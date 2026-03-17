@@ -7,23 +7,31 @@ applications:
     build:
       flavor: composer
     relationships:
-      database: db:postgresql
-      redis: cache:redis
-    disk: 512
+      database: "db:postgresql"
+      redis: "cache:redis"
     mounts:
-      "/storage": { source: local, source_path: storage }
-      "/bootstrap/cache": { source: local, source_path: bootstrap/cache }
+      "/storage":
+        source: storage
+        source_path: storage
+      "/bootstrap/cache":
+        source: storage
+        source_path: bootstrap/cache
     web:
       locations:
         "/":
           root: public
           index:
             - index.php
+          passthru: /index.php
           rules:
-            - { regexp: ^/\.(?!well-known|git), passthru: false }
-            - { regexp: ^/(?:build|storage|bootstrap/cache)/, passthru: false, expires: 60d }
-            - { regexp: ^(?:favicon\.ico|robots\.txt)$, passthru: false, expires: 1d }
-            - { regexp: ^(?!.*\.)(?:.*/)?\w+/?$, passthru: /index.php }
+            "^/\\.(?!well-known|git)":
+              allow: false
+            "^/(?:build|storage|bootstrap/cache)/":
+              allow: true
+              expires: 60d
+            "^(?:favicon\\.ico|robots\\.txt)$":
+              allow: true
+              expires: 1d
     workers:
       queue:
         commands:
@@ -48,9 +56,8 @@ applications:
 services:
   db:
     type: postgresql:16
-    plan: development
   cache:
-    type: redis:7
+    type: redis:7.2
 
 routes:
   "https://{default}/":
