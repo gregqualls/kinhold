@@ -1,37 +1,29 @@
 applications:
   app:
-    type: php:8.4
+    source:
+      root: "/"
+    type: "php:8.4"
     runtime:
       extensions:
         - redis
-    build:
-      flavor: composer
     relationships:
       database: "db:postgresql"
       redis: "cache:redis"
     mounts:
-      "/storage":
-        source: storage
-        source_path: storage
-      "/bootstrap/cache":
-        source: storage
-        source_path: bootstrap/cache
+      "/.config":
+        source: "storage"
+        source_path: "config"
+      "bootstrap/cache":
+        source: "storage"
+        source_path: "cache"
+      "storage":
+        source: "storage"
+        source_path: "storage"
     web:
       locations:
         "/":
-          root: public
-          index:
-            - index.php
-          passthru: /index.php
-          rules:
-            "^/\\.(?!well-known|git)":
-              allow: false
-            "^/(?:build|storage|bootstrap/cache)/":
-              allow: true
-              expires: 60d
-            "^(?:favicon\\.ico|robots\\.txt)$":
-              allow: true
-              expires: 1d
+          passthru: "/index.php"
+          root: "public"
     workers:
       queue:
         commands:
@@ -39,22 +31,30 @@ applications:
       scheduler:
         commands:
           start: php artisan schedule:work
+    variables:
+      env:
+        N_PREFIX: "/app/.global"
+    dependencies:
+      nodejs:
+        n: "*"
+    build:
+      flavor: none
     hooks:
       build: |
-        set -e
-        mkdir -p /app/bootstrap/cache
-        mkdir -p /app/storage/framework/{cache,sessions,views}
-        mkdir -p /app/storage/logs
-        composer install --no-dev --prefer-dist --optimize-autoloader
+        set -eux
+        composer --no-ansi --no-interaction install --no-progress --prefer-dist --optimize-autoloader --no-dev
+        n auto || n lts
+        hash -r
         npm ci
         npm run build
       deploy: |
-        set -e
+        set -eux
+        mkdir -p storage/framework/sessions
+        mkdir -p storage/framework/cache
+        mkdir -p storage/framework/views
         php artisan migrate --force
         php artisan storage:link
-        php artisan config:cache
-        php artisan route:cache
-        php artisan view:cache
+        php artisan optimize:clear
 
 services:
   db:
@@ -65,8 +65,11 @@ services:
 routes:
   "https://{default}/":
     type: upstream
-    upstream: app:http
+    upstream: "app:http"
     cache:
       enabled: true
       headers: ["Accept", "Accept-Language", "Content-Language"]
       default_ttl: 300
+  "https://www.{default}":
+    type: redirect
+    to: "https://{default}/"
