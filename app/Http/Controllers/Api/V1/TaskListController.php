@@ -94,7 +94,7 @@ class TaskListController extends Controller
             'name' => 'string|max:255',
             'description' => 'nullable|string',
             'icon' => 'nullable|string',
-            'color' => 'nullable|string|max:7',
+            'color' => 'nullable|string|max:20',
             'sort_order' => 'nullable|integer',
         ]);
 
