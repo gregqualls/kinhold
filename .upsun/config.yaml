@@ -42,6 +42,9 @@ applications:
     hooks:
       build: |
         set -e
+        mkdir -p /app/bootstrap/cache
+        mkdir -p /app/storage/framework/{cache,sessions,views}
+        mkdir -p /app/storage/logs
         composer install --no-dev --prefer-dist --optimize-autoloader
         npm ci
         npm run build
