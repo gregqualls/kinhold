@@ -1,0 +1,20 @@
+# Map Upsun relationships to Laravel environment variables
+# This file is sourced by the Upsun runtime before the app starts
+
+if [ -n "$PLATFORM_RELATIONSHIPS" ]; then
+    # Database (PostgreSQL)
+    export DB_HOST=$(echo $PLATFORM_RELATIONSHIPS | base64 --decode | jq -r '.database[0].host')
+    export DB_PORT=$(echo $PLATFORM_RELATIONSHIPS | base64 --decode | jq -r '.database[0].port')
+    export DB_DATABASE=$(echo $PLATFORM_RELATIONSHIPS | base64 --decode | jq -r '.database[0].path')
+    export DB_USERNAME=$(echo $PLATFORM_RELATIONSHIPS | base64 --decode | jq -r '.database[0].username')
+    export DB_PASSWORD=$(echo $PLATFORM_RELATIONSHIPS | base64 --decode | jq -r '.database[0].password')
+
+    # Redis
+    export REDIS_HOST=$(echo $PLATFORM_RELATIONSHIPS | base64 --decode | jq -r '.redis[0].host')
+    export REDIS_PORT=$(echo $PLATFORM_RELATIONSHIPS | base64 --decode | jq -r '.redis[0].port')
+fi
+
+# Set APP_URL from Upsun routes
+if [ -n "$PLATFORM_ROUTES" ]; then
+    export APP_URL=$(echo $PLATFORM_ROUTES | base64 --decode | jq -r 'to_entries[] | select(.value.primary == true) | .key' | head -1 | sed 's:/$::')
+fi
