@@ -59,7 +59,6 @@ applications:
         mkdir -p storage/framework/cache
         mkdir -p storage/framework/views
         php artisan migrate --force
-        php artisan storage:link
         php artisan optimize:clear
 
 services:
