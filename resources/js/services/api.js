@@ -1,0 +1,47 @@
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: '/api/v1',
+  withCredentials: true,
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+})
+
+// Restore auth token from localStorage on init
+const savedToken = localStorage.getItem('auth_token')
+if (savedToken) {
+  api.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`
+}
+
+// Request interceptor to add CSRF token
+api.interceptors.request.use((config) => {
+  const token = document.querySelector('meta[name="csrf-token"]')?.content
+  if (token) {
+    config.headers['X-CSRF-TOKEN'] = token
+  }
+  return config
+})
+
+// Response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear stored token on 401
+      localStorage.removeItem('auth_token')
+      delete api.defaults.headers.common['Authorization']
+
+      // Only redirect if not already on login page
+      if (!window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login'
+      }
+    }
+
+    // Return the error so it can be handled in the store/component
+    return Promise.reject(error)
+  }
+)
+
+export default api

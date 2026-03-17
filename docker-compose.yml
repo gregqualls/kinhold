@@ -1,0 +1,200 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: q32hub-app
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=pgsql
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-q32hub}
+      - DB_USERNAME=${DB_USERNAME:-q32hub}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=cookie
+      - QUEUE_CONNECTION=redis
+      - APP_KEY=${APP_KEY:-}
+      - APP_DEBUG=${APP_DEBUG:-true}
+      - APP_ENV=${APP_ENV:-local}
+      - APP_URL=${APP_URL:-http://localhost}
+    volumes:
+      - ./:/app
+      - /app/vendor
+      - /app/node_modules
+    ports:
+      - "9000:9000"
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - q32hub
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  web:
+    image: nginx:latest
+    container_name: q32hub-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/app
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - app
+    networks:
+      - q32hub
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  pgsql:
+    image: postgres:16-alpine
+    container_name: q32hub-pgsql
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-q32hub}
+      POSTGRES_USER: ${DB_USERNAME:-q32hub}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pgsql-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - q32hub
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-q32hub} -d ${DB_DATABASE:-q32hub}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: q32hub-redis
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - q32hub
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: node
+    container_name: q32hub-node
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    command: npm run build
+    networks:
+      - q32hub
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: php
+    container_name: q32hub-queue
+    restart: unless-stopped
+    working_dir: /app
+    command: php artisan queue:work
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=pgsql
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-q32hub}
+      - DB_USERNAME=${DB_USERNAME:-q32hub}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - APP_KEY=${APP_KEY:-}
+      - APP_ENV=${APP_ENV:-production}
+    volumes:
+      - ./:/app
+      - /app/vendor
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      app:
+        condition: service_healthy
+    networks:
+      - q32hub
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: php
+    container_name: q32hub-scheduler
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=pgsql
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-q32hub}
+      - DB_USERNAME=${DB_USERNAME:-q32hub}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - APP_KEY=${APP_KEY:-}
+      - APP_ENV=${APP_ENV:-production}
+    volumes:
+      - ./:/app
+      - /app/vendor
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      app:
+        condition: service_healthy
+    networks:
+      - q32hub
+
+volumes:
+  pgsql-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  q32hub:
+    driver: bridge

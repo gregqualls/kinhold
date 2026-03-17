@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\Family;
+use App\Models\User;
+
+class FamilyPolicy
+{
+    /**
+     * Determine whether the user can update the family.
+     *
+     * @param User $user
+     * @param Family $family
+     * @return bool
+     */
+    public function update(User $user, Family $family): bool
+    {
+        return $user->isParent();
+    }
+
+    /**
+     * Determine whether the user can invite members to the family.
+     *
+     * @param User $user
+     * @param Family $family
+     * @return bool
+     */
+    public function invite(User $user, Family $family): bool
+    {
+        return $user->isParent();
+    }
+}

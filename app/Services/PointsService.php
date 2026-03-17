@@ -1,0 +1,155 @@
+<?php
+
+namespace App\Services;
+
+use App\Enums\PointTransactionType;
+use App\Models\Family;
+use App\Models\PointTransaction;
+use App\Models\Reward;
+use App\Models\RewardPurchase;
+use App\Models\Task;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
+
+class PointsService
+{
+    /**
+     * Award points for completing a task.
+     */
+    public function awardTaskPoints(Task $task, User $user): PointTransaction
+    {
+        return PointTransaction::create([
+            'family_id' => $user->family_id,
+            'user_id' => $user->id,
+            'type' => PointTransactionType::TaskCompletion,
+            'points' => $task->getEffectivePoints(),
+            'description' => "Completed: {$task->title}",
+            'source_type' => Task::class,
+            'source_id' => $task->id,
+        ]);
+    }
+
+    /**
+     * Reverse points when a task is uncompleted.
+     */
+    public function reverseTaskPoints(Task $task, User $user): PointTransaction
+    {
+        return PointTransaction::create([
+            'family_id' => $user->family_id,
+            'user_id' => $user->id,
+            'type' => PointTransactionType::TaskReversal,
+            'points' => -$task->getEffectivePoints(),
+            'description' => "Reversed: {$task->title}",
+            'source_type' => Task::class,
+            'source_id' => $task->id,
+        ]);
+    }
+
+    /**
+     * Give kudos from one user to another (+1 point).
+     */
+    public function giveKudos(User $from, User $to, string $reason): PointTransaction
+    {
+        return PointTransaction::create([
+            'family_id' => $to->family_id,
+            'user_id' => $to->id,
+            'type' => PointTransactionType::Kudos,
+            'points' => 1,
+            'description' => $reason,
+            'awarded_by' => $from->id,
+        ]);
+    }
+
+    /**
+     * Deduct points from a user (parent only).
+     */
+    public function deductPoints(User $from, User $target, int $points, string $reason): PointTransaction
+    {
+        return PointTransaction::create([
+            'family_id' => $target->family_id,
+            'user_id' => $target->id,
+            'type' => PointTransactionType::Deduction,
+            'points' => -abs($points),
+            'description' => $reason,
+            'awarded_by' => $from->id,
+        ]);
+    }
+
+    /**
+     * Redeem a reward (purchase with points).
+     */
+    public function redeemReward(Reward $reward, User $user): array
+    {
+        if (!$user->hasSufficientPoints($reward->point_cost)) {
+            throw new \Exception('Insufficient points');
+        }
+
+        $transaction = PointTransaction::create([
+            'family_id' => $user->family_id,
+            'user_id' => $user->id,
+            'type' => PointTransactionType::Redemption,
+            'points' => -$reward->point_cost,
+            'description' => "Purchased: {$reward->title}",
+            'source_type' => Reward::class,
+            'source_id' => $reward->id,
+        ]);
+
+        $purchase = RewardPurchase::create([
+            'family_id' => $user->family_id,
+            'reward_id' => $reward->id,
+            'user_id' => $user->id,
+            'points_spent' => $reward->point_cost,
+            'purchased_at' => now(),
+        ]);
+
+        return ['transaction' => $transaction, 'purchase' => $purchase];
+    }
+
+    /**
+     * Get a user's point bank balance.
+     */
+    public function getBank(User $user): int
+    {
+        return $user->pointBank();
+    }
+
+    /**
+     * Get leaderboard for a family.
+     */
+    public function getLeaderboard(Family $family, ?string $period = null): Collection
+    {
+        $period = $period ?? $family->getLeaderboardPeriod();
+
+        [$start, $end] = $this->getPeriodBounds($period);
+
+        return PointTransaction::where('family_id', $family->id)
+            ->where('points', '>', 0)
+            ->whereBetween('created_at', [$start, $end])
+            ->selectRaw('user_id, SUM(points) as total_points')
+            ->groupBy('user_id')
+            ->orderByDesc('total_points')
+            ->with('user:id,name,avatar')
+            ->get()
+            ->map(fn ($row) => [
+                'user_id' => $row->user_id,
+                'user' => $row->user ? ['id' => $row->user->id, 'name' => $row->user->name, 'avatar' => $row->user->avatar] : null,
+                'total_points' => (int) $row->total_points,
+            ]);
+    }
+
+    /**
+     * Get the start/end bounds of a leaderboard period.
+     */
+    private function getPeriodBounds(string $period): array
+    {
+        $now = Carbon::now();
+
+        return match ($period) {
+            'daily' => [$now->copy()->startOfDay(), $now->copy()->endOfDay()],
+            'weekly' => [$now->copy()->startOfWeek(), $now->copy()->endOfWeek()],
+            'monthly' => [$now->copy()->startOfMonth(), $now->copy()->endOfMonth()],
+            default => [$now->copy()->startOfWeek(), $now->copy()->endOfWeek()],
+        };
+    }
+}

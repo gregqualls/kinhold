@@ -1,0 +1,58 @@
+applications:
+  app:
+    type: php:8.3
+    build:
+      flavor: composer
+    relationships:
+      database: db:postgresql
+      redis: cache:redis
+    disk: 512
+    mounts:
+      "/storage": { source: local, source_path: storage }
+      "/bootstrap/cache": { source: local, source_path: bootstrap/cache }
+    web:
+      locations:
+        "/":
+          root: public
+          index:
+            - index.php
+          rules:
+            - { regexp: ^/\.(?!well-known|git), passthru: false }
+            - { regexp: ^/(?:build|storage|bootstrap/cache)/, passthru: false, expires: 60d }
+            - { regexp: ^(?:favicon\.ico|robots\.txt)$, passthru: false, expires: 1d }
+            - { regexp: ^(?!.*\.)(?:.*/)?\w+/?$, passthru: /index.php }
+    workers:
+      queue:
+        commands:
+          start: php artisan queue:work
+      scheduler:
+        commands:
+          start: php artisan schedule:work
+    hooks:
+      build: |
+        set -e
+        composer install --no-dev --prefer-dist --optimize-autoloader
+        npm ci
+        npm run build
+      deploy: |
+        set -e
+        php artisan migrate --force
+        php artisan config:cache
+        php artisan route:cache
+        php artisan view:cache
+
+services:
+  db:
+    type: postgresql:16
+    plan: development
+  cache:
+    type: redis:7
+
+routes:
+  "https://{default}/":
+    type: upstream
+    upstream: app:http
+    cache:
+      enabled: true
+      headers: ["Accept", "Accept-Language", "Content-Language"]
+      default_ttl: 300

@@ -1,0 +1,222 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Models\Badge;
+use App\Services\BadgeService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class BadgesController extends Controller
+{
+    public function __construct(
+        private BadgeService $badgeService,
+    ) {}
+
+    /**
+     * List family badges with earned status and progress for current user.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $family = $user->currentFamily()->firstOrFail();
+
+        $badges = Badge::where('family_id', $family->id)
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
+
+        $earnedBadgeIds = $user->badges()->pluck('badges.id')->toArray();
+
+        $badgesData = $badges->map(function ($badge) use ($user, $earnedBadgeIds) {
+            $isEarned = in_array($badge->id, $earnedBadgeIds);
+
+            // Hide details for hidden badges that aren't earned yet
+            if ($badge->is_hidden && !$isEarned) {
+                return [
+                    'id' => $badge->id,
+                    'name' => '???',
+                    'description' => 'Hidden badge — complete the challenge to reveal!',
+                    'icon' => null,
+                    'color' => '#6b7280',
+                    'is_hidden' => true,
+                    'is_earned' => false,
+                    'progress' => null,
+                    'threshold' => null,
+                ];
+            }
+
+            $progress = null;
+            if (!$isEarned && $badge->trigger_threshold) {
+                $progress = $this->badgeService->getCurrentValueForTrigger($user, $badge->trigger_type);
+            }
+
+            return [
+                'id' => $badge->id,
+                'name' => $badge->name,
+                'description' => $badge->description,
+                'icon' => $badge->icon,
+                'custom_icon_path' => $badge->custom_icon_path,
+                'color' => $badge->color,
+                'trigger_type' => $badge->trigger_type,
+                'trigger_threshold' => $badge->trigger_threshold,
+                'is_hidden' => $badge->is_hidden,
+                'is_earned' => $isEarned,
+                'progress' => $progress,
+                'earned_at' => $isEarned
+                    ? $user->badges()->where('badges.id', $badge->id)->first()?->pivot->earned_at
+                    : null,
+            ];
+        });
+
+        return response()->json([
+            'badges' => $badgesData,
+        ]);
+    }
+
+    /**
+     * Create a badge (parent only).
+     */
+    public function store(Request $request): JsonResponse
+    {
+        if (!$request->user()->isParent()) {
+            return response()->json(['message' => 'Only parents can create badges'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:500',
+            'icon' => 'nullable|string|max:50',
+            'color' => 'nullable|string|max:20',
+            'trigger_type' => 'required|string|in:points_earned,tasks_completed,task_streak,kudos_received,kudos_given,rewards_purchased,login_streak,custom',
+            'trigger_threshold' => 'nullable|integer|min:1',
+            'is_hidden' => 'nullable|boolean',
+        ]);
+
+        $family = $request->user()->currentFamily()->firstOrFail();
+
+        $badge = Badge::create([
+            'family_id' => $family->id,
+            'created_by' => $request->user()->id,
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'icon' => $validated['icon'] ?? null,
+            'color' => $validated['color'] ?? '#7d57a8',
+            'trigger_type' => $validated['trigger_type'],
+            'trigger_threshold' => $validated['trigger_threshold'] ?? null,
+            'is_hidden' => $validated['is_hidden'] ?? false,
+        ]);
+
+        return response()->json([
+            'badge' => $badge,
+        ], 201);
+    }
+
+    /**
+     * Update a badge (parent only).
+     */
+    public function update(Request $request, Badge $badge): JsonResponse
+    {
+        if (!$request->user()->isParent()) {
+            return response()->json(['message' => 'Only parents can update badges'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'description' => 'sometimes|string|max:500',
+            'icon' => 'nullable|string|max:50',
+            'color' => 'nullable|string|max:20',
+            'trigger_type' => 'sometimes|string|in:points_earned,tasks_completed,task_streak,kudos_received,kudos_given,rewards_purchased,login_streak,custom',
+            'trigger_threshold' => 'nullable|integer|min:1',
+            'is_hidden' => 'nullable|boolean',
+            'is_active' => 'sometimes|boolean',
+        ]);
+
+        $badge->update($validated);
+
+        return response()->json([
+            'badge' => $badge,
+        ]);
+    }
+
+    /**
+     * Delete a badge (parent only).
+     */
+    public function destroy(Request $request, Badge $badge): JsonResponse
+    {
+        if (!$request->user()->isParent()) {
+            return response()->json(['message' => 'Only parents can delete badges'], 403);
+        }
+
+        $badge->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Manually award a badge (parent only).
+     */
+    public function award(Request $request, Badge $badge): JsonResponse
+    {
+        if (!$request->user()->isParent()) {
+            return response()->json(['message' => 'Only parents can award badges'], 403);
+        }
+
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $family = $request->user()->currentFamily()->firstOrFail();
+        $targetUser = $family->members()->findOrFail($validated['user_id']);
+
+        $this->badgeService->manuallyAward($badge, $targetUser, $request->user());
+
+        return response()->json([
+            'message' => "Awarded '{$badge->name}' to {$targetUser->name}",
+        ]);
+    }
+
+    /**
+     * Revoke a badge (parent only).
+     */
+    public function revoke(Request $request, Badge $badge, string $userId): JsonResponse
+    {
+        if (!$request->user()->isParent()) {
+            return response()->json(['message' => 'Only parents can revoke badges'], 403);
+        }
+
+        $family = $request->user()->currentFamily()->firstOrFail();
+        $targetUser = $family->members()->findOrFail($userId);
+
+        $this->badgeService->revokeBadge($badge, $targetUser);
+
+        return response()->json([
+            'message' => "Revoked '{$badge->name}' from {$targetUser->name}",
+        ]);
+    }
+
+    /**
+     * Get current user's earned badges.
+     */
+    public function earned(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $badges = $user->badges()
+            ->orderByPivot('earned_at', 'desc')
+            ->get()
+            ->map(fn ($badge) => [
+                'id' => $badge->id,
+                'name' => $badge->name,
+                'description' => $badge->description,
+                'icon' => $badge->icon,
+                'color' => $badge->color,
+                'earned_at' => $badge->pivot->earned_at,
+            ]);
+
+        return response()->json([
+            'badges' => $badges,
+        ]);
+    }
+}

@@ -1,0 +1,371 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    /* Lavender-50 background, Black text */
+    background-color: #f4f5f9;
+    color: #02020A;
+  }
+
+  .dark body,
+  body.dark {
+    background-color: #010815; /* Prussian-900 */
+    color: #E1E2EF; /* Lavender */
+  }
+
+  * {
+    @apply transition-colors duration-150;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-card shadow-card p-4;
+    border: 1px solid #E1E2EF; /* Lavender */
+  }
+
+  .card-lg {
+    @apply bg-white rounded-card shadow-card-lg p-6;
+    border: 1px solid #E1E2EF;
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer hover:shadow-card-lg active:shadow-card transition-all duration-200;
+  }
+
+  .card-interactive:hover {
+    border-color: #B497D6; /* Wisteria */
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Primary button: Wisteria purple */
+  .btn-primary {
+    @apply btn text-white shadow-sm;
+    background-color: #7d57a8; /* Wisteria-600 */
+  }
+  .btn-primary:hover {
+    background-color: #9b75c5; /* Wisteria-500 */
+  }
+  .btn-primary:active {
+    background-color: #5e4080; /* Wisteria-700 */
+  }
+  .btn-primary:focus {
+    --tw-ring-color: #B497D6;
+  }
+
+  /* Secondary button: Lavender fill with Prussian text */
+  .btn-secondary {
+    @apply btn;
+    background-color: #E1E2EF; /* Lavender */
+    color: #05204A; /* Prussian Blue */
+    border: 1px solid #c8c9df; /* Lavender-300 */
+  }
+  .btn-secondary:hover {
+    background-color: #c8c9df;
+  }
+  .btn-secondary:active {
+    background-color: #a9abcb;
+  }
+  .btn-secondary:focus {
+    --tw-ring-color: #B497D6;
+  }
+
+  /* Accent button: Golden Sand */
+  .btn-accent {
+    @apply btn shadow-sm;
+    background-color: #a5a84e; /* Sand-500 */
+    color: #02020A;
+  }
+  .btn-accent:hover {
+    background-color: #BBBE64;
+  }
+  .btn-accent:active {
+    background-color: #84863e;
+    color: white;
+  }
+  .btn-accent:focus {
+    --tw-ring-color: #BBBE64;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-500 active:bg-red-700 focus:ring-red-400 shadow-sm;
+  }
+
+  /* Ghost button: transparent with Prussian text */
+  .btn-ghost {
+    @apply btn bg-transparent;
+    color: #05204A;
+  }
+  .btn-ghost:hover {
+    background-color: #E1E2EF;
+  }
+  .btn-ghost:active {
+    background-color: #c8c9df;
+  }
+  .btn-ghost:focus {
+    --tw-ring-color: #B497D6;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-md {
+    @apply px-4 py-2 text-base;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge;
+    background-color: #ebe1f5; /* Wisteria-100 */
+    color: #5e4080; /* Wisteria-700 */
+  }
+
+  .badge-secondary {
+    @apply badge;
+    background-color: #E1E2EF; /* Lavender */
+    color: #05204A; /* Prussian */
+  }
+
+  .badge-accent {
+    @apply badge;
+    background-color: #ecedd1; /* Sand-100 */
+    color: #42431f; /* Sand-800 */
+  }
+
+  .badge-success {
+    @apply badge bg-emerald-100 text-emerald-800;
+  }
+
+  .badge-warning {
+    @apply badge;
+    background-color: #f6f6e8; /* Sand-50 */
+    color: #63652f; /* Sand-700 */
+  }
+
+  .badge-danger {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  /* Input: white bg, lavender border, wisteria focus */
+  .input-base {
+    @apply w-full px-3 py-2 rounded-lg bg-white transition-all duration-200;
+    border: 1px solid #c8c9df; /* Lavender-300 */
+    color: #02020A;
+  }
+  .input-base::placeholder {
+    color: #8a8db7; /* Lavender-500 */
+  }
+  .input-base:focus {
+    --tw-ring-color: #B497D6;
+    @apply ring-2;
+    border-color: #B497D6;
+  }
+
+  .input-error {
+    @apply input-base;
+    border-color: #ef4444;
+  }
+  .input-error:focus {
+    --tw-ring-color: #ef4444;
+    border-color: #ef4444;
+  }
+
+  .divider {
+    @apply my-4;
+    border-top: 1px solid #E1E2EF;
+  }
+
+  .fade-enter-active,
+  .fade-leave-active {
+    @apply transition-opacity duration-200;
+  }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    @apply opacity-0;
+  }
+
+  .slide-enter-active,
+  .slide-leave-active {
+    @apply transition-transform duration-300;
+  }
+
+  .slide-enter-from {
+    @apply translate-x-full;
+  }
+
+  .slide-leave-to {
+    @apply -translate-x-full;
+  }
+
+  .scale-enter-active {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .scale-leave-active {
+    transition: all 0.15s ease-in;
+  }
+  .scale-enter-from,
+  .scale-leave-to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  /* Animated checkbox */
+  .checkbox-custom {
+    @apply relative w-[22px] h-[22px] rounded-full border-2 flex-shrink-0 cursor-pointer;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+  }
+
+  .checkbox-custom:hover {
+    background-color: rgba(180, 151, 214, 0.12); /* Wisteria tint */
+  }
+
+  .checkbox-custom.checked {
+    animation: checkBounce 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .checkbox-custom .check-icon {
+    @apply absolute inset-0 flex items-center justify-center text-white;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .checkbox-custom.checked .check-icon {
+    opacity: 1;
+  }
+
+  @keyframes checkBounce {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+}
+
+/*
+ * === Dark Mode Defaults ===
+ * These live in @layer components so they act as sensible fallbacks.
+ * Explicit dark: Tailwind utilities (in @layer utilities) will
+ * override these when present — that's the correct cascade.
+ */
+@layer components {
+  .dark .card,
+  .dark .card-lg {
+    background-color: #020e22; /* Prussian-800 */
+    border-color: #031430; /* Prussian-700 */
+  }
+
+  .dark .card-interactive:hover {
+    border-color: #5e4080; /* Wisteria-700 */
+  }
+
+  .dark .input-base {
+    background-color: #031430;
+    border-color: #2f4a7a;
+    color: #E1E2EF;
+  }
+  .dark .input-base::placeholder {
+    color: #6e71a0;
+  }
+
+  .dark .btn-secondary {
+    background-color: #031430;
+    color: #E1E2EF;
+    border-color: #2f4a7a;
+  }
+  .dark .btn-secondary:hover {
+    background-color: #041a3d;
+  }
+
+  .dark .btn-ghost {
+    color: #E1E2EF;
+  }
+  .dark .btn-ghost:hover {
+    background-color: #031430;
+  }
+
+  .dark .divider {
+    border-color: #2f4a7a;
+  }
+
+  .dark .badge-primary {
+    background-color: rgba(125, 87, 168, 0.2);
+    color: #c9b2e1; /* Wisteria-300 */
+  }
+
+  .dark .badge-secondary {
+    background-color: #031430;
+    color: #E1E2EF;
+  }
+
+  .dark .badge-accent {
+    background-color: rgba(165, 168, 78, 0.15);
+    color: #BBBE64;
+  }
+
+  .dark .badge-warning {
+    background-color: rgba(165, 168, 78, 0.1);
+    color: #BBBE64;
+  }
+
+  .dark .btn-danger {
+    background-color: #b91c1c;
+  }
+  .dark .btn-danger:hover {
+    background-color: #dc2626;
+  }
+}
+
+/* Safe area for mobile notch/home indicator */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+    padding-top: max(0px, env(safe-area-inset-top));
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(5, 32, 74, 0.15); /* Prussian Blue tint */
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(5, 32, 74, 0.25);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(225, 226, 239, 0.15);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(225, 226, 239, 0.25);
+}

@@ -1,0 +1,134 @@
+<template>
+  <div class="px-4">
+    <div
+      v-if="!isEditing"
+      @click="startEditing"
+      class="flex items-center gap-3 py-3 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 cursor-pointer rounded-xl hover:bg-lavender-50 dark:hover:bg-prussian-700 px-4 transition-colors"
+    >
+      <PlusIcon class="w-5 h-5" />
+      <span class="text-sm">Add a task...</span>
+    </div>
+
+    <div v-else class="bg-white dark:bg-prussian-800 border border-lavender-200 dark:border-prussian-700 rounded-xl p-4 shadow-card">
+      <input
+        ref="inputRef"
+        v-model="title"
+        @keydown.enter.prevent="submit"
+        @keydown.escape="cancel"
+        placeholder="Task name"
+        class="w-full text-sm font-medium text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 outline-none bg-transparent"
+      />
+
+      <!-- Quick options row -->
+      <div class="flex items-center gap-2 mt-3">
+        <!-- Due date -->
+        <label
+          class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg cursor-pointer transition-colors"
+          :class="dueDate ? 'bg-wisteria-50 dark:bg-wisteria-900/20 text-wisteria-700 dark:text-wisteria-400' : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+        >
+          <CalendarIcon class="w-3.5 h-3.5" />
+          {{ dueDate ? formatDueDate(dueDate) : 'Date' }}
+          <input
+            type="date"
+            v-model="dueDate"
+            class="sr-only"
+          />
+        </label>
+
+        <!-- Priority -->
+        <button
+          @click="cyclePriority"
+          class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg transition-colors"
+          :class="priorityClass"
+        >
+          <FlagIcon class="w-3.5 h-3.5" />
+          {{ priority }}
+        </button>
+
+        <div class="flex-1" />
+
+        <!-- Actions -->
+        <button
+          @click="cancel"
+          class="px-3 py-1.5 text-xs text-lavender-500 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 rounded-lg hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          @click="submit"
+          :disabled="!title.trim()"
+          class="px-3 py-1.5 text-xs font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+          Add Task
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, nextTick, computed } from 'vue'
+import { PlusIcon, CalendarIcon, FlagIcon } from '@heroicons/vue/24/outline'
+
+const emit = defineEmits(['add'])
+
+const isEditing = ref(false)
+const inputRef = ref(null)
+const title = ref('')
+const dueDate = ref('')
+const priority = ref('medium')
+
+const startEditing = async () => {
+  isEditing.value = true
+  await nextTick()
+  inputRef.value?.focus()
+}
+
+const cancel = () => {
+  isEditing.value = false
+  title.value = ''
+  dueDate.value = ''
+  priority.value = 'medium'
+}
+
+const submit = () => {
+  if (!title.value.trim()) return
+  emit('add', {
+    title: title.value.trim(),
+    due_date: dueDate.value || null,
+    priority: priority.value,
+  })
+  title.value = ''
+  dueDate.value = ''
+  // Keep editing open for rapid entry
+  nextTick(() => inputRef.value?.focus())
+}
+
+const cyclePriority = () => {
+  const cycle = { low: 'medium', medium: 'high', high: 'low' }
+  priority.value = cycle[priority.value]
+}
+
+const priorityClass = computed(() => {
+  const classes = {
+    high: 'bg-red-50 text-red-600',
+    medium: 'bg-orange-50 text-orange-600',
+    low: 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600',
+  }
+  return classes[priority.value]
+})
+
+const formatDueDate = (dateStr) => {
+  const d = new Date(dateStr)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const dueDay = new Date(d)
+  dueDay.setHours(0, 0, 0, 0)
+
+  if (dueDay.getTime() === today.getTime()) return 'Today'
+  if (dueDay.getTime() === tomorrow.getTime()) return 'Tomorrow'
+  return dueDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+</script>
