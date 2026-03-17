@@ -122,9 +122,37 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Restore auth from saved token on app init
+  // Also checks for OAuth callback token in URL query params
   const initAuth = async () => {
+    // Check for OAuth callback token in URL (Google OAuth redirects here with ?token=...)
+    const urlParams = new URLSearchParams(window.location.search)
+    const oauthToken = urlParams.get('token')
+
+    if (oauthToken) {
+      // Store the token from OAuth callback
+      localStorage.setItem('auth_token', oauthToken)
+      api.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`
+
+      // Clean up URL params (remove token from address bar)
+      const cleanUrl = window.location.pathname
+      window.history.replaceState({}, document.title, cleanUrl)
+
+      // Fetch user data with the new token
+      await fetchUser()
+      initialAuthChecked.value = true
+      return
+    }
+
+    // Check for OAuth error in URL
+    const authError = urlParams.get('auth_error')
+    if (authError) {
+      error.value = decodeURIComponent(authError)
+      window.history.replaceState({}, document.title, window.location.pathname)
+    }
+
     const savedToken = localStorage.getItem('auth_token')
     if (savedToken) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`
       await fetchUser()
     }
     initialAuthChecked.value = true
