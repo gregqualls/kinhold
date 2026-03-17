@@ -43,7 +43,9 @@ applications:
       build: |
         set -eux
         mkdir -p bootstrap/cache
-        mkdir -p storage/framework/{cache,sessions,views}
+        mkdir -p storage/framework/cache
+        mkdir -p storage/framework/sessions
+        mkdir -p storage/framework/views
         mkdir -p storage/logs
         composer --no-ansi --no-interaction install --no-progress --prefer-dist --optimize-autoloader --no-dev
         n auto || n lts
