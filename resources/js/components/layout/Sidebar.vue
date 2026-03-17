@@ -45,13 +45,20 @@
           <p class="text-[11px] text-lavender-400 truncate capitalize">{{ currentUser?.family_role || 'member' }}</p>
         </div>
       </RouterLink>
+      <button
+        @click="handleLogout"
+        class="flex items-center gap-3 px-3 py-2 mt-1 w-full rounded-xl text-sm text-lavender-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
+      >
+        <ArrowRightOnRectangleIcon class="w-5 h-5 flex-shrink-0" />
+        <span>Sign Out</span>
+      </button>
     </div>
   </aside>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import UserAvatar from '@/components/common/UserAvatar.vue'
@@ -63,11 +70,18 @@ import {
   ChatBubbleLeftIcon,
   TrophyIcon,
   ShieldCheckIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 const { family, currentUser, enabledModules } = storeToRefs(authStore)
+
+const handleLogout = async () => {
+  await authStore.logout()
+  router.push('/login')
+}
 
 const familyName = computed(() => family.value?.name || 'Q32 Hub')
 
