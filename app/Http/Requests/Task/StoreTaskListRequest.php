@@ -27,7 +27,7 @@ class StoreTaskListRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'icon' => 'nullable|string',
-            'color' => 'nullable|string|max:7',
+            'color' => 'nullable|string|max:20',
         ];
     }
 }
