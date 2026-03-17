@@ -6,6 +6,7 @@ applications:
     runtime:
       extensions:
         - redis
+        - pdo_pgsql
     relationships:
       database: "db:postgresql"
       redis: "cache:redis"
