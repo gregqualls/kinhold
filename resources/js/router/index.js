@@ -8,8 +8,7 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 // App Views
 import DashboardView from '@/views/dashboard/DashboardView.vue'
 import CalendarView from '@/views/calendar/CalendarView.vue'
-import TaskListsView from '@/views/tasks/TaskListsView.vue'
-import TaskListDetailView from '@/views/tasks/TaskListDetailView.vue'
+import TasksView from '@/views/tasks/TasksView.vue'
 import VaultCategoriesView from '@/views/vault/VaultCategoriesView.vue'
 import VaultEntriesView from '@/views/vault/VaultEntriesView.vue'
 import VaultEntryView from '@/views/vault/VaultEntryView.vue'
@@ -52,14 +51,8 @@ const routes = [
   },
   {
     path: '/tasks',
-    name: 'TaskLists',
-    component: TaskListsView,
-    meta: { requiresAuth: true, module: 'tasks' },
-  },
-  {
-    path: '/tasks/:listId',
-    name: 'TaskListDetail',
-    component: TaskListDetailView,
+    name: 'Tasks',
+    component: TasksView,
     meta: { requiresAuth: true, module: 'tasks' },
   },
   {

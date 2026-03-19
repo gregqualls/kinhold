@@ -20,7 +20,7 @@
       />
 
       <!-- Quick options row -->
-      <div class="flex items-center gap-2 mt-3">
+      <div class="flex items-center gap-2 mt-3 flex-wrap">
         <!-- Due date -->
         <label
           class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg cursor-pointer transition-colors"
@@ -43,6 +43,25 @@
         >
           <FlagIcon class="w-3.5 h-3.5" />
           {{ priority }}
+        </button>
+
+        <!-- Tag chips -->
+        <button
+          v-for="tag in tags"
+          :key="tag.id"
+          @click="toggleTag(tag.id)"
+          class="flex items-center gap-1 px-2 py-1.5 text-xs rounded-lg transition-colors"
+          :class="selectedTagIds.includes(tag.id)
+            ? 'text-white'
+            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+          :style="selectedTagIds.includes(tag.id) ? { backgroundColor: getTagHex(tag.color) } : {}"
+        >
+          <span
+            v-if="!selectedTagIds.includes(tag.id)"
+            class="w-1.5 h-1.5 rounded-full"
+            :style="{ backgroundColor: getTagHex(tag.color) }"
+          />
+          {{ tag.name }}
         </button>
 
         <div class="flex-1" />
@@ -70,13 +89,29 @@
 import { ref, nextTick, computed } from 'vue'
 import { PlusIcon, CalendarIcon, FlagIcon } from '@heroicons/vue/24/outline'
 
+const props = defineProps({
+  tags: { type: Array, default: () => [] },
+})
+
 const emit = defineEmits(['add'])
+
+const colorMap = {
+  wisteria: '#7d57a8',
+  prussian: '#05204A',
+  sand: '#a5a84e',
+  red: '#dc2626',
+  green: '#059669',
+  pink: '#db2777',
+}
+
+const getTagHex = (colorName) => colorMap[colorName] || colorName || colorMap.wisteria
 
 const isEditing = ref(false)
 const inputRef = ref(null)
 const title = ref('')
 const dueDate = ref('')
 const priority = ref('medium')
+const selectedTagIds = ref([])
 
 const startEditing = async () => {
   isEditing.value = true
@@ -89,6 +124,16 @@ const cancel = () => {
   title.value = ''
   dueDate.value = ''
   priority.value = 'medium'
+  selectedTagIds.value = []
+}
+
+const toggleTag = (tagId) => {
+  const idx = selectedTagIds.value.indexOf(tagId)
+  if (idx === -1) {
+    selectedTagIds.value.push(tagId)
+  } else {
+    selectedTagIds.value.splice(idx, 1)
+  }
 }
 
 const submit = () => {
@@ -97,9 +142,11 @@ const submit = () => {
     title: title.value.trim(),
     due_date: dueDate.value || null,
     priority: priority.value,
+    tag_ids: selectedTagIds.value.length > 0 ? selectedTagIds.value : undefined,
   })
   title.value = ''
   dueDate.value = ''
+  selectedTagIds.value = []
   // Keep editing open for rapid entry
   nextTick(() => inputRef.value?.focus())
 }
