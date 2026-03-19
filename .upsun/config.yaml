@@ -75,6 +75,3 @@ routes:
       enabled: true
       headers: ["Accept", "Accept-Language", "Content-Language"]
       default_ttl: 300
-  "https://www.{default}":
-    type: redirect
-    to: "https://{default}/"
