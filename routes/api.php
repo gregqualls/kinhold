@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\VaultController;
 use App\Http\Controllers\Api\V1\CalendarController;
 use App\Http\Controllers\Api\V1\ChatController;
 use App\Http\Controllers\Api\V1\SettingsController;
+use App\Http\Controllers\Api\V1\TagController;
 use App\Http\Controllers\Api\V1\PointsController;
 use App\Http\Controllers\Api\V1\RewardsController;
 use App\Http\Controllers\Api\V1\BadgesController;
@@ -47,9 +48,18 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+        // Tags
+        Route::prefix('/tags')->group(function () {
+            Route::get('/', [TagController::class, 'index']);
+            Route::post('/', [TagController::class, 'store']);
+            Route::put('/{tag}', [TagController::class, 'update']);
+            Route::delete('/{tag}', [TagController::class, 'destroy']);
+        });
+
         // Tasks
         Route::prefix('/tasks')->group(function () {
             Route::get('/', [TaskController::class, 'index']);
+            Route::post('/', [TaskController::class, 'store']);
             Route::get('/{task}', [TaskController::class, 'show']);
             Route::put('/{task}', [TaskController::class, 'update']);
             Route::delete('/{task}', [TaskController::class, 'destroy']);

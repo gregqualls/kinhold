@@ -12,7 +12,7 @@ Goal: Get all 5 family members using the app daily. Focus on core functionality,
 | Email/password authentication | SCAFFOLDED | Sanctum, registration with family creation/join |
 | Family member management | SCAFFOLDED | Parent invites, role assignment |
 | Unified family calendar (read-only) | SCAFFOLDED | Google Calendar aggregation, color-coded per member |
-| Task lists with assignment | SCAFFOLDED | Multiple lists, assignees, due dates, priorities |
+| Task management with tags | COMPLETE | Tag-based filtering replaces lists, inline editing, multi-tag support |
 | Family vault with encryption | SCAFFOLDED | Categories, encrypted entries, document uploads |
 | Vault permission management | SCAFFOLDED | Parent/child roles + per-item overrides |
 | AI chatbot (Claude) | SCAFFOLDED | Optional via API key, queries family data |
@@ -40,7 +40,7 @@ Goal: Polish the experience, add quality-of-life features that make the family w
 | Google OAuth login | DEFERRED | Sign in with Google alongside email/password |
 | Two-way calendar sync | DEFERRED | Create/edit events from hub, push to Google Calendar |
 | Recurring tasks | COMPLETE | Daily, weekly, monthly recurrence via RRULE + daily artisan command |
-| Task categories and filters | DEFERRED | Tags/categories on tasks, advanced filtering |
+| Task categories and filters | COMPLETE | Replaced task lists with tag-based filtering system |
 | Dark mode | IN PROGRESS | Toggle in Settings works, CSS architecture fixed, all views support dark:. Still needs: toggle in TopBar/mobile header for quick access |
 | Push notifications | DEFERRED | Task reminders, event alerts (PWA or web push) |
 | Email digest | DEFERRED | Daily/weekly summary email per family member |

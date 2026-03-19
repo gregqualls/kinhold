@@ -2,6 +2,69 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-19 — Session 6: Tag-Based Task Filtering (Replace Task Lists)
+
+### What Was Done
+- **Replaced task list navigation with tag-based filtering** — tasks now live in a single flat view with colored tag chips for filtering instead of navigating between separate lists.
+
+- **Database:**
+  - New `tags` table (uuid, family_id, name, color, sort_order)
+  - New `task_tag` pivot table (many-to-many: tasks can have multiple tags)
+  - Migration to convert existing task lists into tags and link tasks to their corresponding tags
+  - Made `task_list_id` nullable on tasks table
+
+- **Backend:**
+  - New `Tag` model with `belongsToMany(Task)` relationship
+  - New `TagController` with full CRUD (index with task counts, store, update, destroy)
+  - New `TagResource` for API responses
+  - Added `tags()` relationship to `Task` model
+  - Updated `TaskController`: tag-based filtering via `tags` query param, `tag_ids` sync on create/update, tasks no longer require a task_list_id
+  - Updated `TaskResource` to include tags array
+  - Updated form requests: `task_list_id` now optional, added `tag_ids` validation
+  - Added `POST /tasks` route for creating tasks without going through a task list
+  - Added tag CRUD routes: `GET/POST /tags`, `PUT/DELETE /tags/{tag}`
+
+- **Frontend — New `TasksView.vue`:**
+  - Single flat view showing all tasks (replaces both `TaskListsView` and `TaskListDetailView`)
+  - Horizontal scrollable tag bar with colored chips — click to filter, "All" selected by default
+  - Tag manager modal (gear icon): create, rename, delete tags with color picker
+  - Quick add with tag selector
+  - Collapsible completed tasks section
+  - Inline editing + slide panel for full details
+
+- **Frontend — Updated Components:**
+  - `TaskItem`: colored tag chips on each task, inline title editing (double-click), click priority flag to cycle priority, points display
+  - `TaskQuickAdd`: tag chip toggles for assigning tags during creation
+  - `TaskDetailPanel`: multi-select tag chips, uses `assigned_to`/`assignee` properly
+  - `TopBar`: updated route name mapping (Tasks instead of TaskLists/TaskListDetail)
+  - `DashboardView`: uses `completed_at` instead of `completed`, removed `fetchTaskLists` call
+
+- **Pinia Store (`tasks.js`):**
+  - Full rewrite: tags state, selectedTagIds, filteredTasks computed
+  - Tag CRUD actions: fetchTags, createTag, updateTag, deleteTag
+  - toggleTagFilter/clearTagFilter for UI filtering
+  - Simplified task fetching (single `/tasks` endpoint, no list ID required)
+  - Uses `completed_at` consistently instead of `completed` boolean
+
+- **Seeder:** creates tags (General, Chores, School) instead of task lists, attaches tags to demo tasks
+
+### Architecture Decisions
+- **Tags replace lists** — tasks can have multiple tags (many-to-many pivot), enabling more flexible organization
+- **Backward compatible** — `task_list_id` column kept (nullable) and TaskList model/controller preserved, but no longer used by the frontend
+- **Client-side filtering** — tag filtering happens in the Pinia store (computed), not via API calls, for instant responsiveness. API supports server-side tag filtering too via `?tags=id1,id2`
+
+### Build Status
+- 790 Vue/JS modules, 0 errors via `npx vite build`
+- All PHP files pass syntax check
+
+### Next Session TODO
+- Test the full flow end-to-end in browser (create tag, create task with tags, filter, inline edit, complete)
+- Consider removing TaskList model/controller/routes once tag system is proven stable
+- Dark mode toggle in TopBar (still pending)
+- Continue gamification flow testing
+
+---
+
 ## 2026-03-17 — Session 5: Gamification System (Points, Rewards, Badges)
 
 ### What Was Done

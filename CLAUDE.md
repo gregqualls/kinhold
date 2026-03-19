@@ -56,12 +56,15 @@ An open-source family hub web application at **family.qthirtytwo.com**. It's a c
 - **Future:** Two-way sync (create/edit events from hub), more providers (Outlook, iCloud)
 
 ### 3. Tasks & To-Dos (MVP — SCAFFOLDED + GAMIFICATION)
-- Task lists (e.g., "Grocery", "House Projects", "School")
-- Tasks with: title, description, assignee, due date, priority (low/medium/high), points
+- **Tag-based filtering** replaces task lists — tasks can have multiple colored tags (many-to-many)
+- Single flat view of all tasks with tag chip bar for filtering
+- Inline editing (double-click title, click priority flag) + slide panel for full details
+- Tasks with: title, description, assignee, due date, priority (low/medium/high), points, tags
 - Family tasks (anyone can complete) vs personal tasks
 - Recurring tasks via RRULE (daily, weekly+day, monthly+date) — artisan command generates instances 7 days ahead
 - Points awarded on completion, reversed on uncomplete
-- **Future:** Categories, kanban boards, subtasks, dependencies
+- Tag management: create, rename, delete tags with color picker
+- **Future:** Kanban boards, subtasks, dependencies
 
 ### 4. Family Vault (MVP — SCAFFOLDED)
 - Categories: Medical, Financial, Insurance, Legal, Education, Personal
@@ -136,7 +139,8 @@ q32hub/
 All routes are prefixed with `/api/v1/`. Auth routes are public, everything else requires Sanctum auth.
 
 **Auth:** `POST /register`, `POST /login`, `POST /logout`, `GET /user`
-**Tasks:** CRUD on `/tasks` and `/task-lists`, plus `PATCH /tasks/{id}/toggle`
+**Tags:** CRUD on `/tags`
+**Tasks:** CRUD on `/tasks`, plus `PATCH /tasks/{id}/complete` and `/uncomplete`
 **Vault:** CRUD on `/vault/entries` and `/vault/categories`, permissions at `/vault/entries/{id}/permissions`, documents at `/vault/entries/{id}/documents`
 **Calendar:** `GET /calendar/events`, `GET /calendar/connections`, `POST /calendar/connect`, `POST /calendar/sync`
 **Family:** `GET /family`, `GET /family/members`, `POST /family/invite`, `PUT /family/settings`
@@ -150,8 +154,10 @@ All routes are prefixed with `/api/v1/`. Auth routes are public, everything else
 
 - `families` — id, name, slug, invite_code, settings (JSON)
 - `users` — id, family_id, name, email, password, family_role (enum), avatar, date_of_birth, timezone
-- `task_lists` — id, family_id, name, icon, color, sort_order, is_default
-- `tasks` — id, family_id, task_list_id, created_by, assigned_to, title, description, due_date, completed_at, priority (enum), is_family_task, points, recurrence_rule, recurrence_end, parent_task_id
+- `tags` — id, family_id, name, color, sort_order (unique: family_id+name)
+- `task_tag` — id, task_id, tag_id (pivot, unique: task_id+tag_id)
+- `task_lists` — id, family_id, name, icon, color, sort_order, is_default (LEGACY — replaced by tags)
+- `tasks` — id, family_id, task_list_id (nullable), created_by, assigned_to, title, description, due_date, completed_at, priority (enum), is_family_task, points, recurrence_rule, recurrence_end, parent_task_id
 - `vault_categories` — id, family_id, name, slug, icon, description
 - `vault_entries` — id, family_id, vault_category_id, created_by, title, encrypted_data (encrypted JSON), notes, metadata (JSON)
 - `vault_permissions` — id, vault_entry_id, user_id, permission_level (enum: view/edit)
@@ -210,13 +216,14 @@ chmod +x setup.sh && ./setup.sh
 
 ## Current Status (Updated: 2026-03-17)
 
-**Phase:** MVP running locally. Gamification system implemented. UI/UX overhaul in progress.
+**Phase:** MVP running locally. Gamification + tag-based tasks implemented. UI/UX overhaul in progress.
 
 **What works:**
 - App boots and runs locally (`php artisan serve` + `npm run dev`)
-- Frontend builds clean (791 Vue/JS modules, 0 errors via `npx vite build`)
+- Frontend builds clean (790 Vue/JS modules, 0 errors via `npx vite build`)
 - Auth flow works (login/register with demo accounts from seeder)
-- Task CRUD fully functional: create, edit, complete, delete tasks and task lists
+- Task CRUD fully functional with tag-based filtering: create, edit (inline + panel), complete, delete tasks
+- **Tag system:** Create/edit/delete colored tags, filter tasks by tags, multiple tags per task
 - Calendar view with month/week/day modes, Google Calendar integration, color-coded events with source labels
 - Vault with categories, encrypted entries, sensitive field masking
 - Chat with message bubbles, typing indicator, suggested questions
@@ -243,6 +250,8 @@ chmod +x setup.sh && ./setup.sh
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 
 **What's next:**
+- Test tag-based task flow end-to-end in browser (create tags, create tasks with tags, filter, inline edit, complete)
+- Consider removing legacy TaskList model/controller/routes once tag system is proven stable
 - Add dark mode toggle to TopBar (desktop) and mobile header for quick access
 - End-to-end testing of gamification flow (complete task → points → badge earned → toast)
 - Test recurring task generation: `php artisan app:generate-recurring-tasks`
