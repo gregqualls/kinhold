@@ -26,7 +26,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
         Route::post('/auth/switch-profile', [AuthController::class, 'switchProfile']);
-        Route::post('/auth/switch-back', [AuthController::class, 'switchBack']);
 
         // Family
         Route::prefix('/family')->group(function () {

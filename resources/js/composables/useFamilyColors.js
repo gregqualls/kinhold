@@ -1,10 +1,10 @@
 const familyColors = [
-  { name: 'red', bg: 'bg-family-red', text: 'text-family-red', light: 'bg-red-100' },
-  { name: 'amber', bg: 'bg-family-amber', text: 'text-family-amber', light: 'bg-amber-100' },
-  { name: 'green', bg: 'bg-family-green', text: 'text-family-green', light: 'bg-green-100' },
-  { name: 'blue', bg: 'bg-family-blue', text: 'text-family-blue', light: 'bg-blue-100' },
-  { name: 'purple', bg: 'bg-family-purple', text: 'text-family-purple', light: 'bg-purple-100' },
-  { name: 'pink', bg: 'bg-family-pink', text: 'text-family-pink', light: 'bg-pink-100' },
+  { name: 'red', bg: 'bg-red-500', text: 'text-red-600', light: 'bg-red-100' },
+  { name: 'amber', bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-100' },
+  { name: 'green', bg: 'bg-emerald-600', text: 'text-emerald-600', light: 'bg-green-100' },
+  { name: 'blue', bg: 'bg-blue-600', text: 'text-blue-600', light: 'bg-blue-100' },
+  { name: 'purple', bg: 'bg-wisteria-600', text: 'text-wisteria-600', light: 'bg-purple-100' },
+  { name: 'pink', bg: 'bg-pink-500', text: 'text-pink-600', light: 'bg-pink-100' },
 ]
 
 const colorMap = new Map()
