@@ -20,6 +20,8 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'family_role' => $this->family_role,
             'role' => $this->family_role, // alias for frontend convenience
+            'is_managed' => $this->is_managed,
+            'managed_by' => $this->managed_by,
             'avatar' => $this->avatar,
             'date_of_birth' => $this->date_of_birth,
             'timezone' => $this->timezone,

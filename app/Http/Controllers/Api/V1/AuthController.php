@@ -104,6 +104,86 @@ class AuthController extends Controller
     }
 
     /**
+     * Switch to a managed child's profile (parent only).
+     * Creates a new token for the child account. The parent's user ID
+     * is stored in the token name so we can switch back.
+     */
+    public function switchProfile(Request $request): JsonResponse
+    {
+        $parent = $request->user();
+
+        if (!$parent->isParent()) {
+            return response()->json(['message' => 'Only parents can switch profiles'], 403);
+        }
+
+        $validated = $request->validate([
+            'user_id' => 'required|uuid|exists:users,id',
+        ]);
+
+        $child = User::where('id', $validated['user_id'])
+            ->where('family_id', $parent->family_id)
+            ->where('is_managed', true)
+            ->first();
+
+        if (!$child) {
+            return response()->json(['message' => 'Can only switch to managed accounts in your family'], 403);
+        }
+
+        // Create a token for the child, encoding the parent ID in the token name
+        $token = $child->createToken("switched_from:{$parent->id}")->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => UserResource::make($child),
+            'switched_from' => [
+                'id' => $parent->id,
+                'name' => $parent->name,
+            ],
+            'message' => "Switched to {$child->name}'s profile",
+        ], 200);
+    }
+
+    /**
+     * Switch back to the parent's profile from a managed child session.
+     * Requires the parent's password for security.
+     */
+    public function switchBack(Request $request): JsonResponse
+    {
+        $currentUser = $request->user();
+        $currentToken = $currentUser->currentAccessToken();
+
+        // Check if this is a switched session by looking at token name
+        $tokenName = $currentToken->name;
+        if (!str_starts_with($tokenName, 'switched_from:')) {
+            return response()->json(['message' => 'Not in a switched session'], 400);
+        }
+
+        $parentId = str_replace('switched_from:', '', $tokenName);
+
+        $validated = $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        $parent = User::find($parentId);
+
+        if (!$parent || !Hash::check($validated['password'], $parent->password)) {
+            return response()->json(['message' => 'Invalid password'], 401);
+        }
+
+        // Revoke the child's switched token
+        $currentToken->delete();
+
+        // Create a new token for the parent
+        $token = $parent->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => UserResource::make($parent->load('family')),
+            'message' => "Switched back to {$parent->name}'s profile",
+        ], 200);
+    }
+
+    /**
      * Get the authenticated user with family data.
      *
      * @param Request $request
@@ -113,8 +193,23 @@ class AuthController extends Controller
     {
         $user = $request->user()->load('family.members');
 
+        // Check if this is a switched session
+        $switchedFrom = null;
+        $currentToken = $user->currentAccessToken();
+        if ($currentToken && str_starts_with($currentToken->name, 'switched_from:')) {
+            $parentId = str_replace('switched_from:', '', $currentToken->name);
+            $parent = User::find($parentId);
+            if ($parent) {
+                $switchedFrom = [
+                    'id' => $parent->id,
+                    'name' => $parent->name,
+                ];
+            }
+        }
+
         return response()->json([
             'user' => UserResource::make($user),
+            'switched_from' => $switchedFrom,
             'family' => $user->family ? [
                 'id' => $user->family->id,
                 'name' => $user->family->name,
@@ -123,8 +218,13 @@ class AuthController extends Controller
                 'members' => $user->family->members->map(fn ($m) => [
                     'id' => $m->id,
                     'name' => $m->name,
+                    'email' => $m->email,
                     'family_role' => $m->family_role,
+                    'role' => $m->family_role,
+                    'is_managed' => $m->is_managed,
+                    'managed_by' => $m->managed_by,
                     'avatar' => $m->avatar,
+                    'date_of_birth' => $m->date_of_birth,
                 ]),
             ] : null,
         ], 200);
