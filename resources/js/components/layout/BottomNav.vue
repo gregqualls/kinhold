@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="bg-prussian-500/95 dark:bg-prussian-900/95 backdrop-blur-lg border-t border-prussian-400/30 dark:border-prussian-700/50 flex justify-around fixed bottom-0 left-0 right-0 z-40"
+    class="bg-prussian-500 dark:bg-prussian-900 border-t border-prussian-400/30 dark:border-prussian-700/50 flex justify-around shrink-0"
     :style="{ paddingBottom: 'max(0px, env(safe-area-inset-bottom))' }"
   >
     <RouterLink

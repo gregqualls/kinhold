@@ -1,10 +1,23 @@
 <template>
   <div class="p-4 md:p-6 max-w-4xl">
     <!-- Header -->
-    <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200 mb-6">Family Settings</h1>
+    <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200 mb-6">{{ isParent ? 'Family Settings' : 'My Settings' }}</h1>
 
-    <!-- Family Settings -->
-    <div class="card-lg mb-6">
+    <!-- Kid-friendly Profile Section (shown for non-parent users) -->
+    <div v-if="!isParent" class="card-lg mb-6">
+      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">My Profile</h2>
+      <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+        <UserAvatar :user="currentUser" size="lg" />
+        <div>
+          <p class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">{{ currentUser?.name }}</p>
+          <p v-if="currentUser?.email" class="text-sm text-lavender-700 dark:text-lavender-400">{{ currentUser?.email }}</p>
+          <p v-if="family" class="text-sm text-lavender-600 dark:text-lavender-400 mt-1">{{ family?.name }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Family Settings (parent only) -->
+    <div v-if="isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">Family Information</h2>
 
       <form @submit.prevent="updateFamily" class="space-y-4">
@@ -26,13 +39,31 @@
       </form>
     </div>
 
+    <!-- Invite Code (parent only) -->
+    <div v-if="isParent" class="card-lg mb-6">
+      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Family Invite Code</h2>
+      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        Share this code with family members so they can join during registration.
+      </p>
+
+      <div class="flex items-center gap-3">
+        <div class="flex-1 px-4 py-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg font-mono text-lg tracking-widest text-prussian-500 dark:text-lavender-200 text-center">
+          {{ inviteCode || '...' }}
+        </div>
+        <BaseButton variant="secondary" size="sm" @click="copyInviteCode" :disabled="!inviteCode">
+          <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+          {{ copied ? 'Copied!' : 'Copy' }}
+        </BaseButton>
+      </div>
+    </div>
+
     <!-- Family Members -->
     <div class="card-lg mb-6">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">Family Members</h2>
-        <BaseButton variant="secondary" size="sm" @click="showInviteModal = true">
+        <BaseButton v-if="isParent" variant="secondary" size="sm" @click="openAddMemberModal">
           <PlusIcon class="w-4 h-4 mr-2" />
-          Invite Member
+          Add Member
         </BaseButton>
       </div>
 
@@ -47,27 +78,60 @@
             <UserAvatar :user="member" size="md" />
             <div>
               <p class="font-semibold text-prussian-500 dark:text-lavender-200">{{ member.name }}</p>
-              <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ member.email }}</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
-                <span class="badge badge-primary">{{ member.role }}</span>
-              </p>
+              <p v-if="member.email" class="text-xs text-lavender-700 dark:text-lavender-400">{{ member.email }}</p>
+              <p v-else class="text-xs text-lavender-600 dark:text-lavender-500 italic">Managed account</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span :class="[
+                  'text-xs px-2 py-0.5 rounded-full font-medium',
+                  member.family_role === 'parent' || member.role === 'parent'
+                    ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/30 dark:text-wisteria-300'
+                    : 'bg-lavender-200 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-300'
+                ]">
+                  {{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}
+                </span>
+                <span v-if="member.is_managed" class="text-xs px-2 py-0.5 rounded-full bg-sand-100 text-sand-700 dark:bg-sand-900/30 dark:text-sand-300 font-medium">
+                  Managed
+                </span>
+              </div>
             </div>
           </div>
 
-          <!-- Remove Button -->
-          <button
-            v-if="member.id !== currentUser?.id && familyMembers.length > 1"
-            @click="removeMember(member.id)"
-            class="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-          >
-            <TrashIcon class="w-4 h-4 text-red-600" />
-          </button>
+          <!-- Actions (parent only, not for self) -->
+          <div v-if="isParent && member.id !== currentUser?.id" class="flex items-center gap-1">
+            <!-- Switch to managed child -->
+            <button
+              v-if="member.is_managed"
+              @click="openSwitchToModal(member)"
+              class="p-2 hover:bg-wisteria-100 dark:hover:bg-wisteria-900/20 rounded-lg transition-colors"
+              title="Switch to this profile"
+            >
+              <ArrowsRightLeftIcon class="w-4 h-4 text-wisteria-600 dark:text-wisteria-400" />
+            </button>
+
+            <!-- Edit -->
+            <button
+              @click="openEditMemberModal(member)"
+              class="p-2 hover:bg-lavender-100 dark:hover:bg-prussian-600 rounded-lg transition-colors"
+              title="Edit member"
+            >
+              <PencilIcon class="w-4 h-4 text-prussian-400 dark:text-lavender-400" />
+            </button>
+
+            <!-- Remove -->
+            <button
+              @click="confirmRemoveMember(member)"
+              class="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              title="Remove member"
+            >
+              <TrashIcon class="w-4 h-4 text-red-600" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- API Configuration -->
-    <div class="card-lg mb-6">
+    <!-- API Configuration (parent only) -->
+    <div v-if="isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">API Configuration</h2>
 
       <div class="space-y-4">
@@ -101,7 +165,6 @@
           </p>
 
           <div class="space-y-2">
-            <!-- Current user's connected calendars -->
             <div
               v-for="conn in userCalendarConnections"
               :key="conn.id"
@@ -120,7 +183,6 @@
               </BaseButton>
             </div>
 
-            <!-- Not connected state -->
             <div v-if="userCalendarConnections.length === 0" class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
               <div>
                 <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ currentUser?.name }}</p>
@@ -138,7 +200,6 @@
               </BaseButton>
             </div>
 
-            <!-- Reconnect button when already connected (to pick up new calendars) -->
             <div v-if="userCalendarConnections.length > 0" class="flex justify-end">
               <BaseButton
                 variant="secondary"
@@ -150,7 +211,6 @@
               </BaseButton>
             </div>
 
-            <!-- Other family members' connections -->
             <div
               v-for="conn in otherMemberConnections"
               :key="conn.id"
@@ -163,7 +223,6 @@
             </div>
           </div>
 
-          <!-- Error message -->
           <div v-if="calendarError" class="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
             <p class="text-sm text-red-700 dark:text-red-300">{{ calendarError }}</p>
           </div>
@@ -208,12 +267,10 @@
             </div>
           </form>
 
-          <!-- ICS subscription error -->
           <div v-if="icsError" class="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
             <p class="text-sm text-red-700 dark:text-red-300">{{ icsError }}</p>
           </div>
 
-          <!-- Existing ICS subscriptions -->
           <div v-if="icsConnections.length > 0" class="mt-4 space-y-2">
             <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300">Subscribed Calendars</p>
             <div
@@ -278,8 +335,8 @@
       </div>
     </div>
 
-    <!-- Module Toggles -->
-    <div class="card-lg mb-6">
+    <!-- Module Toggles (parent only) -->
+    <div v-if="isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">Feature Toggles</h2>
 
       <div class="space-y-3">
@@ -322,31 +379,130 @@
       </div>
     </div>
 
-    <!-- Invite Modal -->
+    <!-- Add/Edit Member Modal -->
     <BaseModal
-      :show="showInviteModal"
-      title="Invite Family Member"
-      @close="showInviteModal = false"
+      :show="showMemberModal"
+      :title="editingMember ? 'Edit Family Member' : 'Add Family Member'"
+      @close="closeMemberModal"
     >
-      <form @submit.prevent="handleInvite" class="space-y-4">
+      <form @submit.prevent="handleSaveMember" class="space-y-4">
         <BaseInput
-          v-model="inviteForm.email"
-          label="Email Address"
-          type="email"
-          placeholder="family@example.com"
+          v-model="memberForm.name"
+          label="Name"
+          placeholder="First name"
           required
-          :error="inviteErrors.email"
+          :error="memberErrors.name"
+        />
+
+        <BaseInput
+          v-model="memberForm.email"
+          label="Email (optional for managed accounts)"
+          type="email"
+          placeholder="email@example.com"
+          :error="memberErrors.email"
+        />
+        <p class="text-xs text-lavender-600 dark:text-lavender-400 -mt-2">
+          Leave blank for young kids — creates a managed account you can switch into.
+        </p>
+
+        <BaseInput
+          v-if="!editingMember && memberForm.email"
+          v-model="memberForm.password"
+          label="Password (optional)"
+          type="password"
+          placeholder="Leave blank to set later"
+          :error="memberErrors.password"
+        />
+
+        <label
+          v-if="!editingMember && memberForm.email"
+          class="flex items-center gap-3 p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer"
+        >
+          <input v-model="memberForm.sendEmail" type="checkbox" class="rounded" />
+          <div>
+            <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Send welcome email</p>
+            <p class="text-xs text-lavender-600 dark:text-lavender-400">Send an email with login instructions</p>
+          </div>
+        </label>
+
+        <div>
+          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">Role</label>
+          <select v-model="memberForm.role" class="input-base w-full" required>
+            <option value="child">Child</option>
+            <option value="parent">Parent</option>
+          </select>
+        </div>
+
+        <BaseInput
+          v-model="memberForm.date_of_birth"
+          label="Date of Birth (optional)"
+          type="date"
         />
 
         <div class="flex gap-2 justify-end pt-4">
-          <BaseButton variant="ghost" @click="showInviteModal = false">
+          <BaseButton variant="ghost" @click="closeMemberModal">
             Cancel
           </BaseButton>
-          <BaseButton variant="primary" :loading="inviting">
-            Send Invite
+          <BaseButton variant="primary" :loading="savingMember">
+            {{ editingMember ? 'Save Changes' : 'Add Member' }}
           </BaseButton>
         </div>
       </form>
+    </BaseModal>
+
+    <!-- Remove Member Confirm -->
+    <BaseModal
+      :show="showRemoveConfirm"
+      title="Remove Family Member"
+      @close="showRemoveConfirm = false"
+    >
+      <p class="text-prussian-500 dark:text-lavender-300">
+        Are you sure you want to remove <strong>{{ removingMember?.name }}</strong> from your family?
+      </p>
+      <p v-if="removingMember?.is_managed" class="text-sm text-red-600 dark:text-red-400 mt-2">
+        This is a managed account and will be permanently deleted.
+      </p>
+      <p v-else class="text-sm text-lavender-600 dark:text-lavender-400 mt-2">
+        Their account will be unlinked from your family but not deleted.
+      </p>
+
+      <div class="flex gap-2 justify-end pt-4">
+        <BaseButton variant="ghost" @click="showRemoveConfirm = false">
+          Cancel
+        </BaseButton>
+        <BaseButton variant="danger" :loading="removingLoading" @click="handleRemoveMember">
+          Remove
+        </BaseButton>
+      </div>
+    </BaseModal>
+
+    <!-- Switch To Child Confirmation Modal -->
+    <BaseModal
+      :show="showSwitchToModal"
+      title="Switch to Child Profile"
+      @close="closeSwitchToModal"
+    >
+      <div class="space-y-3">
+        <p class="text-sm text-prussian-500 dark:text-lavender-300">
+          You're about to switch this device to <strong>{{ switchingToMember?.name }}</strong>'s profile.
+        </p>
+        <div class="p-3 bg-sand-50 dark:bg-sand-900/20 border border-sand-200 dark:border-sand-800 rounded-lg">
+          <p class="text-sm text-sand-800 dark:text-sand-200 font-medium">What will happen:</p>
+          <ul class="text-sm text-sand-700 dark:text-sand-300 mt-1 space-y-1 list-disc list-inside">
+            <li>This device will be logged in as {{ switchingToMember?.name }}</li>
+            <li>To switch back, sign out and sign back in as your parent account</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex gap-2 justify-end pt-4">
+        <BaseButton variant="ghost" @click="closeSwitchToModal">
+          Cancel
+        </BaseButton>
+        <BaseButton variant="primary" :loading="switchingTo" @click="handleSwitchToProfile">
+          Switch to {{ switchingToMember?.name }}
+        </BaseButton>
+      </div>
     </BaseModal>
   </div>
 </template>
@@ -365,7 +521,15 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BaseInput from '@/components/common/BaseInput.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
-import { PlusIcon, TrashIcon, SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
+import {
+  PlusIcon,
+  TrashIcon,
+  SunIcon,
+  MoonIcon,
+  PencilIcon,
+  ClipboardDocumentIcon,
+  ArrowsRightLeftIcon,
+} from '@heroicons/vue/24/outline'
 
 const route = useRoute()
 const router = useRouter()
@@ -374,71 +538,63 @@ const calendarStore = useCalendarStore()
 const { success, error: notificationError } = useNotification()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
 
-const { family, familyMembers, currentUser } = storeToRefs(authStore)
+const { family, familyMembers, currentUser, isParent } = storeToRefs(authStore)
 const { connections } = storeToRefs(calendarStore)
 
+// Family form
 const savingFamily = ref(false)
+const familyForm = reactive({ name: family.value?.name || '' })
+const familyErrors = reactive({ name: '' })
+
+// API config
 const savingApi = ref(false)
+const apiConfig = reactive({ anthropic_key: '', google_calendar_enabled: true })
+
+// Module toggles
 const savingModules = ref(false)
-const inviting = ref(false)
-const showInviteModal = ref(false)
+const moduleToggles = reactive({
+  calendar: true, tasks: true, vault: true, chat: true, points: true, badges: true,
+})
+const leaderboardPeriod = ref('weekly')
+
+// Invite code
+const inviteCode = ref(family.value?.invite_code || '')
+const copied = ref(false)
+
+// Calendar
 const connectingCalendar = ref(false)
 const disconnectingCalendar = ref(false)
 const subscribingUrl = ref(false)
 const calendarError = ref('')
 const icsError = ref('')
+const icsForm = reactive({ url: '', name: '' })
 
-const icsForm = reactive({
-  url: '',
-  name: '',
-})
-
-// Current user's Google calendar connections (excludes ICS subscriptions)
 const userCalendarConnections = computed(() =>
   (connections.value || []).filter((c) => c.user_id === currentUser.value?.id && c.provider !== 'ics')
 )
-
-// Other family members' connections
 const otherMemberConnections = computed(() =>
   (connections.value || []).filter((c) => c.user_id !== currentUser.value?.id)
 )
-
-// ICS URL subscriptions for current user
 const icsConnections = computed(() =>
   (connections.value || []).filter((c) => c.user_id === currentUser.value?.id && c.provider === 'ics')
 )
 
-const familyForm = reactive({
-  name: family.value?.name || '',
-})
+// Member management
+const showMemberModal = ref(false)
+const editingMember = ref(null)
+const savingMember = ref(false)
+const memberForm = reactive({ name: '', email: '', password: '', role: 'child', date_of_birth: '', sendEmail: false })
+const memberErrors = reactive({ name: '', email: '', password: '' })
 
-const familyErrors = reactive({
-  name: '',
-})
+// Remove member
+const showRemoveConfirm = ref(false)
+const removingMember = ref(null)
+const removingLoading = ref(false)
 
-const apiConfig = reactive({
-  anthropic_key: '',
-  google_calendar_enabled: true,
-})
-
-const moduleToggles = reactive({
-  calendar: true,
-  tasks: true,
-  vault: true,
-  chat: true,
-  points: true,
-  badges: true,
-})
-
-const leaderboardPeriod = ref('weekly')
-
-const inviteForm = reactive({
-  email: '',
-})
-
-const inviteErrors = reactive({
-  email: '',
-})
+// Profile switching
+const showSwitchToModal = ref(false)
+const switchingToMember = ref(null)
+const switchingTo = ref(false)
 
 const availableModules = [
   { id: 'calendar', name: 'Calendar', description: 'View and manage family events' },
@@ -449,24 +605,20 @@ const availableModules = [
   { id: 'badges', name: 'Badges', description: 'Achievement badges and milestones' },
 ]
 
+// ---- Family name ----
 const updateFamily = async () => {
   familyErrors.name = ''
-
   if (!familyForm.name) {
     familyErrors.name = 'Family name is required'
     return
   }
-
   savingFamily.value = true
-
   const result = await authStore.updateFamilyName(familyForm.name)
-
   if (result.success) {
     success('Family name updated!')
   } else {
     notificationError(result.error)
   }
-
   savingFamily.value = false
 }
 
@@ -475,82 +627,185 @@ const cancelEditFamily = () => {
   familyErrors.name = ''
 }
 
-const handleInvite = async () => {
-  inviteErrors.email = ''
+// ---- Invite code ----
+const loadInviteCode = async () => {
+  if (family.value?.invite_code) {
+    inviteCode.value = family.value.invite_code
+    return
+  }
+  const result = await authStore.getInviteCode()
+  if (result.success) {
+    inviteCode.value = result.invite_code
+  }
+}
 
-  if (!inviteForm.email) {
-    inviteErrors.email = 'Email is required'
+const copyInviteCode = async () => {
+  try {
+    await navigator.clipboard.writeText(inviteCode.value)
+    copied.value = true
+    setTimeout(() => { copied.value = false }, 2000)
+  } catch {
+    notificationError('Failed to copy')
+  }
+}
+
+// ---- Member management ----
+const openAddMemberModal = () => {
+  editingMember.value = null
+  memberForm.name = ''
+  memberForm.email = ''
+  memberForm.password = ''
+  memberForm.role = 'child'
+  memberForm.date_of_birth = ''
+  memberForm.sendEmail = false
+  memberErrors.name = ''
+  memberErrors.email = ''
+  memberErrors.password = ''
+  showMemberModal.value = true
+}
+
+const openEditMemberModal = (member) => {
+  editingMember.value = member
+  memberForm.name = member.name
+  memberForm.email = member.email || ''
+  memberForm.password = ''
+  memberForm.role = member.family_role || member.role || 'child'
+  memberForm.date_of_birth = member.date_of_birth || ''
+  memberErrors.name = ''
+  memberErrors.email = ''
+  memberErrors.password = ''
+  showMemberModal.value = true
+}
+
+const closeMemberModal = () => {
+  showMemberModal.value = false
+  editingMember.value = null
+}
+
+const handleSaveMember = async () => {
+  memberErrors.name = ''
+  memberErrors.email = ''
+  memberErrors.password = ''
+
+  if (!memberForm.name) {
+    memberErrors.name = 'Name is required'
     return
   }
 
-  inviting.value = true
+  savingMember.value = true
 
-  const result = await authStore.inviteFamilyMember(inviteForm.email)
+  if (editingMember.value) {
+    // Update existing member
+    const data = {
+      name: memberForm.name,
+      role: memberForm.role,
+      date_of_birth: memberForm.date_of_birth || null,
+    }
+    if (memberForm.email) data.email = memberForm.email
 
-  if (result.success) {
-    success('Invite sent!')
-    showInviteModal.value = false
-    inviteForm.email = ''
+    const result = await authStore.updateFamilyMember(editingMember.value.id, data)
+    if (result.success) {
+      success('Member updated!')
+      closeMemberModal()
+    } else {
+      notificationError(result.error)
+    }
   } else {
-    notificationError(result.error)
+    // Add new member
+    const data = {
+      name: memberForm.name,
+      role: memberForm.role,
+      date_of_birth: memberForm.date_of_birth || null,
+    }
+    if (memberForm.email) data.email = memberForm.email
+    if (memberForm.password) data.password = memberForm.password
+    if (memberForm.sendEmail) data.send_email = true
+
+    const result = await authStore.addFamilyMember(data)
+    if (result.success) {
+      success(result.message || 'Member added!')
+      closeMemberModal()
+    } else {
+      notificationError(result.error)
+    }
   }
 
-  inviting.value = false
+  savingMember.value = false
 }
 
-const removeMember = async (memberId) => {
-  if (!confirm('Are you sure you want to remove this family member?')) return
+// ---- Remove member ----
+const confirmRemoveMember = (member) => {
+  removingMember.value = member
+  showRemoveConfirm.value = true
+}
 
-  const result = await authStore.removeFamilyMember(memberId)
-
+const handleRemoveMember = async () => {
+  removingLoading.value = true
+  const result = await authStore.removeFamilyMember(removingMember.value.id)
   if (result.success) {
     success('Member removed!')
+    showRemoveConfirm.value = false
+    removingMember.value = null
   } else {
     notificationError(result.error)
   }
+  removingLoading.value = false
 }
 
-const resetApiConfig = () => {
-  apiConfig.anthropic_key = ''
+// ---- Profile switching ----
+const openSwitchToModal = (member) => {
+  switchingToMember.value = member
+  showSwitchToModal.value = true
 }
 
+const closeSwitchToModal = () => {
+  showSwitchToModal.value = false
+  switchingToMember.value = null
+}
+
+const handleSwitchToProfile = async () => {
+  switchingTo.value = true
+  const result = await authStore.switchToProfile(switchingToMember.value.id)
+  if (result.success) {
+    success(result.message)
+    closeSwitchToModal()
+    router.push('/')
+  } else {
+    notificationError(result.error)
+    closeSwitchToModal()
+  }
+  switchingTo.value = false
+}
+
+// ---- Calendar ----
 const handleConnectCalendar = async () => {
   connectingCalendar.value = true
   calendarError.value = ''
-
   const result = await calendarStore.connect('google')
-
   if (result.success && result.authUrl) {
-    // Redirect user to Google OAuth page
     window.location.href = result.authUrl
   } else {
-    calendarError.value = result.error || 'Failed to start Google Calendar connection. Make sure GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are configured in the server .env file.'
+    calendarError.value = result.error || 'Failed to start Google Calendar connection.'
   }
-
   connectingCalendar.value = false
 }
 
 const handleDisconnectCalendar = async (connectionId) => {
   disconnectingCalendar.value = true
   calendarError.value = ''
-
   const result = await calendarStore.disconnect(connectionId)
-
   if (result.success) {
     success('Calendar disconnected!')
   } else {
     calendarError.value = result.error || 'Failed to disconnect calendar'
   }
-
   disconnectingCalendar.value = false
 }
 
 const handleSubscribeUrl = async () => {
   subscribingUrl.value = true
   icsError.value = ''
-
   const result = await calendarStore.subscribeUrl(icsForm.url, icsForm.name || null)
-
   if (result.success) {
     success(result.message || 'Calendar subscribed!')
     icsForm.url = ''
@@ -558,10 +813,14 @@ const handleSubscribeUrl = async () => {
   } else {
     icsError.value = result.error || 'Failed to subscribe to calendar'
   }
-
   subscribingUrl.value = false
 }
 
+const resetApiConfig = () => {
+  apiConfig.anthropic_key = ''
+}
+
+// ---- Module settings ----
 const saveModuleSettings = async () => {
   savingModules.value = true
   try {
@@ -569,7 +828,6 @@ const saveModuleSettings = async () => {
       modules: { ...moduleToggles },
       leaderboard_period: leaderboardPeriod.value,
     })
-    // Refresh family data so enabledModules updates
     await authStore.fetchUser()
     success('Preferences saved!')
   } catch (err) {
@@ -578,10 +836,11 @@ const saveModuleSettings = async () => {
   savingModules.value = false
 }
 
+// ---- Init ----
 onMounted(async () => {
   familyForm.name = family.value?.name || ''
 
-  // Initialize module toggles from family settings
+  // Initialize module toggles
   const settings = family.value?.settings || {}
   const modules = settings.modules || {}
   moduleToggles.calendar = modules.calendar !== false
@@ -592,13 +851,16 @@ onMounted(async () => {
   moduleToggles.badges = modules.badges !== false
   leaderboardPeriod.value = settings.leaderboard_period || 'weekly'
 
-  // Fetch calendar connections to show current status
   await calendarStore.fetchConnections()
+
+  // Load invite code for parents
+  if (isParent.value) {
+    await loadInviteCode()
+  }
 
   // Handle OAuth redirect results
   if (route.query.calendar_connected) {
     success('Google Calendar connected successfully!')
-    // Clean up URL query params
     router.replace({ path: '/settings' })
   } else if (route.query.calendar_error) {
     calendarError.value = route.query.calendar_error
