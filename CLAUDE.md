@@ -24,7 +24,7 @@ An open-source family hub web application at **family.qthirtytwo.com**. It's a c
 | Styling | Tailwind CSS | Mobile-first, card-based UI |
 | Database | PostgreSQL 16 | UUIDs for primary keys |
 | Cache/Queue | Redis 7 | Sessions, cache, queue driver |
-| Auth | Laravel Sanctum | Cookie-based for SPA, token-based for MCP |
+| Auth | Laravel Sanctum + Socialite | Cookie SPA, token MCP, Google OAuth via Socialite |
 | Encryption | Laravel app-level | Vault sensitive fields encrypted at rest |
 | MCP Server | TypeScript/Node.js | Full CRUD, uses Sanctum API tokens |
 | Local Dev | Homebrew (preferred) or Docker | `brew install php composer postgresql redis` then `php artisan serve` |
@@ -46,7 +46,8 @@ An open-source family hub web application at **family.qthirtytwo.com**. It's a c
 - Email/password with Sanctum
 - Family creation on registration OR join via invite code
 - Roles: `parent` (full access) and `child` (restricted)
-- **Future:** Google OAuth, passkeys, 2FA
+- Google OAuth login via Laravel Socialite (redirect → callback → Sanctum token → SPA pickup)
+- **Future:** passkeys, 2FA
 
 ### 2. Family Calendar (MVP — SCAFFOLDED)
 - **Current:** Read-only aggregation of Google Calendars for all 5 family members
@@ -210,7 +211,11 @@ chmod +x setup.sh && ./setup.sh
 
 ## Current Status (Updated: 2026-03-17)
 
-**Phase:** MVP running locally. Gamification system implemented. UI/UX overhaul in progress.
+**Phase:** MVP deployed to production. Gamification system implemented. UI/UX overhaul in progress. **Pushed to GitHub as public open-source repo.**
+
+**Production:** Deployed on Upsun at `family.qthirtytwo.com` (project ID: `2rozcvqjtjdta`, Terra Nova org). GitHub integration auto-deploys on push to `main`. Never use `upsun push` — just push to GitHub.
+
+**GitHub:** https://github.com/gregqualls/q32hub (public, MIT license)
 
 **What works:**
 - App boots and runs locally (`php artisan serve` + `npm run dev`)
@@ -243,11 +248,39 @@ chmod +x setup.sh && ./setup.sh
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 
 **What's next:**
+- Add Google OAuth redirect URI in Google Cloud Console (`https://family.qthirtytwo.com/auth/google/callback`)
+- Audit all controllers for family_id scoping before Corey's family signs up
 - Add dark mode toggle to TopBar (desktop) and mobile header for quick access
 - End-to-end testing of gamification flow (complete task → points → badge earned → toast)
 - Test recurring task generation: `php artisan app:generate-recurring-tasks`
 - Continue UI/UX overhaul: Phase 3 (Calendar components) and Phase 5 (Dashboard enhancements)
 - See `docs/ROADMAP.md` for full phased approach
+
+## Deployment Strategy (Upsun)
+
+**Problem:** Greg owns the open-source repo (`gregqualls/q32hub`) and also wants to deploy a personal instance for his family. Other users should be able to fork/deploy their own instance and pull upstream updates.
+
+**Solution: Single repo, Upsun connects directly to `main` branch.**
+
+- **No fork needed.** Greg owns the repo. Upsun connects directly to `gregqualls/q32hub`.
+- The `.upsun/config.yaml` is already in the repo (committed in Session 1).
+- Family-specific config (API keys, DB creds, domain) lives in Upsun environment variables — never in the repo.
+- Other users fork the repo, connect their fork to their own Upsun project (or any host), and pull upstream updates with `git pull upstream main`.
+
+**Deployment steps (for next session):**
+1. Create Upsun project via CLI or console
+2. Connect it to the GitHub repo (`gregqualls/q32hub`, `main` branch)
+3. Set environment variables on Upsun (APP_KEY, DB creds, Redis, Google OAuth, Anthropic key)
+4. Verify `.upsun/config.yaml` has correct build/deploy hooks (composer install, npm build, migrate, etc.)
+5. Push/deploy, run migrations, seed initial data
+6. Configure domain: family.qthirtytwo.com
+7. Set up SSL (Upsun handles this automatically)
+
+**For other users who want to deploy:**
+1. Fork `gregqualls/q32hub` on GitHub
+2. Connect their fork to their Upsun project (or Docker/VPS/whatever)
+3. Set their own environment variables
+4. To get updates: `git remote add upstream https://github.com/gregqualls/q32hub && git pull upstream main`
 
 ## Aspirational Features (Not Planned Yet)
 

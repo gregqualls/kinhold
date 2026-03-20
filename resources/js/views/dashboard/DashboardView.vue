@@ -58,9 +58,9 @@
 
         <div v-if="myTasks.length > 0" class="space-y-2">
           <div v-for="task in myTasks.slice(0, 3)" :key="task.id" class="flex items-start gap-2">
-            <input type="checkbox" :checked="task.completed" class="mt-1" />
+            <input type="checkbox" :checked="task.completed_at" class="mt-1" />
             <div class="flex-1 min-w-0">
-              <p :class="{ 'line-through text-lavender-500 dark:text-lavender-400': task.completed }" class="text-sm font-medium text-prussian-500 dark:text-lavender-200">
+              <p :class="{ 'line-through text-lavender-500 dark:text-lavender-400': task.completed_at }" class="text-sm font-medium text-prussian-500 dark:text-lavender-200">
                 {{ task.title }}
               </p>
               <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
@@ -247,7 +247,6 @@ onMounted(async () => {
   await calendarStore.fetchEvents(now.startOf('day'), endOfDay)
 
   // Fetch tasks
-  await tasksStore.fetchTaskLists()
   await tasksStore.fetchTasks()
 
   // Fetch points and badges

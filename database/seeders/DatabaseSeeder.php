@@ -9,9 +9,8 @@ use App\Models\Badge;
 use App\Models\Family;
 use App\Models\PointTransaction;
 use App\Models\Reward;
-use App\Models\RewardPurchase;
+use App\Models\Tag;
 use App\Models\Task;
-use App\Models\TaskList;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -65,43 +64,33 @@ class DatabaseSeeder extends Seeder
             'timezone' => 'UTC',
         ]);
 
-        // Create task lists
-        $generalList = TaskList::create([
+        // Create tags (replacing task lists)
+        $generalTag = Tag::create([
             'family_id' => $family->id,
-            'name' => 'General Tasks',
-            'description' => 'General family tasks',
-            'icon' => 'list',
+            'name' => 'General',
             'color' => '#3B82F6',
             'sort_order' => 0,
-            'is_default' => true,
         ]);
 
-        $choresList = TaskList::create([
+        $choresTag = Tag::create([
             'family_id' => $family->id,
             'name' => 'Chores',
-            'description' => 'Family chores and responsibilities',
-            'icon' => 'home',
             'color' => '#10B981',
             'sort_order' => 1,
-            'is_default' => false,
         ]);
 
-        TaskList::create([
+        $schoolTag = Tag::create([
             'family_id' => $family->id,
             'name' => 'School',
-            'description' => 'School-related tasks and assignments',
-            'icon' => 'book',
             'color' => '#F59E0B',
             'sort_order' => 2,
-            'is_default' => false,
         ]);
 
         // --- Tasks with point values + recurring ---
 
         // Recurring family task: Take out trash every Tuesday
-        Task::create([
+        $trashTask = Task::create([
             'family_id' => $family->id,
-            'task_list_id' => $choresList->id,
             'created_by' => $parent->id,
             'assigned_to' => null,
             'title' => 'Take out trash',
@@ -111,11 +100,11 @@ class DatabaseSeeder extends Seeder
             'points' => 10,
             'recurrence_rule' => 'FREQ=WEEKLY;BYDAY=TU',
         ]);
+        $trashTask->tags()->attach($choresTag->id);
 
         // Completed tasks (for demo points)
         $completedTask1 = Task::create([
             'family_id' => $family->id,
-            'task_list_id' => $choresList->id,
             'created_by' => $parent->id,
             'assigned_to' => $child->id,
             'title' => 'Clean kitchen',
@@ -123,10 +112,10 @@ class DatabaseSeeder extends Seeder
             'points' => 20,
             'completed_at' => now()->subDays(3),
         ]);
+        $completedTask1->tags()->attach($choresTag->id);
 
         $completedTask2 = Task::create([
             'family_id' => $family->id,
-            'task_list_id' => $choresList->id,
             'created_by' => $parent->id,
             'assigned_to' => $child->id,
             'title' => 'Vacuum living room',
@@ -134,10 +123,10 @@ class DatabaseSeeder extends Seeder
             'points' => 10,
             'completed_at' => now()->subDays(2),
         ]);
+        $completedTask2->tags()->attach($choresTag->id);
 
         $completedTask3 = Task::create([
             'family_id' => $family->id,
-            'task_list_id' => $generalList->id,
             'created_by' => $parent->id,
             'assigned_to' => $child->id,
             'title' => 'Organize bookshelf',
@@ -145,11 +134,11 @@ class DatabaseSeeder extends Seeder
             'points' => 5,
             'completed_at' => now()->subDays(1),
         ]);
+        $completedTask3->tags()->attach($generalTag->id);
 
         // Pending tasks
-        Task::create([
+        $lawnTask = Task::create([
             'family_id' => $family->id,
-            'task_list_id' => $choresList->id,
             'created_by' => $parent->id,
             'assigned_to' => $child->id,
             'title' => 'Mow the lawn',
@@ -157,6 +146,7 @@ class DatabaseSeeder extends Seeder
             'points' => 25,
             'due_date' => now()->addDays(2)->toDateString(),
         ]);
+        $lawnTask->tags()->attach($choresTag->id);
 
         // --- Point Transactions (demo child has 45 pts in bank) ---
 
@@ -227,7 +217,7 @@ class DatabaseSeeder extends Seeder
 
         // --- Rewards ---
 
-        $sweets = Reward::create([
+        Reward::create([
             'family_id' => $family->id,
             'created_by' => $parent->id,
             'title' => 'Sweets',
@@ -277,8 +267,7 @@ class DatabaseSeeder extends Seeder
             'sort_order' => 4,
         ]);
 
-        // Demo purchase: child bought Sweets (-10 pts, bank now 27)
-        // Actually let's make bank = 45: tasks(35) + kudos(2) + adjustment(8) = 45
+        // Adjustment to reach 45 pts: tasks(35) + kudos(2) + adjustment(8) = 45
         PointTransaction::create([
             'family_id' => $family->id,
             'user_id' => $child->id,
@@ -288,11 +277,6 @@ class DatabaseSeeder extends Seeder
             'awarded_by' => $parent->id,
             'created_at' => now()->subDays(5),
         ]);
-
-        // Purchase (-10, bank = 35)... wait, let me recalculate
-        // 20 + 10 + 5 + 1 + 1 + 8 = 45, then -10 purchase = 35
-        // Let's skip the purchase to keep bank at 45 as specified
-        // Actually plan says "has 45 points in bank" so let's keep it at 45
 
         // --- Badges (10 preset per family) ---
 
@@ -318,14 +302,12 @@ class DatabaseSeeder extends Seeder
             ]));
         }
 
-        // Demo child has earned 2 badges: "First Steps" (tasks_completed >= 1) and one custom
+        // Demo child has earned 2 badges
         $badges['First Steps']->users()->attach($child->id, [
             'id' => \Illuminate\Support\Str::uuid(),
             'earned_at' => now()->subDays(3),
         ]);
 
-        // Award "Task Rookie" would require 10 tasks, so let's give a custom badge instead
-        // Create a custom "Welcome" badge and award it
         $welcomeBadge = Badge::create([
             'family_id' => $family->id,
             'created_by' => $parent->id,
