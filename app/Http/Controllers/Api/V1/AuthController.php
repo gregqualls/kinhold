@@ -118,13 +118,7 @@ class AuthController extends Controller
 
         $validated = $request->validate([
             'user_id' => 'required|uuid|exists:users,id',
-            'password' => 'required|string',
         ]);
-
-        // Verify the parent's password before allowing switch
-        if (!Hash::check($validated['password'], $parent->password)) {
-            return response()->json(['message' => 'Invalid password'], 401);
-        }
 
         $child = User::where('id', $validated['user_id'])
             ->where('family_id', $parent->family_id)

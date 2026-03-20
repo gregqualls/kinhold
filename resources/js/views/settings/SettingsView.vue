@@ -489,34 +489,33 @@
       </div>
     </BaseModal>
 
-    <!-- Switch To Child Modal (requires parent password) -->
+    <!-- Switch To Child Confirmation Modal -->
     <BaseModal
       :show="showSwitchToModal"
       title="Switch to Child Profile"
       @close="closeSwitchToModal"
     >
-      <p class="text-sm text-prussian-500 dark:text-lavender-300 mb-4">
-        Enter your password to switch to <strong>{{ switchingToMember?.name }}</strong>'s profile.
-        This device will stay logged in as {{ switchingToMember?.name }} until you switch back.
-      </p>
-      <form @submit.prevent="handleSwitchToProfile">
-        <BaseInput
-          v-model="switchToPassword"
-          label="Your Password"
-          type="password"
-          placeholder="Enter your password"
-          :error="switchToError"
-        />
-
-        <div class="flex gap-2 justify-end pt-4">
-          <BaseButton variant="ghost" @click="closeSwitchToModal">
-            Cancel
-          </BaseButton>
-          <BaseButton variant="primary" :loading="switchingTo">
-            Switch to {{ switchingToMember?.name }}
-          </BaseButton>
+      <div class="space-y-3">
+        <p class="text-sm text-prussian-500 dark:text-lavender-300">
+          You're about to switch this device to <strong>{{ switchingToMember?.name }}</strong>'s profile.
+        </p>
+        <div class="p-3 bg-sand-50 dark:bg-sand-900/20 border border-sand-200 dark:border-sand-800 rounded-lg">
+          <p class="text-sm text-sand-800 dark:text-sand-200 font-medium">What will happen:</p>
+          <ul class="text-sm text-sand-700 dark:text-sand-300 mt-1 space-y-1 list-disc list-inside">
+            <li>This device will be logged in as {{ switchingToMember?.name }}</li>
+            <li>To switch back, go to Settings and enter your parent password</li>
+          </ul>
         </div>
-      </form>
+      </div>
+
+      <div class="flex gap-2 justify-end pt-4">
+        <BaseButton variant="ghost" @click="closeSwitchToModal">
+          Cancel
+        </BaseButton>
+        <BaseButton variant="primary" :loading="switchingTo" @click="handleSwitchToProfile">
+          Switch to {{ switchingToMember?.name }}
+        </BaseButton>
+      </div>
     </BaseModal>
   </div>
 </template>
@@ -611,8 +610,6 @@ const switchBackError = ref('')
 const switchingBack = ref(false)
 const showSwitchToModal = ref(false)
 const switchingToMember = ref(null)
-const switchToPassword = ref('')
-const switchToError = ref('')
 const switchingTo = ref(false)
 
 const availableModules = [
@@ -782,24 +779,18 @@ const openSwitchToModal = (member) => {
 const closeSwitchToModal = () => {
   showSwitchToModal.value = false
   switchingToMember.value = null
-  switchToPassword.value = ''
-  switchToError.value = ''
 }
 
 const handleSwitchToProfile = async () => {
-  switchToError.value = ''
-  if (!switchToPassword.value) {
-    switchToError.value = 'Password is required'
-    return
-  }
   switchingTo.value = true
-  const result = await authStore.switchToProfile(switchingToMember.value.id, switchToPassword.value)
+  const result = await authStore.switchToProfile(switchingToMember.value.id)
   if (result.success) {
     success(result.message)
     closeSwitchToModal()
     router.push('/')
   } else {
-    switchToError.value = result.error || 'Invalid password'
+    notificationError(result.error)
+    closeSwitchToModal()
   }
   switchingTo.value = false
 }
