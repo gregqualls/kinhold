@@ -2,6 +2,88 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-17 — Session 7: Upsun Deployment & Google OAuth
+
+### What Was Done
+- **Deployed Q32 Hub to Upsun** at `family.qthirtytwo.com`
+  - Created project in Terra Nova org (project ID: `2rozcvqjtjdta`)
+  - Connected to GitHub repo — pushes to `main` auto-deploy
+  - Iterated on `.upsun/config.yaml` (php:8.4, n version manager, pdo_pgsql, Redis, storage mounts)
+  - Created `.environment` file to map `PLATFORM_RELATIONSHIPS` to Laravel env vars
+  - Set all production environment variables (APP_KEY, DB, Redis, session, Google OAuth, etc.)
+  - Fixed multiple deployment issues: PHP version, bootstrap/cache permissions, POSIX shell compat, pdo_pgsql extension, storage:link on read-only fs
+
+- **Created Greg's admin account on production** via SSH
+
+- **Added Google OAuth login (Laravel Socialite)**
+  - New `GoogleAuthController` with redirect + callback (3 cases: existing google_id, existing email, new user+family)
+  - `config/services.php` with separate `GOOGLE_AUTH_REDIRECT_URI` for auth (vs calendar)
+  - Migration: added `google_id` to users, made `password` nullable
+  - Frontend: "Sign in with Google" / "Sign up with Google" buttons on LoginView + RegisterView
+  - `auth.js` store: `initAuth()` picks up `?token=` from OAuth callback URL
+  - Routes in `web.php` for `/auth/google/redirect` and `/auth/google/callback`
+
+- **Fixed production bugs:**
+  - CSRF token mismatch — set `SESSION_SECURE_COOKIE=true` and `SESSION_DOMAIN` on Upsun
+  - Missing sessions table — created migration with `foreignUuid` (not `foreignId`)
+  - Sessions table `user_id` type mismatch (bigint vs UUID) — fix migration for production
+  - Settings 500 error — double-encoded JSON in family settings, fixed data on production
+  - No logout button — added Sign Out button to `Sidebar.vue`
+  - Google OAuth "missing client_id" — set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_AUTH_REDIRECT_URI` on Upsun
+
+### Files Created
+- `.environment` — Upsun platform relationship mapping
+- `app/Http/Controllers/Api/V1/GoogleAuthController.php`
+- `config/services.php`
+- `database/migrations/2026_03_17_183542_create_sessions_table.php`
+- `database/migrations/2026_03_17_184500_fix_sessions_user_id_to_uuid.php`
+- `database/migrations/2026_03_17_185421_add_google_id_to_users_table.php`
+
+### Files Modified
+- `.upsun/config.yaml` — Rewrote for working Upsun deployment
+- `app/Models/User.php` — Added `google_id` to fillable
+- `resources/js/views/auth/LoginView.vue` — Google OAuth button
+- `resources/js/views/auth/RegisterView.vue` — Google OAuth button
+- `resources/js/stores/auth.js` — OAuth token pickup from URL
+- `resources/js/components/layout/Sidebar.vue` — Sign Out button
+- `routes/web.php` — Google OAuth routes
+- `composer.json` — Added `laravel/socialite`
+
+### Architecture Decisions
+- Google OAuth callback redirects to `/login?token=xxx` for SPA to pick up via Sanctum token
+- Separate `GOOGLE_AUTH_REDIRECT_URI` env var from calendar's `GOOGLE_REDIRECT_URI`
+- Multi-family data isolation already supported (all tables scoped by `family_id`)
+
+### Next Session TODO
+- Verify Google OAuth works end-to-end on production (requires adding redirect URI in Google Cloud Console)
+- Audit all controllers for family_id scoping before Corey signs up
+- Dark mode toggle in TopBar
+- End-to-end testing of gamification flow
+- Continue UI/UX overhaul: Calendar, Dashboard
+
+---
+
+## 2026-03-17 — Session 6: Open Source Release & GitHub Push
+
+### What Was Done
+- **Verified parent-only access controls** — confirmed all sensitive UI buttons (badge creation, point deduction, reward management) are properly gated with `v-if="isParent"` across BadgesView, PointsFeedView, RewardsView, RewardCard, VaultCategoriesView, VaultEntriesView, DashboardView
+- **Captured 4 dark mode screenshots** for README using Playwright headless Chromium — points feed, badges, rewards, tasks (saved to `docs/screenshots/`)
+- **Rewrote README.md** for open-source release — professional formatting with features, screenshots, tech stack, quick start (native + Docker), demo accounts, API routes, MCP server docs, contributing guide, roadmap link
+- **Expanded `.env.example`** — full template with all config vars, no secrets
+- **Updated `.gitignore`** — added vendor, Laravel cache/session/view paths, .claude/, session captures, test-results
+- **Created initial git commit** — 207 files, 31,838 insertions
+- **Pushed to GitHub** — public repo at https://github.com/gregqualls/q32hub
+  - `gh repo create q32hub --public --source . --push`
+
+### Next Session TODO
+- Deploy to Upsun for personal/family use (plan documented below in Session 6 notes)
+- Dark mode toggle in TopBar (still pending)
+- End-to-end testing of gamification flow
+- Test recurring task generation
+- Continue UI/UX overhaul: Calendar components, Dashboard enhancements
+
+---
+
 ## 2026-03-17 — Session 5: Gamification System (Points, Rewards, Badges)
 
 ### What Was Done

@@ -31,6 +31,7 @@ class TaskResource extends JsonResource
             'parent_task_id' => $this->parent_task_id,
             'creator' => UserResource::make($this->whenLoaded('creator')),
             'assignee' => UserResource::make($this->whenLoaded('assignee')),
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
