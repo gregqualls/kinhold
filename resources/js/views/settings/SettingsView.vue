@@ -771,8 +771,6 @@ const handleRemoveMember = async () => {
 // ---- Profile switching ----
 const openSwitchToModal = (member) => {
   switchingToMember.value = member
-  switchToPassword.value = ''
-  switchToError.value = ''
   showSwitchToModal.value = true
 }
 
