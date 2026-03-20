@@ -113,7 +113,7 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: SettingsView,
-    meta: { requiresAuth: true, requiresParent: true },
+    meta: { requiresAuth: true },
   },
 ]
 

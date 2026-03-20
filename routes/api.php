@@ -25,12 +25,16 @@ Route::prefix('v1')->group(function () {
         // Auth
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
+        Route::post('/auth/switch-profile', [AuthController::class, 'switchProfile']);
 
         // Family
         Route::prefix('/family')->group(function () {
             Route::get('/', [FamilyController::class, 'show']);
             Route::put('/', [FamilyController::class, 'update']);
             Route::post('/invite', [FamilyController::class, 'invite']);
+            Route::post('/members', [FamilyController::class, 'addMember']);
+            Route::put('/members/{member}', [FamilyController::class, 'updateMember']);
+            Route::delete('/members/{member}', [FamilyController::class, 'removeMember']);
         });
 
         // Task Lists

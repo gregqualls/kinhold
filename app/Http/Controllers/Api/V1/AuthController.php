@@ -17,9 +17,6 @@ class AuthController extends Controller
 {
     /**
      * Register a new user and create or join a family.
-     *
-     * @param RegisterRequest $request
-     * @return JsonResponse
      */
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -27,11 +24,9 @@ class AuthController extends Controller
         $role = 'child';
 
         if ($request->filled('invite_code')) {
-            // Join existing family via invite code
             $family = Family::where('invite_code', $request->validated('invite_code'))->firstOrFail();
             $role = $request->validated('role', 'child');
         } else {
-            // Create new family — creator becomes parent
             $family = Family::create([
                 'name' => $request->validated('family_name'),
                 'slug' => Str::slug($request->validated('family_name')),
@@ -40,7 +35,6 @@ class AuthController extends Controller
             $role = 'parent';
         }
 
-        // Create the user with family assignment
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
@@ -49,7 +43,6 @@ class AuthController extends Controller
             'family_role' => $role,
         ]);
 
-        // Create Sanctum token for API access
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -66,9 +59,6 @@ class AuthController extends Controller
 
     /**
      * Login an existing user.
-     *
-     * @param LoginRequest $request
-     * @return JsonResponse
      */
     public function login(LoginRequest $request): JsonResponse
     {
@@ -90,9 +80,6 @@ class AuthController extends Controller
 
     /**
      * Logout the current user (revoke current token).
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function logout(Request $request): JsonResponse
     {
@@ -104,10 +91,46 @@ class AuthController extends Controller
     }
 
     /**
+     * Switch to a managed child's profile (parent only).
+     * Logs the parent out and creates a new session for the child.
+     * To get back, sign out and sign back in as parent.
+     */
+    public function switchProfile(Request $request): JsonResponse
+    {
+        $parent = $request->user();
+
+        if (!$parent->isParent()) {
+            return response()->json(['message' => 'Only parents can switch profiles'], 403);
+        }
+
+        $validated = $request->validate([
+            'user_id' => 'required|uuid|exists:users,id',
+        ]);
+
+        $child = User::where('id', $validated['user_id'])
+            ->where('family_id', $parent->family_id)
+            ->where('is_managed', true)
+            ->first();
+
+        if (!$child) {
+            return response()->json(['message' => 'Can only switch to managed accounts in your family'], 403);
+        }
+
+        // Revoke the parent's current token
+        $parent->currentAccessToken()->delete();
+
+        // Create a token for the child
+        $token = $child->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => UserResource::make($child),
+            'message' => "Switched to {$child->name}'s profile",
+        ], 200);
+    }
+
+    /**
      * Get the authenticated user with family data.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function user(Request $request): JsonResponse
     {
@@ -123,8 +146,13 @@ class AuthController extends Controller
                 'members' => $user->family->members->map(fn ($m) => [
                     'id' => $m->id,
                     'name' => $m->name,
+                    'email' => $m->email,
                     'family_role' => $m->family_role,
+                    'role' => $m->family_role,
+                    'is_managed' => $m->is_managed,
+                    'managed_by' => $m->managed_by,
                     'avatar' => $m->avatar,
+                    'date_of_birth' => $m->date_of_birth?->format('Y-m-d'),
                 ]),
             ] : null,
         ], 200);

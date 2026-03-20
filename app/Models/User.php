@@ -28,6 +28,8 @@ class User extends Authenticatable
         'google_id',
         'family_id',
         'family_role',
+        'is_managed',
+        'managed_by',
         'avatar',
         'date_of_birth',
         'timezone',
@@ -55,6 +57,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'family_role' => FamilyRole::class,
             'date_of_birth' => 'date',
+            'is_managed' => 'boolean',
         ];
     }
 
@@ -64,6 +67,30 @@ class User extends Authenticatable
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
+    }
+
+    /**
+     * The parent user who manages this account (for managed child accounts).
+     */
+    public function managedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'managed_by');
+    }
+
+    /**
+     * Child accounts managed by this parent.
+     */
+    public function managedChildren(): HasMany
+    {
+        return $this->hasMany(User::class, 'managed_by');
+    }
+
+    /**
+     * Check if this is a managed (parent-controlled) account.
+     */
+    public function isManaged(): bool
+    {
+        return $this->is_managed;
     }
 
     /**
