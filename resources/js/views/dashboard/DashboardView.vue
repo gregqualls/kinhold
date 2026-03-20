@@ -56,16 +56,41 @@
           </RouterLink>
         </div>
 
-        <div v-if="myTasks.length > 0" class="space-y-2">
-          <div v-for="task in myTasks.slice(0, 3)" :key="task.id" class="flex items-start gap-2">
-            <input type="checkbox" :checked="task.completed" class="mt-1" />
+        <div v-if="upcomingTasks.length > 0" class="space-y-1">
+          <div
+            v-for="task in upcomingTasks.slice(0, 5)"
+            :key="task.id"
+            class="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors group"
+          >
+            <button
+              @click.stop="toggleTask(task)"
+              class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
+              :class="task.completed
+                ? 'bg-emerald-500 border-emerald-500'
+                : 'border-lavender-300 dark:border-prussian-500 hover:border-wisteria-400 dark:hover:border-wisteria-400'"
+            >
+              <svg v-if="task.completed" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
             <div class="flex-1 min-w-0">
-              <p :class="{ 'line-through text-lavender-500 dark:text-lavender-400': task.completed }" class="text-sm font-medium text-prussian-500 dark:text-lavender-200">
+              <p
+                class="text-sm font-medium transition-colors"
+                :class="task.completed ? 'line-through text-lavender-400' : 'text-prussian-500 dark:text-lavender-200'"
+              >
                 {{ task.title }}
               </p>
-              <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
-                Due: {{ formatDate(task.due_date) }}
-              </p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
+                  Due: {{ formatDate(task.due_date) }}
+                </p>
+                <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium">
+                  {{ task.effective_points }} pts
+                </span>
+                <span v-if="task.is_family_task" class="text-xs text-sand-500 dark:text-sand-400">
+                  Open
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -159,16 +184,33 @@
           </RouterLink>
         </div>
 
-        <div v-if="familyTasks.length > 0" class="space-y-2">
+        <div v-if="familyTasks.length > 0" class="space-y-1">
           <div
             v-for="task in familyTasks.slice(0, 4)"
             :key="task.id"
-            class="flex items-start gap-3 pb-3 border-b border-lavender-200 dark:border-prussian-700 last:border-0 last:pb-0"
+            class="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
           >
-            <UserAvatar :user="task.assigned_to" size="sm" />
+            <button
+              @click.stop="toggleTask(task)"
+              class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
+              :class="task.completed
+                ? 'bg-emerald-500 border-emerald-500'
+                : 'border-lavender-300 dark:border-prussian-500 hover:border-wisteria-400'"
+            >
+              <svg v-if="task.completed" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
             <div class="flex-1 min-w-0">
-              <p class="font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ task.title }}</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ task.assigned_to?.name }}</p>
+              <p
+                class="font-medium truncate transition-colors"
+                :class="task.completed ? 'line-through text-lavender-400' : 'text-prussian-500 dark:text-lavender-200'"
+              >
+                {{ task.title }}
+              </p>
+              <p class="text-xs text-lavender-600 dark:text-lavender-400">
+                {{ task.is_family_task ? 'Open to anyone' : task.assignee?.name }}
+              </p>
             </div>
           </div>
         </div>
@@ -218,7 +260,20 @@ const badgesStore = useBadgesStore()
 
 const { currentUser, isParent, enabledModules } = storeToRefs(authStore)
 const { todayEvents } = storeToRefs(calendarStore)
-const { myTasks, familyTasks } = storeToRefs(tasksStore)
+const { tasks, familyTasks } = storeToRefs(tasksStore)
+
+// Tasks assigned to me OR open to anyone, not yet completed (show up to 5)
+const upcomingTasks = computed(() => {
+  const userId = currentUser.value?.id
+  return tasks.value.filter((t) => {
+    if (t.completed) return false
+    return t.is_family_task || t.assigned_to_id === userId || t.assigned_to_id === null
+  })
+})
+
+const toggleTask = async (task) => {
+  await tasksStore.toggleComplete(task.id)
+}
 
 const now = DateTime.now()
 
