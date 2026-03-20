@@ -56,16 +56,30 @@
           </RouterLink>
         </div>
 
-        <div v-if="myTasks.length > 0" class="space-y-2">
-          <div v-for="task in myTasks.slice(0, 3)" :key="task.id" class="flex items-start gap-2">
-            <input type="checkbox" :checked="task.completed_at" class="mt-1" />
+        <div v-if="myTasks.length > 0" class="space-y-1">
+          <div
+            v-for="task in myTasks.slice(0, 5)"
+            :key="task.id"
+            class="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
+          >
+            <button
+              @click.stop="toggleTask(task)"
+              class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
+              :class="'border-lavender-300 dark:border-prussian-500 hover:border-wisteria-400 dark:hover:border-wisteria-400'"
+            >
+            </button>
             <div class="flex-1 min-w-0">
-              <p :class="{ 'line-through text-lavender-500 dark:text-lavender-400': task.completed_at }" class="text-sm font-medium text-prussian-500 dark:text-lavender-200">
+              <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200">
                 {{ task.title }}
               </p>
-              <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
-                Due: {{ formatDate(task.due_date) }}
-              </p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
+                  Due: {{ formatDate(task.due_date) }}
+                </p>
+                <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium">
+                  {{ task.effective_points }} pts
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -147,38 +161,46 @@
         </div>
       </BaseCard>
 
-      <!-- Family Tasks (Parents only) -->
-      <BaseCard v-if="isParent" class="md:col-span-1 lg:col-span-2" shadow="lg">
+      <!-- Open Tasks (visible to everyone) -->
+      <BaseCard v-if="openTasks.length > 0" class="md:col-span-1 lg:col-span-2" shadow="lg">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
             <UserGroupIcon class="w-5 h-5 text-sand-500" />
-            Family Tasks
+            Open Tasks
           </h2>
           <RouterLink to="/tasks" class="text-wisteria-600 dark:text-wisteria-400 text-sm font-medium hover:text-wisteria-500">
             View All
           </RouterLink>
         </div>
 
-        <div v-if="familyTasks.length > 0" class="space-y-2">
+        <p class="text-xs text-lavender-500 dark:text-lavender-400 mb-3">Anyone in the family can complete these</p>
+
+        <div class="space-y-1">
           <div
-            v-for="task in familyTasks.slice(0, 4)"
+            v-for="task in openTasks.slice(0, 5)"
             :key="task.id"
-            class="flex items-start gap-3 pb-3 border-b border-lavender-200 dark:border-prussian-700 last:border-0 last:pb-0"
+            class="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
           >
-            <UserAvatar :user="task.assigned_to" size="sm" />
+            <button
+              @click.stop="toggleTask(task)"
+              class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all border-lavender-300 dark:border-prussian-500 hover:border-wisteria-400"
+            >
+            </button>
             <div class="flex-1 min-w-0">
-              <p class="font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ task.title }}</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ task.assigned_to?.name }}</p>
+              <p class="font-medium truncate text-prussian-500 dark:text-lavender-200">
+                {{ task.title }}
+              </p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
+                  Due: {{ formatDate(task.due_date) }}
+                </p>
+                <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium">
+                  {{ task.effective_points }} pts
+                </span>
+              </div>
             </div>
           </div>
         </div>
-
-        <EmptyState
-          v-else
-          :icon="CheckCircleIcon"
-          title="All tasks assigned!"
-          description="Great team effort!"
-        />
       </BaseCard>
     </div>
   </div>
@@ -195,7 +217,6 @@ import { usePointsStore } from '@/stores/points'
 import { useBadgesStore } from '@/stores/badges'
 import BaseCard from '@/components/common/BaseCard.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
-import UserAvatar from '@/components/common/UserAvatar.vue'
 import LeaderboardStrip from '@/components/points/LeaderboardStrip.vue'
 import BadgeShowcase from '@/components/badges/BadgeShowcase.vue'
 import {
@@ -218,7 +239,22 @@ const badgesStore = useBadgesStore()
 
 const { currentUser, isParent, enabledModules } = storeToRefs(authStore)
 const { todayEvents } = storeToRefs(calendarStore)
-const { myTasks, familyTasks } = storeToRefs(tasksStore)
+const { tasks } = storeToRefs(tasksStore)
+
+// My Tasks: assigned specifically to me, incomplete
+const myTasks = computed(() => {
+  const userId = currentUser.value?.id
+  return tasks.value.filter((t) => !t.completed_at && !t.is_family_task && t.assigned_to_id === userId)
+})
+
+// Open Tasks: family tasks anyone can grab, incomplete
+const openTasks = computed(() => {
+  return tasks.value.filter((t) => !t.completed_at && t.is_family_task)
+})
+
+const toggleTask = async (task) => {
+  await tasksStore.toggleComplete(task.id)
+}
 
 const now = DateTime.now()
 
