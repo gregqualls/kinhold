@@ -5,6 +5,9 @@
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Switched Profile Banner -->
+      <SwitchBanner v-if="!isAuthPage" />
+
       <!-- Top Bar (Desktop) -->
       <TopBar v-if="!isAuthPage" class="hidden md:flex" />
 
@@ -65,6 +68,7 @@ import { useAuthStore } from '@/stores/auth'
 import Sidebar from '@/components/layout/Sidebar.vue'
 import TopBar from '@/components/layout/TopBar.vue'
 import BottomNav from '@/components/layout/BottomNav.vue'
+import SwitchBanner from '@/components/common/SwitchBanner.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { useNotification } from '@/composables/useNotification'
 import { useDarkMode } from '@/composables/useDarkMode'
