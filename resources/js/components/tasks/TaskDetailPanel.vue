@@ -49,8 +49,26 @@
         />
       </div>
 
-      <!-- Assignee -->
-      <div>
+      <!-- Family Task (open to anyone) -->
+      <div class="flex items-center justify-between py-3 px-4 bg-lavender-50 dark:bg-prussian-700 rounded-xl">
+        <div>
+          <span class="text-sm text-prussian-500 dark:text-lavender-200 font-medium">Open to Anyone</span>
+          <p class="text-xs text-lavender-500 dark:text-lavender-400 mt-0.5">Any family member can claim and complete this task</p>
+        </div>
+        <button
+          @click="form.is_family_task = !form.is_family_task"
+          class="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-3"
+          :class="form.is_family_task ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-500'"
+        >
+          <span
+            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+            :class="form.is_family_task && 'translate-x-5'"
+          />
+        </button>
+      </div>
+
+      <!-- Assignee (hidden when open to anyone) -->
+      <div v-if="!form.is_family_task">
         <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Assigned To</label>
         <select
           v-model="form.assigned_to_id"
@@ -65,6 +83,63 @@
             {{ member.name }}
           </option>
         </select>
+      </div>
+
+      <!-- Points (only if points module enabled) -->
+      <div v-if="enabledModules.points">
+        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Points</label>
+        <div class="flex items-center gap-3">
+          <input
+            v-model.number="form.points"
+            type="number"
+            min="0"
+            placeholder="Auto (based on priority)"
+            class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
+          />
+          <span class="text-xs text-lavender-500 dark:text-lavender-400 whitespace-nowrap">
+            Earns: {{ form.points || defaultPoints[form.priority] || 10 }} pts
+          </span>
+        </div>
+      </div>
+
+      <!-- Recurring Task -->
+      <div>
+        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Repeat</label>
+        <select
+          v-model="form.recurrence_preset"
+          class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
+        >
+          <option value="">Does not repeat</option>
+          <option value="FREQ=DAILY">Every day</option>
+          <option value="FREQ=WEEKLY;BYDAY=MO">Every Monday</option>
+          <option value="FREQ=WEEKLY;BYDAY=TU">Every Tuesday</option>
+          <option value="FREQ=WEEKLY;BYDAY=WE">Every Wednesday</option>
+          <option value="FREQ=WEEKLY;BYDAY=TH">Every Thursday</option>
+          <option value="FREQ=WEEKLY;BYDAY=FR">Every Friday</option>
+          <option value="FREQ=WEEKLY;BYDAY=SA">Every Saturday</option>
+          <option value="FREQ=WEEKLY;BYDAY=SU">Every Sunday</option>
+          <option value="FREQ=MONTHLY">Every month</option>
+          <option value="custom">Custom RRULE...</option>
+        </select>
+
+        <!-- Custom RRULE input -->
+        <input
+          v-if="form.recurrence_preset === 'custom'"
+          v-model="form.recurrence_rule"
+          type="text"
+          placeholder="e.g. FREQ=WEEKLY;BYDAY=TU,TH"
+          class="w-full mt-2 text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
+        />
+
+        <!-- Recurrence end date -->
+        <div v-if="form.recurrence_preset" class="mt-2">
+          <label class="block text-xs text-lavender-500 dark:text-lavender-400 mb-1">Repeat until (optional)</label>
+          <input
+            v-model="form.recurrence_end"
+            type="date"
+            class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
+          />
+        </div>
       </div>
 
       <!-- Status -->
@@ -143,10 +218,29 @@ const props = defineProps({
 const emit = defineEmits(['save', 'close', 'delete'])
 
 const authStore = useAuthStore()
-const { familyMembers } = storeToRefs(authStore)
+const { familyMembers, enabledModules } = storeToRefs(authStore)
 
 const justSaved = ref(false)
 let savedTimer = null
+
+const defaultPoints = { low: 5, medium: 10, high: 20 }
+
+// Map an RRULE string to a preset value, or 'custom' if not matching
+const recurrenceToPreset = (rule) => {
+  if (!rule) return ''
+  const presets = [
+    'FREQ=DAILY',
+    'FREQ=WEEKLY;BYDAY=MO',
+    'FREQ=WEEKLY;BYDAY=TU',
+    'FREQ=WEEKLY;BYDAY=WE',
+    'FREQ=WEEKLY;BYDAY=TH',
+    'FREQ=WEEKLY;BYDAY=FR',
+    'FREQ=WEEKLY;BYDAY=SA',
+    'FREQ=WEEKLY;BYDAY=SU',
+    'FREQ=MONTHLY',
+  ]
+  return presets.includes(rule) ? rule : 'custom'
+}
 
 const form = reactive({
   title: '',
@@ -154,6 +248,11 @@ const form = reactive({
   priority: 'medium',
   due_date: '',
   assigned_to_id: null,
+  is_family_task: false,
+  points: null,
+  recurrence_preset: '',
+  recurrence_rule: '',
+  recurrence_end: '',
   completed: false,
 })
 
@@ -162,13 +261,19 @@ const originalValues = ref({})
 
 const isDirty = computed(() => {
   if (!props.task) return false
+  const o = originalValues.value
   return (
-    form.title !== originalValues.value.title ||
-    form.description !== originalValues.value.description ||
-    form.priority !== originalValues.value.priority ||
-    form.due_date !== originalValues.value.due_date ||
-    form.assigned_to_id !== originalValues.value.assigned_to_id ||
-    form.completed !== originalValues.value.completed
+    form.title !== o.title ||
+    form.description !== o.description ||
+    form.priority !== o.priority ||
+    form.due_date !== o.due_date ||
+    form.assigned_to_id !== o.assigned_to_id ||
+    form.is_family_task !== o.is_family_task ||
+    form.points !== o.points ||
+    form.recurrence_preset !== o.recurrence_preset ||
+    form.recurrence_rule !== o.recurrence_rule ||
+    form.recurrence_end !== o.recurrence_end ||
+    form.completed !== o.completed
   )
 })
 
@@ -180,6 +285,11 @@ watch(() => props.task, (t) => {
     form.priority = t.priority || 'medium'
     form.due_date = t.due_date || ''
     form.assigned_to_id = t.assigned_to_id || null
+    form.is_family_task = !!t.is_family_task
+    form.points = t.points ?? null
+    form.recurrence_preset = recurrenceToPreset(t.recurrence_rule)
+    form.recurrence_rule = t.recurrence_rule || ''
+    form.recurrence_end = t.recurrence_end || ''
     form.completed = !!t.completed
     // Snapshot original values
     originalValues.value = {
@@ -188,13 +298,36 @@ watch(() => props.task, (t) => {
       priority: form.priority,
       due_date: form.due_date,
       assigned_to_id: form.assigned_to_id,
+      is_family_task: form.is_family_task,
+      points: form.points,
+      recurrence_preset: form.recurrence_preset,
+      recurrence_rule: form.recurrence_rule,
+      recurrence_end: form.recurrence_end,
       completed: form.completed,
     }
   }
 }, { immediate: true })
 
 const save = () => {
-  emit('save', { ...form })
+  // Compute the actual recurrence_rule from preset or custom input
+  const recurrence_rule = form.recurrence_preset === 'custom'
+    ? form.recurrence_rule
+    : form.recurrence_preset || null
+
+  const payload = {
+    title: form.title,
+    description: form.description,
+    priority: form.priority,
+    due_date: form.due_date || null,
+    assigned_to: form.is_family_task ? null : (form.assigned_to_id || null),
+    is_family_task: form.is_family_task,
+    points: form.points || null,
+    recurrence_rule,
+    recurrence_end: form.recurrence_end || null,
+    completed: form.completed,
+  }
+
+  emit('save', payload)
   // Update original values to match saved state
   originalValues.value = { ...form }
   // Show "Saved!" confirmation

@@ -37,10 +37,24 @@
           {{ formattedDueDate }}
         </span>
 
-        <!-- Assignee -->
-        <span v-if="task.assigned_to" class="flex items-center gap-1 text-xs text-lavender-500 dark:text-lavender-400">
-          <UserAvatar :user="task.assigned_to" size="xs" />
-          {{ task.assigned_to.name?.split(' ')[0] }}
+        <!-- Assignee or Family task -->
+        <span v-if="task.is_family_task" class="flex items-center gap-1 text-xs text-wisteria-500 dark:text-wisteria-400">
+          <UserGroupIcon class="w-3 h-3" />
+          Open
+        </span>
+        <span v-else-if="task.assignee" class="flex items-center gap-1 text-xs text-lavender-500 dark:text-lavender-400">
+          <UserAvatar :user="task.assignee" size="xs" />
+          {{ task.assignee.name?.split(' ')[0] }}
+        </span>
+
+        <!-- Points -->
+        <span v-if="task.effective_points" class="flex items-center gap-1 text-xs text-sand-500 dark:text-sand-400 font-medium">
+          {{ task.effective_points }} pts
+        </span>
+
+        <!-- Recurring indicator -->
+        <span v-if="task.recurrence_rule" class="text-xs text-lavender-400">
+          <ArrowPathIcon class="w-3 h-3" />
         </span>
 
         <!-- Description indicator -->
@@ -59,7 +73,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { CalendarIcon, DocumentTextIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { CalendarIcon, DocumentTextIcon, PencilIcon, TrashIcon, UserGroupIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
 import TaskCheckbox from './TaskCheckbox.vue'
 import ContextMenu from '@/components/common/ContextMenu.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
