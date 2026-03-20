@@ -52,8 +52,7 @@ const pageTitle = computed(() => {
   const titles = {
     Dashboard: 'Dashboard',
     Calendar: 'Calendar',
-    TaskLists: 'Tasks',
-    TaskListDetail: 'Tasks',
+    Tasks: 'Tasks',
     VaultCategories: 'Vault',
     VaultEntries: 'Vault',
     VaultEntry: 'Vault',

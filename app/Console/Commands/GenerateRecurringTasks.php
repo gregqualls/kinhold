@@ -27,6 +27,15 @@ class GenerateRecurringTasks extends Command
         $created = 0;
 
         foreach ($templates as $template) {
+            // Skip if there's already an incomplete instance of this template
+            $hasPending = Task::where('parent_task_id', $template->id)
+                ->whereNull('completed_at')
+                ->exists();
+
+            if ($hasPending) {
+                continue;
+            }
+
             $dates = $this->getOccurrenceDates($template->recurrence_rule, $today, $endDate);
 
             foreach ($dates as $date) {
