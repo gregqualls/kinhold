@@ -24,7 +24,7 @@ An open-source family hub web application at **family.qthirtytwo.com**. It's a c
 | Styling | Tailwind CSS | Mobile-first, card-based UI |
 | Database | PostgreSQL 16 | UUIDs for primary keys |
 | Cache/Queue | Redis 7 | Sessions, cache, queue driver |
-| Auth | Laravel Sanctum | Cookie-based for SPA, token-based for MCP |
+| Auth | Laravel Sanctum + Socialite | Cookie SPA, token MCP, Google OAuth via Socialite |
 | Encryption | Laravel app-level | Vault sensitive fields encrypted at rest |
 | MCP Server | TypeScript/Node.js | Full CRUD, uses Sanctum API tokens |
 | Local Dev | Homebrew (preferred) or Docker | `brew install php composer postgresql redis` then `php artisan serve` |
@@ -46,7 +46,8 @@ An open-source family hub web application at **family.qthirtytwo.com**. It's a c
 - Email/password with Sanctum
 - Family creation on registration OR join via invite code
 - Roles: `parent` (full access) and `child` (restricted)
-- **Future:** Google OAuth, passkeys, 2FA
+- Google OAuth login via Laravel Socialite (redirect → callback → Sanctum token → SPA pickup)
+- **Future:** passkeys, 2FA
 
 ### 2. Family Calendar (MVP — SCAFFOLDED)
 - **Current:** Read-only aggregation of Google Calendars for all 5 family members
@@ -56,15 +57,12 @@ An open-source family hub web application at **family.qthirtytwo.com**. It's a c
 - **Future:** Two-way sync (create/edit events from hub), more providers (Outlook, iCloud)
 
 ### 3. Tasks & To-Dos (MVP — SCAFFOLDED + GAMIFICATION)
-- **Tag-based filtering** replaces task lists — tasks can have multiple colored tags (many-to-many)
-- Single flat view of all tasks with tag chip bar for filtering
-- Inline editing (double-click title, click priority flag) + slide panel for full details
-- Tasks with: title, description, assignee, due date, priority (low/medium/high), points, tags
+- Task lists (e.g., "Grocery", "House Projects", "School")
+- Tasks with: title, description, assignee, due date, priority (low/medium/high), points
 - Family tasks (anyone can complete) vs personal tasks
 - Recurring tasks via RRULE (daily, weekly+day, monthly+date) — artisan command generates instances 7 days ahead
 - Points awarded on completion, reversed on uncomplete
-- Tag management: create, rename, delete tags with color picker
-- **Future:** Kanban boards, subtasks, dependencies
+- **Future:** Categories, kanban boards, subtasks, dependencies
 
 ### 4. Family Vault (MVP — SCAFFOLDED)
 - Categories: Medical, Financial, Insurance, Legal, Education, Personal
@@ -139,8 +137,7 @@ q32hub/
 All routes are prefixed with `/api/v1/`. Auth routes are public, everything else requires Sanctum auth.
 
 **Auth:** `POST /register`, `POST /login`, `POST /logout`, `GET /user`
-**Tags:** CRUD on `/tags`
-**Tasks:** CRUD on `/tasks`, plus `PATCH /tasks/{id}/complete` and `/uncomplete`
+**Tasks:** CRUD on `/tasks` and `/task-lists`, plus `PATCH /tasks/{id}/toggle`
 **Vault:** CRUD on `/vault/entries` and `/vault/categories`, permissions at `/vault/entries/{id}/permissions`, documents at `/vault/entries/{id}/documents`
 **Calendar:** `GET /calendar/events`, `GET /calendar/connections`, `POST /calendar/connect`, `POST /calendar/sync`
 **Family:** `GET /family`, `GET /family/members`, `POST /family/invite`, `PUT /family/settings`
@@ -154,10 +151,8 @@ All routes are prefixed with `/api/v1/`. Auth routes are public, everything else
 
 - `families` — id, name, slug, invite_code, settings (JSON)
 - `users` — id, family_id, name, email, password, family_role (enum), avatar, date_of_birth, timezone
-- `tags` — id, family_id, name, color, sort_order (unique: family_id+name)
-- `task_tag` — id, task_id, tag_id (pivot, unique: task_id+tag_id)
-- `task_lists` — id, family_id, name, icon, color, sort_order, is_default (LEGACY — replaced by tags)
-- `tasks` — id, family_id, task_list_id (nullable), created_by, assigned_to, title, description, due_date, completed_at, priority (enum), is_family_task, points, recurrence_rule, recurrence_end, parent_task_id
+- `task_lists` — id, family_id, name, icon, color, sort_order, is_default
+- `tasks` — id, family_id, task_list_id, created_by, assigned_to, title, description, due_date, completed_at, priority (enum), is_family_task, points, recurrence_rule, recurrence_end, parent_task_id
 - `vault_categories` — id, family_id, name, slug, icon, description
 - `vault_entries` — id, family_id, vault_category_id, created_by, title, encrypted_data (encrypted JSON), notes, metadata (JSON)
 - `vault_permissions` — id, vault_entry_id, user_id, permission_level (enum: view/edit)
@@ -216,14 +211,17 @@ chmod +x setup.sh && ./setup.sh
 
 ## Current Status (Updated: 2026-03-17)
 
-**Phase:** MVP running locally. Gamification + tag-based tasks implemented. UI/UX overhaul in progress.
+**Phase:** MVP deployed to production. Gamification system implemented. UI/UX overhaul in progress. **Pushed to GitHub as public open-source repo.**
+
+**Production:** Deployed on Upsun at `family.qthirtytwo.com` (project ID: `2rozcvqjtjdta`, Terra Nova org). GitHub integration auto-deploys on push to `main`. Never use `upsun push` — just push to GitHub.
+
+**GitHub:** https://github.com/gregqualls/q32hub (public, MIT license)
 
 **What works:**
 - App boots and runs locally (`php artisan serve` + `npm run dev`)
-- Frontend builds clean (790 Vue/JS modules, 0 errors via `npx vite build`)
+- Frontend builds clean (791 Vue/JS modules, 0 errors via `npx vite build`)
 - Auth flow works (login/register with demo accounts from seeder)
-- Task CRUD fully functional with tag-based filtering: create, edit (inline + panel), complete, delete tasks
-- **Tag system:** Create/edit/delete colored tags, filter tasks by tags, multiple tags per task
+- Task CRUD fully functional: create, edit, complete, delete tasks and task lists
 - Calendar view with month/week/day modes, Google Calendar integration, color-coded events with source labels
 - Vault with categories, encrypted entries, sensitive field masking
 - Chat with message bubbles, typing indicator, suggested questions
@@ -250,13 +248,39 @@ chmod +x setup.sh && ./setup.sh
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 
 **What's next:**
-- Test tag-based task flow end-to-end in browser (create tags, create tasks with tags, filter, inline edit, complete)
-- Consider removing legacy TaskList model/controller/routes once tag system is proven stable
+- Add Google OAuth redirect URI in Google Cloud Console (`https://family.qthirtytwo.com/auth/google/callback`)
+- Audit all controllers for family_id scoping before Corey's family signs up
 - Add dark mode toggle to TopBar (desktop) and mobile header for quick access
 - End-to-end testing of gamification flow (complete task → points → badge earned → toast)
 - Test recurring task generation: `php artisan app:generate-recurring-tasks`
 - Continue UI/UX overhaul: Phase 3 (Calendar components) and Phase 5 (Dashboard enhancements)
 - See `docs/ROADMAP.md` for full phased approach
+
+## Deployment Strategy (Upsun)
+
+**Problem:** Greg owns the open-source repo (`gregqualls/q32hub`) and also wants to deploy a personal instance for his family. Other users should be able to fork/deploy their own instance and pull upstream updates.
+
+**Solution: Single repo, Upsun connects directly to `main` branch.**
+
+- **No fork needed.** Greg owns the repo. Upsun connects directly to `gregqualls/q32hub`.
+- The `.upsun/config.yaml` is already in the repo (committed in Session 1).
+- Family-specific config (API keys, DB creds, domain) lives in Upsun environment variables — never in the repo.
+- Other users fork the repo, connect their fork to their own Upsun project (or any host), and pull upstream updates with `git pull upstream main`.
+
+**Deployment steps (for next session):**
+1. Create Upsun project via CLI or console
+2. Connect it to the GitHub repo (`gregqualls/q32hub`, `main` branch)
+3. Set environment variables on Upsun (APP_KEY, DB creds, Redis, Google OAuth, Anthropic key)
+4. Verify `.upsun/config.yaml` has correct build/deploy hooks (composer install, npm build, migrate, etc.)
+5. Push/deploy, run migrations, seed initial data
+6. Configure domain: family.qthirtytwo.com
+7. Set up SSL (Upsun handles this automatically)
+
+**For other users who want to deploy:**
+1. Fork `gregqualls/q32hub` on GitHub
+2. Connect their fork to their Upsun project (or Docker/VPS/whatever)
+3. Set their own environment variables
+4. To get updates: `git remote add upstream https://github.com/gregqualls/q32hub && git pull upstream main`
 
 ## Aspirational Features (Not Planned Yet)
 

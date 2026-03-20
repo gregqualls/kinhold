@@ -19,7 +19,8 @@ Goal: Get all 5 family members using the app daily. Focus on core functionality,
 | MCP server (full CRUD) | SCAFFOLDED | 26 tools, Sanctum token auth |
 | Mobile-first responsive UI | SCAFFOLDED | Bottom nav, cards, touch-friendly |
 | Docker Compose local dev | SCAFFOLDED | 5 services, one-command boot |
-| Upsun production config | SCAFFOLDED | `.upsun/config.yaml` |
+| Upsun production config | COMPLETE | Deployed at family.qthirtytwo.com, GitHub integration auto-deploys |
+| GitHub open-source release | COMPLETE | Public repo at github.com/gregqualls/q32hub |
 
 ### MVP Milestones
 1. [ ] First successful local boot (docker-compose up, migrations, seed data)
@@ -37,7 +38,7 @@ Goal: Polish the experience, add quality-of-life features that make the family w
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Google OAuth login | DEFERRED | Sign in with Google alongside email/password |
+| Google OAuth login | SCAFFOLDED | Backend + frontend done, needs Google Console redirect URI config |
 | Two-way calendar sync | DEFERRED | Create/edit events from hub, push to Google Calendar |
 | Recurring tasks | COMPLETE | Daily, weekly, monthly recurrence via RRULE + daily artisan command |
 | Task categories and filters | COMPLETE | Replaced task lists with tag-based filtering system |
@@ -72,7 +73,7 @@ Goal: Make Q32 Hub useful for any family, not just the Qualls family.
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Multi-family isolation | DEFERRED | Complete data isolation between families on shared instance |
+| Multi-family isolation | SCAFFOLDED | Data model already scoped by family_id — needs controller audit before first external user |
 | Plugin/module system | DEFERRED | Community can build and share modules |
 | More calendar providers | DEFERRED | Outlook, iCloud, CalDAV |
 | Mobile app (React Native) | DEFERRED | Native iOS/Android app using the same API |
