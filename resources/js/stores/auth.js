@@ -207,9 +207,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Profile switching
-  const switchToProfile = async (userId) => {
+  const switchToProfile = async (userId, password) => {
     try {
-      const response = await api.post('/auth/switch-profile', { user_id: userId })
+      const response = await api.post('/auth/switch-profile', { user_id: userId, password })
 
       if (response.data.token) {
         localStorage.setItem('auth_token', response.data.token)

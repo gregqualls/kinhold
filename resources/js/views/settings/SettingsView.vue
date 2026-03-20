@@ -3,6 +3,32 @@
     <!-- Header -->
     <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200 mb-6">Family Settings</h1>
 
+    <!-- Switched Session Notice (visible when viewing as a child) -->
+    <div v-if="isSwitchedSession" class="card-lg mb-6 border-2 border-wisteria-300 dark:border-wisteria-700">
+      <div class="flex items-center gap-3 mb-3">
+        <ArrowsRightLeftIcon class="w-5 h-5 text-wisteria-600" />
+        <h2 class="text-lg font-semibold text-wisteria-600 dark:text-wisteria-400">Switched Session</h2>
+      </div>
+      <p class="text-sm text-prussian-500 dark:text-lavender-300 mb-4">
+        You're currently viewing as <strong>{{ currentUser?.name }}</strong>.
+        To switch back to your parent account, enter your password below.
+      </p>
+      <form @submit.prevent="handleSwitchBack" class="space-y-3">
+        <BaseInput
+          v-model="switchBackPassword"
+          label="Parent Password"
+          type="password"
+          placeholder="Enter parent password"
+          :error="switchBackError"
+        />
+        <div class="flex justify-end">
+          <BaseButton variant="primary" :loading="switchingBack">
+            Switch Back to {{ switchedFrom?.name }}
+          </BaseButton>
+        </div>
+      </form>
+    </div>
+
     <!-- Family Settings -->
     <div class="card-lg mb-6">
       <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">Family Information</h2>
@@ -88,7 +114,7 @@
             <!-- Switch to managed child -->
             <button
               v-if="member.is_managed"
-              @click="handleSwitchToProfile(member)"
+              @click="openSwitchToModal(member)"
               class="p-2 hover:bg-wisteria-100 dark:hover:bg-wisteria-900/20 rounded-lg transition-colors"
               title="Switch to this profile"
             >
@@ -401,6 +427,17 @@
           :error="memberErrors.password"
         />
 
+        <label
+          v-if="!editingMember && memberForm.email"
+          class="flex items-center gap-3 p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer"
+        >
+          <input v-model="memberForm.sendEmail" type="checkbox" class="rounded" />
+          <div>
+            <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Send welcome email</p>
+            <p class="text-xs text-lavender-600 dark:text-lavender-400">Send an email with login instructions</p>
+          </div>
+        </label>
+
         <div>
           <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">Role</label>
           <select v-model="memberForm.role" class="input-base w-full" required>
@@ -452,31 +489,34 @@
       </div>
     </BaseModal>
 
-    <!-- Switch Back Modal -->
+    <!-- Switch To Child Modal (requires parent password) -->
     <BaseModal
-      :show="showSwitchBackModal"
-      title="Switch Back to Parent"
-      @close="showSwitchBackModal = false"
+      :show="showSwitchToModal"
+      title="Switch to Child Profile"
+      @close="closeSwitchToModal"
     >
       <p class="text-sm text-prussian-500 dark:text-lavender-300 mb-4">
-        Enter your password to switch back to your parent account.
+        Enter your password to switch to <strong>{{ switchingToMember?.name }}</strong>'s profile.
+        This device will stay logged in as {{ switchingToMember?.name }} until you switch back.
       </p>
-      <BaseInput
-        v-model="switchBackPassword"
-        label="Parent Password"
-        type="password"
-        placeholder="Enter password"
-        :error="switchBackError"
-      />
+      <form @submit.prevent="handleSwitchToProfile">
+        <BaseInput
+          v-model="switchToPassword"
+          label="Your Password"
+          type="password"
+          placeholder="Enter your password"
+          :error="switchToError"
+        />
 
-      <div class="flex gap-2 justify-end pt-4">
-        <BaseButton variant="ghost" @click="showSwitchBackModal = false">
-          Cancel
-        </BaseButton>
-        <BaseButton variant="primary" :loading="switchingBack" @click="handleSwitchBack">
-          Switch Back
-        </BaseButton>
-      </div>
+        <div class="flex gap-2 justify-end pt-4">
+          <BaseButton variant="ghost" @click="closeSwitchToModal">
+            Cancel
+          </BaseButton>
+          <BaseButton variant="primary" :loading="switchingTo">
+            Switch to {{ switchingToMember?.name }}
+          </BaseButton>
+        </div>
+      </form>
     </BaseModal>
   </div>
 </template>
@@ -512,7 +552,7 @@ const calendarStore = useCalendarStore()
 const { success, error: notificationError } = useNotification()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
 
-const { family, familyMembers, currentUser, isParent } = storeToRefs(authStore)
+const { family, familyMembers, currentUser, isParent, switchedFrom, isSwitchedSession } = storeToRefs(authStore)
 const { connections } = storeToRefs(calendarStore)
 
 // Family form
@@ -557,7 +597,7 @@ const icsConnections = computed(() =>
 const showMemberModal = ref(false)
 const editingMember = ref(null)
 const savingMember = ref(false)
-const memberForm = reactive({ name: '', email: '', password: '', role: 'child', date_of_birth: '' })
+const memberForm = reactive({ name: '', email: '', password: '', role: 'child', date_of_birth: '', sendEmail: false })
 const memberErrors = reactive({ name: '', email: '', password: '' })
 
 // Remove member
@@ -566,10 +606,14 @@ const removingMember = ref(null)
 const removingLoading = ref(false)
 
 // Profile switching
-const showSwitchBackModal = ref(false)
 const switchBackPassword = ref('')
 const switchBackError = ref('')
 const switchingBack = ref(false)
+const showSwitchToModal = ref(false)
+const switchingToMember = ref(null)
+const switchToPassword = ref('')
+const switchToError = ref('')
+const switchingTo = ref(false)
 
 const availableModules = [
   { id: 'calendar', name: 'Calendar', description: 'View and manage family events' },
@@ -632,6 +676,7 @@ const openAddMemberModal = () => {
   memberForm.password = ''
   memberForm.role = 'child'
   memberForm.date_of_birth = ''
+  memberForm.sendEmail = false
   memberErrors.name = ''
   memberErrors.email = ''
   memberErrors.password = ''
@@ -693,6 +738,7 @@ const handleSaveMember = async () => {
     }
     if (memberForm.email) data.email = memberForm.email
     if (memberForm.password) data.password = memberForm.password
+    if (memberForm.sendEmail) data.send_email = true
 
     const result = await authStore.addFamilyMember(data)
     if (result.success) {
@@ -726,14 +772,36 @@ const handleRemoveMember = async () => {
 }
 
 // ---- Profile switching ----
-const handleSwitchToProfile = async (member) => {
-  const result = await authStore.switchToProfile(member.id)
+const openSwitchToModal = (member) => {
+  switchingToMember.value = member
+  switchToPassword.value = ''
+  switchToError.value = ''
+  showSwitchToModal.value = true
+}
+
+const closeSwitchToModal = () => {
+  showSwitchToModal.value = false
+  switchingToMember.value = null
+  switchToPassword.value = ''
+  switchToError.value = ''
+}
+
+const handleSwitchToProfile = async () => {
+  switchToError.value = ''
+  if (!switchToPassword.value) {
+    switchToError.value = 'Password is required'
+    return
+  }
+  switchingTo.value = true
+  const result = await authStore.switchToProfile(switchingToMember.value.id, switchToPassword.value)
   if (result.success) {
     success(result.message)
+    closeSwitchToModal()
     router.push('/')
   } else {
-    notificationError(result.error)
+    switchToError.value = result.error || 'Invalid password'
   }
+  switchingTo.value = false
 }
 
 const handleSwitchBack = async () => {
@@ -746,7 +814,6 @@ const handleSwitchBack = async () => {
   const result = await authStore.switchBack(switchBackPassword.value)
   if (result.success) {
     success(result.message)
-    showSwitchBackModal.value = false
     switchBackPassword.value = ''
     router.push('/settings')
   } else {
