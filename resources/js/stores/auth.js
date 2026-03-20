@@ -10,11 +10,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(false)
   const error = ref(null)
   const initialAuthChecked = ref(false)
-  const switchedFrom = ref(null) // tracks parent info when in switched session
-
   // Computed properties
   const isParent = computed(() => user.value?.role === 'parent')
-  const isSwitchedSession = computed(() => !!switchedFrom.value)
   const familyMembers = computed(() => family.value?.members || [])
   const currentUser = computed(() => user.value)
   const enabledModules = computed(() => {
@@ -101,7 +98,6 @@ export const useAuthStore = defineStore('auth', () => {
       delete api.defaults.headers.common['Authorization']
       user.value = null
       family.value = null
-      switchedFrom.value = null
       isAuthenticated.value = false
       error.value = null
     } catch (err) {
@@ -116,13 +112,11 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await api.get('/user')
       user.value = response.data.user
       family.value = response.data.family
-      switchedFrom.value = response.data.switched_from || null
       isAuthenticated.value = true
     } catch (err) {
       isAuthenticated.value = false
       user.value = null
       family.value = null
-      switchedFrom.value = null
     }
   }
 
@@ -217,31 +211,11 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       user.value = response.data.user
-      switchedFrom.value = response.data.switched_from
       await fetchUser()
 
       return { success: true, message: response.data.message }
     } catch (err) {
       return { success: false, error: err.response?.data?.message || 'Failed to switch profile' }
-    }
-  }
-
-  const switchBack = async (password) => {
-    try {
-      const response = await api.post('/auth/switch-back', { password })
-
-      if (response.data.token) {
-        localStorage.setItem('auth_token', response.data.token)
-        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
-      }
-
-      user.value = response.data.user
-      switchedFrom.value = null
-      await fetchUser()
-
-      return { success: true, message: response.data.message }
-    } catch (err) {
-      return { success: false, error: err.response?.data?.message || 'Invalid password' }
     }
   }
 
@@ -253,11 +227,9 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading,
     error,
     initialAuthChecked,
-    switchedFrom,
 
     // Computed
     isParent,
-    isSwitchedSession,
     familyMembers,
     currentUser,
     enabledModules,
@@ -275,6 +247,5 @@ export const useAuthStore = defineStore('auth', () => {
     removeFamilyMember,
     getInviteCode,
     switchToProfile,
-    switchBack,
   }
 })

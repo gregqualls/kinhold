@@ -8,10 +8,17 @@
       <!-- Top Bar (Desktop) -->
       <TopBar v-if="!isAuthPage" class="hidden md:flex" />
 
+      <!-- Mobile Header -->
+      <div v-if="!isAuthPage" class="md:hidden bg-white dark:bg-prussian-800 px-4 py-2.5 flex items-center justify-between border-b border-lavender-200 dark:border-prussian-700">
+        <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ familyName }}</p>
+        <RouterLink to="/settings" class="flex items-center gap-2">
+          <UserAvatar :user="currentUser" size="sm" class="ring-2 ring-lavender-300 dark:ring-prussian-600" />
+        </RouterLink>
+      </div>
+
       <!-- Main Area -->
       <main
-        class="flex-1 overflow-y-auto"
-        :class="{ 'pb-20 md:pb-0': !isAuthPage }"
+        class="flex-1 overflow-y-auto min-h-0"
       >
         <RouterView v-slot="{ Component, route: viewRoute }">
           <Transition name="page-fade" mode="out-in">
@@ -19,10 +26,10 @@
           </Transition>
         </RouterView>
       </main>
-    </div>
 
-    <!-- Bottom Navigation (Mobile) -->
-    <BottomNav v-if="!isAuthPage" class="md:hidden" />
+      <!-- Bottom Navigation (Mobile) -->
+      <BottomNav v-if="!isAuthPage" class="md:hidden" />
+    </div>
 
     <!-- Toast Notifications -->
     <TransitionGroup
@@ -66,13 +73,15 @@ import Sidebar from '@/components/layout/Sidebar.vue'
 import TopBar from '@/components/layout/TopBar.vue'
 import BottomNav from '@/components/layout/BottomNav.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import UserAvatar from '@/components/common/UserAvatar.vue'
 import { useNotification } from '@/composables/useNotification'
 import { useDarkMode } from '@/composables/useDarkMode'
 
 const route = useRoute()
 const authStore = useAuthStore()
 const { notifications } = useNotification()
-const { isLoading } = storeToRefs(authStore)
+const { isLoading, currentUser, family } = storeToRefs(authStore)
+const familyName = computed(() => family.value?.name || 'Q32 Hub')
 const { init: initDarkMode } = useDarkMode()
 initDarkMode()
 

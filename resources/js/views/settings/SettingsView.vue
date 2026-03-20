@@ -1,36 +1,23 @@
 <template>
   <div class="p-4 md:p-6 max-w-4xl">
     <!-- Header -->
-    <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200 mb-6">Family Settings</h1>
+    <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200 mb-6">{{ isParent ? 'Family Settings' : 'My Settings' }}</h1>
 
-    <!-- Switched Session Notice (visible when viewing as a child) -->
-    <div v-if="isSwitchedSession" class="card-lg mb-6 border-2 border-wisteria-300 dark:border-wisteria-700">
-      <div class="flex items-center gap-3 mb-3">
-        <ArrowsRightLeftIcon class="w-5 h-5 text-wisteria-600" />
-        <h2 class="text-lg font-semibold text-wisteria-600 dark:text-wisteria-400">Switched Session</h2>
-      </div>
-      <p class="text-sm text-prussian-500 dark:text-lavender-300 mb-4">
-        You're currently viewing as <strong>{{ currentUser?.name }}</strong>.
-        To switch back to your parent account, enter your password below.
-      </p>
-      <form @submit.prevent="handleSwitchBack" class="space-y-3">
-        <BaseInput
-          v-model="switchBackPassword"
-          label="Parent Password"
-          type="password"
-          placeholder="Enter parent password"
-          :error="switchBackError"
-        />
-        <div class="flex justify-end">
-          <BaseButton variant="primary" :loading="switchingBack">
-            Switch Back to {{ switchedFrom?.name }}
-          </BaseButton>
+    <!-- Kid-friendly Profile Section (shown for non-parent users) -->
+    <div v-if="!isParent" class="card-lg mb-6">
+      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">My Profile</h2>
+      <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+        <UserAvatar :user="currentUser" size="lg" />
+        <div>
+          <p class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">{{ currentUser?.name }}</p>
+          <p v-if="currentUser?.email" class="text-sm text-lavender-700 dark:text-lavender-400">{{ currentUser?.email }}</p>
+          <p v-if="family" class="text-sm text-lavender-600 dark:text-lavender-400 mt-1">{{ family?.name }}</p>
         </div>
-      </form>
+      </div>
     </div>
 
-    <!-- Family Settings -->
-    <div class="card-lg mb-6">
+    <!-- Family Settings (parent only) -->
+    <div v-if="isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">Family Information</h2>
 
       <form @submit.prevent="updateFamily" class="space-y-4">
@@ -143,8 +130,8 @@
       </div>
     </div>
 
-    <!-- API Configuration -->
-    <div class="card-lg mb-6">
+    <!-- API Configuration (parent only) -->
+    <div v-if="isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">API Configuration</h2>
 
       <div class="space-y-4">
@@ -348,8 +335,8 @@
       </div>
     </div>
 
-    <!-- Module Toggles -->
-    <div class="card-lg mb-6">
+    <!-- Module Toggles (parent only) -->
+    <div v-if="isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">Feature Toggles</h2>
 
       <div class="space-y-3">
@@ -503,7 +490,7 @@
           <p class="text-sm text-sand-800 dark:text-sand-200 font-medium">What will happen:</p>
           <ul class="text-sm text-sand-700 dark:text-sand-300 mt-1 space-y-1 list-disc list-inside">
             <li>This device will be logged in as {{ switchingToMember?.name }}</li>
-            <li>To switch back, go to Settings and enter your parent password</li>
+            <li>To switch back, sign out and sign back in as your parent account</li>
           </ul>
         </div>
       </div>
@@ -551,7 +538,7 @@ const calendarStore = useCalendarStore()
 const { success, error: notificationError } = useNotification()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
 
-const { family, familyMembers, currentUser, isParent, switchedFrom, isSwitchedSession } = storeToRefs(authStore)
+const { family, familyMembers, currentUser, isParent } = storeToRefs(authStore)
 const { connections } = storeToRefs(calendarStore)
 
 // Family form
@@ -605,9 +592,6 @@ const removingMember = ref(null)
 const removingLoading = ref(false)
 
 // Profile switching
-const switchBackPassword = ref('')
-const switchBackError = ref('')
-const switchingBack = ref(false)
 const showSwitchToModal = ref(false)
 const switchingToMember = ref(null)
 const switchingTo = ref(false)
@@ -791,24 +775,6 @@ const handleSwitchToProfile = async () => {
     closeSwitchToModal()
   }
   switchingTo.value = false
-}
-
-const handleSwitchBack = async () => {
-  switchBackError.value = ''
-  if (!switchBackPassword.value) {
-    switchBackError.value = 'Password is required'
-    return
-  }
-  switchingBack.value = true
-  const result = await authStore.switchBack(switchBackPassword.value)
-  if (result.success) {
-    success(result.message)
-    switchBackPassword.value = ''
-    router.push('/settings')
-  } else {
-    switchBackError.value = result.error || 'Invalid password'
-  }
-  switchingBack.value = false
 }
 
 // ---- Calendar ----

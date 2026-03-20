@@ -17,9 +17,6 @@ class AuthController extends Controller
 {
     /**
      * Register a new user and create or join a family.
-     *
-     * @param RegisterRequest $request
-     * @return JsonResponse
      */
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -27,11 +24,9 @@ class AuthController extends Controller
         $role = 'child';
 
         if ($request->filled('invite_code')) {
-            // Join existing family via invite code
             $family = Family::where('invite_code', $request->validated('invite_code'))->firstOrFail();
             $role = $request->validated('role', 'child');
         } else {
-            // Create new family — creator becomes parent
             $family = Family::create([
                 'name' => $request->validated('family_name'),
                 'slug' => Str::slug($request->validated('family_name')),
@@ -40,7 +35,6 @@ class AuthController extends Controller
             $role = 'parent';
         }
 
-        // Create the user with family assignment
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
@@ -49,7 +43,6 @@ class AuthController extends Controller
             'family_role' => $role,
         ]);
 
-        // Create Sanctum token for API access
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -66,9 +59,6 @@ class AuthController extends Controller
 
     /**
      * Login an existing user.
-     *
-     * @param LoginRequest $request
-     * @return JsonResponse
      */
     public function login(LoginRequest $request): JsonResponse
     {
@@ -90,9 +80,6 @@ class AuthController extends Controller
 
     /**
      * Logout the current user (revoke current token).
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function logout(Request $request): JsonResponse
     {
@@ -105,8 +92,8 @@ class AuthController extends Controller
 
     /**
      * Switch to a managed child's profile (parent only).
-     * Creates a new token for the child account. The parent's user ID
-     * is stored in the token name so we can switch back.
+     * Logs the parent out and creates a new session for the child.
+     * To get back, sign out and sign back in as parent.
      */
     public function switchProfile(Request $request): JsonResponse
     {
@@ -129,87 +116,28 @@ class AuthController extends Controller
             return response()->json(['message' => 'Can only switch to managed accounts in your family'], 403);
         }
 
-        // Create a token for the child, encoding the parent ID in the token name
-        $token = $child->createToken("switched_from:{$parent->id}")->plainTextToken;
+        // Revoke the parent's current token
+        $parent->currentAccessToken()->delete();
+
+        // Create a token for the child
+        $token = $child->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'token' => $token,
             'user' => UserResource::make($child),
-            'switched_from' => [
-                'id' => $parent->id,
-                'name' => $parent->name,
-            ],
             'message' => "Switched to {$child->name}'s profile",
         ], 200);
     }
 
     /**
-     * Switch back to the parent's profile from a managed child session.
-     * Requires the parent's password for security.
-     */
-    public function switchBack(Request $request): JsonResponse
-    {
-        $currentUser = $request->user();
-        $currentToken = $currentUser->currentAccessToken();
-
-        // Check if this is a switched session by looking at token name
-        $tokenName = $currentToken->name;
-        if (!str_starts_with($tokenName, 'switched_from:')) {
-            return response()->json(['message' => 'Not in a switched session'], 400);
-        }
-
-        $parentId = str_replace('switched_from:', '', $tokenName);
-
-        $validated = $request->validate([
-            'password' => 'required|string',
-        ]);
-
-        $parent = User::find($parentId);
-
-        if (!$parent || !Hash::check($validated['password'], $parent->password)) {
-            return response()->json(['message' => 'Invalid password'], 401);
-        }
-
-        // Revoke the child's switched token
-        $currentToken->delete();
-
-        // Create a new token for the parent
-        $token = $parent->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'token' => $token,
-            'user' => UserResource::make($parent->load('family')),
-            'message' => "Switched back to {$parent->name}'s profile",
-        ], 200);
-    }
-
-    /**
      * Get the authenticated user with family data.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function user(Request $request): JsonResponse
     {
         $user = $request->user()->load('family.members');
 
-        // Check if this is a switched session
-        $switchedFrom = null;
-        $currentToken = $user->currentAccessToken();
-        if ($currentToken && str_starts_with($currentToken->name, 'switched_from:')) {
-            $parentId = str_replace('switched_from:', '', $currentToken->name);
-            $parent = User::find($parentId);
-            if ($parent) {
-                $switchedFrom = [
-                    'id' => $parent->id,
-                    'name' => $parent->name,
-                ];
-            }
-        }
-
         return response()->json([
             'user' => UserResource::make($user),
-            'switched_from' => $switchedFrom,
             'family' => $user->family ? [
                 'id' => $user->family->id,
                 'name' => $user->family->name,
