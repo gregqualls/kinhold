@@ -14,7 +14,13 @@ if [ -n "$PLATFORM_RELATIONSHIPS" ]; then
     export REDIS_PORT=$(echo $PLATFORM_RELATIONSHIPS | base64 --decode | jq -r '.redis[0].port')
 fi
 
-# Set APP_URL from Upsun routes
+# Set APP_URL and session/CSRF domains from Upsun routes
 if [ -n "$PLATFORM_ROUTES" ]; then
     export APP_URL=$(echo $PLATFORM_ROUTES | base64 --decode | jq -r 'to_entries[] | select(.value.primary == true) | .key' | head -1 | sed 's:/$::')
+
+    # Extract hostname for Sanctum SPA auth and session cookies
+    # This ensures CSRF/session cookies work on both production and branch environments
+    APP_HOST=$(echo "$APP_URL" | sed 's|https\?://||')
+    export SANCTUM_STATEFUL_DOMAINS="$APP_HOST"
+    export SESSION_DOMAIN=".$APP_HOST"
 fi
