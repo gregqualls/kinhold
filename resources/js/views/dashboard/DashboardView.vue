@@ -244,12 +244,12 @@ const { tasks } = storeToRefs(tasksStore)
 // My Tasks: assigned specifically to me, incomplete
 const myTasks = computed(() => {
   const userId = currentUser.value?.id
-  return tasks.value.filter((t) => !t.completed && !t.is_family_task && t.assigned_to_id === userId)
+  return tasks.value.filter((t) => !t.completed_at && !t.is_family_task && t.assigned_to_id === userId)
 })
 
 // Open Tasks: family tasks anyone can grab, incomplete
 const openTasks = computed(() => {
-  return tasks.value.filter((t) => !t.completed && t.is_family_task)
+  return tasks.value.filter((t) => !t.completed_at && t.is_family_task)
 })
 
 const toggleTask = async (task) => {
@@ -283,7 +283,6 @@ onMounted(async () => {
   await calendarStore.fetchEvents(now.startOf('day'), endOfDay)
 
   // Fetch tasks
-  await tasksStore.fetchTaskLists()
   await tasksStore.fetchTasks()
 
   // Fetch points and badges

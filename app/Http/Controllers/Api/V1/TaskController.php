@@ -27,18 +27,23 @@ class TaskController extends Controller
     public function index(Request $request): JsonResponse
     {
         $family = $request->user()->currentFamily()->firstOrFail();
-        $user = $request->user();
 
-        $query = Task::whereHas('taskList', function ($q) use ($family) {
-            $q->where('family_id', $family->id);
-        });
+        $query = Task::where('family_id', $family->id);
 
         // Filter by assigned_to
         if ($request->filled('assigned_to')) {
             $query->where('assigned_to', $request->query('assigned_to'));
         }
 
-        // Filter by task list
+        // Filter by tags (comma-separated tag IDs)
+        if ($request->filled('tags')) {
+            $tagIds = explode(',', $request->query('tags'));
+            $query->whereHas('tags', function ($q) use ($tagIds) {
+                $q->whereIn('tags.id', $tagIds);
+            });
+        }
+
+        // Filter by task list (backward compat)
         if ($request->filled('list')) {
             $query->where('task_list_id', $request->query('list'));
         }
@@ -66,7 +71,8 @@ class TaskController extends Controller
         }
 
         $tasks = $query
-            ->with(['creator', 'assignee', 'taskList'])
+            ->with(['creator', 'assignee', 'tags'])
+            ->orderByRaw('completed_at IS NOT NULL')
             ->orderBy('due_date')
             ->orderBy('sort_order')
             ->get();
@@ -84,7 +90,7 @@ class TaskController extends Controller
         $this->authorize('view', $taskList);
 
         $tasks = $taskList->tasks()
-            ->with(['creator', 'assignee'])
+            ->with(['creator', 'assignee', 'tags'])
             ->orderBy('sort_order')
             ->get();
 
@@ -101,18 +107,20 @@ class TaskController extends Controller
         $family = $request->user()->currentFamily()->firstOrFail();
         $validated = $request->validated();
 
-        // Ensure task list belongs to current family
-        $taskList = TaskList::where('family_id', $family->id)
-            ->findOrFail($validated['task_list_id']);
+        // Ensure task list belongs to current family if provided
+        if (!empty($validated['task_list_id'])) {
+            TaskList::where('family_id', $family->id)
+                ->findOrFail($validated['task_list_id']);
+        }
 
         // Validate assigned_to user is in same family if provided
         if ($request->filled('assigned_to')) {
-            $assignedUser = $family->members()->findOrFail($validated['assigned_to']);
+            $family->members()->findOrFail($validated['assigned_to']);
         }
 
         $task = Task::create([
             'family_id' => $family->id,
-            'task_list_id' => $validated['task_list_id'],
+            'task_list_id' => $validated['task_list_id'] ?? null,
             'created_by' => $request->user()->id,
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
@@ -123,11 +131,16 @@ class TaskController extends Controller
             'points' => $validated['points'] ?? null,
             'recurrence_rule' => $validated['recurrence_rule'] ?? null,
             'recurrence_end' => $validated['recurrence_end'] ?? null,
-            'sort_order' => Task::where('task_list_id', $validated['task_list_id'])->max('sort_order') + 1,
+            'sort_order' => Task::where('family_id', $family->id)->max('sort_order') + 1,
         ]);
 
+        // Sync tags
+        if (isset($validated['tag_ids'])) {
+            $task->tags()->sync($validated['tag_ids']);
+        }
+
         return response()->json([
-            'task' => TaskResource::make($task->load(['creator', 'assignee'])),
+            'task' => TaskResource::make($task->load(['creator', 'assignee', 'tags'])),
         ], 201);
     }
 
@@ -138,7 +151,7 @@ class TaskController extends Controller
     {
         $this->authorize('view', $task);
 
-        $task->load(['creator', 'assignee']);
+        $task->load(['creator', 'assignee', 'tags']);
 
         return response()->json([
             'task' => TaskResource::make($task),
@@ -155,15 +168,24 @@ class TaskController extends Controller
         $validated = $request->validated();
 
         // Validate assigned_to user is in same family if being changed
-        if ($request->filled('assigned_to') && $validated['assigned_to'] !== $task->assigned_to) {
-            $family = $task->taskList->family;
+        if ($request->filled('assigned_to') && ($validated['assigned_to'] ?? null) !== $task->assigned_to) {
+            $family = $request->user()->currentFamily()->firstOrFail();
             $family->members()->findOrFail($validated['assigned_to']);
         }
 
+        // Extract tag_ids before update
+        $tagIds = $validated['tag_ids'] ?? null;
+        unset($validated['tag_ids']);
+
         $task->update($validated);
 
+        // Sync tags if provided
+        if ($tagIds !== null) {
+            $task->tags()->sync($tagIds);
+        }
+
         return response()->json([
-            'task' => TaskResource::make($task->load(['creator', 'assignee'])),
+            'task' => TaskResource::make($task->load(['creator', 'assignee', 'tags'])),
         ], 200);
     }
 
@@ -199,7 +221,7 @@ class TaskController extends Controller
         $newBadges = $this->badgeService->checkAndAwardBadges($user);
 
         $response = [
-            'task' => TaskResource::make($task->load(['creator', 'assignee'])),
+            'task' => TaskResource::make($task->load(['creator', 'assignee', 'tags'])),
             'points_earned' => $transaction->points,
         ];
 
@@ -233,7 +255,7 @@ class TaskController extends Controller
         $this->pointsService->reverseTaskPoints($task, $user);
 
         return response()->json([
-            'task' => TaskResource::make($task->load(['creator', 'assignee'])),
+            'task' => TaskResource::make($task->load(['creator', 'assignee', 'tags'])),
         ], 200);
     }
 }
