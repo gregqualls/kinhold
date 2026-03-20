@@ -45,6 +45,16 @@
           {{ priority }}
         </button>
 
+        <!-- Family task toggle -->
+        <button
+          @click="isFamilyTask = !isFamilyTask"
+          class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg transition-colors"
+          :class="isFamilyTask ? 'bg-wisteria-50 dark:bg-wisteria-900/20 text-wisteria-700 dark:text-wisteria-400' : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+        >
+          <UserGroupIcon class="w-3.5 h-3.5" />
+          {{ isFamilyTask ? 'Anyone' : 'Assign' }}
+        </button>
+
         <!-- Tag chips -->
         <button
           v-for="tag in tags"
@@ -87,7 +97,7 @@
 
 <script setup>
 import { ref, nextTick, computed } from 'vue'
-import { PlusIcon, CalendarIcon, FlagIcon } from '@heroicons/vue/24/outline'
+import { PlusIcon, CalendarIcon, FlagIcon, UserGroupIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   tags: { type: Array, default: () => [] },
@@ -111,6 +121,7 @@ const inputRef = ref(null)
 const title = ref('')
 const dueDate = ref('')
 const priority = ref('medium')
+const isFamilyTask = ref(false)
 const selectedTagIds = ref([])
 
 const startEditing = async () => {
@@ -124,6 +135,7 @@ const cancel = () => {
   title.value = ''
   dueDate.value = ''
   priority.value = 'medium'
+  isFamilyTask.value = false
   selectedTagIds.value = []
 }
 
@@ -142,10 +154,12 @@ const submit = () => {
     title: title.value.trim(),
     due_date: dueDate.value || null,
     priority: priority.value,
+    is_family_task: isFamilyTask.value,
     tag_ids: selectedTagIds.value.length > 0 ? selectedTagIds.value : undefined,
   })
   title.value = ''
   dueDate.value = ''
+  isFamilyTask.value = false
   selectedTagIds.value = []
   // Keep editing open for rapid entry
   nextTick(() => inputRef.value?.focus())
