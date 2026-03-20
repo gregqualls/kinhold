@@ -224,7 +224,7 @@ class AuthController extends Controller
                     'is_managed' => $m->is_managed,
                     'managed_by' => $m->managed_by,
                     'avatar' => $m->avatar,
-                    'date_of_birth' => $m->date_of_birth,
+                    'date_of_birth' => $m->date_of_birth?->format('Y-m-d'),
                 ]),
             ] : null,
         ], 200);

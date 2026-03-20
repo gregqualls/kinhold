@@ -23,7 +23,7 @@ class UserResource extends JsonResource
             'is_managed' => $this->is_managed,
             'managed_by' => $this->managed_by,
             'avatar' => $this->avatar,
-            'date_of_birth' => $this->date_of_birth,
+            'date_of_birth' => $this->date_of_birth?->format('Y-m-d'),
             'timezone' => $this->timezone,
             'created_at' => $this->created_at,
         ];
