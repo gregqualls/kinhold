@@ -705,8 +705,8 @@ body.dark {
   background: linear-gradient(
     150deg,
     rgb(var(--prussian-900)) 0%,
-    rgb(var(--prussian-800)) 35%,
-    rgb(var(--wisteria-900) / 0.5) 65%,
+    rgb(var(--prussian-700)) 30%,
+    rgb(var(--wisteria-800)) 60%,
     rgb(var(--prussian-900)) 100%
   );
 }
@@ -769,9 +769,9 @@ nav[class*="bg-prussian-500"] {
   .dark .card-lg {
     background-image: linear-gradient(
       135deg,
-      rgb(var(--prussian-700) / 0.6) 0%,
-      rgb(var(--prussian-800) / 0.3) 40%,
-      rgb(var(--wisteria-900) / 0.25) 100%
+      rgb(var(--wisteria-800) / 0.3) 0%,
+      transparent 40%,
+      rgb(var(--prussian-700) / 0.4) 100%
     );
   }
 }
