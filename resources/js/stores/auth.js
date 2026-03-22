@@ -79,6 +79,21 @@ export const useAuthStore = defineStore('auth', () => {
     return userCanAccessModule(moduleName)
   })
 
+  const canAssignTasks = computed(() => {
+    if (!user.value) return false
+    // Parents can always assign tasks to anyone
+    if (user.value.role === 'parent') return true
+
+    const settings = family.value?.settings || {}
+    const taskAssignment = settings.task_assignment || { mode: 'all', users: [] }
+    const mode = taskAssignment.mode || 'all'
+
+    if (mode === 'all') return true
+    if (mode === 'parents_only') return false
+    if (mode === 'users') return (taskAssignment.users || []).includes(user.value.id)
+    return true
+  })
+
   // Actions
   const login = async (email, password) => {
     isLoading.value = true
@@ -283,6 +298,7 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser,
     enabledModules,
     isModuleEnabled,
+    canAssignTasks,
     moduleAccess,
     userCanAccessModule,
 

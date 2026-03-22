@@ -208,11 +208,17 @@ class Task extends Model
 
     /**
      * Get effective points for this task (explicit or family-configured default or hardcoded default).
+     * Tasks created by children with no explicit points set by a parent return 0.
      */
     public function getEffectivePoints(): int
     {
         if ($this->points !== null) {
             return $this->points;
+        }
+
+        // If a child created this task and no parent has set explicit points, it's worth 0
+        if ($this->created_by && $this->creator && !$this->creator->isParent()) {
+            return 0;
         }
 
         $priority = $this->priority?->value ?? 'medium';

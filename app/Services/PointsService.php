@@ -16,14 +16,18 @@ class PointsService
 {
     /**
      * Award points for completing a task.
+     *
+     * @param bool $forceZero When true, awards 0 points (e.g., child completing own task).
      */
-    public function awardTaskPoints(Task $task, User $user): PointTransaction
+    public function awardTaskPoints(Task $task, User $user, bool $forceZero = false): PointTransaction
     {
+        $points = $forceZero ? 0 : $task->getEffectivePoints();
+
         return PointTransaction::create([
             'family_id' => $user->family_id,
             'user_id' => $user->id,
             'type' => PointTransactionType::TaskCompletion,
-            'points' => $task->getEffectivePoints(),
+            'points' => $points,
             'description' => "Completed: {$task->title}",
             'source_type' => Task::class,
             'source_id' => $task->id,

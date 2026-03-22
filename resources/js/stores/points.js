@@ -10,6 +10,7 @@ export const usePointsStore = defineStore('points', () => {
   const feedPagination = ref({ current_page: 1, last_page: 1, total: 0 })
   const rewards = ref([])
   const purchases = ref([])
+  const pointRequests = ref([])
   const isLoading = ref(false)
   const error = ref(null)
 
@@ -130,6 +131,51 @@ export const usePointsStore = defineStore('points', () => {
     }
   }
 
+  const fetchPointRequests = async (status = null) => {
+    try {
+      const params = status ? { status } : {}
+      const response = await api.get('/points/requests', { params })
+      pointRequests.value = response.data.requests
+    } catch (err) {
+      console.error('Failed to fetch point requests:', err)
+    }
+  }
+
+  const submitPointRequest = async (points, reason) => {
+    try {
+      const response = await api.post('/points/request', { points, reason })
+      pointRequests.value.unshift(response.data.request)
+      return { success: true, data: response.data }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to submit request' }
+    }
+  }
+
+  const approvePointRequest = async (requestId) => {
+    try {
+      const response = await api.post(`/points/requests/${requestId}/approve`)
+      // Remove from local list or update status
+      const idx = pointRequests.value.findIndex(r => r.id === requestId)
+      if (idx !== -1) pointRequests.value[idx] = response.data.request
+      // Refresh feed and bank
+      await Promise.all([fetchFeed(), fetchBank(), fetchLeaderboard()])
+      return { success: true, data: response.data }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to approve request' }
+    }
+  }
+
+  const denyPointRequest = async (requestId) => {
+    try {
+      const response = await api.post(`/points/requests/${requestId}/deny`)
+      const idx = pointRequests.value.findIndex(r => r.id === requestId)
+      if (idx !== -1) pointRequests.value[idx] = response.data.request
+      return { success: true, data: response.data }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to deny request' }
+    }
+  }
+
   return {
     bank,
     leaderboard,
@@ -151,5 +197,10 @@ export const usePointsStore = defineStore('points', () => {
     deleteReward,
     purchaseReward,
     fetchPurchases,
+    pointRequests,
+    fetchPointRequests,
+    submitPointRequest,
+    approvePointRequest,
+    denyPointRequest,
   }
 })
