@@ -446,6 +446,64 @@
       </div>
     </div>
 
+    <!-- Default Task Points (parent only, when tasks + points enabled) -->
+    <div v-if="isParent && moduleToggles.tasks && moduleToggles.points" class="card-lg mb-6">
+      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Default Task Points</h2>
+      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        Set how many points are awarded by default for each task priority level. Tasks with explicitly set points are not affected.
+      </p>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Low Priority</label>
+          </div>
+          <input
+            v-model.number="defaultPoints.low"
+            type="number"
+            min="0"
+            max="1000"
+            class="input-base w-24 text-center"
+          />
+          <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+        </div>
+
+        <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Medium Priority</label>
+          </div>
+          <input
+            v-model.number="defaultPoints.medium"
+            type="number"
+            min="0"
+            max="1000"
+            class="input-base w-24 text-center"
+          />
+          <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+        </div>
+
+        <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">High Priority</label>
+          </div>
+          <input
+            v-model.number="defaultPoints.high"
+            type="number"
+            min="0"
+            max="1000"
+            class="input-base w-24 text-center"
+          />
+          <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
+        <BaseButton variant="primary" :loading="savingDefaultPoints" @click="saveDefaultPoints">
+          Save Default Points
+        </BaseButton>
+      </div>
+    </div>
+
     <!-- Add/Edit Member Modal -->
     <BaseModal
       :show="showMemberModal"
@@ -624,6 +682,14 @@ const moduleToggles = reactive({
   calendar: true, tasks: true, vault: true, chat: true, points: true, badges: true,
 })
 const leaderboardPeriod = ref('weekly')
+
+// Default task points
+const savingDefaultPoints = ref(false)
+const defaultPoints = reactive({
+  low: 5,
+  medium: 10,
+  high: 20,
+})
 
 // Invite code
 const inviteCode = ref(family.value?.invite_code || '')
@@ -986,6 +1052,23 @@ const saveModuleSettings = async () => {
   savingModules.value = false
 }
 
+// ---- Default task points ----
+const saveDefaultPoints = async () => {
+  savingDefaultPoints.value = true
+  try {
+    await api.put('/settings', {
+      default_points_low: defaultPoints.low,
+      default_points_medium: defaultPoints.medium,
+      default_points_high: defaultPoints.high,
+    })
+    await authStore.fetchUser()
+    success('Default task points saved!')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to save default points')
+  }
+  savingDefaultPoints.value = false
+}
+
 // ---- Init ----
 onMounted(async () => {
   familyForm.name = family.value?.name || ''
@@ -1000,6 +1083,11 @@ onMounted(async () => {
   moduleToggles.points = modules.points !== false
   moduleToggles.badges = modules.badges !== false
   leaderboardPeriod.value = settings.leaderboard_period || 'weekly'
+
+  // Initialize default task points
+  defaultPoints.low = settings.default_points_low ?? 5
+  defaultPoints.medium = settings.default_points_medium ?? 10
+  defaultPoints.high = settings.default_points_high ?? 20
 
   await calendarStore.fetchConnections()
 
