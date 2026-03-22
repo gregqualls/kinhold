@@ -71,7 +71,7 @@ class TaskController extends Controller
         }
 
         $tasks = $query
-            ->with(['creator', 'assignee', 'tags'])
+            ->with(['creator', 'assignee', 'tags', 'parentTask'])
             ->orderByRaw('completed_at IS NOT NULL')
             ->orderBy('due_date')
             ->orderBy('sort_order')
@@ -90,7 +90,7 @@ class TaskController extends Controller
         $this->authorize('view', $taskList);
 
         $tasks = $taskList->tasks()
-            ->with(['creator', 'assignee', 'tags'])
+            ->with(['creator', 'assignee', 'tags', 'parentTask'])
             ->orderBy('sort_order')
             ->get();
 

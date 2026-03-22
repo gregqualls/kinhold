@@ -29,6 +29,7 @@ class TaskResource extends JsonResource
             'points' => $this->points,
             'effective_points' => $this->getEffectivePoints(),
             'recurrence_rule' => $this->recurrence_rule,
+            'recurrence_label' => $this->recurrence_label,
             'recurrence_end' => $this->recurrence_end,
             'parent_task_id' => $this->parent_task_id,
             'creator' => UserResource::make($this->whenLoaded('creator')),
