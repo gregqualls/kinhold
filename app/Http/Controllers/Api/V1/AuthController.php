@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Family;
 use App\Models\User;
+use App\Services\BadgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -35,6 +36,8 @@ class AuthController extends Controller
             $role = 'parent';
         }
 
+        $isNewFamily = !$request->filled('invite_code');
+
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
@@ -42,6 +45,11 @@ class AuthController extends Controller
             'family_id' => $family->id,
             'family_role' => $role,
         ]);
+
+        // Seed default badges for newly created families
+        if ($isNewFamily) {
+            BadgeService::createDefaultBadges($family->id, $user->id);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
