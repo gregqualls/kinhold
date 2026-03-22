@@ -41,7 +41,11 @@ class DatabaseSeeder extends Seeder
         // Idempotent: if demo family exists, wipe and re-seed so data stays fresh
         // Uses a reserved slug + @demo.local emails that real families can't claim.
         // Safe to run on every deploy — wipes and re-creates demo data only.
-        $existing = Family::where('slug', 'q32-demo-family')->first();
+        // Also checks for legacy slug/invite_code from older seeds.
+        $existing = Family::where('slug', 'q32-demo-family')
+            ->orWhere('slug', 'johnsons')
+            ->orWhere('invite_code', 'JOHNSON2026')
+            ->first();
         if ($existing) {
             // Delete all related data (cascades handle most, but be thorough)
             User::where('family_id', $existing->id)->delete();
