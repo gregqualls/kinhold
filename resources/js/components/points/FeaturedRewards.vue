@@ -40,14 +40,30 @@
     </div>
   </div>
 
-  <div v-else class="text-center py-4">
-    <p class="text-sm text-lavender-500 dark:text-lavender-400">No rewards available yet.</p>
+  <div v-else class="text-center py-6">
+    <span class="text-3xl mb-2 block">🎁</span>
+    <p class="text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">No rewards yet</p>
+    <p v-if="isParent" class="text-xs text-lavender-500 dark:text-lavender-400 mb-3">
+      Create rewards your family can earn with points!
+    </p>
+    <p v-else class="text-xs text-lavender-500 dark:text-lavender-400">
+      Ask a parent to add some rewards to the shop.
+    </p>
+    <RouterLink
+      v-if="isParent"
+      to="/points/rewards"
+      class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-lg transition-colors"
+    >
+      <PlusIcon class="w-3.5 h-3.5" />
+      Create Rewards
+    </RouterLink>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { StarIcon, CheckIcon } from '@heroicons/vue/24/solid'
+import { RouterLink } from 'vue-router'
+import { StarIcon, CheckIcon, PlusIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps({
   rewards: {
@@ -61,6 +77,10 @@ const props = defineProps({
   limit: {
     type: Number,
     default: 3,
+  },
+  isParent: {
+    type: Boolean,
+    default: false,
   },
 })
 
