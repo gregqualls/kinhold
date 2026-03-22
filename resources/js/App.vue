@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col bg-lavender-50 md:flex-row dark:bg-prussian-900">
+  <div class="h-screen flex flex-col md:flex-row">
     <!-- Sidebar (Desktop) -->
     <Sidebar v-if="!isAuthPage" class="hidden md:flex" />
 
