@@ -18,6 +18,7 @@ return new class extends Migration
             $table->time('event_time')->nullable();
             $table->string('icon', 50)->default("\u{1F389}"); // party popper emoji
             $table->string('color', 7)->default('#8B5CF6'); // wisteria purple
+            $table->string('recurrence', 20)->default('none'); // none, yearly, monthly, weekly
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 

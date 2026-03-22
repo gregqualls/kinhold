@@ -20,6 +20,7 @@ class FeaturedEvent extends Model
         'event_time',
         'icon',
         'color',
+        'recurrence',
         'is_active',
     ];
 
@@ -30,6 +31,45 @@ class FeaturedEvent extends Model
             'event_time' => 'datetime:H:i',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the next occurrence date for a recurring event.
+     * For non-recurring events, returns the original event_date.
+     */
+    public function getNextOccurrenceAttribute(): \Carbon\Carbon
+    {
+        $date = $this->event_date->copy();
+        $today = now()->startOfDay();
+
+        if ($this->recurrence === 'none') {
+            return $date;
+        }
+
+        // Advance the date until it's today or in the future
+        while ($date->lt($today)) {
+            $date = match ($this->recurrence) {
+                'yearly' => $date->addYear(),
+                'monthly' => $date->addMonth(),
+                'weekly' => $date->addWeek(),
+                default => $date,
+            };
+        }
+
+        return $date;
+    }
+
+    /**
+     * Human-readable recurrence label.
+     */
+    public function getRecurrenceLabelAttribute(): ?string
+    {
+        return match ($this->recurrence) {
+            'yearly' => 'Every year',
+            'monthly' => 'Every month',
+            'weekly' => 'Every week',
+            default => null,
+        };
     }
 
     public function family(): BelongsTo

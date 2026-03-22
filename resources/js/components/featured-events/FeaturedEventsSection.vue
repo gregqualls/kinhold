@@ -44,12 +44,19 @@
           <p class="font-semibold text-prussian-500 dark:text-lavender-200 truncate">
             {{ event.title }}
           </p>
-          <div class="flex items-center gap-2 text-xs">
+          <div class="flex items-center gap-2 text-xs flex-wrap">
             <span class="text-lavender-600 dark:text-lavender-400">
               {{ formatEventDate(event.event_date) }}
             </span>
             <span v-if="event.event_time" class="text-lavender-500 dark:text-lavender-400">
               {{ formatTime(event.event_time) }}
+            </span>
+            <span
+              v-if="event.recurrence_label"
+              class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-wisteria-100/60 dark:bg-wisteria-900/30 text-wisteria-600 dark:text-wisteria-400 text-[10px] font-medium"
+            >
+              <ArrowPathIcon class="w-2.5 h-2.5" />
+              {{ event.recurrence_label }}
             </span>
           </div>
         </div>
@@ -132,7 +139,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import FeaturedEventModal from './FeaturedEventModal.vue'
-import { StarIcon, PlusIcon, EllipsisVerticalIcon } from '@heroicons/vue/24/outline'
+import { StarIcon, PlusIcon, EllipsisVerticalIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   isParent: Boolean,

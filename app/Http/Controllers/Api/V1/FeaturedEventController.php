@@ -18,14 +18,23 @@ class FeaturedEventController extends Controller
     {
         $family = $request->user()->currentFamily()->firstOrFail();
 
+        // Fetch all active events — recurring ones may have old dates but still be relevant
         $events = FeaturedEvent::where('family_id', $family->id)
             ->where('is_active', true)
-            ->where('event_date', '>=', Carbon::today())
-            ->where('event_date', '<=', Carbon::today()->addDays(30))
-            ->orderBy('event_date')
-            ->orderBy('event_time')
             ->with('creator:id,name,avatar')
-            ->get();
+            ->get()
+            ->map(function ($event) {
+                // Compute next occurrence for recurring events
+                $event->computed_next_date = $event->next_occurrence;
+                return $event;
+            })
+            ->filter(function ($event) {
+                // Only show events whose next occurrence is within the next 60 days
+                return $event->computed_next_date->lte(Carbon::today()->addDays(60))
+                    && $event->computed_next_date->gte(Carbon::today());
+            })
+            ->sortBy('computed_next_date')
+            ->values();
 
         return response()->json([
             'featured_events' => FeaturedEventResource::collection($events),
@@ -44,10 +53,11 @@ class FeaturedEventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'event_date' => 'required|date|after_or_equal:today',
+            'event_date' => 'required|date',
             'event_time' => 'nullable|date_format:H:i',
             'icon' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:7|regex:/^#[0-9A-Fa-f]{6}$/',
+            'recurrence' => 'nullable|string|in:none,yearly,monthly,weekly',
         ]);
 
         $family = $request->user()->currentFamily()->firstOrFail();
@@ -61,6 +71,7 @@ class FeaturedEventController extends Controller
             'event_time' => $validated['event_time'] ?? null,
             'icon' => $validated['icon'] ?? "\u{1F389}",
             'color' => $validated['color'] ?? '#8B5CF6',
+            'recurrence' => $validated['recurrence'] ?? 'none',
         ]);
 
         $event->load('creator:id,name,avatar');
@@ -93,6 +104,7 @@ class FeaturedEventController extends Controller
             'icon' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:7|regex:/^#[0-9A-Fa-f]{6}$/',
             'is_active' => 'sometimes|boolean',
+            'recurrence' => 'nullable|string|in:none,yearly,monthly,weekly',
         ]);
 
         $featuredEvent->update($validated);

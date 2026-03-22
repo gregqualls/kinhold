@@ -40,6 +40,22 @@
         />
       </div>
 
+      <!-- Recurrence -->
+      <div>
+        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
+          Repeats
+        </label>
+        <select
+          v-model="form.recurrence"
+          class="w-full px-3 py-2 rounded-lg border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+        >
+          <option value="none">One-time event</option>
+          <option value="yearly">Every year (birthdays, anniversaries)</option>
+          <option value="monthly">Every month</option>
+          <option value="weekly">Every week</option>
+        </select>
+      </div>
+
       <!-- Description (optional) -->
       <div>
         <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
@@ -166,6 +182,7 @@ const defaultForm = () => ({
   event_time: '',
   icon: '\u{1F389}',
   color: '#8B5CF6',
+  recurrence: 'none',
 })
 
 const form = ref(defaultForm())
@@ -184,6 +201,7 @@ watch(
           event_time: props.event.event_time || '',
           icon: props.event.icon || '\u{1F389}',
           color: props.event.color || '#8B5CF6',
+          recurrence: props.event.recurrence || 'none',
         }
       } else {
         form.value = defaultForm()
@@ -204,6 +222,7 @@ const handleSubmit = async () => {
     event_date: form.value.event_date,
     icon: form.value.icon,
     color: form.value.color,
+    recurrence: form.value.recurrence,
   }
 
   if (form.value.description) data.description = form.value.description
