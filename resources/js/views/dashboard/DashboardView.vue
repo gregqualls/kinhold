@@ -79,6 +79,13 @@
                 <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium">
                   {{ task.effective_points }} pts
                 </span>
+                <span
+                  v-if="task.recurrence_label"
+                  class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-wisteria-100 text-wisteria-600 dark:bg-wisteria-900/30 dark:text-wisteria-400"
+                >
+                  <ArrowPathIcon class="w-3 h-3" />
+                  {{ task.recurrence_label }}
+                </span>
               </div>
             </div>
           </div>
@@ -217,6 +224,13 @@
                 <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium">
                   {{ task.effective_points }} pts
                 </span>
+                <span
+                  v-if="task.recurrence_label"
+                  class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-wisteria-100 text-wisteria-600 dark:bg-wisteria-900/30 dark:text-wisteria-400"
+                >
+                  <ArrowPathIcon class="w-3 h-3" />
+                  {{ task.recurrence_label }}
+                </span>
               </div>
             </div>
           </div>
@@ -241,6 +255,7 @@ import LeaderboardStrip from '@/components/points/LeaderboardStrip.vue'
 import FeaturedRewards from '@/components/points/FeaturedRewards.vue'
 import BadgeShowcase from '@/components/badges/BadgeShowcase.vue'
 import {
+  ArrowPathIcon,
   CalendarIcon,
   CheckCircleIcon,
   SparklesIcon,

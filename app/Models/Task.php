@@ -225,4 +225,80 @@ class Task extends Model
     {
         return $this->recurrence_rule !== null && $this->parent_task_id === null;
     }
+
+    /**
+     * Get a human-readable label for the recurrence rule.
+     *
+     * Parses RRULE strings into friendly text like "Daily", "Every Tuesday",
+     * "Every Mon, Wed, Fri", or "Monthly on the 15th".
+     */
+    public function getRecurrenceLabelAttribute(): ?string
+    {
+        // Use the task's own rule, or inherit from parent template
+        $rule = $this->recurrence_rule ?? $this->parentTask?->recurrence_rule;
+
+        if (!$rule) {
+            return null;
+        }
+
+        // Parse RRULE parts into key-value pairs
+        $parts = [];
+        foreach (explode(';', $rule) as $part) {
+            $kv = explode('=', $part, 2);
+            if (count($kv) === 2) {
+                $parts[$kv[0]] = $kv[1];
+            }
+        }
+
+        $freq = $parts['FREQ'] ?? null;
+
+        if (!$freq) {
+            return null;
+        }
+
+        $dayNames = [
+            'MO' => 'Mon', 'TU' => 'Tue', 'WE' => 'Wed',
+            'TH' => 'Thu', 'FR' => 'Fri', 'SA' => 'Sat', 'SU' => 'Sun',
+        ];
+
+        $fullDayNames = [
+            'MO' => 'Monday', 'TU' => 'Tuesday', 'WE' => 'Wednesday',
+            'TH' => 'Thursday', 'FR' => 'Friday', 'SA' => 'Saturday', 'SU' => 'Sunday',
+        ];
+
+        switch ($freq) {
+            case 'DAILY':
+                return 'Daily';
+
+            case 'WEEKLY':
+                if (isset($parts['BYDAY'])) {
+                    $days = explode(',', $parts['BYDAY']);
+                    if (count($days) === 1) {
+                        return 'Every ' . ($fullDayNames[$days[0]] ?? $days[0]);
+                    }
+                    $labels = array_map(fn($d) => $dayNames[$d] ?? $d, $days);
+                    return 'Every ' . implode(', ', $labels);
+                }
+                return 'Weekly';
+
+            case 'MONTHLY':
+                if (isset($parts['BYMONTHDAY'])) {
+                    $day = (int) $parts['BYMONTHDAY'];
+                    $suffix = match (true) {
+                        $day === 1, $day === 21, $day === 31 => 'st',
+                        $day === 2, $day === 22 => 'nd',
+                        $day === 3, $day === 23 => 'rd',
+                        default => 'th',
+                    };
+                    return "Monthly on the {$day}{$suffix}";
+                }
+                return 'Monthly';
+
+            case 'YEARLY':
+                return 'Yearly';
+
+            default:
+                return 'Recurring';
+        }
+    }
 }
