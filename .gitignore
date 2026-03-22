@@ -35,8 +35,9 @@ Thumbs.db
 .phpunit.result.cache
 /coverage
 
-# Claude Code
-.claude/
+# Claude Code (ignore all except slash commands)
+.claude/*
+!.claude/commands/
 
 # Session captures
 *-session-capture.md
