@@ -75,9 +75,13 @@
           {{ task.effective_points }}pts
         </span>
 
-        <!-- Recurring indicator -->
-        <span v-if="task.recurrence_rule" class="text-xs text-lavender-400">
+        <!-- Recurring indicator with label -->
+        <span
+          v-if="task.recurrence_label || task.recurrence_rule"
+          class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-wisteria-100 text-wisteria-600 dark:bg-wisteria-900/30 dark:text-wisteria-400"
+        >
           <ArrowPathIcon class="w-3 h-3" />
+          {{ task.recurrence_label || 'Recurring' }}
         </span>
 
         <!-- Description indicator -->
