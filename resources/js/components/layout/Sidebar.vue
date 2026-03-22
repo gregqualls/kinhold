@@ -3,7 +3,10 @@
     <!-- Logo/Family Name -->
     <div class="px-5 py-5 border-b border-prussian-400/30 dark:border-prussian-700/50">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-wisteria-400 flex items-center justify-center shadow-glow">
+        <div
+          class="w-9 h-9 rounded-xl bg-wisteria-400 flex items-center justify-center shadow-glow cursor-pointer select-none"
+          @click="onLogoClick"
+        >
           <span class="text-white font-bold text-sm">Q</span>
         </div>
         <div>
@@ -57,7 +60,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
@@ -84,6 +87,11 @@ const handleLogout = async () => {
 }
 
 const familyName = computed(() => family.value?.name || 'Q32 Hub')
+
+const easterEggsRef = inject('easterEggs', null)
+const onLogoClick = () => {
+  easterEggsRef?.value?.handleLogoClick()
+}
 
 const navItems = [
   { label: 'Dashboard', path: '/', icon: HomeIcon, name: 'Dashboard', module: null },
