@@ -38,6 +38,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Idempotent: if demo family exists, wipe and re-seed so data stays fresh
+        $existing = Family::where('slug', 'johnsons')->first();
+        if ($existing) {
+            // Delete all related data (cascades handle most, but be thorough)
+            User::where('family_id', $existing->id)->delete();
+            Task::where('family_id', $existing->id)->delete();
+            Tag::where('family_id', $existing->id)->delete();
+            Reward::where('family_id', $existing->id)->delete();
+            Badge::where('family_id', $existing->id)->delete();
+            FeaturedEvent::where('family_id', $existing->id)->delete();
+            VaultEntry::where('family_id', $existing->id)->delete();
+            VaultCategory::where('family_id', $existing->id)->delete();
+            PointTransaction::where('family_id', $existing->id)->delete();
+            ChatMessage::where('family_id', $existing->id)->delete();
+            $existing->delete();
+            $this->command?->info('Cleared existing demo family data.');
+        }
+
         $now = Carbon::now();
         $vault = new VaultEncryptionService();
 
