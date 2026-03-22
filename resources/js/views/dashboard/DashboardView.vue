@@ -8,6 +8,13 @@
       <p class="text-sand-600 dark:text-sand-400">{{ dateMessage }}</p>
     </div>
 
+    <!-- Featured Events -->
+    <FeaturedEventsSection
+      v-if="featuredEventsStore.upcomingEvents.length > 0 || isParent"
+      :is-parent="isParent"
+      class="mb-4 md:mb-6"
+    />
+
     <!-- Content Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       <!-- Today's Events -->
@@ -249,11 +256,13 @@ import { useCalendarStore } from '@/stores/calendar'
 import { useTasksStore } from '@/stores/tasks'
 import { usePointsStore } from '@/stores/points'
 import { useBadgesStore } from '@/stores/badges'
+import { useFeaturedEventsStore } from '@/stores/featuredEvents'
 import BaseCard from '@/components/common/BaseCard.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LeaderboardStrip from '@/components/points/LeaderboardStrip.vue'
 import FeaturedRewards from '@/components/points/FeaturedRewards.vue'
 import BadgeShowcase from '@/components/badges/BadgeShowcase.vue'
+import FeaturedEventsSection from '@/components/featured-events/FeaturedEventsSection.vue'
 import {
   ArrowPathIcon,
   CalendarIcon,
@@ -273,6 +282,7 @@ const calendarStore = useCalendarStore()
 const tasksStore = useTasksStore()
 const pointsStore = usePointsStore()
 const badgesStore = useBadgesStore()
+const featuredEventsStore = useFeaturedEventsStore()
 
 const { currentUser, isParent, enabledModules } = storeToRefs(authStore)
 const { todayEvents } = storeToRefs(calendarStore)
@@ -315,6 +325,9 @@ const formatDate = (dateStr) => {
 }
 
 onMounted(async () => {
+  // Fetch featured events
+  featuredEventsStore.fetchEvents()
+
   // Fetch today's events
   const endOfDay = now.endOf('day')
   await calendarStore.fetchEvents(now.startOf('day'), endOfDay)
