@@ -109,8 +109,8 @@
         </select>
       </div>
 
-      <!-- Points (only if points module enabled) -->
-      <div v-if="enabledModules.points">
+      <!-- Points (only for parents — children can't set point values) -->
+      <div v-if="enabledModules.points && isParent">
         <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Points</label>
         <div class="flex items-center gap-3">
           <input
@@ -243,7 +243,7 @@ const props = defineProps({
 const emit = defineEmits(['save', 'close', 'delete'])
 
 const authStore = useAuthStore()
-const { familyMembers, enabledModules } = storeToRefs(authStore)
+const { familyMembers, enabledModules, isParent } = storeToRefs(authStore)
 
 const justSaved = ref(false)
 let savedTimer = null
