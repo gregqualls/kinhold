@@ -108,11 +108,93 @@ class Family extends Model
     }
 
     /**
-     * Get enabled modules.
+     * Get enabled modules (legacy helper — returns module names that are globally enabled).
      */
     public function getEnabledModules(): array
     {
         return $this->settings['enabled_modules'] ?? ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges'];
+    }
+
+    /**
+     * All module names the system supports.
+     */
+    public const MODULES = ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges'];
+
+    /**
+     * Get the module_access config for a given module.
+     *
+     * Returns the granular access rule if set, otherwise falls back to the
+     * legacy `settings.modules` boolean toggle (true → 'all', false → 'off').
+     *
+     * @return array{mode: string, roles?: string[], users?: string[]}
+     */
+    public function getModuleAccess(string $module): array
+    {
+        $settings = $this->settings ?? [];
+
+        // Check for granular module_access first
+        if (isset($settings['module_access'][$module])) {
+            return $settings['module_access'][$module];
+        }
+
+        // Fall back to legacy boolean toggle
+        $legacy = $settings['modules'][$module] ?? true;
+
+        return ['mode' => $legacy === false ? 'off' : 'all'];
+    }
+
+    /**
+     * Check whether a specific user has access to a module.
+     *
+     * Parents always have access to every module (except when mode is 'off').
+     */
+    public function userHasModuleAccess(string $module, User $user): bool
+    {
+        $access = $this->getModuleAccess($module);
+        $mode = $access['mode'] ?? 'all';
+
+        // Module completely disabled — nobody can access it
+        if ($mode === 'off') {
+            return false;
+        }
+
+        // Module open to everyone
+        if ($mode === 'all') {
+            return true;
+        }
+
+        // Parents always have access when the module isn't globally off
+        if ($user->isParent()) {
+            return true;
+        }
+
+        // Role-based access
+        if ($mode === 'roles') {
+            $allowedRoles = $access['roles'] ?? [];
+            return in_array($user->family_role->value, $allowedRoles, true);
+        }
+
+        // Per-user access
+        if ($mode === 'users') {
+            $allowedUsers = $access['users'] ?? [];
+            return in_array($user->id, $allowedUsers, true);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the full module_access map (all modules), filling in defaults.
+     *
+     * Useful for returning to the frontend so the Settings UI can render the grid.
+     */
+    public function getAllModuleAccess(): array
+    {
+        $result = [];
+        foreach (self::MODULES as $mod) {
+            $result[$mod] = $this->getModuleAccess($mod);
+        }
+        return $result;
     }
 
     /**

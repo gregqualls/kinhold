@@ -38,8 +38,8 @@ Route::prefix('v1')->group(function () {
             Route::delete('/members/{member}', [FamilyController::class, 'removeMember']);
         });
 
-        // Task Lists
-        Route::prefix('/task-lists')->group(function () {
+        // Task Lists (module: tasks)
+        Route::prefix('/task-lists')->middleware('module:tasks')->group(function () {
             Route::get('/', [TaskListController::class, 'index']);
             Route::post('/', [TaskListController::class, 'store']);
             Route::get('/{taskList}', [TaskListController::class, 'show']);
@@ -53,16 +53,16 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        // Tags
-        Route::prefix('/tags')->group(function () {
+        // Tags (module: tasks)
+        Route::prefix('/tags')->middleware('module:tasks')->group(function () {
             Route::get('/', [TagController::class, 'index']);
             Route::post('/', [TagController::class, 'store']);
             Route::put('/{tag}', [TagController::class, 'update']);
             Route::delete('/{tag}', [TagController::class, 'destroy']);
         });
 
-        // Tasks
-        Route::prefix('/tasks')->group(function () {
+        // Tasks (module: tasks)
+        Route::prefix('/tasks')->middleware('module:tasks')->group(function () {
             Route::get('/', [TaskController::class, 'index']);
             Route::post('/', [TaskController::class, 'store']);
             Route::get('/{task}', [TaskController::class, 'show']);
@@ -72,8 +72,8 @@ Route::prefix('v1')->group(function () {
             Route::patch('/{task}/uncomplete', [TaskController::class, 'uncomplete']);
         });
 
-        // Vault
-        Route::prefix('/vault')->group(function () {
+        // Vault (module: vault)
+        Route::prefix('/vault')->middleware('module:vault')->group(function () {
             Route::get('/categories', [VaultController::class, 'categories']);
             Route::get('/entries', [VaultController::class, 'index']);
             Route::post('/entries', [VaultController::class, 'store']);
@@ -86,8 +86,8 @@ Route::prefix('v1')->group(function () {
             Route::delete('/documents/{document}', [VaultController::class, 'deleteDocument']);
         });
 
-        // Calendar
-        Route::prefix('/calendar')->group(function () {
+        // Calendar (module: calendar)
+        Route::prefix('/calendar')->middleware('module:calendar')->group(function () {
             Route::get('/events', [CalendarController::class, 'events']);
             Route::get('/connections', [CalendarController::class, 'connections']);
             Route::post('/connect', [CalendarController::class, 'connect']);
@@ -96,14 +96,14 @@ Route::prefix('v1')->group(function () {
             Route::post('/sync', [CalendarController::class, 'sync']);
         });
 
-        // Chat
-        Route::prefix('/chat')->group(function () {
+        // Chat (module: chat)
+        Route::prefix('/chat')->middleware('module:chat')->group(function () {
             Route::post('/', [ChatController::class, 'send']);
             Route::get('/history', [ChatController::class, 'history']);
         });
 
-        // Points
-        Route::prefix('/points')->group(function () {
+        // Points (module: points)
+        Route::prefix('/points')->middleware('module:points')->group(function () {
             Route::get('/bank', [PointsController::class, 'bank']);
             Route::get('/leaderboard', [PointsController::class, 'leaderboard']);
             Route::get('/feed', [PointsController::class, 'feed']);
@@ -111,8 +111,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/deduct', [PointsController::class, 'deduct']);
         });
 
-        // Rewards
-        Route::prefix('/rewards')->group(function () {
+        // Rewards (module: points)
+        Route::prefix('/rewards')->middleware('module:points')->group(function () {
             Route::get('/', [RewardsController::class, 'index']);
             Route::post('/', [RewardsController::class, 'store']);
             Route::put('/{reward}', [RewardsController::class, 'update']);
@@ -121,8 +121,8 @@ Route::prefix('v1')->group(function () {
             Route::get('/purchases', [RewardsController::class, 'purchases']);
         });
 
-        // Badges
-        Route::prefix('/badges')->group(function () {
+        // Badges (module: badges)
+        Route::prefix('/badges')->middleware('module:badges')->group(function () {
             Route::get('/', [BadgesController::class, 'index']);
             Route::post('/', [BadgesController::class, 'store']);
             Route::put('/{badge}', [BadgesController::class, 'update']);
