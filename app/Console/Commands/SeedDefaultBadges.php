@@ -41,7 +41,7 @@ class SeedDefaultBadges extends Command
                 ->where('family_role', 'parent')
                 ->first();
 
-            BadgeService::ensureDefaultBadges($family->id, $creator?->id);
+            BadgeService::createDefaultBadges($family->id, $creator?->id);
             $seeded++;
             $this->info("Created default badges for {$family->name}.");
         }

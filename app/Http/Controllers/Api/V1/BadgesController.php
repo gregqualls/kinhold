@@ -25,7 +25,7 @@ class BadgesController extends Controller
 
         // Auto-create default badges if the family has fewer than the full set (27)
         if (Badge::where('family_id', $family->id)->count() < 20) {
-            BadgeService::ensureDefaultBadges($family->id, $user->id);
+            BadgeService::createDefaultBadges($family->id, $user->id);
         }
 
         $badges = Badge::where('family_id', $family->id)
