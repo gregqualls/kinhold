@@ -51,9 +51,26 @@
           </div>
         </div>
 
-        <div>
+        <div class="sm:col-span-2">
           <label class="block text-xs text-lavender-500 mb-1">Color</label>
-          <input v-model="newBadge.color" type="color" class="w-10 h-10 rounded cursor-pointer" />
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="c in badgeColorPalette"
+              :key="c.value"
+              type="button"
+              @click="newBadge.color = c.value"
+              :title="c.label"
+              class="w-8 h-8 rounded-full border-2 transition-all duration-150 flex-shrink-0"
+              :class="newBadge.color === c.value
+                ? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 scale-110'
+                : 'border-transparent hover:scale-110'"
+              :style="{
+                backgroundColor: c.value,
+                borderColor: newBadge.color === c.value ? c.value : 'transparent',
+                '--tw-ring-color': c.value,
+              }"
+            ></button>
+          </div>
         </div>
 
         <div class="flex items-center gap-2">
@@ -150,6 +167,25 @@ const awardBadgeId = ref('')
 const awardUserId = ref('')
 
 const iconNames = badgeIconNames
+
+const badgeColorPalette = [
+  { value: '#7d57a8', label: 'Wisteria' },
+  { value: '#9b59b6', label: 'Amethyst' },
+  { value: '#8e44ad', label: 'Purple' },
+  { value: '#3498db', label: 'Blue' },
+  { value: '#1c3d5a', label: 'Prussian Blue' },
+  { value: '#2ecc71', label: 'Emerald' },
+  { value: '#27ae60', label: 'Green' },
+  { value: '#1abc9c', label: 'Turquoise' },
+  { value: '#e74c3c', label: 'Red' },
+  { value: '#e67e22', label: 'Orange' },
+  { value: '#d4a23a', label: 'Golden Sand' },
+  { value: '#f1c40f', label: 'Yellow' },
+  { value: '#e91e63', label: 'Pink' },
+  { value: '#00bcd4', label: 'Cyan' },
+  { value: '#607d8b', label: 'Slate' },
+  { value: '#34495e', label: 'Dark Slate' },
+]
 
 const newBadge = ref({
   name: '',
