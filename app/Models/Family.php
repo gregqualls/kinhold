@@ -116,6 +116,41 @@ class Family extends Model
     }
 
     /**
+     * Get the task assignment setting.
+     *
+     * Returns ['mode' => 'all'|'parents_only'|'users', 'users' => [...]]
+     */
+    public function getTaskAssignment(): array
+    {
+        return $this->settings['task_assignment'] ?? [
+            'mode' => 'all',
+            'users' => [],
+        ];
+    }
+
+    /**
+     * Determine if a user is allowed to assign tasks to other family members.
+     *
+     * Parents always return true. Children depend on the task_assignment setting.
+     */
+    public function userCanAssignTasks(User $user): bool
+    {
+        if ($user->isParent()) {
+            return true;
+        }
+
+        $setting = $this->getTaskAssignment();
+        $mode = $setting['mode'] ?? 'all';
+
+        return match ($mode) {
+            'all' => true,
+            'parents_only' => false,
+            'users' => in_array($user->id, $setting['users'] ?? []),
+            default => true,
+        };
+    }
+
+    /**
      * All module names the system supports.
      */
     public const MODULES = ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges'];
@@ -153,28 +188,23 @@ class Family extends Model
         $access = $this->getModuleAccess($module);
         $mode = $access['mode'] ?? 'all';
 
-        // Module completely disabled — nobody can access it
         if ($mode === 'off') {
             return false;
         }
 
-        // Module open to everyone
         if ($mode === 'all') {
             return true;
         }
 
-        // Parents always have access when the module isn't globally off
         if ($user->isParent()) {
             return true;
         }
 
-        // Role-based access
         if ($mode === 'roles') {
             $allowedRoles = $access['roles'] ?? [];
             return in_array($user->family_role->value, $allowedRoles, true);
         }
 
-        // Per-user access
         if ($mode === 'users') {
             $allowedUsers = $access['users'] ?? [];
             return in_array($user->id, $allowedUsers, true);
@@ -185,8 +215,6 @@ class Family extends Model
 
     /**
      * Get the full module_access map (all modules), filling in defaults.
-     *
-     * Useful for returning to the frontend so the Settings UI can render the grid.
      */
     public function getAllModuleAccess(): array
     {

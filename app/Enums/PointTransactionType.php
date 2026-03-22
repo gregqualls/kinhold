@@ -10,6 +10,7 @@ enum PointTransactionType: string
     case Deduction = 'deduction';
     case Redemption = 'redemption';
     case Adjustment = 'adjustment';
+    case PointRequest = 'point_request';
 
     public function label(): string
     {
@@ -20,11 +21,12 @@ enum PointTransactionType: string
             self::Deduction => 'Deduction',
             self::Redemption => 'Redemption',
             self::Adjustment => 'Adjustment',
+            self::PointRequest => 'Point Request',
         };
     }
 
     public function isPositive(): bool
     {
-        return in_array($this, [self::TaskCompletion, self::Kudos, self::Adjustment]);
+        return in_array($this, [self::TaskCompletion, self::Kudos, self::Adjustment, self::PointRequest]);
     }
 }

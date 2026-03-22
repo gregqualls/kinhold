@@ -45,8 +45,9 @@
           {{ priority }}
         </button>
 
-        <!-- Family task toggle -->
+        <!-- Family task toggle (hidden for children who can't assign to others) -->
         <button
+          v-if="canAssignTasks"
           @click="isFamilyTask = !isFamilyTask"
           class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg transition-colors"
           :class="isFamilyTask ? 'bg-wisteria-50 dark:bg-wisteria-900/20 text-wisteria-700 dark:text-wisteria-400' : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
@@ -97,11 +98,16 @@
 
 <script setup>
 import { ref, nextTick, computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useAuthStore } from '@/stores/auth'
 import { PlusIcon, CalendarIcon, FlagIcon, UserGroupIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   tags: { type: Array, default: () => [] },
 })
+
+const authStore = useAuthStore()
+const { canAssignTasks } = storeToRefs(authStore)
 
 const emit = defineEmits(['add'])
 

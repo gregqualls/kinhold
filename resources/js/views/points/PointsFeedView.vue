@@ -9,6 +9,14 @@
       </div>
     </div>
 
+    <!-- Pending Point Requests (parents only) -->
+    <PendingRequests
+      v-if="isParent"
+      :requests="pointsStore.pointRequests"
+      @approve="handleApprove"
+      @deny="handleDeny"
+    />
+
     <!-- Bank Balance + Leaderboard -->
     <div class="card p-4 mb-4">
       <div class="flex items-center justify-between mb-3">
@@ -45,8 +53,11 @@
       <!-- Kudos Input -->
       <div class="p-3 border-t border-lavender-200 dark:border-prussian-700 bg-lavender-50 dark:bg-prussian-900">
         <KudosInput :members="familyMembers" @kudos="handleKudos" />
-        <div v-if="isParent" class="mt-2 flex justify-end">
-          <button @click="showDeductModal = true" class="text-xs text-red-500 hover:text-red-600 font-medium">
+        <div class="mt-2 flex justify-end gap-3">
+          <button v-if="!isParent" @click="showRequestModal = true" class="text-xs text-wisteria-600 hover:text-wisteria-700 dark:text-wisteria-400 dark:hover:text-wisteria-300 font-medium">
+            Request Points
+          </button>
+          <button v-if="isParent" @click="showDeductModal = true" class="text-xs text-red-500 hover:text-red-600 font-medium">
             Deduct Points
           </button>
         </div>
@@ -60,6 +71,13 @@
       @close="showDeductModal = false"
       @deduct="handleDeduct"
     />
+
+    <!-- Request Points Modal -->
+    <RequestPointsModal
+      :show="showRequestModal"
+      @close="showRequestModal = false"
+      @submit="handleRequestPoints"
+    />
   </div>
 </template>
 
@@ -72,12 +90,15 @@ import LeaderboardStrip from '@/components/points/LeaderboardStrip.vue'
 import FeedItem from '@/components/points/FeedItem.vue'
 import KudosInput from '@/components/points/KudosInput.vue'
 import DeductModal from '@/components/points/DeductModal.vue'
+import RequestPointsModal from '@/components/points/RequestPointsModal.vue'
+import PendingRequests from '@/components/points/PendingRequests.vue'
 
 const pointsStore = usePointsStore()
 const authStore = useAuthStore()
 const { isParent, familyMembers } = storeToRefs(authStore)
 
 const showDeductModal = ref(false)
+const showRequestModal = ref(false)
 
 const handleKudos = async ({ userId, reason }) => {
   await pointsStore.giveKudos(userId, reason)
@@ -88,11 +109,25 @@ const handleDeduct = async ({ userId, points, reason }) => {
   showDeductModal.value = false
 }
 
+const handleRequestPoints = async ({ points, reason }) => {
+  await pointsStore.submitPointRequest(points, reason)
+  showRequestModal.value = false
+}
+
+const handleApprove = async (requestId) => {
+  await pointsStore.approvePointRequest(requestId)
+}
+
+const handleDeny = async (requestId) => {
+  await pointsStore.denyPointRequest(requestId)
+}
+
 onMounted(async () => {
   await Promise.all([
     pointsStore.fetchBank(),
     pointsStore.fetchLeaderboard(),
     pointsStore.fetchFeed(),
+    pointsStore.fetchPointRequests(),
   ])
 })
 </script>

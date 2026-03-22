@@ -100,7 +100,7 @@
         >
           <option :value="null">Unassigned</option>
           <option
-            v-for="member in familyMembers"
+            v-for="member in assignableMembers"
             :key="member.id"
             :value="member.id"
           >
@@ -109,8 +109,8 @@
         </select>
       </div>
 
-      <!-- Points (only if points module enabled) -->
-      <div v-if="enabledModules.points">
+      <!-- Points (only for parents — children can't set point values) -->
+      <div v-if="enabledModules.points && isParent">
         <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Points</label>
         <div class="flex items-center gap-3">
           <input
@@ -243,12 +243,18 @@ const props = defineProps({
 const emit = defineEmits(['save', 'close', 'delete'])
 
 const authStore = useAuthStore()
-const { familyMembers, enabledModules } = storeToRefs(authStore)
+const { familyMembers, enabledModules, isParent, canAssignTasks, currentUser } = storeToRefs(authStore)
 
 const justSaved = ref(false)
 let savedTimer = null
 
 const defaultPoints = { low: 5, medium: 10, high: 20 }
+
+// If user can't assign tasks to others, only show themselves as an option
+const assignableMembers = computed(() => {
+  if (canAssignTasks.value) return familyMembers.value
+  return familyMembers.value.filter((m) => m.id === currentUser.value?.id)
+})
 
 const colorMap = {
   wisteria: '#7d57a8',

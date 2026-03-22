@@ -47,6 +47,10 @@ class SettingsController extends Controller
                 'ai_api_key_masked' => $this->maskApiKey($settings),
                 'ai_has_key' => !empty($settings['ai_api_key']),
                 'ai_providers' => ChatbotService::availableProviders(),
+                'task_assignment' => $settings['task_assignment'] ?? [
+                    'mode' => 'all',
+                    'users' => [],
+                ],
             ],
         ], 200);
     }
@@ -89,6 +93,10 @@ class SettingsController extends Controller
             'ai_provider' => 'nullable|string|in:anthropic,openai,google',
             'ai_api_key' => 'nullable|string|max:500',
             'ai_model' => 'nullable|string|max:100',
+            'task_assignment' => 'nullable|array',
+            'task_assignment.mode' => 'nullable|string|in:all,parents_only,users',
+            'task_assignment.users' => 'nullable|array',
+            'task_assignment.users.*' => 'uuid|exists:users,id',
         ]);
 
         $settings = $family->settings ?? [];
@@ -150,6 +158,14 @@ class SettingsController extends Controller
             $settings['ai_model'] = $validated['ai_model'] ?? '';
         }
 
+        // Task assignment permissions
+        if ($request->has('task_assignment')) {
+            $settings['task_assignment'] = [
+                'mode' => $validated['task_assignment']['mode'] ?? 'all',
+                'users' => $validated['task_assignment']['users'] ?? [],
+            ];
+        }
+
         // Encrypt the API key before storing. Only update if a non-empty value is sent.
         // Sending an empty string clears the key.
         if ($request->has('ai_api_key')) {
@@ -180,6 +196,10 @@ class SettingsController extends Controller
                 'ai_api_key_masked' => $this->maskApiKey($settings),
                 'ai_has_key' => !empty($settings['ai_api_key']),
                 'ai_providers' => ChatbotService::availableProviders(),
+                'task_assignment' => $settings['task_assignment'] ?? [
+                    'mode' => 'all',
+                    'users' => [],
+                ],
             ],
         ], 200);
     }
