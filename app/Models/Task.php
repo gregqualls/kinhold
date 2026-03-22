@@ -218,13 +218,12 @@ class Task extends Model
         $priority = $this->priority?->value ?? 'medium';
 
         // Use family-configured defaults if available
-        if ($this->relationLoaded('family') && $this->family) {
-            return $this->family->getDefaultPoints($priority);
-        }
-
-        // Load the family relationship if we have a family_id
-        if ($this->family_id) {
-            return $this->family->getDefaultPoints($priority);
+        try {
+            if ($this->family_id && $this->family) {
+                return $this->family->getDefaultPoints($priority);
+            }
+        } catch (\Throwable $e) {
+            // Fallback to hardcoded defaults if family can't be loaded
         }
 
         return self::PRIORITY_POINTS[$priority] ?? 10;
