@@ -1,5 +1,8 @@
 <template>
   <div class="p-4 md:p-6 max-w-6xl">
+    <!-- Countdown Banner -->
+    <CountdownBanner :countdown-event="featuredEventsStore.countdownEvent" />
+
     <!-- Welcome Header -->
     <div class="mb-6">
       <h1 class="text-3xl font-bold text-prussian-500 dark:text-lavender-200">
@@ -263,6 +266,7 @@ import LeaderboardStrip from '@/components/points/LeaderboardStrip.vue'
 import FeaturedRewards from '@/components/points/FeaturedRewards.vue'
 import BadgeShowcase from '@/components/badges/BadgeShowcase.vue'
 import FeaturedEventsSection from '@/components/featured-events/FeaturedEventsSection.vue'
+import CountdownBanner from '@/components/featured-events/CountdownBanner.vue'
 import {
   ArrowPathIcon,
   CalendarIcon,
@@ -325,8 +329,9 @@ const formatDate = (dateStr) => {
 }
 
 onMounted(async () => {
-  // Fetch featured events
+  // Fetch featured events and countdown
   featuredEventsStore.fetchEvents()
+  featuredEventsStore.fetchCountdown()
 
   // Fetch today's events
   const endOfDay = now.endOf('day')
