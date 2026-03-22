@@ -104,6 +104,20 @@ export default {
       borderRadius: {
         card: '1rem',
       },
+      animation: {
+        'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
+        'bounce-gentle': 'bounce-gentle 2s ease-in-out infinite',
+      },
+      keyframes: {
+        'pulse-subtle': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.85' },
+        },
+        'bounce-gentle': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-2px)' },
+        },
+      },
       spacing: {
         'safe-bottom': 'max(1rem, env(safe-area-inset-bottom))',
       },
