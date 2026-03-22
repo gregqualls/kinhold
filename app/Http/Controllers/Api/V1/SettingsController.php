@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -91,6 +92,42 @@ class SettingsController extends Controller
                 'modules' => $settings['modules'] ?? [],
                 'preferences' => $settings['preferences'] ?? [],
             ],
+        ], 200);
+    }
+
+    /**
+     * Get the current user's email notification preferences.
+     */
+    public function emailPreferences(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'email_preferences' => $user->email_preferences ?? User::defaultEmailPreferences(),
+        ], 200);
+    }
+
+    /**
+     * Update the current user's email notification preferences.
+     */
+    public function updateEmailPreferences(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'email_task_completed' => 'required|boolean',
+            'email_task_assigned' => 'required|boolean',
+            'email_weekly_digest' => 'required|boolean',
+            'email_family_invite' => 'required|boolean',
+        ]);
+
+        $user->update([
+            'email_preferences' => $validated,
+        ]);
+
+        return response()->json([
+            'email_preferences' => $user->email_preferences,
+            'message' => 'Email preferences updated successfully.',
         ], 200);
     }
 }

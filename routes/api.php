@@ -136,6 +136,8 @@ Route::prefix('v1')->group(function () {
         Route::prefix('/settings')->group(function () {
             Route::get('/', [SettingsController::class, 'index']);
             Route::put('/', [SettingsController::class, 'update']);
+            Route::get('/email-preferences', [SettingsController::class, 'emailPreferences']);
+            Route::put('/email-preferences', [SettingsController::class, 'updateEmailPreferences']);
         });
     });
 
