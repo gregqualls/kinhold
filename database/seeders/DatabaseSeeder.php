@@ -16,6 +16,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\VaultCategory;
 use App\Models\VaultEntry;
+use App\Services\BadgeService;
 use App\Services\VaultEncryptionService;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -611,27 +612,8 @@ class DatabaseSeeder extends Seeder
         //  BADGES
         // ─────────────────────────────────────────────
 
-        $badgeData = [
-            ['name' => 'First Steps', 'description' => 'Complete your first task', 'icon' => 'rocket', 'color' => '#059669', 'trigger_type' => BadgeTriggerType::TasksCompleted->value, 'trigger_threshold' => 1, 'is_hidden' => false, 'sort_order' => 0],
-            ['name' => 'Task Rookie', 'description' => 'Complete 10 tasks', 'icon' => 'target', 'color' => '#0284c7', 'trigger_type' => BadgeTriggerType::TasksCompleted->value, 'trigger_threshold' => 10, 'is_hidden' => false, 'sort_order' => 1],
-            ['name' => 'Task Machine', 'description' => 'Complete 50 tasks', 'icon' => 'lightning', 'color' => '#7d57a8', 'trigger_type' => BadgeTriggerType::TasksCompleted->value, 'trigger_threshold' => 50, 'is_hidden' => false, 'sort_order' => 2],
-            ['name' => 'Task Legend', 'description' => 'Complete 100 tasks', 'icon' => 'crown', 'color' => '#d97706', 'trigger_type' => BadgeTriggerType::TasksCompleted->value, 'trigger_threshold' => 100, 'is_hidden' => true, 'sort_order' => 3],
-            ['name' => 'On Fire', 'description' => 'Complete tasks 7 days in a row', 'icon' => 'flame', 'color' => '#dc2626', 'trigger_type' => BadgeTriggerType::TaskStreak->value, 'trigger_threshold' => 7, 'is_hidden' => false, 'sort_order' => 4],
-            ['name' => 'Unstoppable', 'description' => 'Complete tasks 30 days in a row', 'icon' => 'fire-ring', 'color' => '#e11d48', 'trigger_type' => BadgeTriggerType::TaskStreak->value, 'trigger_threshold' => 30, 'is_hidden' => true, 'sort_order' => 5],
-            ['name' => 'Rising Star', 'description' => 'Earn 100 points', 'icon' => 'star-burst', 'color' => '#0d9488', 'trigger_type' => BadgeTriggerType::PointsEarned->value, 'trigger_threshold' => 100, 'is_hidden' => false, 'sort_order' => 6],
-            ['name' => 'Point Hunter', 'description' => 'Earn 500 points', 'icon' => 'gem', 'color' => '#7c49b6', 'trigger_type' => BadgeTriggerType::PointsEarned->value, 'trigger_threshold' => 500, 'is_hidden' => false, 'sort_order' => 7],
-            ['name' => 'Point Lord', 'description' => 'Earn 1000 points', 'icon' => 'trophy', 'color' => '#d97706', 'trigger_type' => BadgeTriggerType::PointsEarned->value, 'trigger_threshold' => 1000, 'is_hidden' => true, 'sort_order' => 8],
-            ['name' => 'Helping Hand', 'description' => 'Give 10 kudos to family members', 'icon' => 'heart-fire', 'color' => '#db2777', 'trigger_type' => BadgeTriggerType::KudosGiven->value, 'trigger_threshold' => 10, 'is_hidden' => false, 'sort_order' => 9],
-        ];
-
-        $badges = [];
-        foreach ($badgeData as $data) {
-            $badges[$data['name']] = Badge::create(array_merge($data, [
-                'family_id' => $family->id,
-                'created_by' => $mike->id,
-                'is_active' => true,
-            ]));
-        }
+        // Create default badges using BadgeService (single source of truth)
+        $badges = BadgeService::createDefaultBadges($family->id, $mike->id);
 
         // Custom badges
         $welcomeBadge = Badge::create([
@@ -644,7 +626,7 @@ class DatabaseSeeder extends Seeder
             'trigger_type' => BadgeTriggerType::Custom->value,
             'is_hidden' => false,
             'is_active' => true,
-            'sort_order' => 10,
+            'sort_order' => 20,
         ]);
 
         $superHelper = Badge::create([
@@ -652,12 +634,12 @@ class DatabaseSeeder extends Seeder
             'created_by' => $sarah->id,
             'name' => 'Super Helper',
             'description' => 'Went above and beyond to help the family',
-            'icon' => 'sparkle',
+            'icon' => 'sun',
             'color' => '#f59e0b',
             'trigger_type' => BadgeTriggerType::Custom->value,
             'is_hidden' => false,
             'is_active' => true,
-            'sort_order' => 11,
+            'sort_order' => 21,
         ]);
 
         // Award badges to family members
