@@ -6,13 +6,25 @@ use App\Models\User;
 use App\Models\Family;
 use App\Models\Task;
 use App\Models\VaultEntry;
-use Illuminate\Support\Facades\Http;
+use App\Services\AiProviders\AiProviderInterface;
+use App\Services\AiProviders\AnthropicProvider;
+use App\Services\AiProviders\OpenAiProvider;
+use App\Services\AiProviders\GoogleGeminiProvider;
 use Illuminate\Support\Facades\Log;
 
 class ChatbotService
 {
     /**
-     * Send a message and get Claude's response.
+     * Map of provider slugs to their class names.
+     */
+    private const PROVIDERS = [
+        'anthropic' => AnthropicProvider::class,
+        'openai' => OpenAiProvider::class,
+        'google' => GoogleGeminiProvider::class,
+    ];
+
+    /**
+     * Send a message and get an AI response.
      *
      * @param string $message
      * @param User $user
@@ -20,42 +32,95 @@ class ChatbotService
      */
     public function chat(string $message, User $user): string
     {
-        if (!config('q32hub.chatbot.enabled')) {
-            throw new \RuntimeException('Chatbot is not configured. Add ANTHROPIC_API_KEY to your .env file.');
-        }
-
         $family = $user->currentFamily()->firstOrFail();
+        $provider = $this->resolveProvider($family);
+
         $context = $this->buildFamilyContext($user, $family);
         $systemPrompt = $this->buildSystemPrompt($user, $family);
+        $userMessage = "{$message}\n\nFamily Context:\n{$context}";
 
         try {
-            $response = Http::withHeaders([
-                'x-api-key' => config('q32hub.chatbot.api_key'),
-                'anthropic-version' => '2023-06-01',
-                'Content-Type' => 'application/json',
-            ])->post('https://api.anthropic.com/v1/messages', [
-                'model' => config('q32hub.chatbot.model', 'claude-sonnet-4-5-20250514'),
-                'max_tokens' => 1024,
-                'system' => $systemPrompt,
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => "{$message}\n\nFamily Context:\n{$context}",
-                    ],
-                ],
-            ]);
-
-            if ($response->failed()) {
-                Log::error('Chatbot API error: ' . $response->body());
-                throw new \RuntimeException('Failed to get response from AI service.');
-            }
-
-            $data = $response->json();
-            return $data['content'][0]['text'] ?? 'Sorry, I could not generate a response.';
+            return $provider->ask($systemPrompt, $userMessage);
         } catch (\Exception $e) {
             Log::error('Chatbot error: ' . $e->getMessage());
             throw $e;
         }
+    }
+
+    /**
+     * Resolve the AI provider based on family settings with .env fallback.
+     */
+    private function resolveProvider(Family $family): AiProviderInterface
+    {
+        $settings = $family->settings ?? [];
+
+        // Determine which provider to use
+        $providerSlug = $settings['ai_provider'] ?? 'anthropic';
+
+        // Get the API key: family setting (encrypted) -> .env fallback for anthropic
+        $apiKey = null;
+        if (!empty($settings['ai_api_key'])) {
+            try {
+                $apiKey = decrypt($settings['ai_api_key']);
+            } catch (\Exception $e) {
+                Log::warning('Failed to decrypt family AI API key, falling back to .env');
+            }
+        }
+
+        // Fallback to .env for Anthropic
+        if (empty($apiKey) && $providerSlug === 'anthropic') {
+            $apiKey = config('q32hub.chatbot.api_key');
+        }
+
+        if (empty($apiKey)) {
+            throw new \RuntimeException(
+                'No API key configured for ' . ($providerSlug ?? 'anthropic') . '. '
+                . 'Add one in Settings > API Configuration.'
+            );
+        }
+
+        // Get optional model override
+        $model = $settings['ai_model'] ?? '';
+
+        // Build the provider
+        $providerClass = self::PROVIDERS[$providerSlug] ?? AnthropicProvider::class;
+
+        return new $providerClass($apiKey, $model);
+    }
+
+    /**
+     * Get available providers with their metadata.
+     *
+     * @return array
+     */
+    public static function availableProviders(): array
+    {
+        return [
+            [
+                'slug' => 'anthropic',
+                'name' => AnthropicProvider::displayName(),
+                'default_model' => AnthropicProvider::defaultModel(),
+                'key_placeholder' => 'sk-ant-...',
+                'key_prefix' => 'sk-ant-',
+                'help_url' => 'https://console.anthropic.com/settings/keys',
+            ],
+            [
+                'slug' => 'openai',
+                'name' => OpenAiProvider::displayName(),
+                'default_model' => OpenAiProvider::defaultModel(),
+                'key_placeholder' => 'sk-...',
+                'key_prefix' => 'sk-',
+                'help_url' => 'https://platform.openai.com/api-keys',
+            ],
+            [
+                'slug' => 'google',
+                'name' => GoogleGeminiProvider::displayName(),
+                'default_model' => GoogleGeminiProvider::defaultModel(),
+                'key_placeholder' => 'AIza...',
+                'key_prefix' => 'AIza',
+                'help_url' => 'https://aistudio.google.com/apikey',
+            ],
+        ];
     }
 
     /**

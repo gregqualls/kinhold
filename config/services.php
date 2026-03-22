@@ -41,4 +41,25 @@ return [
         'redirect' => env('GOOGLE_AUTH_REDIRECT_URI', '/auth/google/callback'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | AI Provider Defaults
+    |--------------------------------------------------------------------------
+    |
+    | Default model names for each supported AI provider. These are used when
+    | the family has not set a model override in their settings.
+    |
+    */
+    'ai_providers' => [
+        'anthropic' => [
+            'default_model' => env('AI_ANTHROPIC_MODEL', 'claude-sonnet-4-5-20250514'),
+        ],
+        'openai' => [
+            'default_model' => env('AI_OPENAI_MODEL', 'gpt-4o'),
+        ],
+        'google' => [
+            'default_model' => env('AI_GOOGLE_MODEL', 'gemini-2.0-flash'),
+        ],
+    ],
+
 ];

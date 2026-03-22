@@ -164,20 +164,109 @@
           </p>
         </div>
 
-        <!-- Anthropic API Key -->
+        <!-- AI Provider Selection -->
         <div>
           <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
-            Anthropic API Key (for Hub AI)
+            AI Provider (for Hub AI)
           </label>
-          <input
-            v-model="apiConfig.anthropic_key"
-            type="password"
-            placeholder="sk-ant-..."
-            class="input-base"
-          />
-          <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-1">
-            Keep this secret. Used for family chat AI features.
-          </p>
+
+          <!-- Provider Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            <button
+              v-for="provider in aiProviders"
+              :key="provider.slug"
+              @click="selectAiProvider(provider.slug)"
+              :class="[
+                'relative flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 text-center',
+                aiConfig.provider === provider.slug
+                  ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 dark:ring-wisteria-400/20 bg-lavender-50 dark:bg-prussian-800'
+                  : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 dark:hover:border-prussian-500 bg-white dark:bg-prussian-800/50',
+              ]"
+            >
+              <!-- Check indicator -->
+              <div
+                v-if="aiConfig.provider === provider.slug"
+                class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 dark:bg-wisteria-400 flex items-center justify-center"
+              >
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+
+              <!-- Provider Icon -->
+              <div class="w-10 h-10 mb-2 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
+                <span class="text-lg font-bold">{{ providerIcon(provider.slug) }}</span>
+              </div>
+
+              <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ provider.name }}</p>
+              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">{{ provider.default_model }}</p>
+            </button>
+          </div>
+
+          <!-- API Key Input -->
+          <div>
+            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
+              {{ selectedProviderName }} API Key
+            </label>
+            <div class="relative">
+              <input
+                v-model="aiConfig.apiKey"
+                :type="showAiKey ? 'text' : 'password'"
+                :placeholder="selectedProviderPlaceholder"
+                class="input-base pr-20"
+              />
+              <button
+                type="button"
+                @click="showAiKey = !showAiKey"
+                class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs font-medium text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors"
+              >
+                {{ showAiKey ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+            <div class="flex items-center justify-between mt-1">
+              <p class="text-xs text-lavender-700 dark:text-lavender-400">
+                <template v-if="aiConfig.hasSavedKey && !aiConfig.apiKey">
+                  Current key: <span class="font-mono">{{ aiConfig.maskedKey }}</span>
+                </template>
+                <template v-else>
+                  Keep this secret. Used for family chat AI features.
+                </template>
+              </p>
+              <a
+                :href="selectedProviderHelpUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-xs text-wisteria-600 dark:text-wisteria-400 hover:underline whitespace-nowrap ml-2"
+              >
+                Get API key
+              </a>
+            </div>
+          </div>
+
+          <!-- Model Override -->
+          <div class="mt-3">
+            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
+              Model Override (optional)
+            </label>
+            <input
+              v-model="aiConfig.model"
+              type="text"
+              :placeholder="selectedProviderDefaultModel"
+              class="input-base"
+            />
+            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-1">
+              Leave blank to use the default model ({{ selectedProviderDefaultModel }}).
+            </p>
+          </div>
+
+          <div class="flex gap-3 justify-end pt-3">
+            <BaseButton variant="ghost" @click="resetAiConfig">
+              Reset
+            </BaseButton>
+            <BaseButton variant="primary" :loading="savingAi" @click="saveAiSettings">
+              Save AI Settings
+            </BaseButton>
+          </div>
         </div>
 
         <!-- Google Calendar -->
@@ -316,14 +405,6 @@
           </div>
         </div>
 
-        <div class="flex gap-3 justify-end pt-4">
-          <BaseButton variant="ghost" @click="resetApiConfig">
-            Reset
-          </BaseButton>
-          <BaseButton variant="primary" :loading="savingApi">
-            Save Configuration
-          </BaseButton>
-        </div>
       </div>
     </div>
 
@@ -687,7 +768,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
@@ -728,9 +809,17 @@ const savingFamily = ref(false)
 const familyForm = reactive({ name: family.value?.name || '' })
 const familyErrors = reactive({ name: '' })
 
-// API config
-const savingApi = ref(false)
-const apiConfig = reactive({ anthropic_key: '', google_calendar_enabled: true })
+// AI config
+const savingAi = ref(false)
+const showAiKey = ref(false)
+const aiProviders = ref([])
+const aiConfig = reactive({
+  provider: 'anthropic',
+  apiKey: '',
+  model: '',
+  maskedKey: '',
+  hasSavedKey: false,
+})
 
 // Module toggles
 const savingModules = ref(false)
@@ -1088,8 +1177,63 @@ const handleSubscribeUrl = async () => {
   subscribingUrl.value = false
 }
 
-const resetApiConfig = () => {
-  apiConfig.anthropic_key = ''
+// ---- AI Provider settings ----
+const selectedProvider = computed(() =>
+  aiProviders.value.find((p) => p.slug === aiConfig.provider) || aiProviders.value[0] || {}
+)
+const selectedProviderName = computed(() => selectedProvider.value?.name || 'AI')
+const selectedProviderPlaceholder = computed(() => selectedProvider.value?.key_placeholder || 'API key...')
+const selectedProviderDefaultModel = computed(() => selectedProvider.value?.default_model || '')
+const selectedProviderHelpUrl = computed(() => selectedProvider.value?.help_url || '#')
+
+const providerIcon = (slug) => {
+  const icons = { anthropic: 'A', openai: 'O', google: 'G' }
+  return icons[slug] || '?'
+}
+const providerIconClass = (slug) => {
+  const classes = {
+    anthropic: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
+    openai: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+    google: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
+  }
+  return classes[slug] || 'bg-lavender-100 text-lavender-700'
+}
+
+const selectAiProvider = (slug) => {
+  aiConfig.provider = slug
+}
+
+const resetAiConfig = () => {
+  aiConfig.apiKey = ''
+  aiConfig.model = ''
+}
+
+const saveAiSettings = async () => {
+  savingAi.value = true
+  try {
+    const payload = {
+      ai_provider: aiConfig.provider,
+      ai_model: aiConfig.model || '',
+    }
+    // Only send the key if the user typed something new
+    if (aiConfig.apiKey) {
+      payload.ai_api_key = aiConfig.apiKey
+    }
+    const { data } = await api.put('/settings', payload)
+    // Update local state from response
+    if (data.settings) {
+      aiConfig.maskedKey = data.settings.ai_api_key_masked || ''
+      aiConfig.hasSavedKey = data.settings.ai_has_key || false
+      aiProviders.value = data.settings.ai_providers || aiProviders.value
+    }
+    aiConfig.apiKey = '' // Clear input after save
+    showAiKey.value = false
+    await authStore.fetchUser()
+    success('AI settings saved!')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to save AI settings')
+  }
+  savingAi.value = false
 }
 
 // ---- Module settings ----
@@ -1144,6 +1288,21 @@ onMounted(async () => {
   defaultPoints.low = settings.default_points_low ?? 5
   defaultPoints.medium = settings.default_points_medium ?? 10
   defaultPoints.high = settings.default_points_high ?? 20
+
+  // Load AI settings from the settings API
+  if (isParent.value) {
+    try {
+      const { data } = await api.get('/settings')
+      const s = data.settings || {}
+      aiConfig.provider = s.ai_provider || 'anthropic'
+      aiConfig.model = s.ai_model || ''
+      aiConfig.maskedKey = s.ai_api_key_masked || ''
+      aiConfig.hasSavedKey = s.ai_has_key || false
+      aiProviders.value = s.ai_providers || []
+    } catch (err) {
+      // Defaults are fine
+    }
+  }
 
   await calendarStore.fetchConnections()
 
