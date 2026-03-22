@@ -89,7 +89,7 @@ class BadgesController extends Controller
             'description' => 'required|string|max:500',
             'icon' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:20',
-            'trigger_type' => 'required|string|in:points_earned,tasks_completed,task_streak,kudos_received,kudos_given,rewards_purchased,login_streak,custom',
+            'trigger_type' => 'required|string|in:points_earned,tasks_completed,task_streak,kudos_received,kudos_given,rewards_purchased,login_streak,custom,easter_egg',
             'trigger_threshold' => 'nullable|integer|min:1',
             'is_hidden' => 'nullable|boolean',
         ]);
@@ -197,6 +197,75 @@ class BadgesController extends Controller
     }
 
     /**
+     * Record an easter egg discovery and award corresponding badge.
+     */
+    public function easterEgg(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'egg_key' => 'required|string|in:konami,seven_ate_nine,party_mode,mirror,matrix,disco',
+        ]);
+
+        $user = $request->user();
+        $found = $user->easter_eggs_found ?? [];
+
+        // Already found this one
+        if (in_array($validated['egg_key'], $found)) {
+            return response()->json(['already_found' => true, 'badges' => []]);
+        }
+
+        // Record the discovery
+        $found[] = $validated['egg_key'];
+        $user->easter_eggs_found = $found;
+        $user->save();
+
+        // Map egg keys to badge names
+        $badgeNameMap = [
+            'konami' => 'Code Breaker',
+            'seven_ate_nine' => 'Number Cruncher',
+            'party_mode' => 'Party Animal',
+            'mirror' => 'Mirror Mirror',
+            'matrix' => 'Red Pill',
+            'disco' => 'Disco Inferno',
+        ];
+
+        $badgeName = $badgeNameMap[$validated['egg_key']];
+        $badge = Badge::where('family_id', $user->family_id)
+            ->where('name', $badgeName)
+            ->first();
+
+        // Auto-create easter egg badges for existing families that don't have them yet
+        if (!$badge) {
+            $this->ensureEasterEggBadgesExist($user->family_id, $user->id);
+            $badge = Badge::where('family_id', $user->family_id)
+                ->where('name', $badgeName)
+                ->first();
+        }
+
+        $newBadges = [];
+
+        if ($badge && !$user->badges()->where('badges.id', $badge->id)->exists()) {
+            $this->badgeService->manuallyAward($badge, $user, $user);
+            $newBadges[] = $badge;
+        }
+
+        // Check for Master Explorer (all 6 found)
+        $masterBadges = $this->badgeService->checkAndAwardBadges($user);
+        $newBadges = array_merge($newBadges, $masterBadges);
+
+        return response()->json([
+            'already_found' => false,
+            'total_found' => count($found),
+            'badges' => collect($newBadges)->map(fn($b) => [
+                'id' => $b->id,
+                'name' => $b->name,
+                'description' => $b->description,
+                'icon' => $b->icon,
+                'color' => $b->color,
+            ]),
+        ]);
+    }
+
+    /**
      * Get current user's earned badges.
      */
     public function earned(Request $request): JsonResponse
@@ -218,5 +287,52 @@ class BadgesController extends Controller
         return response()->json([
             'badges' => $badges,
         ]);
+    }
+
+    /**
+     * Ensure easter egg badges exist for a family (auto-creates for existing families).
+     */
+    private function ensureEasterEggBadgesExist(string $familyId, string $createdBy): void
+    {
+        $easterEggBadges = [
+            ['name' => 'Code Breaker', 'description' => 'Cracked the Konami Code', 'icon' => 'key', 'color' => '#059669'],
+            ['name' => 'Number Cruncher', 'description' => 'Why was 6 afraid of 7?', 'icon' => 'hashtag', 'color' => '#f59e0b'],
+            ['name' => 'Party Animal', 'description' => 'Started a legendary party', 'icon' => 'sun', 'color' => '#ec4899'],
+            ['name' => 'Mirror Mirror', 'description' => 'Saw everything backwards', 'icon' => 'eye', 'color' => '#06b6d4'],
+            ['name' => 'Red Pill', 'description' => 'Entered the digital rain', 'icon' => 'lightning', 'color' => '#22c55e'],
+            ['name' => 'Disco Inferno', 'description' => 'Got the groove going', 'icon' => 'music-note', 'color' => '#a855f7'],
+        ];
+
+        foreach ($easterEggBadges as $i => $data) {
+            Badge::firstOrCreate(
+                ['family_id' => $familyId, 'name' => $data['name']],
+                array_merge($data, [
+                    'family_id' => $familyId,
+                    'created_by' => $createdBy,
+                    'trigger_type' => 'custom',
+                    'trigger_threshold' => null,
+                    'is_hidden' => true,
+                    'is_active' => true,
+                    'sort_order' => 20 + $i,
+                ])
+            );
+        }
+
+        // Master Explorer badge
+        Badge::firstOrCreate(
+            ['family_id' => $familyId, 'name' => 'Master Explorer'],
+            [
+                'family_id' => $familyId,
+                'created_by' => $createdBy,
+                'description' => 'Found every single easter egg!',
+                'icon' => 'compass',
+                'color' => '#d97706',
+                'trigger_type' => 'easter_egg',
+                'trigger_threshold' => 6,
+                'is_hidden' => true,
+                'is_active' => true,
+                'sort_order' => 26,
+            ]
+        );
     }
 }

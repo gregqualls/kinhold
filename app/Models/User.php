@@ -34,6 +34,7 @@ class User extends Authenticatable
         'date_of_birth',
         'timezone',
         'email_preferences',
+        'easter_eggs_found',
     ];
 
     /**
@@ -60,6 +61,7 @@ class User extends Authenticatable
             'date_of_birth' => 'date',
             'is_managed' => 'boolean',
             'email_preferences' => 'json',
+            'easter_eggs_found' => 'array',
         ];
     }
 
