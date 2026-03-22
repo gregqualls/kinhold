@@ -68,9 +68,9 @@
     </div>
 
     <!-- Tasks -->
-    <div v-else class="flex-1 overflow-y-auto pb-32 md:pb-6">
+    <div v-else ref="scrollContainerRef" class="flex-1 overflow-y-auto pb-32 md:pb-6">
       <!-- Quick add -->
-      <TaskQuickAdd :tags="tags" @add="handleQuickAdd" />
+      <TaskQuickAdd ref="quickAddRef" :tags="tags" @add="handleQuickAdd" />
 
       <!-- Incomplete tasks -->
       <div v-if="filteredIncompleteTasks.length > 0" class="mt-2">
@@ -289,6 +289,8 @@ const showTagManager = ref(false)
 const editingTag = ref(null)
 const newTagName = ref('')
 const newTagColor = ref('wisteria')
+const scrollContainerRef = ref(null)
+const quickAddRef = ref(null)
 
 const tagColorOptions = ['wisteria', 'prussian', 'sand', 'red', 'green', 'pink']
 const colorMap = {
@@ -415,7 +417,8 @@ const handleDeleteTag = async (tag) => {
 }
 
 const focusQuickAdd = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  scrollContainerRef.value?.scrollTo({ top: 0, behavior: 'smooth' })
+  quickAddRef.value?.startEditing()
 }
 
 onMounted(async () => {
