@@ -33,6 +33,9 @@ class SettingsController extends Controller
                 ],
                 'preferences' => $family->settings['preferences'] ?? [],
                 'leaderboard_period' => $family->settings['leaderboard_period'] ?? 'weekly',
+                'default_points_low' => $family->settings['default_points_low'] ?? 5,
+                'default_points_medium' => $family->settings['default_points_medium'] ?? 10,
+                'default_points_high' => $family->settings['default_points_high'] ?? 20,
             ],
         ], 200);
     }
@@ -61,6 +64,9 @@ class SettingsController extends Controller
             'modules.badges' => 'nullable|boolean',
             'preferences' => 'nullable|array',
             'leaderboard_period' => 'nullable|string|in:daily,weekly,monthly',
+            'default_points_low' => 'nullable|integer|min:0|max:1000',
+            'default_points_medium' => 'nullable|integer|min:0|max:1000',
+            'default_points_high' => 'nullable|integer|min:0|max:1000',
         ]);
 
         $settings = $family->settings ?? [];
@@ -83,6 +89,13 @@ class SettingsController extends Controller
             $settings['leaderboard_period'] = $validated['leaderboard_period'];
         }
 
+        // Update default points per priority
+        foreach (['default_points_low', 'default_points_medium', 'default_points_high'] as $key) {
+            if ($request->has($key)) {
+                $settings[$key] = (int) $validated[$key];
+            }
+        }
+
         $family->update(['settings' => $settings]);
 
         return response()->json([
@@ -91,6 +104,9 @@ class SettingsController extends Controller
                 'name' => $family->name,
                 'modules' => $settings['modules'] ?? [],
                 'preferences' => $settings['preferences'] ?? [],
+                'default_points_low' => $settings['default_points_low'] ?? 5,
+                'default_points_medium' => $settings['default_points_medium'] ?? 10,
+                'default_points_high' => $settings['default_points_high'] ?? 20,
             ],
         ], 200);
     }
