@@ -115,6 +115,66 @@ class FeaturedEventController extends Controller
     }
 
     /**
+     * Get the current countdown event for the family.
+     */
+    public function countdown(Request $request): JsonResponse
+    {
+        $family = $request->user()->currentFamily()->firstOrFail();
+
+        $event = FeaturedEvent::where('family_id', $family->id)
+            ->where('is_active', true)
+            ->where('is_countdown', true)
+            ->with('creator:id,name,avatar')
+            ->first();
+
+        if (!$event) {
+            return response()->json(['countdown_event' => null]);
+        }
+
+        // Compute next occurrence for recurring events
+        $event->computed_next_date = $event->next_occurrence;
+
+        return response()->json([
+            'countdown_event' => new FeaturedEventResource($event),
+        ]);
+    }
+
+    /**
+     * Set an event as the countdown event (parent only). Unsets any other countdown.
+     */
+    public function setCountdown(Request $request, FeaturedEvent $featuredEvent): JsonResponse
+    {
+        if (!$request->user()->isParent()) {
+            return response()->json(['message' => 'Only parents can set the countdown event'], 403);
+        }
+
+        $family = $request->user()->currentFamily()->firstOrFail();
+        if ($featuredEvent->family_id !== $family->id) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
+        // Unset any existing countdown for this family
+        FeaturedEvent::where('family_id', $family->id)
+            ->where('is_countdown', true)
+            ->update(['is_countdown' => false]);
+
+        // Toggle: if this event was already the countdown, just unset it
+        if ($featuredEvent->is_countdown) {
+            $featuredEvent->refresh();
+            return response()->json([
+                'featured_event' => new FeaturedEventResource($featuredEvent),
+            ]);
+        }
+
+        // Set this event as the countdown
+        $featuredEvent->update(['is_countdown' => true]);
+
+        return response()->json([
+            'featured_event' => new FeaturedEventResource($featuredEvent),
+        ]);
+    }
+
+    /**
      * Delete a featured event (parent only).
      */
     public function destroy(Request $request, FeaturedEvent $featuredEvent): JsonResponse

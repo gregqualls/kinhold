@@ -136,8 +136,10 @@ Route::prefix('v1')->group(function () {
         // Featured Events
         Route::prefix('/featured-events')->group(function () {
             Route::get('/', [FeaturedEventController::class, 'index']);
+            Route::get('/countdown', [FeaturedEventController::class, 'countdown']);
             Route::post('/', [FeaturedEventController::class, 'store']);
             Route::put('/{featuredEvent}', [FeaturedEventController::class, 'update']);
+            Route::put('/{featuredEvent}/countdown', [FeaturedEventController::class, 'setCountdown']);
             Route::delete('/{featuredEvent}', [FeaturedEventController::class, 'destroy']);
         });
 

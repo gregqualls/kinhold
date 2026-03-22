@@ -31,12 +31,22 @@
           : 'bg-lavender-50/50 dark:bg-prussian-700/50'"
       >
         <!-- Icon -->
-        <div
-          class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-          :class="isToday(event.event_date) ? 'shadow-md' : ''"
-          :style="{ backgroundColor: event.color + '20' }"
-        >
-          {{ event.icon }}
+        <div class="relative flex-shrink-0">
+          <div
+            class="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+            :class="isToday(event.event_date) ? 'shadow-md' : ''"
+            :style="{ backgroundColor: event.color + '20' }"
+          >
+            {{ event.icon }}
+          </div>
+          <!-- Countdown pin indicator -->
+          <div
+            v-if="event.is_countdown"
+            class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-sand-500 flex items-center justify-center"
+            title="Countdown event"
+          >
+            <ClockIcon class="w-2.5 h-2.5 text-white" />
+          </div>
         </div>
 
         <!-- Info -->
@@ -90,6 +100,13 @@
               Edit
             </button>
             <button
+              @click="toggleCountdown(event)"
+              class="w-full text-left px-3 py-1.5 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700 flex items-center gap-1.5"
+            >
+              <ClockIcon class="w-3.5 h-3.5" />
+              {{ event.is_countdown ? 'Remove Countdown' : 'Set as Countdown' }}
+            </button>
+            <button
               @click="confirmDelete(event)"
               class="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
             >
@@ -139,7 +156,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import FeaturedEventModal from './FeaturedEventModal.vue'
-import { StarIcon, PlusIcon, EllipsisVerticalIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
+import { StarIcon, PlusIcon, EllipsisVerticalIcon, ArrowPathIcon, ClockIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   isParent: Boolean,
@@ -189,6 +206,15 @@ const editEvent = (event) => {
   editingEvent.value = { ...event }
   showEditModal.value = true
   openMenuId.value = null
+}
+
+const toggleCountdown = async (event) => {
+  openMenuId.value = null
+  try {
+    await store.setCountdown(event.id)
+  } catch {
+    // error is set in the store
+  }
 }
 
 const confirmDelete = (event) => {

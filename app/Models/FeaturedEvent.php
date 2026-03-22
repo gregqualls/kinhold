@@ -22,6 +22,7 @@ class FeaturedEvent extends Model
         'color',
         'recurrence',
         'is_active',
+        'is_countdown',
     ];
 
     protected function casts(): array
@@ -30,6 +31,7 @@ class FeaturedEvent extends Model
             'event_date' => 'date',
             'event_time' => 'datetime:H:i',
             'is_active' => 'boolean',
+            'is_countdown' => 'boolean',
         ];
     }
 
