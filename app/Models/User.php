@@ -33,6 +33,7 @@ class User extends Authenticatable
         'avatar',
         'date_of_birth',
         'timezone',
+        'easter_eggs_found',
     ];
 
     /**
@@ -58,6 +59,7 @@ class User extends Authenticatable
             'family_role' => FamilyRole::class,
             'date_of_birth' => 'date',
             'is_managed' => 'boolean',
+            'easter_eggs_found' => 'array',
         ];
     }
 
