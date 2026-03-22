@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Family;
 use App\Models\User;
+use App\Notifications\WelcomeNotification;
 use App\Services\BadgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -50,6 +51,9 @@ class AuthController extends Controller
         if ($isNewFamily) {
             BadgeService::createDefaultBadges($family->id, $user->id);
         }
+
+        // Send welcome email
+        $user->notify(new WelcomeNotification($family, $isNewFamily));
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

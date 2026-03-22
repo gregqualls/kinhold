@@ -55,6 +55,29 @@
           {{ copied ? 'Copied!' : 'Copy' }}
         </BaseButton>
       </div>
+
+      <!-- Send invite by email -->
+      <div class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
+        <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">Send Invite by Email</p>
+        <form @submit.prevent="handleSendInviteEmail" class="flex items-end gap-3">
+          <div class="flex-1">
+            <input
+              v-model="inviteEmail"
+              type="email"
+              placeholder="name@example.com"
+              class="input-base"
+              required
+            />
+          </div>
+          <BaseButton variant="secondary" size="sm" :loading="sendingInvite" :disabled="!inviteCode">
+            <EnvelopeIcon class="w-4 h-4 mr-1" />
+            Send
+          </BaseButton>
+        </form>
+        <p v-if="inviteEmailSent" class="text-sm text-green-600 dark:text-green-400 mt-2">
+          Invite sent!
+        </p>
+      </div>
     </div>
 
     <!-- Family Members -->
@@ -335,6 +358,50 @@
       </div>
     </div>
 
+    <!-- Email Notifications -->
+    <div v-if="currentUser?.email" class="card-lg mb-6">
+      <div class="flex items-center gap-2 mb-4">
+        <EnvelopeIcon class="w-5 h-5 text-wisteria-500 dark:text-wisteria-400" />
+        <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">Email Notifications</h2>
+      </div>
+      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        Choose which email notifications you'd like to receive.
+      </p>
+
+      <div class="space-y-3">
+        <div
+          v-for="pref in emailPreferenceOptions"
+          :key="pref.key"
+          class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
+        >
+          <div class="flex-1 mr-4">
+            <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ pref.label }}</p>
+            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">{{ pref.description }}</p>
+          </div>
+          <button
+            @click="toggleEmailPref(pref.key)"
+            :class="[
+              'relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-wisteria-400 focus:ring-offset-2',
+              emailPrefs[pref.key] ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-600',
+            ]"
+          >
+            <span
+              :class="[
+                'pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                emailPrefs[pref.key] ? 'translate-x-5' : 'translate-x-0',
+              ]"
+            />
+          </button>
+        </div>
+      </div>
+
+      <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
+        <BaseButton variant="primary" :loading="savingEmailPrefs" @click="saveEmailPreferences">
+          Save Email Preferences
+        </BaseButton>
+      </div>
+    </div>
+
     <!-- Module Toggles (parent only) -->
     <div v-if="isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">Feature Toggles</h2>
@@ -529,6 +596,7 @@ import {
   PencilIcon,
   ClipboardDocumentIcon,
   ArrowsRightLeftIcon,
+  EnvelopeIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -560,6 +628,11 @@ const leaderboardPeriod = ref('weekly')
 // Invite code
 const inviteCode = ref(family.value?.invite_code || '')
 const copied = ref(false)
+
+// Invite email
+const inviteEmail = ref('')
+const sendingInvite = ref(false)
+const inviteEmailSent = ref(false)
 
 // Calendar
 const connectingCalendar = ref(false)
@@ -595,6 +668,66 @@ const removingLoading = ref(false)
 const showSwitchToModal = ref(false)
 const switchingToMember = ref(null)
 const switchingTo = ref(false)
+
+// Email preferences
+const savingEmailPrefs = ref(false)
+const emailPrefs = reactive({
+  email_task_completed: true,
+  email_task_assigned: true,
+  email_weekly_digest: true,
+  email_family_invite: true,
+})
+
+const emailPreferenceOptions = [
+  {
+    key: 'email_task_completed',
+    label: 'Task Completed',
+    description: 'Get notified when a family member completes a task',
+  },
+  {
+    key: 'email_task_assigned',
+    label: 'Task Assigned',
+    description: 'Get notified when a task is assigned to you',
+  },
+  {
+    key: 'email_weekly_digest',
+    label: 'Weekly Digest',
+    description: 'Receive a weekly summary of family activity',
+  },
+  {
+    key: 'email_family_invite',
+    label: 'Family Invites',
+    description: 'Receive email when invited to join a family',
+  },
+]
+
+const toggleEmailPref = (key) => {
+  emailPrefs[key] = !emailPrefs[key]
+}
+
+const loadEmailPreferences = async () => {
+  try {
+    const { data } = await api.get('/settings/email-preferences')
+    const prefs = data.email_preferences || {}
+    emailPrefs.email_task_completed = prefs.email_task_completed !== false
+    emailPrefs.email_task_assigned = prefs.email_task_assigned !== false
+    emailPrefs.email_weekly_digest = prefs.email_weekly_digest !== false
+    emailPrefs.email_family_invite = prefs.email_family_invite !== false
+  } catch (err) {
+    // Use defaults on error
+  }
+}
+
+const saveEmailPreferences = async () => {
+  savingEmailPrefs.value = true
+  try {
+    await api.put('/settings/email-preferences', { ...emailPrefs })
+    success('Email preferences saved!')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to save email preferences')
+  }
+  savingEmailPrefs.value = false
+}
 
 const availableModules = [
   { id: 'calendar', name: 'Calendar', description: 'View and manage family events' },
@@ -647,6 +780,23 @@ const copyInviteCode = async () => {
   } catch {
     notificationError('Failed to copy')
   }
+}
+
+// ---- Invite email ----
+const handleSendInviteEmail = async () => {
+  if (!inviteEmail.value) return
+  sendingInvite.value = true
+  inviteEmailSent.value = false
+  try {
+    await api.post('/family/invite', { email: inviteEmail.value })
+    inviteEmailSent.value = true
+    inviteEmail.value = ''
+    success('Invite email sent!')
+    setTimeout(() => { inviteEmailSent.value = false }, 3000)
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to send invite email')
+  }
+  sendingInvite.value = false
 }
 
 // ---- Member management ----
@@ -852,6 +1002,11 @@ onMounted(async () => {
   leaderboardPeriod.value = settings.leaderboard_period || 'weekly'
 
   await calendarStore.fetchConnections()
+
+  // Load email preferences
+  if (currentUser.value?.email) {
+    await loadEmailPreferences()
+  }
 
   // Load invite code for parents
   if (isParent.value) {
