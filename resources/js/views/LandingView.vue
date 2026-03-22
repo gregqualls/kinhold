@@ -191,6 +191,12 @@
             Built with love by the Qualls family
           </p>
           <div class="flex items-center gap-6 text-sm">
+            <RouterLink
+              to="/privacy"
+              class="text-lavender-500 dark:text-lavender-500 hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors"
+            >
+              Privacy
+            </RouterLink>
             <a
               href="https://github.com/gregqualls/q32hub"
               target="_blank"
