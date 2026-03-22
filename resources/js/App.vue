@@ -106,7 +106,7 @@ const easterEggsRef = ref(null)
 provide('easterEggs', easterEggsRef)
 
 const isAuthPage = computed(() => {
-  return ['Login', 'Register', 'Landing', 'Privacy'].includes(route.name)
+  return ['Login', 'Register', 'Landing', 'Privacy', 'Terms'].includes(route.name)
 })
 </script>
 

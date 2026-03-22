@@ -197,6 +197,12 @@
             >
               Privacy
             </RouterLink>
+            <RouterLink
+              to="/terms"
+              class="text-lavender-500 dark:text-lavender-500 hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors"
+            >
+              Terms
+            </RouterLink>
             <a
               href="https://github.com/gregqualls/q32hub"
               target="_blank"

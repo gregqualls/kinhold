@@ -8,6 +8,7 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 // Public Views
 import LandingView from '@/views/LandingView.vue'
 const PrivacyPolicyView = () => import('@/views/PrivacyPolicyView.vue')
+const TermsView = () => import('@/views/TermsView.vue')
 
 // App Views
 import DashboardView from '@/views/dashboard/DashboardView.vue'
@@ -34,11 +35,17 @@ const routes = [
     meta: { isPublic: true },
   },
 
-  // Privacy Policy (accessible by anyone, no redirect)
+  // Legal pages (accessible by anyone, no redirect)
   {
     path: '/privacy',
     name: 'Privacy',
     component: PrivacyPolicyView,
+    meta: { isOpen: true },
+  },
+  {
+    path: '/terms',
+    name: 'Terms',
+    component: TermsView,
     meta: { isOpen: true },
   },
 
