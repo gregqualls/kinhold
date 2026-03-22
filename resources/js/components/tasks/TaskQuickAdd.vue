@@ -130,6 +130,8 @@ const startEditing = async () => {
   inputRef.value?.focus()
 }
 
+defineExpose({ startEditing })
+
 const cancel = () => {
   isEditing.value = false
   title.value = ''
