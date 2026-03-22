@@ -356,6 +356,60 @@
           </span>
         </button>
       </div>
+
+      <!-- Color Theme Picker -->
+      <div class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
+        <p class="font-medium text-prussian-500 dark:text-lavender-200 mb-1">Color Theme</p>
+        <p class="text-xs text-lavender-700 dark:text-lavender-400 mb-3">Choose a color palette for the app</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <button
+            v-for="theme in availableThemes"
+            :key="theme.id"
+            @click="selectTheme(theme.id)"
+            :class="[
+              'relative flex flex-col p-3 rounded-xl border-2 transition-all duration-200 text-left',
+              currentTheme === theme.id
+                ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 dark:ring-wisteria-400/20 bg-lavender-50 dark:bg-prussian-800'
+                : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 dark:hover:border-prussian-500 bg-white dark:bg-prussian-800/50',
+            ]"
+          >
+            <!-- Check indicator -->
+            <div
+              v-if="currentTheme === theme.id"
+              class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 dark:bg-wisteria-400 flex items-center justify-center"
+            >
+              <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            <!-- Color swatches -->
+            <div class="flex gap-1.5 mb-2">
+              <span
+                class="w-8 h-8 rounded-lg shadow-sm"
+                :style="{ backgroundColor: theme.colors.primary }"
+              />
+              <span
+                class="w-8 h-8 rounded-lg shadow-sm"
+                :style="{ backgroundColor: theme.colors.accent }"
+              />
+              <span
+                class="w-8 h-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600"
+                :style="{ backgroundColor: theme.colors.surface }"
+              />
+              <span
+                class="w-8 h-8 rounded-lg shadow-sm"
+                :style="{ backgroundColor: theme.colors.highlight }"
+              />
+            </div>
+
+            <!-- Theme name and description -->
+            <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ theme.name }}</p>
+            <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ theme.description }}</p>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Email Notifications -->
@@ -641,6 +695,7 @@ import { useCalendarStore } from '@/stores/calendar'
 import api from '@/services/api'
 import { useNotification } from '@/composables/useNotification'
 import { useDarkMode } from '@/composables/useDarkMode'
+import { useTheme, themes as availableThemes } from '@/composables/useTheme'
 import BaseCard from '@/components/common/BaseCard.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseInput from '@/components/common/BaseInput.vue'
@@ -663,6 +718,7 @@ const authStore = useAuthStore()
 const calendarStore = useCalendarStore()
 const { success, error: notificationError } = useNotification()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
+const { currentTheme, setTheme: selectTheme } = useTheme()
 
 const { family, familyMembers, currentUser, isParent } = storeToRefs(authStore)
 const { connections } = storeToRefs(calendarStore)

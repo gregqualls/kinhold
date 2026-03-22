@@ -2,6 +2,354 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * === Color Theme Variables ===
+ * Each theme defines RGB triplets (space-separated) for all color scales.
+ * The Tailwind config references these via rgb(var(--color) / <alpha-value>).
+ * Existing class names (prussian, wisteria, lavender, sand, ink) are unchanged.
+ */
+
+/* ─── Q32 Classic (default) ─── */
+:root,
+[data-theme="classic"] {
+  /* Prussian Blue — deep navy */
+  --prussian-50: 232 237 245;
+  --prussian-100: 197 208 227;
+  --prussian-200: 143 161 199;
+  --prussian-300: 90 114 171;
+  --prussian-400: 47 74 122;
+  --prussian-500: 5 32 74;
+  --prussian-600: 4 26 61;
+  --prussian-700: 3 20 48;
+  --prussian-800: 2 14 34;
+  --prussian-900: 1 8 21;
+  --prussian-950: 1 5 14;
+
+  /* Wisteria — purple accent */
+  --wisteria-50: 245 240 250;
+  --wisteria-100: 235 225 245;
+  --wisteria-200: 215 195 235;
+  --wisteria-300: 195 165 225;
+  --wisteria-400: 180 151 214;
+  --wisteria-500: 155 117 197;
+  --wisteria-600: 125 87 168;
+  --wisteria-700: 94 64 128;
+  --wisteria-800: 64 43 87;
+  --wisteria-900: 33 22 45;
+  --wisteria-950: 21 14 29;
+
+  /* Lavender — light surfaces */
+  --lavender-50: 244 245 249;
+  --lavender-100: 237 238 245;
+  --lavender-200: 225 226 239;
+  --lavender-300: 200 201 223;
+  --lavender-400: 169 171 203;
+  --lavender-500: 138 141 183;
+  --lavender-600: 110 113 160;
+  --lavender-700: 85 87 125;
+  --lavender-800: 60 61 89;
+  --lavender-900: 35 36 54;
+  --lavender-950: 22 23 32;
+
+  /* Golden Sand — warm highlight */
+  --sand-50: 246 246 232;
+  --sand-100: 236 237 209;
+  --sand-200: 217 219 163;
+  --sand-300: 205 208 128;
+  --sand-400: 187 190 100;
+  --sand-500: 165 168 78;
+  --sand-600: 132 134 62;
+  --sand-700: 99 101 47;
+  --sand-800: 66 67 31;
+  --sand-900: 33 34 16;
+  --sand-950: 20 20 8;
+
+  /* Ink — deepest text */
+  --ink-50: 230 230 231;
+  --ink-100: 179 179 181;
+  --ink-200: 128 128 131;
+  --ink-300: 77 77 81;
+  --ink-400: 38 38 42;
+  --ink-500: 2 2 10;
+  --ink-600: 2 2 8;
+  --ink-700: 1 1 6;
+  --ink-800: 1 1 4;
+  --ink-900: 0 0 2;
+  --ink-950: 0 0 1;
+}
+
+/* ─── Ocean Breeze ─── */
+[data-theme="ocean"] {
+  /* Deep Navy Teal — primary */
+  --prussian-50: 230 241 245;
+  --prussian-100: 194 222 233;
+  --prussian-200: 133 189 211;
+  --prussian-300: 77 155 186;
+  --prussian-400: 36 113 148;
+  --prussian-500: 10 74 105;
+  --prussian-600: 8 60 87;
+  --prussian-700: 6 46 68;
+  --prussian-800: 4 32 48;
+  --prussian-900: 2 18 30;
+  --prussian-950: 1 10 18;
+
+  /* Cyan/Aqua — accent */
+  --wisteria-50: 230 249 252;
+  --wisteria-100: 204 243 248;
+  --wisteria-200: 153 230 240;
+  --wisteria-300: 102 215 230;
+  --wisteria-400: 56 198 218;
+  --wisteria-500: 6 182 212;
+  --wisteria-600: 5 150 175;
+  --wisteria-700: 4 116 136;
+  --wisteria-800: 3 80 96;
+  --wisteria-900: 1 42 52;
+  --wisteria-950: 1 26 32;
+
+  /* Light Blue Gray — surface */
+  --lavender-50: 243 247 249;
+  --lavender-100: 232 239 244;
+  --lavender-200: 216 228 236;
+  --lavender-300: 188 210 222;
+  --lavender-400: 156 187 205;
+  --lavender-500: 124 161 183;
+  --lavender-600: 96 133 157;
+  --lavender-700: 72 103 124;
+  --lavender-800: 50 73 89;
+  --lavender-900: 30 44 54;
+  --lavender-950: 18 27 34;
+
+  /* Coral — highlight */
+  --sand-50: 254 241 238;
+  --sand-100: 252 221 214;
+  --sand-200: 249 186 173;
+  --sand-300: 245 151 132;
+  --sand-400: 241 117 93;
+  --sand-500: 236 84 56;
+  --sand-600: 210 64 38;
+  --sand-700: 168 50 30;
+  --sand-800: 118 36 22;
+  --sand-900: 64 20 12;
+  --sand-950: 38 12 7;
+
+  /* Ink stays consistent */
+  --ink-50: 230 232 234;
+  --ink-100: 179 182 188;
+  --ink-200: 128 133 142;
+  --ink-300: 77 83 96;
+  --ink-400: 38 42 52;
+  --ink-500: 8 12 22;
+  --ink-600: 6 10 18;
+  --ink-700: 5 8 14;
+  --ink-800: 3 5 10;
+  --ink-900: 2 3 6;
+  --ink-950: 1 1 3;
+}
+
+/* ─── Forest ─── */
+[data-theme="forest"] {
+  /* Dark Forest Green — primary */
+  --prussian-50: 232 242 236;
+  --prussian-100: 198 225 208;
+  --prussian-200: 140 195 161;
+  --prussian-300: 86 162 116;
+  --prussian-400: 44 121 76;
+  --prussian-500: 14 80 42;
+  --prussian-600: 11 66 35;
+  --prussian-700: 8 50 27;
+  --prussian-800: 6 36 19;
+  --prussian-900: 3 20 11;
+  --prussian-950: 2 12 6;
+
+  /* Emerald — accent */
+  --wisteria-50: 232 252 243;
+  --wisteria-100: 209 248 230;
+  --wisteria-200: 163 240 205;
+  --wisteria-300: 117 230 178;
+  --wisteria-400: 74 216 153;
+  --wisteria-500: 34 197 128;
+  --wisteria-600: 22 163 105;
+  --wisteria-700: 16 126 82;
+  --wisteria-800: 11 88 58;
+  --wisteria-900: 6 48 32;
+  --wisteria-950: 3 28 18;
+
+  /* Sage/Mint — surface */
+  --lavender-50: 244 248 244;
+  --lavender-100: 234 242 234;
+  --lavender-200: 216 232 218;
+  --lavender-300: 190 216 194;
+  --lavender-400: 160 196 166;
+  --lavender-500: 132 172 140;
+  --lavender-600: 104 146 114;
+  --lavender-700: 80 114 88;
+  --lavender-800: 56 80 62;
+  --lavender-900: 34 48 38;
+  --lavender-950: 20 30 22;
+
+  /* Amber — highlight */
+  --sand-50: 255 248 235;
+  --sand-100: 254 240 214;
+  --sand-200: 252 224 172;
+  --sand-300: 250 207 130;
+  --sand-400: 247 189 90;
+  --sand-500: 244 170 50;
+  --sand-600: 214 142 22;
+  --sand-700: 168 110 16;
+  --sand-800: 118 78 12;
+  --sand-900: 64 42 6;
+  --sand-950: 38 24 3;
+
+  /* Ink */
+  --ink-50: 232 234 232;
+  --ink-100: 182 186 182;
+  --ink-200: 132 138 132;
+  --ink-300: 82 90 82;
+  --ink-400: 40 46 40;
+  --ink-500: 6 12 6;
+  --ink-600: 5 10 5;
+  --ink-700: 4 8 4;
+  --ink-800: 3 5 3;
+  --ink-900: 1 3 1;
+  --ink-950: 1 1 1;
+}
+
+/* ─── Sunset ─── */
+[data-theme="sunset"] {
+  /* Deep Warm Charcoal — primary */
+  --prussian-50: 240 236 234;
+  --prussian-100: 222 214 208;
+  --prussian-200: 189 175 166;
+  --prussian-300: 152 134 122;
+  --prussian-400: 110 92 80;
+  --prussian-500: 66 52 42;
+  --prussian-600: 54 42 34;
+  --prussian-700: 42 33 26;
+  --prussian-800: 30 24 19;
+  --prussian-900: 18 14 11;
+  --prussian-950: 10 8 6;
+
+  /* Warm Orange/Amber — accent */
+  --wisteria-50: 255 244 235;
+  --wisteria-100: 254 231 211;
+  --wisteria-200: 253 206 168;
+  --wisteria-300: 251 180 124;
+  --wisteria-400: 249 155 82;
+  --wisteria-500: 246 130 42;
+  --wisteria-600: 220 106 22;
+  --wisteria-700: 172 82 16;
+  --wisteria-800: 120 58 12;
+  --wisteria-900: 66 32 6;
+  --wisteria-950: 38 18 4;
+
+  /* Cream/Warm Gray — surface */
+  --lavender-50: 250 247 244;
+  --lavender-100: 245 240 234;
+  --lavender-200: 236 228 218;
+  --lavender-300: 222 210 196;
+  --lavender-400: 204 188 170;
+  --lavender-500: 182 164 144;
+  --lavender-600: 156 138 120;
+  --lavender-700: 122 108 94;
+  --lavender-800: 86 76 66;
+  --lavender-900: 52 46 40;
+  --lavender-950: 32 28 24;
+
+  /* Rose — highlight */
+  --sand-50: 253 238 241;
+  --sand-100: 250 218 224;
+  --sand-200: 245 180 192;
+  --sand-300: 239 142 160;
+  --sand-400: 232 106 130;
+  --sand-500: 224 70 102;
+  --sand-600: 196 48 78;
+  --sand-700: 155 38 62;
+  --sand-800: 110 28 44;
+  --sand-900: 60 14 24;
+  --sand-950: 36 8 14;
+
+  /* Ink — warm black */
+  --ink-50: 236 234 232;
+  --ink-100: 188 184 180;
+  --ink-200: 140 134 128;
+  --ink-300: 92 86 80;
+  --ink-400: 48 44 40;
+  --ink-500: 12 10 8;
+  --ink-600: 10 8 6;
+  --ink-700: 8 6 5;
+  --ink-800: 5 4 3;
+  --ink-900: 3 2 2;
+  --ink-950: 1 1 1;
+}
+
+/* ─── Midnight ─── */
+[data-theme="midnight"] {
+  /* Deep Indigo — primary */
+  --prussian-50: 234 233 244;
+  --prussian-100: 206 204 230;
+  --prussian-200: 155 150 200;
+  --prussian-300: 108 100 168;
+  --prussian-400: 68 58 132;
+  --prussian-500: 30 22 96;
+  --prussian-600: 24 18 78;
+  --prussian-700: 18 14 60;
+  --prussian-800: 13 10 44;
+  --prussian-900: 7 5 26;
+  --prussian-950: 4 3 16;
+
+  /* Electric Blue — accent */
+  --wisteria-50: 232 240 255;
+  --wisteria-100: 209 224 254;
+  --wisteria-200: 163 194 252;
+  --wisteria-300: 117 164 250;
+  --wisteria-400: 72 134 248;
+  --wisteria-500: 30 106 245;
+  --wisteria-600: 14 84 214;
+  --wisteria-700: 10 66 170;
+  --wisteria-800: 8 48 122;
+  --wisteria-900: 4 26 68;
+  --wisteria-950: 2 16 42;
+
+  /* Cool Gray — surface */
+  --lavender-50: 244 244 248;
+  --lavender-100: 234 234 242;
+  --lavender-200: 218 218 232;
+  --lavender-300: 195 196 216;
+  --lavender-400: 168 170 198;
+  --lavender-500: 140 142 176;
+  --lavender-600: 112 114 152;
+  --lavender-700: 86 88 120;
+  --lavender-800: 60 62 86;
+  --lavender-900: 36 38 52;
+  --lavender-950: 22 22 34;
+
+  /* Gold — highlight */
+  --sand-50: 255 250 235;
+  --sand-100: 254 244 214;
+  --sand-200: 252 232 172;
+  --sand-300: 250 220 130;
+  --sand-400: 248 208 90;
+  --sand-500: 245 195 52;
+  --sand-600: 216 168 24;
+  --sand-700: 170 132 18;
+  --sand-800: 120 92 12;
+  --sand-900: 66 50 6;
+  --sand-950: 40 30 4;
+
+  /* Ink — cool black */
+  --ink-50: 232 232 236;
+  --ink-100: 180 180 190;
+  --ink-200: 128 128 142;
+  --ink-300: 78 78 94;
+  --ink-400: 38 38 50;
+  --ink-500: 4 4 14;
+  --ink-600: 3 3 11;
+  --ink-700: 2 2 8;
+  --ink-800: 2 2 6;
+  --ink-900: 1 1 3;
+  --ink-950: 0 0 2;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -10,15 +358,14 @@
   }
 
   body {
-    /* Lavender-50 background, Black text */
-    background-color: #f4f5f9;
-    color: #02020A;
+    background-color: rgb(var(--lavender-50));
+    color: rgb(var(--ink-500));
   }
 
   .dark body,
   body.dark {
-    background-color: #010815; /* Prussian-900 */
-    color: #E1E2EF; /* Lavender */
+    background-color: rgb(var(--prussian-900));
+    color: rgb(var(--lavender-200));
   }
 
   * {
@@ -29,12 +376,12 @@
 @layer components {
   .card {
     @apply bg-white rounded-card shadow-card p-4;
-    border: 1px solid #E1E2EF; /* Lavender */
+    border: 1px solid rgb(var(--lavender-200));
   }
 
   .card-lg {
     @apply bg-white rounded-card shadow-card-lg p-6;
-    border: 1px solid #E1E2EF;
+    border: 1px solid rgb(var(--lavender-200));
   }
 
   .card-interactive {
@@ -42,79 +389,79 @@
   }
 
   .card-interactive:hover {
-    border-color: #B497D6; /* Wisteria */
+    border-color: rgb(var(--wisteria-400));
   }
 
   .btn {
     @apply inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
-  /* Primary button: Wisteria purple */
+  /* Primary button: Wisteria/accent */
   .btn-primary {
     @apply btn text-white shadow-sm;
-    background-color: #7d57a8; /* Wisteria-600 */
+    background-color: rgb(var(--wisteria-600));
   }
   .btn-primary:hover {
-    background-color: #9b75c5; /* Wisteria-500 */
+    background-color: rgb(var(--wisteria-500));
   }
   .btn-primary:active {
-    background-color: #5e4080; /* Wisteria-700 */
+    background-color: rgb(var(--wisteria-700));
   }
   .btn-primary:focus {
-    --tw-ring-color: #B497D6;
+    --tw-ring-color: rgb(var(--wisteria-400));
   }
 
-  /* Secondary button: Lavender fill with Prussian text */
+  /* Secondary button: Lavender/surface fill with Prussian/primary text */
   .btn-secondary {
     @apply btn;
-    background-color: #E1E2EF; /* Lavender */
-    color: #05204A; /* Prussian Blue */
-    border: 1px solid #c8c9df; /* Lavender-300 */
+    background-color: rgb(var(--lavender-200));
+    color: rgb(var(--prussian-500));
+    border: 1px solid rgb(var(--lavender-300));
   }
   .btn-secondary:hover {
-    background-color: #c8c9df;
+    background-color: rgb(var(--lavender-300));
   }
   .btn-secondary:active {
-    background-color: #a9abcb;
+    background-color: rgb(var(--lavender-400));
   }
   .btn-secondary:focus {
-    --tw-ring-color: #B497D6;
+    --tw-ring-color: rgb(var(--wisteria-400));
   }
 
-  /* Accent button: Golden Sand */
+  /* Accent button: Sand/highlight */
   .btn-accent {
     @apply btn shadow-sm;
-    background-color: #a5a84e; /* Sand-500 */
-    color: #02020A;
+    background-color: rgb(var(--sand-500));
+    color: rgb(var(--ink-500));
   }
   .btn-accent:hover {
-    background-color: #BBBE64;
+    background-color: rgb(var(--sand-400));
   }
   .btn-accent:active {
-    background-color: #84863e;
+    background-color: rgb(var(--sand-600));
     color: white;
   }
   .btn-accent:focus {
-    --tw-ring-color: #BBBE64;
+    --tw-ring-color: rgb(var(--sand-400));
   }
 
   .btn-danger {
     @apply btn bg-red-600 text-white hover:bg-red-500 active:bg-red-700 focus:ring-red-400 shadow-sm;
   }
 
-  /* Ghost button: transparent with Prussian text */
+  /* Ghost button: transparent with Prussian/primary text */
   .btn-ghost {
     @apply btn bg-transparent;
-    color: #05204A;
+    color: rgb(var(--prussian-500));
   }
   .btn-ghost:hover {
-    background-color: #E1E2EF;
+    background-color: rgb(var(--lavender-200));
   }
   .btn-ghost:active {
-    background-color: #c8c9df;
+    background-color: rgb(var(--lavender-300));
   }
   .btn-ghost:focus {
-    --tw-ring-color: #B497D6;
+    --tw-ring-color: rgb(var(--wisteria-400));
   }
 
   .btn-sm {
@@ -135,20 +482,20 @@
 
   .badge-primary {
     @apply badge;
-    background-color: #ebe1f5; /* Wisteria-100 */
-    color: #5e4080; /* Wisteria-700 */
+    background-color: rgb(var(--wisteria-100));
+    color: rgb(var(--wisteria-700));
   }
 
   .badge-secondary {
     @apply badge;
-    background-color: #E1E2EF; /* Lavender */
-    color: #05204A; /* Prussian */
+    background-color: rgb(var(--lavender-200));
+    color: rgb(var(--prussian-500));
   }
 
   .badge-accent {
     @apply badge;
-    background-color: #ecedd1; /* Sand-100 */
-    color: #42431f; /* Sand-800 */
+    background-color: rgb(var(--sand-100));
+    color: rgb(var(--sand-800));
   }
 
   .badge-success {
@@ -157,27 +504,27 @@
 
   .badge-warning {
     @apply badge;
-    background-color: #f6f6e8; /* Sand-50 */
-    color: #63652f; /* Sand-700 */
+    background-color: rgb(var(--sand-50));
+    color: rgb(var(--sand-700));
   }
 
   .badge-danger {
     @apply badge bg-red-100 text-red-800;
   }
 
-  /* Input: white bg, lavender border, wisteria focus */
+  /* Input: white bg, lavender/surface border, wisteria/accent focus */
   .input-base {
     @apply w-full px-3 py-2 rounded-lg bg-white transition-all duration-200;
-    border: 1px solid #c8c9df; /* Lavender-300 */
-    color: #02020A;
+    border: 1px solid rgb(var(--lavender-300));
+    color: rgb(var(--ink-500));
   }
   .input-base::placeholder {
-    color: #8a8db7; /* Lavender-500 */
+    color: rgb(var(--lavender-500));
   }
   .input-base:focus {
-    --tw-ring-color: #B497D6;
+    --tw-ring-color: rgb(var(--wisteria-400));
     @apply ring-2;
-    border-color: #B497D6;
+    border-color: rgb(var(--wisteria-400));
   }
 
   .input-error {
@@ -191,7 +538,7 @@
 
   .divider {
     @apply my-4;
-    border-top: 1px solid #E1E2EF;
+    border-top: 1px solid rgb(var(--lavender-200));
   }
 
   .fade-enter-active,
@@ -236,7 +583,7 @@
   }
 
   .checkbox-custom:hover {
-    background-color: rgba(180, 151, 214, 0.12); /* Wisteria tint */
+    background-color: rgb(var(--wisteria-400) / 0.12);
   }
 
   .checkbox-custom.checked {
@@ -269,61 +616,61 @@
 @layer components {
   .dark .card,
   .dark .card-lg {
-    background-color: #020e22; /* Prussian-800 */
-    border-color: #031430; /* Prussian-700 */
+    background-color: rgb(var(--prussian-800));
+    border-color: rgb(var(--prussian-700));
   }
 
   .dark .card-interactive:hover {
-    border-color: #5e4080; /* Wisteria-700 */
+    border-color: rgb(var(--wisteria-700));
   }
 
   .dark .input-base {
-    background-color: #031430;
-    border-color: #2f4a7a;
-    color: #E1E2EF;
+    background-color: rgb(var(--prussian-700));
+    border-color: rgb(var(--prussian-400));
+    color: rgb(var(--lavender-200));
   }
   .dark .input-base::placeholder {
-    color: #6e71a0;
+    color: rgb(var(--lavender-600));
   }
 
   .dark .btn-secondary {
-    background-color: #031430;
-    color: #E1E2EF;
-    border-color: #2f4a7a;
+    background-color: rgb(var(--prussian-700));
+    color: rgb(var(--lavender-200));
+    border-color: rgb(var(--prussian-400));
   }
   .dark .btn-secondary:hover {
-    background-color: #041a3d;
+    background-color: rgb(var(--prussian-600));
   }
 
   .dark .btn-ghost {
-    color: #E1E2EF;
+    color: rgb(var(--lavender-200));
   }
   .dark .btn-ghost:hover {
-    background-color: #031430;
+    background-color: rgb(var(--prussian-700));
   }
 
   .dark .divider {
-    border-color: #2f4a7a;
+    border-color: rgb(var(--prussian-400));
   }
 
   .dark .badge-primary {
-    background-color: rgba(125, 87, 168, 0.2);
-    color: #c9b2e1; /* Wisteria-300 */
+    background-color: rgb(var(--wisteria-600) / 0.2);
+    color: rgb(var(--wisteria-300));
   }
 
   .dark .badge-secondary {
-    background-color: #031430;
-    color: #E1E2EF;
+    background-color: rgb(var(--prussian-700));
+    color: rgb(var(--lavender-200));
   }
 
   .dark .badge-accent {
-    background-color: rgba(165, 168, 78, 0.15);
-    color: #BBBE64;
+    background-color: rgb(var(--sand-500) / 0.15);
+    color: rgb(var(--sand-400));
   }
 
   .dark .badge-warning {
-    background-color: rgba(165, 168, 78, 0.1);
-    color: #BBBE64;
+    background-color: rgb(var(--sand-500) / 0.1);
+    color: rgb(var(--sand-400));
   }
 
   .dark .btn-danger {
@@ -354,18 +701,18 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(5, 32, 74, 0.15); /* Prussian Blue tint */
+  background: rgb(var(--prussian-500) / 0.15);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(5, 32, 74, 0.25);
+  background: rgb(var(--prussian-500) / 0.25);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(225, 226, 239, 0.15);
+  background: rgb(var(--lavender-200) / 0.15);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(225, 226, 239, 0.25);
+  background: rgb(var(--lavender-200) / 0.25);
 }
