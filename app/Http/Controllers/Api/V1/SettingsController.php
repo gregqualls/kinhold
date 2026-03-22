@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ChatbotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class SettingsController extends Controller
 {
@@ -18,12 +20,13 @@ class SettingsController extends Controller
     public function index(Request $request): JsonResponse
     {
         $family = $request->user()->currentFamily()->firstOrFail();
+        $settings = $family->settings ?? [];
 
         return response()->json([
             'settings' => [
                 'id' => $family->id,
                 'name' => $family->name,
-                'modules' => $family->settings['modules'] ?? [
+                'modules' => $settings['modules'] ?? [
                     'tasks' => true,
                     'vault' => true,
                     'calendar' => true,
@@ -31,12 +34,17 @@ class SettingsController extends Controller
                     'points' => true,
                     'badges' => true,
                 ],
-                'preferences' => $family->settings['preferences'] ?? [],
-                'leaderboard_period' => $family->settings['leaderboard_period'] ?? 'weekly',
-                'kudos_cost_enabled' => $family->settings['kudos_cost_enabled'] ?? false,
-                'default_points_low' => $family->settings['default_points_low'] ?? 5,
-                'default_points_medium' => $family->settings['default_points_medium'] ?? 10,
-                'default_points_high' => $family->settings['default_points_high'] ?? 20,
+                'preferences' => $settings['preferences'] ?? [],
+                'leaderboard_period' => $settings['leaderboard_period'] ?? 'weekly',
+                'kudos_cost_enabled' => $settings['kudos_cost_enabled'] ?? false,
+                'default_points_low' => $settings['default_points_low'] ?? 5,
+                'default_points_medium' => $settings['default_points_medium'] ?? 10,
+                'default_points_high' => $settings['default_points_high'] ?? 20,
+                'ai_provider' => $settings['ai_provider'] ?? 'anthropic',
+                'ai_model' => $settings['ai_model'] ?? '',
+                'ai_api_key_masked' => $this->maskApiKey($settings),
+                'ai_has_key' => !empty($settings['ai_api_key']),
+                'ai_providers' => ChatbotService::availableProviders(),
             ],
         ], 200);
     }
@@ -69,6 +77,9 @@ class SettingsController extends Controller
             'default_points_low' => 'nullable|integer|min:0|max:1000',
             'default_points_medium' => 'nullable|integer|min:0|max:1000',
             'default_points_high' => 'nullable|integer|min:0|max:1000',
+            'ai_provider' => 'nullable|string|in:anthropic,openai,google',
+            'ai_api_key' => 'nullable|string|max:500',
+            'ai_model' => 'nullable|string|max:100',
         ]);
 
         $settings = $family->settings ?? [];
@@ -102,6 +113,26 @@ class SettingsController extends Controller
             }
         }
 
+        // AI provider settings
+        if ($request->has('ai_provider')) {
+            $settings['ai_provider'] = $validated['ai_provider'];
+        }
+
+        if ($request->has('ai_model')) {
+            $settings['ai_model'] = $validated['ai_model'] ?? '';
+        }
+
+        // Encrypt the API key before storing. Only update if a non-empty value is sent.
+        // Sending an empty string clears the key.
+        if ($request->has('ai_api_key')) {
+            $rawKey = $validated['ai_api_key'] ?? '';
+            if ($rawKey !== '') {
+                $settings['ai_api_key'] = encrypt($rawKey);
+            } else {
+                $settings['ai_api_key'] = '';
+            }
+        }
+
         $family->update(['settings' => $settings]);
 
         return response()->json([
@@ -110,12 +141,40 @@ class SettingsController extends Controller
                 'name' => $family->name,
                 'modules' => $settings['modules'] ?? [],
                 'preferences' => $settings['preferences'] ?? [],
+                'leaderboard_period' => $settings['leaderboard_period'] ?? 'weekly',
                 'kudos_cost_enabled' => $settings['kudos_cost_enabled'] ?? false,
                 'default_points_low' => $settings['default_points_low'] ?? 5,
                 'default_points_medium' => $settings['default_points_medium'] ?? 10,
                 'default_points_high' => $settings['default_points_high'] ?? 20,
+                'ai_provider' => $settings['ai_provider'] ?? 'anthropic',
+                'ai_model' => $settings['ai_model'] ?? '',
+                'ai_api_key_masked' => $this->maskApiKey($settings),
+                'ai_has_key' => !empty($settings['ai_api_key']),
+                'ai_providers' => ChatbotService::availableProviders(),
             ],
         ], 200);
+    }
+
+    /**
+     * Mask the stored API key for display. Shows first 6 and last 4 chars.
+     */
+    private function maskApiKey(array $settings): string
+    {
+        if (empty($settings['ai_api_key'])) {
+            return '';
+        }
+
+        try {
+            $key = decrypt($settings['ai_api_key']);
+        } catch (\Exception $e) {
+            return '***invalid***';
+        }
+
+        if (Str::length($key) <= 12) {
+            return Str::mask($key, '*', 4);
+        }
+
+        return Str::substr($key, 0, 6) . '...' . Str::substr($key, -4);
     }
 
     /**
