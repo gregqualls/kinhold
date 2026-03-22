@@ -11,6 +11,15 @@
       <p class="text-sand-600 dark:text-sand-400">{{ dateMessage }}</p>
     </div>
 
+    <!-- Celebration Banners (birthdays & holidays) -->
+    <CelebrationBanner
+      :show-birthday="hasBirthdays"
+      :is-my-birthday="isMyBirthday"
+      :birthday-members="birthdayMembers"
+      :show-holiday="isHoliday"
+      :holiday="todayHoliday"
+    />
+
     <!-- Featured Events -->
     <FeaturedEventsSection
       v-if="featuredEventsStore.upcomingEvents.length > 0 || isParent"
@@ -267,6 +276,8 @@ import FeaturedRewards from '@/components/points/FeaturedRewards.vue'
 import BadgeShowcase from '@/components/badges/BadgeShowcase.vue'
 import FeaturedEventsSection from '@/components/featured-events/FeaturedEventsSection.vue'
 import CountdownBanner from '@/components/featured-events/CountdownBanner.vue'
+import CelebrationBanner from '@/components/common/CelebrationBanner.vue'
+import { useCelebrations } from '@/composables/useCelebrations'
 import {
   ArrowPathIcon,
   CalendarIcon,
@@ -291,6 +302,9 @@ const featuredEventsStore = useFeaturedEventsStore()
 const { currentUser, isParent, enabledModules } = storeToRefs(authStore)
 const { todayEvents } = storeToRefs(calendarStore)
 const { tasks } = storeToRefs(tasksStore)
+
+// Celebration detection (birthdays & holidays)
+const { birthdayMembers, hasBirthdays, isMyBirthday, todayHoliday, isHoliday } = useCelebrations()
 
 // My Tasks: assigned specifically to me, incomplete
 const myTasks = computed(() => {
