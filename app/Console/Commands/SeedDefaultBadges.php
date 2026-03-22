@@ -20,7 +20,7 @@ class SeedDefaultBadges extends Command
      *
      * @var string
      */
-    protected $description = 'Create default badges for families that have fewer than 5 badges. Safe to run multiple times.';
+    protected $description = 'Create default badges for families that have fewer than 20 badges. Safe to run multiple times.';
 
     /**
      * Execute the console command.
@@ -31,7 +31,7 @@ class SeedDefaultBadges extends Command
         $seeded = 0;
 
         foreach ($families as $family) {
-            if ($family->badges_count >= 5) {
+            if ($family->badges_count >= 20) {
                 $this->line("Skipping {$family->name} — already has {$family->badges_count} badges.");
                 continue;
             }
@@ -41,7 +41,7 @@ class SeedDefaultBadges extends Command
                 ->where('family_role', 'parent')
                 ->first();
 
-            BadgeService::createDefaultBadges($family->id, $creator?->id);
+            BadgeService::ensureDefaultBadges($family->id, $creator?->id);
             $seeded++;
             $this->info("Created default badges for {$family->name}.");
         }
