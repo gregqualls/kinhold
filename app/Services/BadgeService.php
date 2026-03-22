@@ -9,18 +9,16 @@ use App\Models\PointTransaction;
 use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class BadgeService
 {
     /**
-     * Create default badges for a newly created family.
-     * Called during seeding and when a new family registers.
-     *
-     * @return \Illuminate\Support\Collection<Badge> The created badges, keyed by name.
+     * The single source of truth for default badge definitions.
      */
-    public static function createDefaultBadges(string $familyId, ?string $createdBy = null): \Illuminate\Support\Collection
+    public static function getDefaultBadgeDefinitions(): array
     {
-        $defaults = [
+        return [
             // --- Tasks Completed progression ---
             ['name' => 'First Steps', 'description' => 'Complete your first task', 'icon' => 'rocket', 'color' => '#059669', 'trigger_type' => BadgeTriggerType::TasksCompleted, 'trigger_threshold' => 1, 'is_hidden' => false, 'sort_order' => 0],
             ['name' => 'Task Rookie', 'description' => 'Complete 10 tasks', 'icon' => 'target', 'color' => '#0284c7', 'trigger_type' => BadgeTriggerType::TasksCompleted, 'trigger_threshold' => 10, 'is_hidden' => false, 'sort_order' => 1],
@@ -66,15 +64,30 @@ class BadgeService
             // --- Master Explorer (auto-triggered when all 6 eggs found) ---
             ['name' => 'Master Explorer', 'description' => 'Found every single easter egg!', 'icon' => 'compass', 'color' => '#d97706', 'trigger_type' => BadgeTriggerType::EasterEgg, 'trigger_threshold' => 6, 'is_hidden' => true, 'sort_order' => 26],
         ];
+    }
 
+    /**
+     * Create default badges for a family. Idempotent — uses firstOrCreate
+     * so it's safe to call on new families AND existing ones with partial sets.
+     *
+     * @return \Illuminate\Support\Collection<Badge> The badges, keyed by name.
+     */
+    public static function createDefaultBadges(string $familyId, ?string $createdBy = null): \Illuminate\Support\Collection
+    {
         $badges = collect();
 
-        foreach ($defaults as $data) {
-            $badge = Badge::create(array_merge($data, [
-                'family_id' => $familyId,
-                'created_by' => $createdBy,
-                'trigger_type' => $data['trigger_type']->value,
-            ]));
+        foreach (static::getDefaultBadgeDefinitions() as $data) {
+            $badge = Badge::firstOrCreate(
+                [
+                    'family_id' => $familyId,
+                    'name' => $data['name'],
+                ],
+                array_merge($data, [
+                    'family_id' => $familyId,
+                    'created_by' => $createdBy,
+                    'trigger_type' => $data['trigger_type']->value,
+                ])
+            );
             $badges->put($data['name'], $badge);
         }
 
@@ -105,6 +118,7 @@ class BadgeService
 
             if ($currentValue >= $badge->trigger_threshold) {
                 $user->badges()->attach($badge->id, [
+                    'id' => Str::uuid(),
                     'earned_at' => now(),
                     'awarded_by' => null,
                 ]);
@@ -125,6 +139,7 @@ class BadgeService
         }
 
         $user->badges()->attach($badge->id, [
+            'id' => Str::uuid(),
             'earned_at' => now(),
             'awarded_by' => $awardedBy->id,
         ]);

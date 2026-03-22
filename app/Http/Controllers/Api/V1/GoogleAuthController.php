@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Family;
 use App\Models\User;
+use App\Services\BadgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -90,6 +91,9 @@ class GoogleAuthController extends Controller
             'family_id' => $family->id,
             'family_role' => 'parent',
         ]);
+
+        // Seed default badges for the newly created family
+        BadgeService::createDefaultBadges($family->id, $user->id);
 
         $token = $user->createToken('google_auth')->plainTextToken;
 

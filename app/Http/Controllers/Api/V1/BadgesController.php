@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Badge;
+use App\Models\User;
 use App\Services\BadgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,11 +17,25 @@ class BadgesController extends Controller
 
     /**
      * List family badges with earned status and progress for current user.
+     * Auto-creates default badges if the family has none yet.
      */
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
         $family = $user->currentFamily()->firstOrFail();
+
+        // Auto-create default badges if the family has fewer than the full set (27)
+        if (Badge::where('family_id', $family->id)->count() < 20) {
+            BadgeService::createDefaultBadges($family->id, $user->id);
+        }
+
+        // Catch up on any badges the user has earned but wasn't awarded yet
+        try {
+            $this->badgeService->checkAndAwardBadges($user);
+            $this->awardMissingEasterEggBadges($user);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Badge catch-up failed: ' . $e->getMessage());
+        }
 
         $badges = Badge::where('family_id', $family->id)
             ->where('is_active', true)
@@ -287,6 +302,42 @@ class BadgesController extends Controller
         return response()->json([
             'badges' => $badges,
         ]);
+    }
+
+    /**
+     * Award any easter egg badges the user has found but hasn't been awarded yet.
+     * Handles cases where eggs were discovered before badges existed or API calls failed silently.
+     */
+    private function awardMissingEasterEggBadges(User $user): void
+    {
+        $found = $user->easter_eggs_found ?? [];
+        if (empty($found)) {
+            return;
+        }
+
+        $badgeNameMap = [
+            'konami' => 'Code Breaker',
+            'seven_ate_nine' => 'Number Cruncher',
+            'party_mode' => 'Party Animal',
+            'mirror' => 'Mirror Mirror',
+            'matrix' => 'Red Pill',
+            'disco' => 'Disco Inferno',
+        ];
+
+        foreach ($found as $eggKey) {
+            $badgeName = $badgeNameMap[$eggKey] ?? null;
+            if (!$badgeName) {
+                continue;
+            }
+
+            $badge = Badge::where('family_id', $user->family_id)
+                ->where('name', $badgeName)
+                ->first();
+
+            if ($badge && !$user->badges()->where('badges.id', $badge->id)->exists()) {
+                $this->badgeService->manuallyAward($badge, $user, $user);
+            }
+        }
     }
 
     /**

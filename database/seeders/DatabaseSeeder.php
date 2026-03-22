@@ -8,6 +8,7 @@ use App\Enums\PointTransactionType;
 use App\Models\Badge;
 use App\Models\ChatMessage;
 use App\Models\Family;
+use App\Models\FeaturedEvent;
 use App\Models\PointTransaction;
 use App\Models\Reward;
 use App\Models\RewardPurchase;
@@ -37,6 +38,30 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Idempotent: if demo family exists, wipe and re-seed so data stays fresh
+        // Uses a reserved slug + @demo.local emails that real families can't claim.
+        // Safe to run on every deploy — wipes and re-creates demo data only.
+        // Also checks for legacy slug/invite_code from older seeds.
+        $existing = Family::where('slug', 'q32-demo-family')
+            ->orWhere('slug', 'johnsons')
+            ->orWhere('invite_code', 'JOHNSON2026')
+            ->first();
+        if ($existing) {
+            // Delete all related data (cascades handle most, but be thorough)
+            User::where('family_id', $existing->id)->delete();
+            Task::where('family_id', $existing->id)->delete();
+            Tag::where('family_id', $existing->id)->delete();
+            Reward::where('family_id', $existing->id)->delete();
+            Badge::where('family_id', $existing->id)->delete();
+            FeaturedEvent::where('family_id', $existing->id)->delete();
+            VaultEntry::where('family_id', $existing->id)->delete();
+            VaultCategory::where('family_id', $existing->id)->delete();
+            PointTransaction::where('family_id', $existing->id)->delete();
+            ChatMessage::where('family_id', $existing->id)->delete();
+            $existing->delete();
+            $this->command?->info('Cleared existing demo family data.');
+        }
+
         $now = Carbon::now();
         $vault = new VaultEncryptionService();
 
@@ -46,7 +71,7 @@ class DatabaseSeeder extends Seeder
 
         $family = Family::create([
             'name' => 'The Johnsons',
-            'slug' => 'johnsons',
+            'slug' => 'q32-demo-family',
             'invite_code' => 'JOHNSON2026',
             'settings' => [
                 'theme' => 'light',
@@ -60,6 +85,11 @@ class DatabaseSeeder extends Seeder
                     'badges' => true,
                 ],
                 'leaderboard_period' => 'weekly',
+                'default_points_low' => 5,
+                'default_points_medium' => 10,
+                'default_points_high' => 20,
+                'kudos_cost_enabled' => false,
+                'ai_provider' => 'anthropic',
             ],
         ]);
 
@@ -75,6 +105,7 @@ class DatabaseSeeder extends Seeder
             'family_role' => FamilyRole::Parent,
             'date_of_birth' => '1984-06-15',
             'timezone' => 'America/Chicago',
+            'email_preferences' => User::defaultEmailPreferences(),
         ]);
 
         $sarah = User::create([
@@ -85,6 +116,7 @@ class DatabaseSeeder extends Seeder
             'family_role' => FamilyRole::Parent,
             'date_of_birth' => '1986-03-22',
             'timezone' => 'America/Chicago',
+            'email_preferences' => User::defaultEmailPreferences(),
         ]);
 
         $emma = User::create([
@@ -95,6 +127,7 @@ class DatabaseSeeder extends Seeder
             'family_role' => FamilyRole::Child,
             'date_of_birth' => $now->copy()->subYears(16)->subMonths(3)->toDateString(),
             'timezone' => 'America/Chicago',
+            'email_preferences' => User::defaultEmailPreferences(),
         ]);
 
         $jake = User::create([
@@ -956,5 +989,65 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => $createdAt,
             ]);
         }
+
+        // ─────────────────────────────────────────────
+        //  FEATURED EVENTS
+        // ─────────────────────────────────────────────
+
+        FeaturedEvent::create([
+            'family_id' => $family->id,
+            'created_by' => $mike->id,
+            'title' => "Sarah's Birthday",
+            'description' => 'Happy Birthday Sarah! 🎂',
+            'event_date' => '2026-03-22',
+            'event_time' => null,
+            'icon' => 'cake',
+            'color' => '#EC4899',
+            'recurrence' => 'yearly',
+            'is_active' => true,
+            'is_countdown' => true,
+        ]);
+
+        FeaturedEvent::create([
+            'family_id' => $family->id,
+            'created_by' => $sarah->id,
+            'title' => 'Mom & Dad Anniversary',
+            'description' => 'Celebrating another wonderful year together ❤️',
+            'event_date' => '2026-06-15',
+            'event_time' => null,
+            'icon' => 'heart',
+            'color' => '#EF4444',
+            'recurrence' => 'yearly',
+            'is_active' => true,
+            'is_countdown' => false,
+        ]);
+
+        FeaturedEvent::create([
+            'family_id' => $family->id,
+            'created_by' => $mike->id,
+            'title' => 'Family Game Night',
+            'description' => 'Board games and fun for everyone!',
+            'event_date' => $now->copy()->next('Friday')->toDateString(),
+            'event_time' => '19:00',
+            'icon' => 'game-controller',
+            'color' => '#8B5CF6',
+            'recurrence' => 'weekly',
+            'is_active' => true,
+            'is_countdown' => false,
+        ]);
+
+        FeaturedEvent::create([
+            'family_id' => $family->id,
+            'created_by' => $sarah->id,
+            'title' => 'Spring Break',
+            'description' => 'No school — family trip to the lake!',
+            'event_date' => $now->copy()->addDays(14)->toDateString(),
+            'event_time' => null,
+            'icon' => 'sun',
+            'color' => '#F59E0B',
+            'recurrence' => 'none',
+            'is_active' => true,
+            'is_countdown' => false,
+        ]);
     }
 }
