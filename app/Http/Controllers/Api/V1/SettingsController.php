@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Family;
 use App\Models\User;
 use App\Services\ChatbotService;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +35,7 @@ class SettingsController extends Controller
                     'points' => true,
                     'badges' => true,
                 ],
+                'module_access' => $family->getAllModuleAccess(),
                 'preferences' => $settings['preferences'] ?? [],
                 'leaderboard_period' => $settings['leaderboard_period'] ?? 'weekly',
                 'kudos_cost_enabled' => $settings['kudos_cost_enabled'] ?? false,
@@ -75,6 +77,13 @@ class SettingsController extends Controller
             'modules.chat' => 'nullable|boolean',
             'modules.points' => 'nullable|boolean',
             'modules.badges' => 'nullable|boolean',
+            'module_access' => 'nullable|array',
+            'module_access.*' => 'nullable|array',
+            'module_access.*.mode' => 'required_with:module_access.*|string|in:all,off,roles,users',
+            'module_access.*.roles' => 'nullable|array',
+            'module_access.*.roles.*' => 'string|in:parent,child',
+            'module_access.*.users' => 'nullable|array',
+            'module_access.*.users.*' => 'string|uuid',
             'preferences' => 'nullable|array',
             'leaderboard_period' => 'nullable|string|in:daily,weekly,monthly',
             'kudos_cost_enabled' => 'nullable|boolean',
@@ -97,6 +106,25 @@ class SettingsController extends Controller
                 $settings['modules'] ?? [],
                 $validated['modules']
             );
+        }
+
+        // Granular module_access — replaces legacy boolean modules when present
+        if ($request->filled('module_access')) {
+            $allowed = Family::MODULES;
+            $existing = $settings['module_access'] ?? [];
+
+            foreach ($validated['module_access'] as $module => $rule) {
+                if (! in_array($module, $allowed, true)) {
+                    continue;
+                }
+                $existing[$module] = $rule;
+
+                // Keep the legacy modules key in sync for backward compat
+                $settings['modules'] = $settings['modules'] ?? [];
+                $settings['modules'][$module] = ($rule['mode'] ?? 'all') !== 'off';
+            }
+
+            $settings['module_access'] = $existing;
         }
 
         if ($request->filled('preferences')) {
@@ -156,6 +184,7 @@ class SettingsController extends Controller
                 'id' => $family->id,
                 'name' => $family->name,
                 'modules' => $settings['modules'] ?? [],
+                'module_access' => $family->getAllModuleAccess(),
                 'preferences' => $settings['preferences'] ?? [],
                 'leaderboard_period' => $settings['leaderboard_period'] ?? 'weekly',
                 'kudos_cost_enabled' => $settings['kudos_cost_enabled'] ?? false,

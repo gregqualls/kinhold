@@ -537,30 +537,114 @@
       </div>
     </div>
 
-    <!-- Module Toggles (parent only) -->
+    <!-- Feature Access Control (parent only) -->
     <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">Feature Toggles</h2>
+      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Feature Access Control</h2>
+      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        Control which features each family member can access. Parents always have access unless a feature is turned off entirely.
+      </p>
 
-      <div class="space-y-3">
-        <label
+      <!-- Access control per module -->
+      <div class="space-y-4">
+        <div
           v-for="module in availableModules"
           :key="module.id"
-          class="flex items-center gap-3 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+          class="p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
         >
-          <input
-            v-model="moduleToggles[module.id]"
-            type="checkbox"
-            class="rounded"
-          />
-          <div class="flex-1">
-            <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ module.name }}</p>
-            <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ module.description }}</p>
+          <!-- Module header with quick-action buttons -->
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+            <div>
+              <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ module.name }}</p>
+              <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ module.description }}</p>
+            </div>
+            <div class="flex gap-1.5 shrink-0">
+              <button
+                @click="setModuleMode(module.id, 'all')"
+                :class="[
+                  'px-2.5 py-1 text-xs font-medium rounded-full transition-colors',
+                  moduleAccessState[module.id]?.mode === 'all'
+                    ? 'bg-wisteria-500 text-white'
+                    : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500',
+                ]"
+              >
+                Everyone
+              </button>
+              <button
+                @click="setModuleMode(module.id, 'roles', ['parent'])"
+                :class="[
+                  'px-2.5 py-1 text-xs font-medium rounded-full transition-colors',
+                  moduleAccessState[module.id]?.mode === 'roles'
+                    ? 'bg-wisteria-500 text-white'
+                    : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500',
+                ]"
+              >
+                Parents Only
+              </button>
+              <button
+                @click="setModuleMode(module.id, 'off')"
+                :class="[
+                  'px-2.5 py-1 text-xs font-medium rounded-full transition-colors',
+                  moduleAccessState[module.id]?.mode === 'off'
+                    ? 'bg-red-500 text-white'
+                    : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500',
+                ]"
+              >
+                Off
+              </button>
+              <button
+                @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
+                :class="[
+                  'px-2.5 py-1 text-xs font-medium rounded-full transition-colors',
+                  moduleAccessState[module.id]?.mode === 'users'
+                    ? 'bg-wisteria-500 text-white'
+                    : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500',
+                ]"
+              >
+                Custom
+              </button>
+            </div>
           </div>
-        </label>
+
+          <!-- Per-member checkboxes (shown only in 'users' mode) -->
+          <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-lavender-200 dark:border-prussian-600">
+            <p class="text-xs font-medium text-prussian-400 dark:text-lavender-300 mb-2">Select family members:</p>
+            <div class="flex flex-wrap gap-2">
+              <label
+                v-for="member in familyMembers"
+                :key="member.id"
+                class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-prussian-800 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  :checked="isMemberSelected(module.id, member.id)"
+                  @change="toggleMemberAccess(module.id, member.id)"
+                  class="rounded"
+                  :disabled="(member.family_role || member.role) === 'parent'"
+                />
+                <UserAvatar :user="member" size="xs" />
+                <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ member.name }}</span>
+                <span
+                  v-if="(member.family_role || member.role) === 'parent'"
+                  class="text-xs text-lavender-500 dark:text-lavender-400 italic"
+                >(always)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Mode summary -->
+          <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-2">
+            <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
+            <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
+            <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
+            <template v-else-if="moduleAccessState[module.id]?.mode === 'users'">
+              {{ getSelectedMemberNames(module.id) || 'No members selected (parents always have access).' }}
+            </template>
+          </p>
+        </div>
       </div>
 
       <!-- Leaderboard Period -->
-      <div v-if="moduleToggles.points" class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
+      <div v-if="moduleAccessState.points?.mode !== 'off'" class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
         <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
           Leaderboard Reset Period
         </label>
@@ -902,10 +986,23 @@ const aiConfig = reactive({
   hasSavedKey: false,
 })
 
-// Module toggles
+// Module access (granular)
 const savingModules = ref(false)
-const moduleToggles = reactive({
-  calendar: true, tasks: true, vault: true, chat: true, points: true, badges: true,
+const moduleAccessState = reactive({
+  calendar: { mode: 'all' },
+  tasks: { mode: 'all' },
+  vault: { mode: 'all' },
+  chat: { mode: 'all' },
+  points: { mode: 'all' },
+  badges: { mode: 'all' },
+})
+// Legacy compat: moduleToggles is derived from moduleAccessState
+const moduleToggles = computed(() => {
+  const result = {}
+  for (const mod of Object.keys(moduleAccessState)) {
+    result[mod] = moduleAccessState[mod]?.mode !== 'off'
+  }
+  return result
 })
 const leaderboardPeriod = ref('weekly')
 const kudosCostEnabled = ref(false)
@@ -1045,6 +1142,57 @@ const availableModules = [
   { id: 'points', name: 'Points & Rewards', description: 'Earn points, give kudos, purchase rewards' },
   { id: 'badges', name: 'Badges', description: 'Achievement badges and milestones' },
 ]
+
+// ---- Module access helpers ----
+const setModuleMode = (moduleId, mode, extra = []) => {
+  if (mode === 'all' || mode === 'off') {
+    moduleAccessState[moduleId] = { mode }
+  } else if (mode === 'roles') {
+    moduleAccessState[moduleId] = { mode: 'roles', roles: extra.length ? extra : ['parent'] }
+  } else if (mode === 'users') {
+    // When switching to 'users' mode, pre-select all parent IDs + any previously selected
+    const parentIds = (familyMembers.value || [])
+      .filter((m) => (m.family_role || m.role) === 'parent')
+      .map((m) => m.id)
+    const existing = extra.length ? extra : parentIds
+    moduleAccessState[moduleId] = { mode: 'users', users: [...new Set([...parentIds, ...existing])] }
+  }
+}
+
+const getSelectedUserIds = (moduleId) => {
+  const state = moduleAccessState[moduleId]
+  if (state?.mode === 'users') return state.users || []
+  return []
+}
+
+const isMemberSelected = (moduleId, memberId) => {
+  const state = moduleAccessState[moduleId]
+  if (state?.mode !== 'users') return false
+  return (state.users || []).includes(memberId)
+}
+
+const toggleMemberAccess = (moduleId, memberId) => {
+  const state = moduleAccessState[moduleId]
+  if (state?.mode !== 'users') return
+  const users = state.users || []
+  const idx = users.indexOf(memberId)
+  if (idx >= 0) {
+    users.splice(idx, 1)
+  } else {
+    users.push(memberId)
+  }
+  moduleAccessState[moduleId] = { ...state, users: [...users] }
+}
+
+const getSelectedMemberNames = (moduleId) => {
+  const state = moduleAccessState[moduleId]
+  if (state?.mode !== 'users') return ''
+  const userIds = state.users || []
+  const members = (familyMembers.value || []).filter((m) => userIds.includes(m.id))
+  if (members.length === 0) return ''
+  const names = members.map((m) => m.name).join(', ')
+  return `Access: ${names}`
+}
 
 // ---- Family name ----
 const updateFamily = async () => {
@@ -1337,8 +1485,19 @@ const saveAiSettings = async () => {
 const saveModuleSettings = async () => {
   savingModules.value = true
   try {
+    // Build the module_access payload from local state
+    const module_access = {}
+    for (const mod of availableModules) {
+      const state = moduleAccessState[mod.id]
+      if (!state) continue
+      const rule = { mode: state.mode }
+      if (state.mode === 'roles') rule.roles = state.roles || ['parent']
+      if (state.mode === 'users') rule.users = state.users || []
+      module_access[mod.id] = rule
+    }
+
     await api.put('/settings', {
-      modules: { ...moduleToggles },
+      module_access,
       leaderboard_period: leaderboardPeriod.value,
       kudos_cost_enabled: kudosCostEnabled.value,
     })
@@ -1389,15 +1548,20 @@ const saveTaskAssignment = async () => {
 onMounted(async () => {
   familyForm.name = family.value?.name || ''
 
-  // Initialize module toggles
+  // Initialize module access state from the API-provided module_access map
   const settings = family.value?.settings || {}
-  const modules = settings.modules || {}
-  moduleToggles.calendar = modules.calendar !== false
-  moduleToggles.tasks = modules.tasks !== false
-  moduleToggles.vault = modules.vault !== false
-  moduleToggles.chat = modules.chat !== false
-  moduleToggles.points = modules.points !== false
-  moduleToggles.badges = modules.badges !== false
+  const moduleAccessFromApi = family.value?.module_access || {}
+  const legacyModules = settings.modules || {}
+
+  for (const mod of availableModules) {
+    if (moduleAccessFromApi[mod.id]) {
+      // Use granular access data
+      moduleAccessState[mod.id] = { ...moduleAccessFromApi[mod.id] }
+    } else {
+      // Fall back to legacy boolean
+      moduleAccessState[mod.id] = { mode: legacyModules[mod.id] === false ? 'off' : 'all' }
+    }
+  }
   leaderboardPeriod.value = settings.leaderboard_period || 'weekly'
   kudosCostEnabled.value = settings.kudos_cost_enabled ?? false
 
