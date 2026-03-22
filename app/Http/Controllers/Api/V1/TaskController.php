@@ -151,7 +151,7 @@ class TaskController extends Controller
         }
 
         return response()->json([
-            'task' => TaskResource::make($task->load(['creator', 'assignee', 'tags'])),
+            'task' => TaskResource::make($task->load(['creator', 'assignee', 'tags', 'family'])),
         ], 201);
     }
 
