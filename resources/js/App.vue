@@ -90,6 +90,7 @@ import EasterEggs from '@/components/common/EasterEggs.vue'
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { useNotification } from '@/composables/useNotification'
 import { useDarkMode } from '@/composables/useDarkMode'
+import { useTheme } from '@/composables/useTheme'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -97,7 +98,9 @@ const { notifications } = useNotification()
 const { isLoading, currentUser, family } = storeToRefs(authStore)
 const familyName = computed(() => family.value?.name || 'Q32 Hub')
 const { init: initDarkMode } = useDarkMode()
+const { init: initTheme } = useTheme()
 initDarkMode()
+initTheme()
 
 const easterEggsRef = ref(null)
 provide('easterEggs', easterEggsRef)
