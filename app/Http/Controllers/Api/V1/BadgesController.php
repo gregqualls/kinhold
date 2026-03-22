@@ -28,6 +28,14 @@ class BadgesController extends Controller
             BadgeService::createDefaultBadges($family->id, $user->id);
         }
 
+        // Always check for newly earned badges on page load — catches up on
+        // progress from tasks/points earned before badges were created
+        $this->badgeService->checkAndAwardBadges($user);
+
+        // Catch up on easter egg badges that may have been found but not awarded
+        // (e.g. eggs discovered before badges existed, or silent API failures)
+        $this->awardMissingEasterEggBadges($user);
+
         $badges = Badge::where('family_id', $family->id)
             ->where('is_active', true)
             ->orderBy('sort_order')
@@ -293,6 +301,42 @@ class BadgesController extends Controller
         return response()->json([
             'badges' => $badges,
         ]);
+    }
+
+    /**
+     * Award any easter egg badges the user has found but hasn't been awarded yet.
+     * Handles cases where eggs were discovered before badges existed or API calls failed silently.
+     */
+    private function awardMissingEasterEggBadges(User $user): void
+    {
+        $found = $user->easter_eggs_found ?? [];
+        if (empty($found)) {
+            return;
+        }
+
+        $badgeNameMap = [
+            'konami' => 'Code Breaker',
+            'seven_ate_nine' => 'Number Cruncher',
+            'party_mode' => 'Party Animal',
+            'mirror' => 'Mirror Mirror',
+            'matrix' => 'Red Pill',
+            'disco' => 'Disco Inferno',
+        ];
+
+        foreach ($found as $eggKey) {
+            $badgeName = $badgeNameMap[$eggKey] ?? null;
+            if (!$badgeName) {
+                continue;
+            }
+
+            $badge = Badge::where('family_id', $user->family_id)
+                ->where('name', $badgeName)
+                ->first();
+
+            if ($badge && !$user->badges()->where('badges.id', $badge->id)->exists()) {
+                $this->badgeService->manuallyAward($badge, $user, $user);
+            }
+        }
     }
 
     /**
