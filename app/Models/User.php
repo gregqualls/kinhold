@@ -33,6 +33,7 @@ class User extends Authenticatable
         'avatar',
         'date_of_birth',
         'timezone',
+        'email_preferences',
     ];
 
     /**
@@ -58,6 +59,7 @@ class User extends Authenticatable
             'family_role' => FamilyRole::class,
             'date_of_birth' => 'date',
             'is_managed' => 'boolean',
+            'email_preferences' => 'json',
         ];
     }
 
@@ -231,5 +233,33 @@ class User extends Authenticatable
     public function hasSufficientPoints(int $cost): bool
     {
         return $this->pointBank() >= $cost;
+    }
+
+    /**
+     * Get the default email preferences.
+     */
+    public static function defaultEmailPreferences(): array
+    {
+        return [
+            'email_task_completed' => true,
+            'email_task_assigned' => true,
+            'email_weekly_digest' => true,
+            'email_family_invite' => true,
+        ];
+    }
+
+    /**
+     * Get a specific email preference (defaults to true if not set).
+     */
+    public function wantsEmail(string $key): bool
+    {
+        // Managed accounts without email never get emails
+        if (!$this->email) {
+            return false;
+        }
+
+        $prefs = $this->email_preferences ?? self::defaultEmailPreferences();
+
+        return $prefs[$key] ?? true;
     }
 }

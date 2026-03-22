@@ -7,9 +7,12 @@ use App\Http\Resources\FamilyResource;
 use App\Http\Resources\UserResource;
 use App\Models\Family;
 use App\Models\User;
+use App\Notifications\FamilyInviteNotification;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -55,6 +58,7 @@ class FamilyController extends Controller
 
     /**
      * Generate an invite link/code for adding family members (parent only).
+     * Optionally send an invite email if an email address is provided.
      */
     public function invite(Request $request): JsonResponse
     {
@@ -63,6 +67,10 @@ class FamilyController extends Controller
 
         $this->authorize('invite', $family);
 
+        $request->validate([
+            'email' => 'nullable|email',
+        ]);
+
         // Generate invite code if not exists
         if (!$family->invite_code) {
             $family->update([
@@ -70,9 +78,20 @@ class FamilyController extends Controller
             ]);
         }
 
+        // Send invite email if email address provided
+        $emailSent = false;
+        if ($request->filled('email')) {
+            Notification::route('mail', $request->input('email'))
+                ->notify(new FamilyInviteNotification($family, $family->invite_code, $user->name));
+            $emailSent = true;
+        }
+
         return response()->json([
             'invite_code' => $family->invite_code,
-            'message' => 'Share this code with family members so they can join during registration',
+            'email_sent' => $emailSent,
+            'message' => $emailSent
+                ? "Invite email sent to {$request->input('email')}"
+                : 'Share this code with family members so they can join during registration',
         ], 200);
     }
 
@@ -107,6 +126,11 @@ class FamilyController extends Controller
             'is_managed' => $isManaged,
             'managed_by' => $isManaged ? $user->id : null,
         ]);
+
+        // Send welcome email if the member has an email and send_email was requested
+        if ($member->email && ($request->boolean('send_email') || !$isManaged)) {
+            $member->notify(new WelcomeNotification($family, false));
+        }
 
         return response()->json([
             'member' => UserResource::make($member),

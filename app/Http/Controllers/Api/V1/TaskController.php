@@ -8,6 +8,9 @@ use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Models\TaskList;
+use App\Models\User;
+use App\Notifications\TaskAssignedNotification;
+use App\Notifications\TaskCompletedNotification;
 use App\Services\BadgeService;
 use App\Services\PointsService;
 use Carbon\Carbon;
@@ -139,6 +142,14 @@ class TaskController extends Controller
             $task->tags()->sync($validated['tag_ids']);
         }
 
+        // Notify assignee if task is assigned to someone other than the creator
+        if ($task->assigned_to && $task->assigned_to !== $request->user()->id) {
+            $assignee = User::find($task->assigned_to);
+            if ($assignee) {
+                $assignee->notify(new TaskAssignedNotification($task, $request->user()));
+            }
+        }
+
         return response()->json([
             'task' => TaskResource::make($task->load(['creator', 'assignee', 'tags'])),
         ], 201);
@@ -167,6 +178,9 @@ class TaskController extends Controller
 
         $validated = $request->validated();
 
+        // Track if assignee is changing
+        $previousAssignee = $task->assigned_to;
+
         // Validate assigned_to user is in same family if being changed
         if ($request->filled('assigned_to') && ($validated['assigned_to'] ?? null) !== $task->assigned_to) {
             $family = $request->user()->currentFamily()->firstOrFail();
@@ -182,6 +196,15 @@ class TaskController extends Controller
         // Sync tags if provided
         if ($tagIds !== null) {
             $task->tags()->sync($tagIds);
+        }
+
+        // Notify new assignee if assignment changed
+        $newAssignee = $task->assigned_to;
+        if ($newAssignee && $newAssignee !== $previousAssignee && $newAssignee !== $request->user()->id) {
+            $assignee = User::find($newAssignee);
+            if ($assignee) {
+                $assignee->notify(new TaskAssignedNotification($task, $request->user()));
+            }
         }
 
         return response()->json([
@@ -219,6 +242,15 @@ class TaskController extends Controller
 
         // Check for newly earned badges
         $newBadges = $this->badgeService->checkAndAwardBadges($user);
+
+        // Notify family members about task completion
+        $family = $user->currentFamily()->firstOrFail();
+        $family->members()
+            ->where('id', '!=', $user->id)
+            ->get()
+            ->each(function (User $member) use ($task, $user) {
+                $member->notify(new TaskCompletedNotification($task, $user));
+            });
 
         $response = [
             'task' => TaskResource::make($task->load(['creator', 'assignee', 'tags'])),
