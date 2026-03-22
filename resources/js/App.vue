@@ -11,9 +11,18 @@
       <!-- Mobile Header -->
       <div v-if="!isAuthPage" class="md:hidden bg-white dark:bg-prussian-800 px-4 py-2.5 flex items-center justify-between border-b border-lavender-200 dark:border-prussian-700">
         <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ familyName }}</p>
-        <RouterLink to="/settings" class="flex items-center gap-2">
-          <UserAvatar :user="currentUser" size="sm" class="ring-2 ring-lavender-300 dark:ring-prussian-600" />
-        </RouterLink>
+        <div class="flex items-center gap-2">
+          <RouterLink
+            to="/settings"
+            class="p-1.5 rounded-lg text-lavender-500 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
+            aria-label="Settings"
+          >
+            <Cog6ToothIcon class="w-5 h-5" />
+          </RouterLink>
+          <RouterLink to="/settings" class="flex items-center">
+            <UserAvatar :user="currentUser" size="sm" class="ring-2 ring-lavender-300 dark:ring-prussian-600" />
+          </RouterLink>
+        </div>
       </div>
 
       <!-- Main Area -->
@@ -78,6 +87,7 @@ import BottomNav from '@/components/layout/BottomNav.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
 import EasterEggs from '@/components/common/EasterEggs.vue'
+import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { useNotification } from '@/composables/useNotification'
 import { useDarkMode } from '@/composables/useDarkMode'
 
