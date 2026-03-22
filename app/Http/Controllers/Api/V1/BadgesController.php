@@ -16,11 +16,17 @@ class BadgesController extends Controller
 
     /**
      * List family badges with earned status and progress for current user.
+     * Auto-creates default badges if the family has none yet.
      */
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
         $family = $user->currentFamily()->firstOrFail();
+
+        // Auto-create default badges for families that have none
+        if (Badge::where('family_id', $family->id)->count() === 0) {
+            BadgeService::createDefaultBadges($family->id, $user->id);
+        }
 
         $badges = Badge::where('family_id', $family->id)
             ->where('is_active', true)
