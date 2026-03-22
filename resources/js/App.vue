@@ -61,11 +61,14 @@
         <LoadingSpinner size="lg" color="white" />
       </div>
     </Transition>
+
+    <!-- Easter Eggs -->
+    <EasterEggs v-if="!isAuthPage" ref="easterEggsRef" />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
@@ -74,6 +77,7 @@ import TopBar from '@/components/layout/TopBar.vue'
 import BottomNav from '@/components/layout/BottomNav.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
+import EasterEggs from '@/components/common/EasterEggs.vue'
 import { useNotification } from '@/composables/useNotification'
 import { useDarkMode } from '@/composables/useDarkMode'
 
@@ -84,6 +88,9 @@ const { isLoading, currentUser, family } = storeToRefs(authStore)
 const familyName = computed(() => family.value?.name || 'Q32 Hub')
 const { init: initDarkMode } = useDarkMode()
 initDarkMode()
+
+const easterEggsRef = ref(null)
+provide('easterEggs', easterEggsRef)
 
 const isAuthPage = computed(() => {
   return ['Login', 'Register'].includes(route.name)

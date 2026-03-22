@@ -54,6 +54,17 @@ class BadgeService
             // --- Login Streak progression ---
             ['name' => 'Consistent', 'description' => 'Log in 7 days in a row', 'icon' => 'check-circle', 'color' => '#2563eb', 'trigger_type' => BadgeTriggerType::LoginStreak, 'trigger_threshold' => 7, 'is_hidden' => false, 'sort_order' => 18],
             ['name' => 'Dedicated', 'description' => 'Log in 30 days in a row', 'icon' => 'infinity', 'color' => '#7c3aed', 'trigger_type' => BadgeTriggerType::LoginStreak, 'trigger_threshold' => 30, 'is_hidden' => true, 'sort_order' => 19],
+
+            // --- Easter Egg Discoveries (individual eggs — custom type, awarded directly) ---
+            ['name' => 'Code Breaker', 'description' => 'Cracked the Konami Code', 'icon' => 'key', 'color' => '#059669', 'trigger_type' => BadgeTriggerType::Custom, 'trigger_threshold' => null, 'is_hidden' => true, 'sort_order' => 20],
+            ['name' => 'Number Cruncher', 'description' => 'Why was 6 afraid of 7?', 'icon' => 'hashtag', 'color' => '#f59e0b', 'trigger_type' => BadgeTriggerType::Custom, 'trigger_threshold' => null, 'is_hidden' => true, 'sort_order' => 21],
+            ['name' => 'Party Animal', 'description' => 'Started a legendary party', 'icon' => 'sun', 'color' => '#ec4899', 'trigger_type' => BadgeTriggerType::Custom, 'trigger_threshold' => null, 'is_hidden' => true, 'sort_order' => 22],
+            ['name' => 'Mirror Mirror', 'description' => 'Saw everything backwards', 'icon' => 'eye', 'color' => '#06b6d4', 'trigger_type' => BadgeTriggerType::Custom, 'trigger_threshold' => null, 'is_hidden' => true, 'sort_order' => 23],
+            ['name' => 'Red Pill', 'description' => 'Entered the digital rain', 'icon' => 'lightning', 'color' => '#22c55e', 'trigger_type' => BadgeTriggerType::Custom, 'trigger_threshold' => null, 'is_hidden' => true, 'sort_order' => 24],
+            ['name' => 'Disco Inferno', 'description' => 'Got the groove going', 'icon' => 'music-note', 'color' => '#a855f7', 'trigger_type' => BadgeTriggerType::Custom, 'trigger_threshold' => null, 'is_hidden' => true, 'sort_order' => 25],
+
+            // --- Master Explorer (auto-triggered when all 6 eggs found) ---
+            ['name' => 'Master Explorer', 'description' => 'Found every single easter egg!', 'icon' => 'compass', 'color' => '#d97706', 'trigger_type' => BadgeTriggerType::EasterEgg, 'trigger_threshold' => 6, 'is_hidden' => true, 'sort_order' => 26],
         ];
 
         $badges = collect();
@@ -141,6 +152,7 @@ class BadgeService
             BadgeTriggerType::RewardsPurchased => $this->getRewardsPurchased($user),
             BadgeTriggerType::LoginStreak => $this->getLoginStreak($user),
             BadgeTriggerType::Custom => 0,
+            BadgeTriggerType::EasterEgg => $this->getEasterEggsFound($user),
         };
     }
 
@@ -205,6 +217,11 @@ class BadgeService
         return $user->pointTransactions()
             ->where('type', PointTransactionType::Redemption)
             ->count();
+    }
+
+    private function getEasterEggsFound(User $user): int
+    {
+        return count($user->easter_eggs_found ?? []);
     }
 
     private function getLoginStreak(User $user): int

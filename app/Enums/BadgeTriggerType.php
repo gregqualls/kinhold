@@ -12,6 +12,7 @@ enum BadgeTriggerType: string
     case RewardsPurchased = 'rewards_purchased';
     case LoginStreak = 'login_streak';
     case Custom = 'custom';
+    case EasterEgg = 'easter_egg';
 
     public function label(): string
     {
@@ -24,6 +25,7 @@ enum BadgeTriggerType: string
             self::RewardsPurchased => 'Rewards Purchased',
             self::LoginStreak => 'Login Streak',
             self::Custom => 'Custom',
+            self::EasterEgg => 'Easter Egg',
         };
     }
 }
