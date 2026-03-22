@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\TagController;
 use App\Http\Controllers\Api\V1\PointsController;
 use App\Http\Controllers\Api\V1\RewardsController;
 use App\Http\Controllers\Api\V1\BadgesController;
+use App\Http\Controllers\Api\V1\FeaturedEventController;
 
 Route::prefix('v1')->group(function () {
     // Auth routes (no authentication required)
@@ -130,6 +131,14 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{badge}/revoke/{user}', [BadgesController::class, 'revoke']);
             Route::get('/earned', [BadgesController::class, 'earned']);
             Route::post('/easter-egg', [BadgesController::class, 'easterEgg']);
+        });
+
+        // Featured Events
+        Route::prefix('/featured-events')->group(function () {
+            Route::get('/', [FeaturedEventController::class, 'index']);
+            Route::post('/', [FeaturedEventController::class, 'store']);
+            Route::put('/{featuredEvent}', [FeaturedEventController::class, 'update']);
+            Route::delete('/{featuredEvent}', [FeaturedEventController::class, 'destroy']);
         });
 
         // Settings
