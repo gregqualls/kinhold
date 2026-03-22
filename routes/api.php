@@ -129,6 +129,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/{badge}/award', [BadgesController::class, 'award']);
             Route::delete('/{badge}/revoke/{user}', [BadgesController::class, 'revoke']);
             Route::get('/earned', [BadgesController::class, 'earned']);
+            Route::post('/easter-egg', [BadgesController::class, 'easterEgg']);
         });
 
         // Settings

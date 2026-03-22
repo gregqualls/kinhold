@@ -89,7 +89,7 @@ class BadgesController extends Controller
             'description' => 'required|string|max:500',
             'icon' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:20',
-            'trigger_type' => 'required|string|in:points_earned,tasks_completed,task_streak,kudos_received,kudos_given,rewards_purchased,login_streak,custom',
+            'trigger_type' => 'required|string|in:points_earned,tasks_completed,task_streak,kudos_received,kudos_given,rewards_purchased,login_streak,custom,easter_egg',
             'trigger_threshold' => 'nullable|integer|min:1',
             'is_hidden' => 'nullable|boolean',
         ]);
@@ -193,6 +193,67 @@ class BadgesController extends Controller
 
         return response()->json([
             'message' => "Revoked '{$badge->name}' from {$targetUser->name}",
+        ]);
+    }
+
+    /**
+     * Record an easter egg discovery and award corresponding badge.
+     */
+    public function easterEgg(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'egg_key' => 'required|string|in:konami,seven_ate_nine,party_mode,mirror,matrix,disco',
+        ]);
+
+        $user = $request->user();
+        $found = $user->easter_eggs_found ?? [];
+
+        // Already found this one
+        if (in_array($validated['egg_key'], $found)) {
+            return response()->json(['already_found' => true, 'badges' => []]);
+        }
+
+        // Record the discovery
+        $found[] = $validated['egg_key'];
+        $user->easter_eggs_found = $found;
+        $user->save();
+
+        // Map egg keys to badge names
+        $badgeNameMap = [
+            'konami' => 'Code Breaker',
+            'seven_ate_nine' => 'Number Cruncher',
+            'party_mode' => 'Party Animal',
+            'mirror' => 'Mirror Mirror',
+            'matrix' => 'Red Pill',
+            'disco' => 'Disco Inferno',
+        ];
+
+        $badgeName = $badgeNameMap[$validated['egg_key']];
+        $badge = Badge::where('family_id', $user->family_id)
+            ->where('name', $badgeName)
+            ->first();
+
+        $newBadges = [];
+
+        if ($badge && !$user->badges()->where('badges.id', $badge->id)->exists()) {
+            $this->badgeService->manuallyAward($badge, $user, $user);
+            $newBadges[] = $badge;
+        }
+
+        // Check for Master Explorer (all 6 found)
+        $masterBadges = $this->badgeService->checkAndAwardBadges($user);
+        $newBadges = array_merge($newBadges, $masterBadges);
+
+        return response()->json([
+            'already_found' => false,
+            'total_found' => count($found),
+            'badges' => collect($newBadges)->map(fn($b) => [
+                'id' => $b->id,
+                'name' => $b->name,
+                'description' => $b->description,
+                'icon' => $b->icon,
+                'color' => $b->color,
+            ]),
         ]);
     }
 
