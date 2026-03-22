@@ -114,4 +114,22 @@ class Family extends Model
     {
         return $this->settings['enabled_modules'] ?? ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges'];
     }
+
+    /**
+     * Get the default points for a given task priority.
+     *
+     * Falls back to hardcoded defaults if not configured.
+     */
+    public function getDefaultPoints(string $priority): int
+    {
+        $defaults = [
+            'low' => 5,
+            'medium' => 10,
+            'high' => 20,
+        ];
+
+        $key = 'default_points_' . $priority;
+
+        return (int) ($this->settings[$key] ?? $defaults[$priority] ?? 10);
+    }
 }

@@ -207,7 +207,7 @@ class Task extends Model
     }
 
     /**
-     * Get effective points for this task (explicit or priority default).
+     * Get effective points for this task (explicit or family-configured default or hardcoded default).
      */
     public function getEffectivePoints(): int
     {
@@ -215,7 +215,18 @@ class Task extends Model
             return $this->points;
         }
 
-        return self::PRIORITY_POINTS[$this->priority?->value ?? 'medium'] ?? 10;
+        $priority = $this->priority?->value ?? 'medium';
+
+        // Use family-configured defaults if available
+        try {
+            if ($this->family_id && $this->family) {
+                return $this->family->getDefaultPoints($priority);
+            }
+        } catch (\Throwable $e) {
+            // Fallback to hardcoded defaults if family can't be loaded
+        }
+
+        return self::PRIORITY_POINTS[$priority] ?? 10;
     }
 
     /**
