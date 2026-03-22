@@ -9,6 +9,7 @@ use App\Models\PointTransaction;
 use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class BadgeService
 {
@@ -117,6 +118,7 @@ class BadgeService
 
             if ($currentValue >= $badge->trigger_threshold) {
                 $user->badges()->attach($badge->id, [
+                    'id' => Str::uuid(),
                     'earned_at' => now(),
                     'awarded_by' => null,
                 ]);
@@ -137,6 +139,7 @@ class BadgeService
         }
 
         $user->badges()->attach($badge->id, [
+            'id' => Str::uuid(),
             'earned_at' => now(),
             'awarded_by' => $awardedBy->id,
         ]);
