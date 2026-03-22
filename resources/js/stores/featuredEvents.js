@@ -5,6 +5,7 @@ import api from '@/services/api'
 
 export const useFeaturedEventsStore = defineStore('featuredEvents', () => {
   const events = ref([])
+  const countdownEvent = ref(null)
   const isLoading = ref(false)
   const error = ref(null)
 
@@ -87,20 +88,69 @@ export const useFeaturedEventsStore = defineStore('featuredEvents', () => {
     try {
       await api.delete(`/featured-events/${id}`)
       events.value = events.value.filter((e) => e.id !== id)
+      // If the deleted event was the countdown, clear it
+      if (countdownEvent.value?.id === id) {
+        countdownEvent.value = null
+      }
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to delete event'
       throw err
     }
   }
 
+  const fetchCountdown = async () => {
+    try {
+      const response = await api.get('/featured-events/countdown')
+      countdownEvent.value = response.data.countdown_event
+    } catch (err) {
+      console.error('Failed to fetch countdown event:', err)
+    }
+  }
+
+  const setCountdown = async (id) => {
+    error.value = null
+    try {
+      const response = await api.put(`/featured-events/${id}/countdown`)
+      const updatedEvent = response.data.featured_event
+
+      // Update the event in the events list
+      const index = events.value.findIndex((e) => e.id === id)
+      if (index !== -1) {
+        events.value[index] = updatedEvent
+      }
+
+      // Clear is_countdown on all other events in local state
+      events.value.forEach((e) => {
+        if (e.id !== id) {
+          e.is_countdown = false
+        }
+      })
+
+      // Update countdown event ref
+      if (updatedEvent.is_countdown) {
+        countdownEvent.value = updatedEvent
+      } else {
+        countdownEvent.value = null
+      }
+
+      return updatedEvent
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to set countdown'
+      throw err
+    }
+  }
+
   return {
     events,
+    countdownEvent,
     isLoading,
     error,
     upcomingEvents,
     todayEvents,
     getCountdown,
     fetchEvents,
+    fetchCountdown,
+    setCountdown,
     createEvent,
     updateEvent,
     deleteEvent,
