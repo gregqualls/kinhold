@@ -196,10 +196,9 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // Module-gated routes
+  // Module-gated routes — uses granular per-user access
   if (to.meta.module) {
-    const modules = authStore.enabledModules
-    if (modules[to.meta.module] === false) {
+    if (!authStore.userCanAccessModule(to.meta.module)) {
       return next({ name: 'Dashboard' })
     }
   }

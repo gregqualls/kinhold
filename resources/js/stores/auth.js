@@ -14,20 +14,69 @@ export const useAuthStore = defineStore('auth', () => {
   const isParent = computed(() => user.value?.role === 'parent')
   const familyMembers = computed(() => family.value?.members || [])
   const currentUser = computed(() => user.value)
-  const enabledModules = computed(() => {
-    const settings = family.value?.settings || {}
-    const modules = settings.modules || {}
-    return {
-      calendar: modules.calendar !== false,
-      tasks: modules.tasks !== false,
-      vault: modules.vault !== false,
-      chat: modules.chat !== false,
-      points: modules.points !== false,
-      badges: modules.badges !== false,
-    }
+  /**
+   * Granular module access map from the API.
+   * Each key is a module name, value is { mode, roles?, users? }.
+   */
+  const moduleAccess = computed(() => {
+    return family.value?.module_access || {}
   })
+
+  /**
+   * Check whether the current user can access a specific module.
+   *
+   * Parents always have access unless the module is globally 'off'.
+   * Backward-compatible: if no module_access data exists, falls back to
+   * the legacy boolean settings.modules toggle.
+   */
+  const userCanAccessModule = (moduleName) => {
+    const access = moduleAccess.value[moduleName]
+    const currentUserId = user.value?.id
+    const currentRole = user.value?.role || user.value?.family_role
+
+    // If we have no granular access data, fall back to legacy
+    if (!access) {
+      const settings = family.value?.settings || {}
+      const modules = settings.modules || {}
+      return modules[moduleName] !== false
+    }
+
+    const mode = access.mode || 'all'
+
+    if (mode === 'off') return false
+    if (mode === 'all') return true
+
+    // Parents always have access when not 'off'
+    if (currentRole === 'parent') return true
+
+    if (mode === 'roles') {
+      const allowedRoles = access.roles || []
+      return allowedRoles.includes(currentRole)
+    }
+
+    if (mode === 'users') {
+      const allowedUsers = access.users || []
+      return allowedUsers.includes(currentUserId)
+    }
+
+    return false
+  }
+
+  /**
+   * Legacy computed — now backed by the granular system.
+   * Returns a map of { moduleName: boolean } for the current user.
+   */
+  const enabledModules = computed(() => {
+    const modules = ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges']
+    const result = {}
+    for (const mod of modules) {
+      result[mod] = userCanAccessModule(mod)
+    }
+    return result
+  })
+
   const isModuleEnabled = computed(() => (moduleName) => {
-    return enabledModules.value[moduleName] !== false
+    return userCanAccessModule(moduleName)
   })
 
   // Actions
@@ -234,6 +283,8 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser,
     enabledModules,
     isModuleEnabled,
+    moduleAccess,
+    userCanAccessModule,
 
     // Actions
     login,
