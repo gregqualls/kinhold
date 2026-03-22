@@ -5,7 +5,7 @@
       class="input-base text-sm py-2 flex-shrink-0 w-32"
     >
       <option value="">Select...</option>
-      <option v-for="member in members" :key="member.id" :value="member.id">
+      <option v-for="member in otherMembers" :key="member.id" :value="member.id">
         {{ member.name }}
       </option>
     </select>
@@ -29,14 +29,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 
-defineProps({
+const props = defineProps({
   members: {
     type: Array,
     default: () => [],
   },
 })
+
+const authStore = useAuthStore()
+
+// Filter out the current user so they can't give kudos to themselves
+const otherMembers = computed(() =>
+  props.members.filter(m => m.id !== authStore.currentUser?.id)
+)
 
 const emit = defineEmits(['kudos'])
 
