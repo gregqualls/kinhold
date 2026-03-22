@@ -49,7 +49,7 @@ const authStore = useAuthStore()
 const { enabledModules } = storeToRefs(authStore)
 
 const navItems = [
-  { label: 'Home', path: '/', icon: HomeIcon, iconSolid: HomeIconSolid, name: 'Dashboard', module: null },
+  { label: 'Home', path: '/dashboard', icon: HomeIcon, iconSolid: HomeIconSolid, name: 'Dashboard', module: null },
   { label: 'Calendar', path: '/calendar', icon: CalendarIcon, iconSolid: CalendarIconSolid, name: 'Calendar', module: 'calendar' },
   { label: 'Tasks', path: '/tasks', icon: CheckCircleIcon, iconSolid: CheckCircleIconSolid, name: 'Tasks', module: 'tasks' },
   { label: 'Points', path: '/points', icon: TrophyIcon, iconSolid: TrophyIconSolid, name: 'Points', module: 'points' },

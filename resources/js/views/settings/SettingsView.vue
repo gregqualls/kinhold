@@ -1155,7 +1155,7 @@ const handleSwitchToProfile = async () => {
   if (result.success) {
     success(result.message)
     closeSwitchToModal()
-    router.push('/')
+    router.push('/dashboard')
   } else {
     notificationError(result.error)
     closeSwitchToModal()

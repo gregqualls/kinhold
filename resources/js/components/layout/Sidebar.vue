@@ -94,7 +94,7 @@ const onLogoClick = () => {
 }
 
 const navItems = [
-  { label: 'Dashboard', path: '/', icon: HomeIcon, name: 'Dashboard', module: null },
+  { label: 'Dashboard', path: '/dashboard', icon: HomeIcon, name: 'Dashboard', module: null },
   { label: 'Calendar', path: '/calendar', icon: CalendarIcon, name: 'Calendar', module: 'calendar' },
   { label: 'Tasks', path: '/tasks', icon: CheckCircleIcon, name: 'Tasks', module: 'tasks' },
   { label: 'Vault', path: '/vault', icon: LockClosedIcon, name: 'Vault', module: 'vault' },
