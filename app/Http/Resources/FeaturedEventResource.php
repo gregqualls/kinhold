@@ -21,6 +21,7 @@ class FeaturedEventResource extends JsonResource
             'recurrence' => $this->recurrence,
             'recurrence_label' => $this->recurrence_label,
             'is_active' => $this->is_active,
+            'is_countdown' => $this->is_countdown,
             'creator' => UserResource::make($this->whenLoaded('creator')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
