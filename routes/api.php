@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\ChatController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\TagController;
 use App\Http\Controllers\Api\V1\PointsController;
+use App\Http\Controllers\Api\V1\PointRequestController;
 use App\Http\Controllers\Api\V1\RewardsController;
 use App\Http\Controllers\Api\V1\BadgesController;
 use App\Http\Controllers\Api\V1\FeaturedEventController;
@@ -109,6 +110,10 @@ Route::prefix('v1')->group(function () {
             Route::get('/feed', [PointsController::class, 'feed']);
             Route::post('/kudos', [PointsController::class, 'kudos']);
             Route::post('/deduct', [PointsController::class, 'deduct']);
+            Route::get('/requests', [PointRequestController::class, 'index']);
+            Route::post('/request', [PointRequestController::class, 'store']);
+            Route::post('/requests/{pointRequest}/approve', [PointRequestController::class, 'approve']);
+            Route::post('/requests/{pointRequest}/deny', [PointRequestController::class, 'deny']);
         });
 
         // Rewards

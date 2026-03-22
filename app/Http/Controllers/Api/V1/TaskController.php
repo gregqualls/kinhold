@@ -121,6 +121,12 @@ class TaskController extends Controller
             $family->members()->findOrFail($validated['assigned_to']);
         }
 
+        // Children cannot set custom points on tasks — only parents can
+        $points = $validated['points'] ?? null;
+        if (!$request->user()->isParent()) {
+            $points = null;
+        }
+
         $task = Task::create([
             'family_id' => $family->id,
             'task_list_id' => $validated['task_list_id'] ?? null,
@@ -131,7 +137,7 @@ class TaskController extends Controller
             'due_date' => $validated['due_date'] ?? null,
             'priority' => $validated['priority'] ?? 'medium',
             'is_family_task' => $validated['is_family_task'] ?? false,
-            'points' => $validated['points'] ?? null,
+            'points' => $points,
             'recurrence_rule' => $validated['recurrence_rule'] ?? null,
             'recurrence_end' => $validated['recurrence_end'] ?? null,
             'sort_order' => Task::where('family_id', $family->id)->max('sort_order') + 1,
@@ -187,6 +193,11 @@ class TaskController extends Controller
             $family->members()->findOrFail($validated['assigned_to']);
         }
 
+        // Children cannot set custom points on tasks — only parents can
+        if (!$request->user()->isParent() && array_key_exists('points', $validated)) {
+            unset($validated['points']);
+        }
+
         // Extract tag_ids before update
         $tagIds = $validated['tag_ids'] ?? null;
         unset($validated['tag_ids']);
@@ -237,8 +248,15 @@ class TaskController extends Controller
             'completed_at' => now(),
         ]);
 
-        // Award points
-        $transaction = $this->pointsService->awardTaskPoints($task, $user);
+        // Children cannot earn points from tasks they created themselves
+        // (prevents gaming: create task → set points → complete for free points)
+        $skipPoints = !$user->isParent()
+            && $task->created_by === $user->id;
+
+        // Award points (0 if self-created by a child)
+        $transaction = $skipPoints
+            ? $this->pointsService->awardTaskPoints($task, $user, forceZero: true)
+            : $this->pointsService->awardTaskPoints($task, $user);
 
         // Check for newly earned badges
         $newBadges = $this->badgeService->checkAndAwardBadges($user);
