@@ -7,6 +7,7 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 
 // Public Views
 import LandingView from '@/views/LandingView.vue'
+const PrivacyPolicyView = () => import('@/views/PrivacyPolicyView.vue')
 
 // App Views
 import DashboardView from '@/views/dashboard/DashboardView.vue'
@@ -31,6 +32,14 @@ const routes = [
     name: 'Landing',
     component: LandingView,
     meta: { isPublic: true },
+  },
+
+  // Privacy Policy (accessible by anyone, no redirect)
+  {
+    path: '/privacy',
+    name: 'Privacy',
+    component: PrivacyPolicyView,
+    meta: { isOpen: true },
   },
 
   // Auth routes
@@ -143,6 +152,11 @@ router.beforeEach(async (to, from, next) => {
   // Wait for initial auth check to complete before making routing decisions
   if (!authStore.initialAuthChecked) {
     await authStore.initAuth()
+  }
+
+  // Open pages — accessible by anyone, no redirects (privacy policy, etc.)
+  if (to.meta.isOpen) {
+    return next()
   }
 
   // Public landing page: redirect authenticated users to dashboard
