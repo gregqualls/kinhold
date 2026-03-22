@@ -277,6 +277,51 @@ Print a clean, actionable execution plan to the terminal. This is what the user 
      claude-code --worktree "default-badges" -- "Fix #12"
 ```
 
+## Step 7: Update GitHub Project Board
+
+The project "Q32 Hub — Issue Planner" (project number 1, owner gregqualls) has custom fields: **Batch**, **Parallelism**, and **Size**. After analysis, update each issue's project fields so the board views stay current.
+
+### Get field IDs and option IDs
+
+```bash
+gh project field-list 1 --owner gregqualls --format json
+```
+
+Parse the JSON to find the field IDs for "Batch", "Parallelism", and "Size", and the option IDs for each value (e.g., "Batch 1", "Parallel Safe", "M").
+
+### Get item IDs
+
+Each issue on the project board has an item ID (different from the issue number). List them:
+
+```bash
+gh project item-list 1 --owner gregqualls --format json
+```
+
+Match each item to its issue number via the `content.number` field.
+
+### Update fields for each item
+
+```bash
+# Set Batch field
+gh project item-edit --project-id PROJECT_ID --id ITEM_ID --field-id BATCH_FIELD_ID --single-select-option-id BATCH_1_OPTION_ID
+
+# Set Parallelism field
+gh project item-edit --project-id PROJECT_ID --id ITEM_ID --field-id PARALLELISM_FIELD_ID --single-select-option-id PARALLEL_SAFE_OPTION_ID
+
+# Set Size field
+gh project item-edit --project-id PROJECT_ID --id ITEM_ID --field-id SIZE_FIELD_ID --single-select-option-id M_OPTION_ID
+```
+
+### Handle new issues not yet on the board
+
+If an issue exists on GitHub but isn't on the project board yet, add it first:
+
+```bash
+gh project item-add 1 --owner gregqualls --url "https://github.com/gregqualls/q32hub/issues/<number>"
+```
+
+Then set its fields as above.
+
 ## Important Rules
 
 1. **Re-analyze everything on every run.** Never cache or assume previous analysis is current. Issues may have been closed, new ones opened, or priorities shifted.
