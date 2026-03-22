@@ -74,10 +74,20 @@ class PointsController extends Controller
         ]);
 
         $from = $request->user();
+
+        // Block self-kudos
+        if ($validated['user_id'] === $from->id) {
+            return response()->json(['message' => "You can't give kudos to yourself"], 422);
+        }
+
         $family = $from->currentFamily()->firstOrFail();
         $to = $family->members()->findOrFail($validated['user_id']);
 
-        $transaction = $this->pointsService->giveKudos($from, $to, $validated['reason']);
+        try {
+            $transaction = $this->pointsService->giveKudos($from, $to, $family, $validated['reason']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         // Check for badges on the recipient
         $newBadges = $this->badgeService->checkAndAwardBadges($to);

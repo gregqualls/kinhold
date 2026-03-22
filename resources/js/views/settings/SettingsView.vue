@@ -491,6 +491,30 @@
         <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
           How often the leaderboard resets. Does not affect point balances.
         </p>
+
+        <!-- Kudos Cost Toggle -->
+        <div class="flex items-center justify-between mt-4 p-4 bg-lavender-50 dark:bg-prussian-800 rounded-lg">
+          <div class="flex-1 mr-4">
+            <p class="font-medium text-prussian-500 dark:text-lavender-200">Kudos cost points</p>
+            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">
+              Giving kudos deducts 1 point from the giver's bank. Prevents trading kudos back and forth.
+            </p>
+          </div>
+          <button
+            @click="kudosCostEnabled = !kudosCostEnabled"
+            :class="[
+              'relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-wisteria-400 focus:ring-offset-2',
+              kudosCostEnabled ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-600',
+            ]"
+          >
+            <span
+              :class="[
+                'pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                kudosCostEnabled ? 'translate-x-5' : 'translate-x-0',
+              ]"
+            />
+          </button>
+        </div>
       </div>
 
       <div class="flex gap-3 justify-end pt-4 border-t border-lavender-200 dark:border-prussian-700 mt-4">
@@ -738,6 +762,7 @@ const moduleToggles = reactive({
   calendar: true, tasks: true, vault: true, chat: true, points: true, badges: true,
 })
 const leaderboardPeriod = ref('weekly')
+const kudosCostEnabled = ref(false)
 
 // Default task points
 const savingDefaultPoints = ref(false)
@@ -1099,6 +1124,7 @@ const saveModuleSettings = async () => {
     await api.put('/settings', {
       modules: { ...moduleToggles },
       leaderboard_period: leaderboardPeriod.value,
+      kudos_cost_enabled: kudosCostEnabled.value,
     })
     await authStore.fetchUser()
     success('Preferences saved!')
@@ -1139,6 +1165,7 @@ onMounted(async () => {
   moduleToggles.points = modules.points !== false
   moduleToggles.badges = modules.badges !== false
   leaderboardPeriod.value = settings.leaderboard_period || 'weekly'
+  kudosCostEnabled.value = settings.kudos_cost_enabled ?? false
 
   // Initialize default task points
   defaultPoints.low = settings.default_points_low ?? 5
