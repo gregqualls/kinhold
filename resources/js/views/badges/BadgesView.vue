@@ -149,7 +149,7 @@ const showCreateForm = ref(false)
 const awardBadgeId = ref('')
 const awardUserId = ref('')
 
-const iconNames = badgeIconNames.slice(0, 10) // Show first 10 icons in picker
+const iconNames = badgeIconNames
 
 const newBadge = ref({
   name: '',
