@@ -113,7 +113,7 @@
       </BaseCard>
 
       <!-- Featured Rewards -->
-      <BaseCard v-if="enabledModules.points && pointsStore.rewards.length > 0" shadow="lg">
+      <BaseCard v-if="enabledModules.points" shadow="lg">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
             <GiftIcon class="w-5 h-5 text-sand-500" />
@@ -127,6 +127,7 @@
         <FeaturedRewards
           :rewards="pointsStore.rewards"
           :bank="pointsStore.bank"
+          :is-parent="isParent"
           @navigate="$router.push('/points/rewards')"
         />
       </BaseCard>
