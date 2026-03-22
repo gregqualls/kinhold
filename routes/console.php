@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+// Send weekly digest emails every Monday at 8am
+Schedule::command('app:send-weekly-digest')->weeklyOn(1, '8:00');
+
+// Generate recurring task instances daily at 00:05
+Schedule::command('app:generate-recurring-tasks')->dailyAt('00:05');
