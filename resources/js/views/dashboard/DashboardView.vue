@@ -112,6 +112,26 @@
         <LeaderboardStrip :leaderboard="pointsStore.leaderboard" />
       </BaseCard>
 
+      <!-- Featured Rewards -->
+      <BaseCard v-if="enabledModules.points" shadow="lg">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
+            <GiftIcon class="w-5 h-5 text-sand-500" />
+            Rewards Shop
+          </h2>
+          <RouterLink to="/points/rewards" class="text-wisteria-600 dark:text-wisteria-400 text-sm font-medium hover:text-wisteria-500">
+            View All
+          </RouterLink>
+        </div>
+
+        <FeaturedRewards
+          :rewards="pointsStore.rewards"
+          :bank="pointsStore.bank"
+          :is-parent="isParent"
+          @navigate="$router.push('/points/rewards')"
+        />
+      </BaseCard>
+
       <!-- Badges Showcase -->
       <BaseCard v-if="enabledModules.badges" shadow="lg">
         <div class="flex items-center justify-between mb-4">
@@ -218,6 +238,7 @@ import { useBadgesStore } from '@/stores/badges'
 import BaseCard from '@/components/common/BaseCard.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LeaderboardStrip from '@/components/points/LeaderboardStrip.vue'
+import FeaturedRewards from '@/components/points/FeaturedRewards.vue'
 import BadgeShowcase from '@/components/badges/BadgeShowcase.vue'
 import {
   CalendarIcon,
@@ -229,6 +250,7 @@ import {
   UserGroupIcon,
   TrophyIcon,
   ShieldCheckIcon,
+  GiftIcon,
 } from '@heroicons/vue/24/outline'
 
 const authStore = useAuthStore()
@@ -289,6 +311,7 @@ onMounted(async () => {
   if (enabledModules.value.points) {
     pointsStore.fetchBank()
     pointsStore.fetchLeaderboard()
+    pointsStore.fetchRewards()
   }
   if (enabledModules.value.badges) {
     badgesStore.fetchEarned()
