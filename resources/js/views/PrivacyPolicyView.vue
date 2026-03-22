@@ -189,6 +189,8 @@
         <div class="mt-2 flex items-center justify-center gap-4">
           <RouterLink to="/" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Home</RouterLink>
           <span>&bull;</span>
+          <RouterLink to="/terms" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Terms</RouterLink>
+          <span>&bull;</span>
           <a href="https://github.com/gregqualls/q32hub" target="_blank" rel="noopener" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">GitHub</a>
         </div>
       </div>
