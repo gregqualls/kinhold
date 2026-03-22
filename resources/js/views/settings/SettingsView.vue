@@ -663,6 +663,63 @@
       </div>
     </div>
 
+    <!-- Task Assignment Permissions (parent only, when tasks enabled) -->
+    <div v-if="isParent && moduleToggles.tasks" class="card-lg mb-6">
+      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Task Assignment</h2>
+      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        Control which family members can assign tasks to others. Parents can always assign tasks to anyone.
+      </p>
+
+      <div class="space-y-3">
+        <label
+          v-for="option in taskAssignmentOptions"
+          :key="option.value"
+          class="flex items-start gap-3 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+        >
+          <input
+            v-model="taskAssignment.mode"
+            type="radio"
+            :value="option.value"
+            name="task_assignment_mode"
+            class="mt-0.5 rounded-full"
+          />
+          <div class="flex-1">
+            <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ option.label }}</p>
+            <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ option.description }}</p>
+          </div>
+        </label>
+      </div>
+
+      <!-- Per-child checkboxes (when mode is 'users') -->
+      <div v-if="taskAssignment.mode === 'users'" class="mt-4 pl-4 border-l-2 border-wisteria-300 dark:border-wisteria-700">
+        <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-3">Select which children can assign tasks to others:</p>
+        <div class="space-y-2">
+          <label
+            v-for="child in childMembers"
+            :key="child.id"
+            class="flex items-center gap-3 p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+          >
+            <input
+              type="checkbox"
+              :value="child.id"
+              v-model="taskAssignment.users"
+              class="rounded"
+            />
+            <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">{{ child.name }}</span>
+          </label>
+          <p v-if="childMembers.length === 0" class="text-sm text-lavender-600 dark:text-lavender-400 italic">
+            No child members in the family yet.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
+        <BaseButton variant="primary" :loading="savingTaskAssignment" @click="saveTaskAssignment">
+          Save Task Assignment
+        </BaseButton>
+      </div>
+    </div>
+
     <!-- Add/Edit Member Modal -->
     <BaseModal
       :show="showMemberModal"
@@ -860,6 +917,21 @@ const defaultPoints = reactive({
   medium: 10,
   high: 20,
 })
+
+// Task assignment
+const savingTaskAssignment = ref(false)
+const taskAssignment = reactive({
+  mode: 'all',
+  users: [],
+})
+const taskAssignmentOptions = [
+  { value: 'all', label: 'Everyone', description: 'All family members can assign tasks to anyone.' },
+  { value: 'parents_only', label: 'Parents Only', description: 'Only parents can assign tasks to other members. Children can only create tasks for themselves.' },
+  { value: 'users', label: 'Custom', description: 'Choose which children can assign tasks to others.' },
+]
+const childMembers = computed(() =>
+  familyMembers.value.filter((m) => (m.family_role || m.role) === 'child')
+)
 
 // Invite code
 const inviteCode = ref(family.value?.invite_code || '')
@@ -1295,6 +1367,24 @@ const saveDefaultPoints = async () => {
   savingDefaultPoints.value = false
 }
 
+// ---- Task assignment ----
+const saveTaskAssignment = async () => {
+  savingTaskAssignment.value = true
+  try {
+    await api.put('/settings', {
+      task_assignment: {
+        mode: taskAssignment.mode,
+        users: taskAssignment.users,
+      },
+    })
+    await authStore.fetchUser()
+    success('Task assignment settings saved!')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to save task assignment settings')
+  }
+  savingTaskAssignment.value = false
+}
+
 // ---- Init ----
 onMounted(async () => {
   familyForm.name = family.value?.name || ''
@@ -1315,6 +1405,11 @@ onMounted(async () => {
   defaultPoints.low = settings.default_points_low ?? 5
   defaultPoints.medium = settings.default_points_medium ?? 10
   defaultPoints.high = settings.default_points_high ?? 20
+
+  // Initialize task assignment
+  const ta = settings.task_assignment || {}
+  taskAssignment.mode = ta.mode || 'all'
+  taskAssignment.users = ta.users || []
 
   // Load AI settings from the settings API
   if (isParent.value) {

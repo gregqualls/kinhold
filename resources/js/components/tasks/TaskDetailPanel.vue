@@ -100,7 +100,7 @@
         >
           <option :value="null">Unassigned</option>
           <option
-            v-for="member in familyMembers"
+            v-for="member in assignableMembers"
             :key="member.id"
             :value="member.id"
           >
@@ -243,12 +243,18 @@ const props = defineProps({
 const emit = defineEmits(['save', 'close', 'delete'])
 
 const authStore = useAuthStore()
-const { familyMembers, enabledModules, isParent } = storeToRefs(authStore)
+const { familyMembers, enabledModules, isParent, canAssignTasks, currentUser } = storeToRefs(authStore)
 
 const justSaved = ref(false)
 let savedTimer = null
 
 const defaultPoints = { low: 5, medium: 10, high: 20 }
+
+// If user can't assign tasks to others, only show themselves as an option
+const assignableMembers = computed(() => {
+  if (canAssignTasks.value) return familyMembers.value
+  return familyMembers.value.filter((m) => m.id === currentUser.value?.id)
+})
 
 const colorMap = {
   wisteria: '#7d57a8',

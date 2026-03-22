@@ -116,6 +116,41 @@ class Family extends Model
     }
 
     /**
+     * Get the task assignment setting.
+     *
+     * Returns ['mode' => 'all'|'parents_only'|'users', 'users' => [...]]
+     */
+    public function getTaskAssignment(): array
+    {
+        return $this->settings['task_assignment'] ?? [
+            'mode' => 'all',
+            'users' => [],
+        ];
+    }
+
+    /**
+     * Determine if a user is allowed to assign tasks to other family members.
+     *
+     * Parents always return true. Children depend on the task_assignment setting.
+     */
+    public function userCanAssignTasks(User $user): bool
+    {
+        if ($user->isParent()) {
+            return true;
+        }
+
+        $setting = $this->getTaskAssignment();
+        $mode = $setting['mode'] ?? 'all';
+
+        return match ($mode) {
+            'all' => true,
+            'parents_only' => false,
+            'users' => in_array($user->id, $setting['users'] ?? []),
+            default => true,
+        };
+    }
+
+    /**
      * Get the default points for a given task priority.
      *
      * Falls back to hardcoded defaults if not configured.

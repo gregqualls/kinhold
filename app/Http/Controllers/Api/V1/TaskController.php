@@ -121,6 +121,13 @@ class TaskController extends Controller
             $family->members()->findOrFail($validated['assigned_to']);
         }
 
+        // Enforce task assignment permissions — if user can't assign to others,
+        // silently force assigned_to to be their own ID or null
+        $assignedTo = $validated['assigned_to'] ?? null;
+        if ($assignedTo && $assignedTo !== $request->user()->id && !$family->userCanAssignTasks($request->user())) {
+            $assignedTo = $request->user()->id;
+        }
+
         // Children cannot set custom points on tasks — only parents can
         $points = $validated['points'] ?? null;
         if (!$request->user()->isParent()) {
@@ -133,7 +140,7 @@ class TaskController extends Controller
             'created_by' => $request->user()->id,
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
-            'assigned_to' => $validated['assigned_to'] ?? null,
+            'assigned_to' => $assignedTo,
             'due_date' => $validated['due_date'] ?? null,
             'priority' => $validated['priority'] ?? 'medium',
             'is_family_task' => $validated['is_family_task'] ?? false,
@@ -191,6 +198,18 @@ class TaskController extends Controller
         if ($request->filled('assigned_to') && ($validated['assigned_to'] ?? null) !== $task->assigned_to) {
             $family = $request->user()->currentFamily()->firstOrFail();
             $family->members()->findOrFail($validated['assigned_to']);
+        }
+
+        // Enforce task assignment permissions — if user can't assign to others,
+        // silently force assigned_to to be their own ID or null
+        if (array_key_exists('assigned_to', $validated)) {
+            $newAssignedTo = $validated['assigned_to'] ?? null;
+            if ($newAssignedTo && $newAssignedTo !== $request->user()->id) {
+                $family = $family ?? $request->user()->currentFamily()->firstOrFail();
+                if (!$family->userCanAssignTasks($request->user())) {
+                    $validated['assigned_to'] = $request->user()->id;
+                }
+            }
         }
 
         // Children cannot set custom points on tasks — only parents can
