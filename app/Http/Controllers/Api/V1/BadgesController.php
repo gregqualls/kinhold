@@ -233,6 +233,14 @@ class BadgesController extends Controller
             ->where('name', $badgeName)
             ->first();
 
+        // Auto-create easter egg badges for existing families that don't have them yet
+        if (!$badge) {
+            $this->ensureEasterEggBadgesExist($user->family_id, $user->id);
+            $badge = Badge::where('family_id', $user->family_id)
+                ->where('name', $badgeName)
+                ->first();
+        }
+
         $newBadges = [];
 
         if ($badge && !$user->badges()->where('badges.id', $badge->id)->exists()) {
@@ -279,5 +287,52 @@ class BadgesController extends Controller
         return response()->json([
             'badges' => $badges,
         ]);
+    }
+
+    /**
+     * Ensure easter egg badges exist for a family (auto-creates for existing families).
+     */
+    private function ensureEasterEggBadgesExist(string $familyId, string $createdBy): void
+    {
+        $easterEggBadges = [
+            ['name' => 'Code Breaker', 'description' => 'Cracked the Konami Code', 'icon' => 'key', 'color' => '#059669'],
+            ['name' => 'Number Cruncher', 'description' => 'Why was 6 afraid of 7?', 'icon' => 'hashtag', 'color' => '#f59e0b'],
+            ['name' => 'Party Animal', 'description' => 'Started a legendary party', 'icon' => 'sun', 'color' => '#ec4899'],
+            ['name' => 'Mirror Mirror', 'description' => 'Saw everything backwards', 'icon' => 'eye', 'color' => '#06b6d4'],
+            ['name' => 'Red Pill', 'description' => 'Entered the digital rain', 'icon' => 'lightning', 'color' => '#22c55e'],
+            ['name' => 'Disco Inferno', 'description' => 'Got the groove going', 'icon' => 'music-note', 'color' => '#a855f7'],
+        ];
+
+        foreach ($easterEggBadges as $i => $data) {
+            Badge::firstOrCreate(
+                ['family_id' => $familyId, 'name' => $data['name']],
+                array_merge($data, [
+                    'family_id' => $familyId,
+                    'created_by' => $createdBy,
+                    'trigger_type' => 'custom',
+                    'trigger_threshold' => null,
+                    'is_hidden' => true,
+                    'is_active' => true,
+                    'sort_order' => 20 + $i,
+                ])
+            );
+        }
+
+        // Master Explorer badge
+        Badge::firstOrCreate(
+            ['family_id' => $familyId, 'name' => 'Master Explorer'],
+            [
+                'family_id' => $familyId,
+                'created_by' => $createdBy,
+                'description' => 'Found every single easter egg!',
+                'icon' => 'compass',
+                'color' => '#d97706',
+                'trigger_type' => 'easter_egg',
+                'trigger_threshold' => 6,
+                'is_hidden' => true,
+                'is_active' => true,
+                'sort_order' => 26,
+            ]
+        );
     }
 }

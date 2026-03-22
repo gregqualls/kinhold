@@ -127,11 +127,24 @@
     <Transition name="ee-fade">
       <div
         v-if="discoMode"
-        class="fixed top-4 left-1/2 -translate-x-1/2 z-[201] pointer-events-none flex flex-col items-center"
+        class="fixed inset-0 z-[199] pointer-events-none overflow-hidden"
       >
-        <div class="text-6xl animate-ee-disco-ball">🪩</div>
-        <div class="mt-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-400 text-white font-bold text-sm shadow-lg animate-ee-party-banner">
-          DISCO MODE!
+        <!-- Color wash overlay -->
+        <div class="absolute inset-0 ee-disco-lights opacity-40"></div>
+
+        <!-- Spotlights -->
+        <div class="absolute inset-0">
+          <div class="ee-spotlight ee-spotlight-1"></div>
+          <div class="ee-spotlight ee-spotlight-2"></div>
+          <div class="ee-spotlight ee-spotlight-3"></div>
+        </div>
+
+        <!-- Disco ball + banner -->
+        <div class="fixed top-4 left-1/2 -translate-x-1/2 z-[201] flex flex-col items-center">
+          <div class="text-6xl animate-ee-disco-ball">🪩</div>
+          <div class="mt-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-400 text-white font-bold text-sm shadow-lg animate-ee-party-banner">
+            DISCO MODE!
+          </div>
         </div>
       </div>
     </Transition>
@@ -487,25 +500,12 @@ const startMatrixRain = () => {
 }
 
 // --- Disco Mode ---
-let discoInterval = null
-
 const triggerDisco = () => {
   discoMode.value = true
   reportEasterEgg('disco')
 
-  const colors = ['#ff0000', '#ff8800', '#ffff00', '#00ff00', '#0088ff', '#8800ff', '#ff00ff']
-  let colorIdx = 0
-
-  discoInterval = setInterval(() => {
-    document.body.style.backgroundColor = colors[colorIdx % colors.length]
-    colorIdx++
-  }, 200)
-
   setTimeout(() => {
     discoMode.value = false
-    clearInterval(discoInterval)
-    discoInterval = null
-    document.body.style.backgroundColor = ''
   }, 5000)
 }
 
@@ -539,12 +539,8 @@ onUnmounted(() => {
   document.documentElement.classList.remove('ee-party-mode')
   document.body.style.transform = ''
   document.body.style.overflow = ''
-  document.body.style.backgroundColor = ''
   if (matrixAnimFrame) {
     cancelAnimationFrame(matrixAnimFrame)
-  }
-  if (discoInterval) {
-    clearInterval(discoInterval)
   }
 })
 
@@ -653,6 +649,54 @@ defineExpose({ handleLogoClick })
 }
 html.ee-party-mode {
   animation: ee-party-hue 2s linear infinite;
+}
+
+/* Disco lights color wash */
+@keyframes ee-disco-color-cycle {
+  0% { background-color: rgba(255, 0, 0, 0.3); }
+  16% { background-color: rgba(255, 136, 0, 0.3); }
+  33% { background-color: rgba(255, 255, 0, 0.3); }
+  50% { background-color: rgba(0, 255, 0, 0.3); }
+  66% { background-color: rgba(0, 136, 255, 0.3); }
+  83% { background-color: rgba(136, 0, 255, 0.3); }
+  100% { background-color: rgba(255, 0, 255, 0.3); }
+}
+.ee-disco-lights {
+  animation: ee-disco-color-cycle 1.5s linear infinite;
+}
+
+/* Disco spotlights */
+.ee-spotlight {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: ee-spotlight-move 2s ease-in-out infinite;
+}
+.ee-spotlight-1 {
+  background: rgba(255, 0, 128, 0.5);
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+.ee-spotlight-2 {
+  background: rgba(0, 200, 255, 0.5);
+  top: 40%;
+  right: 10%;
+  animation-delay: 0.6s;
+}
+.ee-spotlight-3 {
+  background: rgba(255, 230, 0, 0.5);
+  bottom: 10%;
+  left: 40%;
+  animation-delay: 1.2s;
+}
+@keyframes ee-spotlight-move {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(50px, -30px) scale(1.3); }
+  50% { transform: translate(-30px, 50px) scale(0.8); }
+  75% { transform: translate(40px, 40px) scale(1.2); }
 }
 
 /* Disco ball spin */
