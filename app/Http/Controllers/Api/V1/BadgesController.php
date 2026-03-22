@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Badge;
+use App\Models\User;
 use App\Services\BadgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,13 +29,13 @@ class BadgesController extends Controller
             BadgeService::createDefaultBadges($family->id, $user->id);
         }
 
-        // Always check for newly earned badges on page load — catches up on
-        // progress from tasks/points earned before badges were created
-        $this->badgeService->checkAndAwardBadges($user);
-
-        // Catch up on easter egg badges that may have been found but not awarded
-        // (e.g. eggs discovered before badges existed, or silent API failures)
-        $this->awardMissingEasterEggBadges($user);
+        // Catch up on any badges the user has earned but wasn't awarded yet
+        try {
+            $this->badgeService->checkAndAwardBadges($user);
+            $this->awardMissingEasterEggBadges($user);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Badge catch-up failed: ' . $e->getMessage());
+        }
 
         $badges = Badge::where('family_id', $family->id)
             ->where('is_active', true)
