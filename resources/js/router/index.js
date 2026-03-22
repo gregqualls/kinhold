@@ -5,6 +5,9 @@ import { useAuthStore } from '@/stores/auth'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
 
+// Public Views
+import LandingView from '@/views/LandingView.vue'
+
 // App Views
 import DashboardView from '@/views/dashboard/DashboardView.vue'
 import CalendarView from '@/views/calendar/CalendarView.vue'
@@ -22,6 +25,14 @@ const PointsHistoryView = () => import('@/views/points/PointsHistoryView.vue')
 const BadgesView = () => import('@/views/badges/BadgesView.vue')
 
 const routes = [
+  // Public landing page
+  {
+    path: '/',
+    name: 'Landing',
+    component: LandingView,
+    meta: { isPublic: true },
+  },
+
   // Auth routes
   {
     path: '/login',
@@ -38,7 +49,7 @@ const routes = [
 
   // App routes
   {
-    path: '/',
+    path: '/dashboard',
     name: 'Dashboard',
     component: DashboardView,
     meta: { requiresAuth: true },
@@ -120,6 +131,9 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior() {
+    return { top: 0 }
+  },
 })
 
 // Navigation guards
@@ -129,6 +143,14 @@ router.beforeEach(async (to, from, next) => {
   // Wait for initial auth check to complete before making routing decisions
   if (!authStore.initialAuthChecked) {
     await authStore.initAuth()
+  }
+
+  // Public landing page: redirect authenticated users to dashboard
+  if (to.meta.isPublic) {
+    if (authStore.isAuthenticated) {
+      return next({ name: 'Dashboard' })
+    }
+    return next()
   }
 
   // Guest-only routes
