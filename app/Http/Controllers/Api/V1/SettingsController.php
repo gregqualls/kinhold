@@ -33,6 +33,7 @@ class SettingsController extends Controller
                 ],
                 'preferences' => $family->settings['preferences'] ?? [],
                 'leaderboard_period' => $family->settings['leaderboard_period'] ?? 'weekly',
+                'kudos_cost_enabled' => $family->settings['kudos_cost_enabled'] ?? false,
                 'default_points_low' => $family->settings['default_points_low'] ?? 5,
                 'default_points_medium' => $family->settings['default_points_medium'] ?? 10,
                 'default_points_high' => $family->settings['default_points_high'] ?? 20,
@@ -64,6 +65,7 @@ class SettingsController extends Controller
             'modules.badges' => 'nullable|boolean',
             'preferences' => 'nullable|array',
             'leaderboard_period' => 'nullable|string|in:daily,weekly,monthly',
+            'kudos_cost_enabled' => 'nullable|boolean',
             'default_points_low' => 'nullable|integer|min:0|max:1000',
             'default_points_medium' => 'nullable|integer|min:0|max:1000',
             'default_points_high' => 'nullable|integer|min:0|max:1000',
@@ -89,6 +91,10 @@ class SettingsController extends Controller
             $settings['leaderboard_period'] = $validated['leaderboard_period'];
         }
 
+        if ($request->has('kudos_cost_enabled')) {
+            $settings['kudos_cost_enabled'] = (bool) $validated['kudos_cost_enabled'];
+        }
+
         // Update default points per priority
         foreach (['default_points_low', 'default_points_medium', 'default_points_high'] as $key) {
             if ($request->has($key)) {
@@ -104,6 +110,7 @@ class SettingsController extends Controller
                 'name' => $family->name,
                 'modules' => $settings['modules'] ?? [],
                 'preferences' => $settings['preferences'] ?? [],
+                'kudos_cost_enabled' => $settings['kudos_cost_enabled'] ?? false,
                 'default_points_low' => $settings['default_points_low'] ?? 5,
                 'default_points_medium' => $settings['default_points_medium'] ?? 10,
                 'default_points_high' => $settings['default_points_high'] ?? 20,

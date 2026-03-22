@@ -48,9 +48,28 @@ class PointsService
 
     /**
      * Give kudos from one user to another (+1 point).
+     * If kudos_cost_enabled is on, deduct 1 point from the giver.
      */
-    public function giveKudos(User $from, User $to, string $reason): PointTransaction
+    public function giveKudos(User $from, User $to, Family $family, string $reason): PointTransaction
     {
+        $kudosCostEnabled = $family->settings['kudos_cost_enabled'] ?? false;
+
+        if ($kudosCostEnabled && !$from->hasSufficientPoints(1)) {
+            throw new \Exception('Not enough points to give kudos');
+        }
+
+        // Deduct from giver if cost is enabled
+        if ($kudosCostEnabled) {
+            PointTransaction::create([
+                'family_id' => $from->family_id,
+                'user_id' => $from->id,
+                'type' => PointTransactionType::Deduction,
+                'points' => -1,
+                'description' => "Kudos cost: gave kudos to {$to->name}",
+                'awarded_by' => $from->id,
+            ]);
+        }
+
         return PointTransaction::create([
             'family_id' => $to->family_id,
             'user_id' => $to->id,
