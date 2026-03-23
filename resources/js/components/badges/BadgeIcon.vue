@@ -9,17 +9,10 @@
         points="50,3 95,25 95,75 50,97 5,75 5,25"
         :fill="locked ? '#9ca3af' : color + '20'"
         :stroke="locked ? '#d1d5db' : color"
-        stroke-width="3"
+        stroke-width="2"
         :class="{ 'opacity-40': locked }"
       />
     </svg>
-
-    <!-- Glow effect for earned badges -->
-    <div
-      v-if="!locked"
-      class="absolute inset-0 rounded-full animate-pulse opacity-20"
-      :style="{ backgroundColor: color, filter: 'blur(8px)' }"
-    ></div>
 
     <!-- Icon -->
     <svg
@@ -28,7 +21,7 @@
       viewBox="0 0 24 24"
       fill="none"
       :stroke="locked ? '#9ca3af' : color"
-      stroke-width="2"
+      stroke-width="1.5"
       stroke-linecap="round"
       stroke-linejoin="round"
       class="relative z-10"

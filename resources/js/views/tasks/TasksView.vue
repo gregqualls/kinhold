@@ -4,7 +4,7 @@
     <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200">Tasks</h1>
+          <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Tasks</h1>
           <p class="text-sm text-lavender-500 dark:text-lavender-400 mt-0.5">
             {{ filteredIncompleteTasks.length }} remaining
           </p>

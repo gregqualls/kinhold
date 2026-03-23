@@ -8,7 +8,7 @@
         class="flex flex-col items-center animate-slide-up-delayed"
       >
         <div class="relative mb-1">
-          <div class="medal-icon text-base sm:text-lg">&#x1F948;</div>
+          <div class="medal-icon text-xs sm:text-sm font-bold text-lavender-500 dark:text-lavender-300">2nd</div>
           <div
             class="relative"
             :class="{ 'ring-2 ring-wisteria-400 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 rounded-full': isCurrentUser(topThree[1]) }"
@@ -20,10 +20,10 @@
           {{ firstName(topThree[1]) }}
         </p>
         <div
-          class="podium-bar bg-gradient-to-t from-lavender-300 to-lavender-200 dark:from-prussian-600 dark:to-prussian-500 rounded-t-md mt-1"
+          class="podium-bar bg-gradient-to-t from-lavender-300 to-lavender-200 dark:from-prussian-600 dark:to-prussian-500 rounded-t-[12px] mt-1"
           :style="{ height: '36px', width: '56px' }"
         >
-          <span class="podium-points text-[10px] sm:text-xs font-bold text-prussian-500 dark:text-lavender-200">
+          <span class="podium-points text-[10px] sm:text-xs font-bold font-mono text-prussian-500 dark:text-lavender-200">
             {{ topThree[1].total_points }}
           </span>
         </div>
@@ -35,7 +35,7 @@
         class="flex flex-col items-center animate-slide-up"
       >
         <div class="relative mb-1">
-          <div class="crown-bounce text-lg sm:text-xl">&#x1F451;</div>
+          <div class="crown-bounce"><TrophyIcon class="w-5 h-5 sm:w-6 sm:h-6 text-wisteria-400" /></div>
           <div
             class="relative"
             :class="{ 'ring-2 ring-wisteria-400 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 rounded-full': isCurrentUser(topThree[0]) }"
@@ -47,11 +47,11 @@
           {{ firstName(topThree[0]) }}
         </p>
         <div
-          class="podium-bar bg-gradient-to-t from-sand-400 to-sand-300 dark:from-sand-700 dark:to-sand-600 rounded-t-md mt-1 relative overflow-hidden"
+          class="podium-bar bg-gradient-to-t from-sand-400 to-sand-300 dark:from-sand-700 dark:to-sand-600 rounded-t-[12px] mt-1 relative overflow-hidden"
           :style="{ height: '52px', width: '64px' }"
         >
           <div class="podium-shimmer" />
-          <span class="podium-points text-xs sm:text-sm font-bold text-prussian-600 dark:text-sand-100">
+          <span class="podium-points text-xs sm:text-sm font-bold font-mono text-prussian-600 dark:text-sand-100">
             {{ topThree[0].total_points }}
           </span>
         </div>
@@ -63,7 +63,7 @@
         class="flex flex-col items-center animate-slide-up-delayed-2"
       >
         <div class="relative mb-1">
-          <div class="medal-icon text-base sm:text-lg">&#x1F949;</div>
+          <div class="medal-icon text-xs sm:text-sm font-bold text-lavender-500 dark:text-lavender-300">3rd</div>
           <div
             class="relative"
             :class="{ 'ring-2 ring-wisteria-400 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 rounded-full': isCurrentUser(topThree[2]) }"
@@ -75,10 +75,10 @@
           {{ firstName(topThree[2]) }}
         </p>
         <div
-          class="podium-bar bg-gradient-to-t from-amber-200 to-amber-100 dark:from-prussian-700 dark:to-prussian-600 rounded-t-md mt-1"
+          class="podium-bar bg-gradient-to-t from-amber-200 to-amber-100 dark:from-prussian-700 dark:to-prussian-600 rounded-t-[12px] mt-1"
           :style="{ height: '24px', width: '56px' }"
         >
-          <span class="podium-points text-[10px] sm:text-xs font-bold text-amber-800 dark:text-lavender-300">
+          <span class="podium-points text-[10px] sm:text-xs font-bold font-mono text-amber-800 dark:text-lavender-300">
             {{ topThree[2].total_points }}
           </span>
         </div>
@@ -107,7 +107,7 @@
               {{ firstName(entry) }}
               <span v-if="isCurrentUser(entry)" class="text-[9px] text-wisteria-500 dark:text-wisteria-400">(you)</span>
             </span>
-            <span class="text-[10px] font-semibold text-wisteria-600 dark:text-wisteria-400 ml-1 flex-shrink-0">
+            <span class="text-[10px] font-semibold font-mono text-wisteria-600 dark:text-wisteria-400 ml-1 flex-shrink-0">
               {{ entry.total_points }} pts
             </span>
           </div>
@@ -124,7 +124,7 @@
 
     <!-- Empty state -->
     <div v-if="leaderboard.length === 0" class="text-center py-3">
-      <div class="text-2xl mb-1">&#x1F3C6;</div>
+      <TrophyIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mx-auto mb-1" />
       <p class="text-sm text-lavender-500 dark:text-lavender-400">
         No activity yet this period
       </p>
@@ -138,6 +138,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { TrophyIcon } from '@heroicons/vue/24/solid'
+import { StarIcon } from '@heroicons/vue/24/outline'
 import UserAvatar from '@/components/common/UserAvatar.vue'
 
 const props = defineProps({
@@ -232,11 +234,11 @@ const progressBarColor = (idx) => {
 }
 
 .animate-slide-up-delayed {
-  animation: slide-up var(--anim-duration) ease-out 0.15s both;
+  animation: slide-up var(--anim-duration) ease-out 0.075s both;
 }
 
 .animate-slide-up-delayed-2 {
-  animation: slide-up var(--anim-duration) ease-out 0.3s both;
+  animation: slide-up var(--anim-duration) ease-out 0.15s both;
 }
 
 @keyframes slide-up {

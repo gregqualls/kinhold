@@ -3,7 +3,7 @@
     <Transition name="toast">
       <div
         v-if="show"
-        class="fixed bottom-28 md:bottom-8 left-1/2 -translate-x-1/2 z-[80] bg-prussian-500 dark:bg-prussian-700 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-4 min-w-[280px]"
+        class="fixed bottom-28 md:bottom-8 left-1/2 -translate-x-1/2 z-[80] bg-prussian-500 dark:bg-prussian-700 text-white px-5 py-3 rounded-[12px] shadow-xl flex items-center gap-4 min-w-[280px]"
       >
         <span class="text-sm flex-1">{{ message }}</span>
         <button

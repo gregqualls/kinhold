@@ -5,14 +5,14 @@
       <RouterLink to="/points" class="btn-ghost btn-sm rounded-lg">
         <ChevronLeftIcon class="w-5 h-5" />
       </RouterLink>
-      <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200">My Points History</h1>
+      <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">My Points History</h1>
     </div>
 
     <!-- Balance Card -->
     <div class="card p-4 mb-6 flex items-center justify-between">
       <div>
         <p class="text-xs text-lavender-500 dark:text-lavender-400 uppercase tracking-wide font-medium">Total Balance</p>
-        <p class="text-3xl font-bold text-wisteria-600 dark:text-wisteria-400">{{ pointsStore.bank }}</p>
+        <p class="text-3xl font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ pointsStore.bank }}</p>
       </div>
     </div>
 
@@ -32,7 +32,7 @@
           </p>
         </div>
         <span
-          class="text-sm font-bold ml-3 flex-shrink-0"
+          class="text-sm font-bold font-mono ml-3 flex-shrink-0"
           :class="item.points > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'"
         >
           {{ item.points > 0 ? '+' : '' }}{{ item.points }}

@@ -23,7 +23,7 @@
               width="100%"
               height="100%"
               src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&start=0"
-              title="You've been Q32'd!"
+              title="You've been Kinholded!"
               frameborder="0"
               allow="autoplay; encrypted-media"
               allowfullscreen
@@ -31,7 +31,7 @@
           </div>
           <div class="px-4 py-3 text-center">
             <p class="text-xs text-prussian-400 dark:text-lavender-400">
-              You just got Q32'd! Press Escape or click outside to close.
+              You just got Kinholded! Press Escape or click outside to close.
             </p>
           </div>
         </div>
@@ -79,7 +79,7 @@
     <Transition name="ee-fade">
       <div v-if="showConfetti" class="fixed inset-0 z-[199] pointer-events-none overflow-hidden">
         <div
-          v-for="i in 50"
+          v-for="i in 15"
           :key="i"
           class="ee-confetti-piece"
           :style="confettiStyle(i)"
@@ -141,7 +141,7 @@
 
         <!-- Disco ball + banner -->
         <div class="fixed top-4 left-1/2 -translate-x-1/2 z-[201] flex flex-col items-center">
-          <div class="text-6xl animate-ee-disco-ball">🪩</div>
+          <SparklesIcon class="w-14 h-14 text-yellow-300 animate-ee-disco-ball" />
           <div class="mt-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-400 text-white font-bold text-sm shadow-lg animate-ee-party-banner">
             DISCO MODE!
           </div>
@@ -160,7 +160,7 @@
         <!-- Confetti behind the badge -->
         <div class="fixed inset-0 z-[209] pointer-events-none overflow-hidden">
           <div
-            v-for="i in 60"
+            v-for="i in 15"
             :key="'badge-confetti-' + i"
             class="ee-confetti-piece"
             :style="confettiStyle(i)"
@@ -174,8 +174,8 @@
               class="ee-hex-badge"
               :style="{ '--badge-color': badgeEarned.color }"
             >
-              <div class="ee-hex-inner flex items-center justify-center text-4xl text-white">
-                {{ getBadgeEmoji(badgeEarned.icon) }}
+              <div class="ee-hex-inner flex items-center justify-center text-white">
+                <component :is="getBadgeIcon(badgeEarned.icon)" class="w-12 h-12" />
               </div>
             </div>
             <div
@@ -201,6 +201,17 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import {
+  SparklesIcon,
+  TrophyIcon,
+  KeyIcon,
+  HashtagIcon,
+  SunIcon,
+  EyeIcon,
+  BoltIcon,
+  MusicalNoteIcon,
+  MapIcon,
+} from '@heroicons/vue/24/solid'
 import api from '@/services/api'
 
 const showRickRoll = ref(false)
@@ -216,7 +227,7 @@ const matrixCanvas = ref(null)
 // Track locally found eggs to avoid unnecessary API calls
 const getLocalEggs = () => {
   try {
-    return JSON.parse(localStorage.getItem('q32_easter_eggs') || '[]')
+    return JSON.parse(localStorage.getItem('kinhold_easter_eggs') || '[]')
   } catch {
     return []
   }
@@ -225,17 +236,22 @@ const saveLocalEgg = (key) => {
   const eggs = getLocalEggs()
   if (!eggs.includes(key)) {
     eggs.push(key)
-    localStorage.setItem('q32_easter_eggs', JSON.stringify(eggs))
+    localStorage.setItem('kinhold_easter_eggs', JSON.stringify(eggs))
   }
 }
 
-// Badge emoji map
-const getBadgeEmoji = (icon) => {
+// Badge icon map — returns Heroicon component
+const getBadgeIcon = (icon) => {
   const map = {
-    'key': '🔑', 'hashtag': '#', 'sun': '☀️', 'eye': '👁️',
-    'lightning': '⚡', 'music-note': '🎵', 'compass': '🧭',
+    'key': KeyIcon,
+    'hashtag': HashtagIcon,
+    'sun': SunIcon,
+    'eye': EyeIcon,
+    'lightning': BoltIcon,
+    'music-note': MusicalNoteIcon,
+    'compass': MapIcon,
   }
-  return map[icon] || '🏆'
+  return map[icon] || TrophyIcon
 }
 
 // --- Badge reporting ---
