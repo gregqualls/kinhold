@@ -1,7 +1,7 @@
 <template>
   <div v-if="pendingRequests.length > 0" class="card mb-4">
     <div class="px-4 pt-3 pb-2 border-b border-lavender-200 dark:border-prussian-700 flex items-center justify-between">
-      <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">
+      <p class="text-sm font-semibold font-heading text-prussian-500 dark:text-lavender-200">
         Pending Point Requests
       </p>
       <span class="bg-wisteria-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
@@ -17,7 +17,7 @@
       >
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200 truncate">
-            {{ req.user?.name }} requested <span class="font-bold text-wisteria-600 dark:text-wisteria-400">{{ req.points }} pts</span>
+            {{ req.user?.name }} requested <span class="font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ req.points }} pts</span>
           </p>
           <p class="text-xs text-lavender-500 dark:text-lavender-400 truncate">{{ req.reason }}</p>
         </div>

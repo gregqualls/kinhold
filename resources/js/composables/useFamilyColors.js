@@ -1,10 +1,13 @@
+// Muted Kinhold palette — premium, works in light and dark mode
 const familyColors = [
-  { name: 'red', bg: 'bg-red-500', text: 'text-red-600', light: 'bg-red-100' },
-  { name: 'amber', bg: 'bg-amber-500', text: 'text-amber-600', light: 'bg-amber-100' },
-  { name: 'green', bg: 'bg-emerald-600', text: 'text-emerald-600', light: 'bg-green-100' },
-  { name: 'blue', bg: 'bg-blue-600', text: 'text-blue-600', light: 'bg-blue-100' },
-  { name: 'purple', bg: 'bg-wisteria-600', text: 'text-wisteria-600', light: 'bg-purple-100' },
-  { name: 'pink', bg: 'bg-pink-500', text: 'text-pink-600', light: 'bg-pink-100' },
+  { name: 'teal', bg: 'bg-[#5B8C9C]', text: 'text-[#5B8C9C]', light: 'bg-[#5B8C9C]/10' },
+  { name: 'amber', bg: 'bg-[#C48B5B]', text: 'text-[#C48B5B]', light: 'bg-[#C48B5B]/10' },
+  { name: 'sage', bg: 'bg-[#5B9C7B]', text: 'text-[#5B9C7B]', light: 'bg-[#5B9C7B]/10' },
+  { name: 'steel', bg: 'bg-[#5B6B9C]', text: 'text-[#5B6B9C]', light: 'bg-[#5B6B9C]/10' },
+  { name: 'plum', bg: 'bg-[#8B5B9C]', text: 'text-[#8B5B9C]', light: 'bg-[#8B5B9C]/10' },
+  { name: 'rose', bg: 'bg-[#9C5B5B]', text: 'text-[#9C5B5B]', light: 'bg-[#9C5B5B]/10' },
+  { name: 'sienna', bg: 'bg-[#9C7B5B]', text: 'text-[#9C7B5B]', light: 'bg-[#9C7B5B]/10' },
+  { name: 'lavender', bg: 'bg-[#7B6B9C]', text: 'text-[#7B6B9C]', light: 'bg-[#7B6B9C]/10' },
 ]
 
 const colorMap = new Map()

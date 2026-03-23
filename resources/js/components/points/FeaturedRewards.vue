@@ -4,14 +4,17 @@
       <div
         v-for="reward in featuredRewards"
         :key="reward.id"
-        class="relative group flex flex-col items-center text-center p-4 rounded-xl border-2 transition-all duration-200"
+        class="relative group flex flex-col items-center text-center p-4 rounded-[12px] border-2 transition-all duration-200"
         :class="canAfford(reward)
           ? 'border-wisteria-300 dark:border-wisteria-600 bg-gradient-to-b from-wisteria-50 to-white dark:from-wisteria-900/20 dark:to-prussian-800 hover:shadow-lg hover:border-wisteria-400 dark:hover:border-wisteria-500 cursor-pointer'
           : 'border-lavender-200 dark:border-prussian-700 bg-lavender-50/50 dark:bg-prussian-800/50'"
         @click="$emit('navigate')"
       >
         <!-- Icon -->
-        <span class="text-3xl mb-2 select-none">{{ reward.icon || '🎁' }}</span>
+        <span class="mb-2 select-none">
+          <template v-if="reward.icon">{{ reward.icon }}</template>
+          <GiftIcon v-else class="w-8 h-8 text-wisteria-500 dark:text-wisteria-400" />
+        </span>
 
         <!-- Title -->
         <h4 class="text-sm font-bold text-prussian-500 dark:text-lavender-200 leading-tight mb-1 line-clamp-2">
@@ -41,7 +44,7 @@
   </div>
 
   <div v-else class="text-center py-6">
-    <span class="text-3xl mb-2 block">🎁</span>
+    <GiftIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mx-auto mb-2" />
     <p class="text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">No rewards yet</p>
     <p v-if="isParent" class="text-xs text-lavender-500 dark:text-lavender-400 mb-3">
       Create rewards your family can earn with points!
@@ -64,6 +67,7 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { StarIcon, CheckIcon, PlusIcon } from '@heroicons/vue/24/solid'
+import { GiftIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   rewards: {

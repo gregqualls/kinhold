@@ -14,7 +14,7 @@
       </p>
     </div>
     <span
-      class="text-sm font-bold flex-shrink-0 px-2 py-0.5 rounded-full"
+      class="text-sm font-bold font-mono flex-shrink-0 px-2 py-0.5 rounded-full"
       :class="item.points > 0
         ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30'
         : 'text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30'"

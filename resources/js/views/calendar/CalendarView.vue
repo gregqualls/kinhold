@@ -2,7 +2,7 @@
   <div class="p-4 md:p-6 max-w-6xl">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200">Calendar</h1>
+      <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Calendar</h1>
 
       <!-- View Mode Selector -->
       <div class="flex gap-1 bg-lavender-100 dark:bg-prussian-700 rounded-lg p-1">
@@ -29,7 +29,7 @@
       </button>
 
       <div class="flex items-center gap-4">
-        <h2 class="text-xl font-semibold text-prussian-500 dark:text-lavender-200">
+        <h2 class="text-xl font-semibold font-heading text-prussian-500 dark:text-lavender-200">
           {{ navigationTitle }}
         </h2>
         <button

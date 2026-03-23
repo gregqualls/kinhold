@@ -8,7 +8,7 @@
           <div class="w-16 h-16 rounded-2xl bg-wisteria-50 dark:bg-wisteria-900/20 flex items-center justify-center mx-auto mb-4">
             <SparklesIcon class="w-8 h-8 text-wisteria-500" />
           </div>
-          <h2 class="text-xl font-bold text-prussian-500 dark:text-lavender-200 mb-2">Ask Hub Anything</h2>
+          <h2 class="text-xl font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Ask Kinhold Anything</h2>
           <p class="text-sm text-lavender-500 dark:text-lavender-400 mb-8">
             I can help with calendar events, tasks, vault info, and more.
           </p>
@@ -92,7 +92,7 @@
         <input
           v-model="messageInput"
           type="text"
-          placeholder="Ask Hub..."
+          placeholder="Ask Kinhold..."
           class="flex-1 px-4 py-2.5 bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-xl text-sm placeholder-lavender-400 dark:placeholder-lavender-500 text-prussian-500 dark:text-lavender-200 focus:bg-white dark:focus:bg-prussian-800 focus:ring-2 focus:ring-wisteria-400 transition-all outline-none"
           :disabled="loading"
         />

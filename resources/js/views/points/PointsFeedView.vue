@@ -2,7 +2,7 @@
   <div class="p-4 md:p-6 max-w-3xl flex flex-col h-full">
     <!-- Header -->
     <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200">Points</h1>
+      <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Points</h1>
       <div class="flex gap-2">
         <RouterLink to="/points/rewards" class="btn-secondary btn-sm">Rewards</RouterLink>
         <RouterLink to="/points/history" class="btn-ghost btn-sm">History</RouterLink>
@@ -22,7 +22,7 @@
       <div class="flex items-center justify-between mb-3">
         <div>
           <p class="text-xs text-lavender-500 dark:text-lavender-400 uppercase tracking-wide font-medium">Your Balance</p>
-          <p class="text-3xl font-bold text-wisteria-600 dark:text-wisteria-400">{{ pointsStore.bank }}</p>
+          <p class="text-3xl font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ pointsStore.bank }}</p>
         </div>
         <div class="text-right">
           <p class="text-xs text-lavender-500 dark:text-lavender-400 uppercase tracking-wide font-medium mb-1">

@@ -634,7 +634,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $kid->id,
                 'type' => PointTransactionType::Adjustment->value,
                 'points' => 25,
-                'description' => 'Welcome to Q32 Hub bonus!',
+                'description' => 'Welcome to Kinhold bonus!',
                 'awarded_by' => $mike->id,
                 'created_at' => $bonusAt,
                 'updated_at' => $bonusAt,
@@ -652,7 +652,7 @@ class DatabaseSeeder extends Seeder
         $welcomeBadge = Badge::create([
             'family_id' => $family->id,
             'created_by' => $mike->id,
-            'name' => 'Welcome to Q32!',
+            'name' => 'Welcome to Kinhold!',
             'description' => 'Joined the family hub',
             'icon' => 'shield',
             'color' => '#7d57a8',
