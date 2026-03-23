@@ -1,11 +1,11 @@
 <template>
   <div class="p-4 md:p-6 max-w-4xl">
     <!-- Header -->
-    <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200 mb-6">{{ isParent ? 'Family Settings' : 'My Settings' }}</h1>
+    <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-6">{{ isParent ? 'Family Settings' : 'My Settings' }}</h1>
 
     <!-- Kid-friendly Profile Section (shown for non-parent users) -->
     <div v-if="!isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">My Profile</h2>
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">My Profile</h2>
       <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
         <UserAvatar :user="currentUser" size="lg" />
         <div>
@@ -18,7 +18,7 @@
 
     <!-- Family Settings (parent only) -->
     <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">Family Information</h2>
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Family Information</h2>
 
       <form @submit.prevent="updateFamily" class="space-y-4">
         <BaseInput
@@ -41,7 +41,7 @@
 
     <!-- Invite Code (parent only) -->
     <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Family Invite Code</h2>
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Family Invite Code</h2>
       <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
         Share this code with family members so they can join during registration.
       </p>
@@ -83,7 +83,7 @@
     <!-- Family Members -->
     <div class="card-lg mb-6">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">Family Members</h2>
+        <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200">Family Members</h2>
         <BaseButton v-if="isParent" variant="secondary" size="sm" @click="openAddMemberModal">
           <PlusIcon class="w-4 h-4 mr-2" />
           Add Member
@@ -155,7 +155,7 @@
 
     <!-- API Configuration (parent only) -->
     <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">API Configuration</h2>
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">API Configuration</h2>
 
       <div class="space-y-4">
         <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -167,7 +167,7 @@
         <!-- AI Provider Selection -->
         <div>
           <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
-            AI Provider (for Hub AI)
+            AI Provider (for Kinhold AI)
           </label>
 
           <!-- Provider Cards -->
@@ -410,7 +410,7 @@
 
     <!-- Appearance -->
     <div class="card-lg mb-6">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4">Appearance</h2>
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Appearance</h2>
 
       <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-800 rounded-lg">
         <div>
@@ -497,7 +497,7 @@
     <div v-if="currentUser?.email" class="card-lg mb-6">
       <div class="flex items-center gap-2 mb-4">
         <EnvelopeIcon class="w-5 h-5 text-wisteria-500 dark:text-wisteria-400" />
-        <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">Email Notifications</h2>
+        <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200">Email Notifications</h2>
       </div>
       <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
         Choose which email notifications you'd like to receive.
@@ -539,7 +539,7 @@
 
     <!-- Feature Access Control (parent only) -->
     <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Feature Access Control</h2>
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Feature Access Control</h2>
       <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
         Control which features each family member can access. Parents always have access unless a feature is turned off entirely.
       </p>
@@ -691,7 +691,7 @@
 
     <!-- Default Task Points (parent only, when tasks + points enabled) -->
     <div v-if="isParent && moduleToggles.tasks && moduleToggles.points" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Default Task Points</h2>
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Default Task Points</h2>
       <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
         Set how many points are awarded by default for each task priority level. Tasks with explicitly set points are not affected.
       </p>
@@ -749,7 +749,7 @@
 
     <!-- Task Assignment Permissions (parent only, when tasks enabled) -->
     <div v-if="isParent && moduleToggles.tasks" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Task Assignment</h2>
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Task Assignment</h2>
       <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
         Control which family members can assign tasks to others. Parents can always assign tasks to anyone.
       </p>
@@ -1138,7 +1138,7 @@ const availableModules = [
   { id: 'calendar', name: 'Calendar', description: 'View and manage family events' },
   { id: 'tasks', name: 'Tasks', description: 'Create and assign tasks' },
   { id: 'vault', name: 'Family Vault', description: 'Secure information storage' },
-  { id: 'chat', name: 'Hub AI', description: 'AI-powered assistant' },
+  { id: 'chat', name: 'Kinhold AI', description: 'AI-powered assistant' },
   { id: 'points', name: 'Points & Rewards', description: 'Earn points, give kudos, purchase rewards' },
   { id: 'badges', name: 'Badges', description: 'Achievement badges and milestones' },
 ]

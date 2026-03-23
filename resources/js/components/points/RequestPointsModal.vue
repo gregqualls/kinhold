@@ -2,7 +2,7 @@
   <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/50" @click="$emit('close')"></div>
     <div class="card p-6 w-full max-w-sm relative z-10">
-      <h3 class="text-lg font-bold text-prussian-500 dark:text-lavender-200 mb-4">Request Points</h3>
+      <h3 class="text-lg font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Request Points</h3>
 
       <div class="space-y-4">
         <div>

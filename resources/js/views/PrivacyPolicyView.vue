@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between h-16">
           <RouterLink to="/" class="flex items-center gap-2">
             <span class="text-2xl">&#x1F3E0;</span>
-            <span class="text-xl font-bold text-wisteria-600 dark:text-wisteria-400">Q32 Hub</span>
+            <span class="text-xl font-bold text-wisteria-600 dark:text-wisteria-400">Kinhold</span>
           </RouterLink>
           <div class="flex items-center gap-3">
             <RouterLink to="/login" class="btn-ghost btn-sm">Sign In</RouterLink>
@@ -26,7 +26,7 @@
         <section>
           <h2>Overview</h2>
           <p>
-            Q32 Hub ("we", "our", "the app") is an open-source family management application.
+            Kinhold ("we", "our", "the app") is an open-source family management application.
             We respect your privacy and are committed to protecting the personal data you share with us.
             This policy explains what data we collect, why, and how we handle it.
           </p>
@@ -72,7 +72,7 @@
 
         <section>
           <h2>How We Use Your Data</h2>
-          <p>Your data is used exclusively to provide the Q32 Hub service to your family:</p>
+          <p>Your data is used exclusively to provide the Kinhold service to your family:</p>
           <ul>
             <li>Authenticate you and manage your session</li>
             <li>Display your family's calendar, tasks, and vault</li>
@@ -127,7 +127,7 @@
         <section>
           <h2>Self-Hosting</h2>
           <p>
-            Q32 Hub is open source (MIT license). If you self-host, your data stays entirely on your own infrastructure.
+            Kinhold is open source (MIT license). If you self-host, your data stays entirely on your own infrastructure.
             This privacy policy applies only to the instance at <strong>family.qthirtytwo.com</strong> operated by Greg Qualls.
           </p>
         </section>
@@ -135,7 +135,7 @@
         <section>
           <h2>Children's Privacy</h2>
           <p>
-            Q32 Hub is designed for families with children. Child accounts are created and managed by parents.
+            Kinhold is designed for families with children. Child accounts are created and managed by parents.
             Children under 13 do not provide their own email — parents create managed accounts for them.
             Parents control what data children can access via role-based permissions and feature toggles.
           </p>
@@ -185,7 +185,7 @@
     <!-- Footer -->
     <footer class="border-t border-lavender-200 dark:border-prussian-700 mt-16 py-8 text-center text-sm text-prussian-400 dark:text-lavender-500">
       <div class="max-w-4xl mx-auto px-4">
-        <p>&copy; {{ new Date().getFullYear() }} Q32 Hub &mdash; Open source under the MIT License</p>
+        <p>&copy; {{ new Date().getFullYear() }} Kinhold &mdash; Open source under the MIT License</p>
         <div class="mt-2 flex items-center justify-center gap-4">
           <RouterLink to="/" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Home</RouterLink>
           <span>&bull;</span>

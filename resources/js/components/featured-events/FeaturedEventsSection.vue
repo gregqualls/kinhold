@@ -1,7 +1,7 @@
 <template>
   <BaseCard class="md:col-span-2 lg:col-span-3" shadow="lg">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
         <StarIcon class="w-5 h-5 text-sand-500" />
         Coming Up
       </h2>
@@ -25,7 +25,7 @@
       <div
         v-for="event in upcomingEvents.slice(0, 6)"
         :key="event.id"
-        class="flex items-center gap-3 p-3 rounded-xl transition-all duration-300"
+        class="flex items-center gap-3 p-3 rounded-[12px] transition-all duration-300"
         :class="isToday(event.event_date)
           ? 'bg-gradient-to-r from-sand-100/80 to-wisteria-100/60 dark:from-sand-900/30 dark:to-wisteria-900/30 ring-1 ring-sand-300/50 dark:ring-sand-700/50 animate-pulse-subtle'
           : 'bg-lavender-50/50 dark:bg-prussian-700/50'"

@@ -1,14 +1,16 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-lavender-50 to-wisteria-50 dark:from-prussian-900 dark:to-prussian-800 flex items-center justify-center p-4">
+  <div class="kin-page min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-wisteria-600 dark:text-wisteria-400 mb-2">Q32 Hub</h1>
-        <p class="text-lavender-600 dark:text-lavender-400">Family Hub Login</p>
+        <router-link to="/" class="inline-block">
+          <h1 class="text-4xl font-heading font-bold text-kin-gold mb-2">Kinhold</h1>
+        </router-link>
+        <p class="kin-muted">Sign in to your family hub</p>
       </div>
 
       <!-- Form Card -->
-      <div class="card-lg">
+      <div class="kin-card">
         <form @submit.prevent="handleLogin" class="space-y-4">
           <!-- Email -->
           <BaseInput
@@ -32,12 +34,12 @@
 
           <!-- Remember me -->
           <label class="flex items-center gap-2 cursor-pointer">
-            <input v-model="form.remember" type="checkbox" class="rounded border-lavender-300 text-wisteria-600 focus:ring-wisteria-400" />
-            <span class="text-sm text-prussian-500 dark:text-lavender-200">Remember me</span>
+            <input v-model="form.remember" type="checkbox" class="rounded border-kin-border text-kin-gold focus:ring-kin-gold/30" />
+            <span class="text-sm text-kin-black dark:text-kin-off-white">Remember me</span>
           </label>
 
           <!-- Error message -->
-          <div v-if="errors.general" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <div v-if="errors.general" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-[10px]">
             <p class="text-sm text-red-800 dark:text-red-300">{{ errors.general }}</p>
           </div>
 
@@ -55,10 +57,10 @@
         <!-- Divider with text -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-lavender-200 dark:border-prussian-600"></div>
+            <div class="w-full border-t border-kin-border dark:border-kin-border-dark"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-3 bg-white dark:bg-prussian-800 text-lavender-500 dark:text-lavender-400">or continue with</span>
+            <span class="px-3 bg-white dark:bg-kin-surface-dark kin-muted">or continue with</span>
           </div>
         </div>
 
@@ -66,7 +68,7 @@
         <button
           @click="handleGoogleLogin"
           :disabled="googleLoading"
-          class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-lavender-200 dark:border-prussian-600 rounded-lg bg-white dark:bg-prussian-700 hover:bg-lavender-50 dark:hover:bg-prussian-600 transition-colors text-prussian-600 dark:text-lavender-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-kin-border dark:border-kin-border-dark rounded-[10px] bg-white dark:bg-kin-surface-dark hover:bg-kin-gray-50 dark:hover:bg-kin-surface-dark-alt transition-colors text-kin-black dark:text-kin-off-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg class="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -78,12 +80,12 @@
         </button>
 
         <!-- Divider -->
-        <div class="divider my-6" />
+        <div class="border-t border-kin-border dark:border-kin-border-dark my-6" />
 
         <!-- Register link -->
-        <p class="text-center text-lavender-600 dark:text-lavender-400">
+        <p class="text-center kin-muted">
           Don't have an account?
-          <RouterLink to="/register" class="text-wisteria-600 dark:text-wisteria-400 font-medium hover:text-wisteria-500">
+          <RouterLink to="/register" class="kin-link font-medium">
             Sign up
           </RouterLink>
         </p>

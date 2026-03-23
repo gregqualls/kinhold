@@ -6,7 +6,7 @@
     </div>
     <div class="w-full h-2 bg-lavender-200 dark:bg-prussian-700 rounded-full overflow-hidden">
       <div
-        class="h-full rounded-full transition-all duration-500"
+        class="h-full rounded-full transition-all duration-200"
         :style="{
           width: Math.min(100, (progress / threshold) * 100) + '%',
           backgroundColor: color,

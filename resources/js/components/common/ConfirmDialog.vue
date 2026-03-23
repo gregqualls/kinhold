@@ -9,7 +9,7 @@
         <Transition name="scale">
           <div
             v-if="show"
-            class="bg-white dark:bg-prussian-800 rounded-2xl w-full max-w-sm shadow-xl"
+            class="bg-white dark:bg-prussian-800 rounded-[12px] w-full max-w-sm shadow-xl"
             @click.stop
           >
             <!-- Icon -->
@@ -33,13 +33,13 @@
             <div class="px-6 pb-6 pt-4 flex gap-3">
               <button
                 @click="$emit('cancel')"
-                class="flex-1 px-4 py-2.5 text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-lavender-100 dark:bg-prussian-700 hover:bg-lavender-200 dark:hover:bg-prussian-600 rounded-xl transition-colors"
+                class="flex-1 px-4 py-2.5 text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-lavender-100 dark:bg-prussian-700 hover:bg-lavender-200 dark:hover:bg-prussian-600 rounded-[10px] transition-colors"
               >
                 {{ cancelText }}
               </button>
               <button
                 @click="$emit('confirm')"
-                class="flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-xl transition-colors"
+                class="flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-[10px] transition-colors"
                 :class="confirmBtnClass"
                 :disabled="loading"
               >

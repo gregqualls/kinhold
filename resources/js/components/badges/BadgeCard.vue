@@ -1,8 +1,7 @@
 <template>
   <div
-    class="card p-4 flex flex-col items-center text-center transition-all"
-    :class="badge.is_earned ? 'ring-1' : 'opacity-75'"
-    :style="badge.is_earned ? { borderColor: badge.color + '40' } : {}"
+    class="card p-4 flex flex-col items-center text-center transition-all rounded-[12px]"
+    :class="badge.is_earned ? '' : 'opacity-60'"
   >
     <BadgeIcon
       :icon="badge.icon"

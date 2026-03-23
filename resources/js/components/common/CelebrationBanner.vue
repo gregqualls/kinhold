@@ -3,12 +3,12 @@
   <Transition name="celebration-slide">
     <div
       v-if="showBirthday && !birthdayDismissed"
-      class="relative mb-4 overflow-hidden rounded-2xl bg-gradient-to-r from-wisteria-500 via-pink-500 to-sand-400 dark:from-wisteria-700 dark:via-pink-700 dark:to-sand-600 p-4 md:p-5 shadow-lg"
+      class="relative mb-4 overflow-hidden rounded-[12px] bg-gradient-to-r from-wisteria-500 via-pink-500 to-sand-400 dark:from-wisteria-700 dark:via-pink-700 dark:to-sand-600 p-4 md:p-5 shadow-lg"
     >
       <!-- Confetti overlay -->
       <div class="absolute inset-0 pointer-events-none overflow-hidden">
         <div
-          v-for="i in 40"
+          v-for="i in 12"
           :key="'confetti-' + i"
           class="celebration-confetti-piece"
           :style="confettiStyle(i)"
@@ -56,11 +56,11 @@
   <Transition name="celebration-slide">
     <div
       v-if="showHoliday && !holidayDismissed"
-      class="relative mb-4 overflow-hidden rounded-xl bg-lavender-100 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 px-4 py-3 shadow-sm"
+      class="relative mb-4 overflow-hidden rounded-[12px] bg-lavender-100 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 px-4 py-3 shadow-sm"
     >
       <div class="flex items-center justify-between gap-3">
         <p class="text-sm md:text-base font-semibold text-prussian-600 dark:text-lavender-200">
-          <span class="mr-1">{{ holiday.emoji }}</span>
+          <component :is="holidayIconComponent" class="w-4 h-4 inline-block mr-1 align-text-bottom" />
           {{ holiday.message }}
         </p>
 
@@ -77,8 +77,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
+import { ref, computed } from 'vue'
+import { XMarkIcon, GiftIcon, MoonIcon } from '@heroicons/vue/24/outline'
+import { SparklesIcon, HeartIcon, StarIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps({
   /** Whether to show the birthday banner */
@@ -108,6 +109,19 @@ const props = defineProps({
   },
 })
 
+const holidayIconMap = {
+  sparkles: SparklesIcon,
+  heart: HeartIcon,
+  star: StarIcon,
+  moon: MoonIcon,
+  gift: GiftIcon,
+}
+
+const holidayIconComponent = computed(() => {
+  if (!props.holiday?.emoji) return SparklesIcon
+  return holidayIconMap[props.holiday.emoji] || SparklesIcon
+})
+
 // Session-based dismissal (resets on page reload / new session)
 const birthdayDismissed = ref(false)
 const holidayDismissed = ref(false)
@@ -125,8 +139,8 @@ const confettiColors = ['#ffffff', '#FFD700', '#FF6B6B', '#4ECDC4', '#FF69B4', '
 const confettiStyle = (i) => {
   const color = confettiColors[i % confettiColors.length]
   const left = Math.random() * 100
-  const delay = Math.random() * 3
-  const duration = 3 + Math.random() * 3
+  const delay = Math.random() * 1
+  const duration = 1 + Math.random() * 1
   const size = 5 + Math.random() * 5
   const rotation = Math.random() * 360
   return {

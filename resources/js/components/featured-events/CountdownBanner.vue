@@ -9,7 +9,7 @@
   >
     <div
       v-if="countdownEvent && !isDismissed"
-      class="relative overflow-hidden rounded-2xl p-4 md:p-5 mb-4 md:mb-6"
+      class="relative overflow-hidden rounded-[12px] p-4 md:p-5 mb-4 md:mb-6"
       :style="bannerStyle"
     >
       <!-- Background shimmer effect -->
