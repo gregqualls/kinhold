@@ -3,352 +3,84 @@
 @tailwind utilities;
 
 /*
- * === Color Theme Variables ===
- * Each theme defines RGB triplets (space-separated) for all color scales.
+ * === Kinhold Color Variables ===
+ * RGB triplets (space-separated) for all color scales.
  * The Tailwind config references these via rgb(var(--color) / <alpha-value>).
- * Existing class names (prussian, wisteria, lavender, sand, ink) are unchanged.
+ * Variable names (prussian, wisteria, lavender, sand, ink) are legacy —
+ * they now map to the Kinhold brand palette.
  */
 
-/* ─── Q32 Classic (default) ─── */
+/* ─── Kinhold (default) ─── */
 :root,
-[data-theme="classic"] {
-  /* Prussian Blue — deep navy */
-  --prussian-50: 232 237 245;
-  --prussian-100: 197 208 227;
-  --prussian-200: 143 161 199;
-  --prussian-300: 90 114 171;
-  --prussian-400: 47 74 122;
-  --prussian-500: 5 32 74;
-  --prussian-600: 4 26 61;
-  --prussian-700: 3 20 48;
-  --prussian-800: 2 14 34;
-  --prussian-900: 1 8 21;
-  --prussian-950: 1 5 14;
+[data-theme="kinhold"] {
+  /* Dark surfaces — warm neutrals (was Prussian Blue) */
+  --prussian-50: 245 243 240;
+  --prussian-100: 232 228 223;
+  --prussian-200: 200 196 190;
+  --prussian-300: 156 152 149;
+  --prussian-400: 107 105 102;
+  --prussian-500: 55 52 48;
+  --prussian-600: 42 40 36;
+  --prussian-700: 37 35 32;
+  --prussian-800: 28 28 30;
+  --prussian-900: 18 18 20;
+  --prussian-950: 12 12 14;
 
-  /* Wisteria — purple accent */
-  --wisteria-50: 245 240 250;
-  --wisteria-100: 235 225 245;
-  --wisteria-200: 215 195 235;
-  --wisteria-300: 195 165 225;
-  --wisteria-400: 180 151 214;
-  --wisteria-500: 155 117 197;
-  --wisteria-600: 125 87 168;
-  --wisteria-700: 94 64 128;
-  --wisteria-800: 64 43 87;
-  --wisteria-900: 33 22 45;
-  --wisteria-950: 21 14 29;
+  /* Accent — muted gold (was Wisteria) */
+  --wisteria-50: 250 246 240;
+  --wisteria-100: 240 230 214;
+  --wisteria-200: 228 210 184;
+  --wisteria-300: 212 180 140;
+  --wisteria-400: 196 151 90;
+  --wisteria-500: 179 138 80;
+  --wisteria-600: 196 151 90;
+  --wisteria-700: 155 115 62;
+  --wisteria-800: 110 82 44;
+  --wisteria-900: 61 46 26;
+  --wisteria-950: 38 28 16;
 
-  /* Lavender — light surfaces */
-  --lavender-50: 244 245 249;
-  --lavender-100: 237 238 245;
-  --lavender-200: 225 226 239;
-  --lavender-300: 200 201 223;
-  --lavender-400: 169 171 203;
-  --lavender-500: 138 141 183;
-  --lavender-600: 110 113 160;
-  --lavender-700: 85 87 125;
-  --lavender-800: 60 61 89;
-  --lavender-900: 35 36 54;
-  --lavender-950: 22 23 32;
+  /* Surfaces — warm ivory/cream (was Lavender) */
+  --lavender-50: 250 248 245;
+  --lavender-100: 245 242 238;
+  --lavender-200: 232 228 223;
+  --lavender-300: 210 206 200;
+  --lavender-400: 160 155 148;
+  --lavender-500: 120 116 110;
+  --lavender-600: 90 86 80;
+  --lavender-700: 64 60 56;
+  --lavender-800: 46 46 50;
+  --lavender-900: 28 28 32;
+  --lavender-950: 18 18 20;
 
-  /* Golden Sand — warm highlight */
-  --sand-50: 246 246 232;
-  --sand-100: 236 237 209;
-  --sand-200: 217 219 163;
-  --sand-300: 205 208 128;
-  --sand-400: 187 190 100;
-  --sand-500: 165 168 78;
-  --sand-600: 132 134 62;
-  --sand-700: 99 101 47;
-  --sand-800: 66 67 31;
-  --sand-900: 33 34 16;
-  --sand-950: 20 20 8;
+  /* Secondary accent — warm amber (was Sand) */
+  --sand-50: 250 246 240;
+  --sand-100: 244 236 220;
+  --sand-200: 232 216 190;
+  --sand-300: 218 192 152;
+  --sand-400: 196 139 63;
+  --sand-500: 180 128 54;
+  --sand-600: 150 106 42;
+  --sand-700: 118 84 34;
+  --sand-800: 82 58 24;
+  --sand-900: 46 32 14;
+  --sand-950: 28 20 8;
 
-  /* Ink — deepest text */
-  --ink-50: 230 230 231;
-  --ink-100: 179 179 181;
-  --ink-200: 128 128 131;
-  --ink-300: 77 77 81;
-  --ink-400: 38 38 42;
-  --ink-500: 2 2 10;
-  --ink-600: 2 2 8;
-  --ink-700: 1 1 6;
-  --ink-800: 1 1 4;
-  --ink-900: 0 0 2;
-  --ink-950: 0 0 1;
+  /* Text — warm near-black (was Ink) */
+  --ink-50: 240 237 233;
+  --ink-100: 200 196 190;
+  --ink-200: 156 152 149;
+  --ink-300: 107 105 102;
+  --ink-400: 74 70 64;
+  --ink-500: 28 28 30;
+  --ink-600: 24 24 26;
+  --ink-700: 18 18 20;
+  --ink-800: 12 12 14;
+  --ink-900: 6 6 8;
+  --ink-950: 2 2 4;
 }
 
-/* ─── Ocean Breeze ─── */
-[data-theme="ocean"] {
-  /* Deep Navy Teal — primary */
-  --prussian-50: 230 241 245;
-  --prussian-100: 194 222 233;
-  --prussian-200: 133 189 211;
-  --prussian-300: 77 155 186;
-  --prussian-400: 36 113 148;
-  --prussian-500: 10 74 105;
-  --prussian-600: 8 60 87;
-  --prussian-700: 6 46 68;
-  --prussian-800: 4 32 48;
-  --prussian-900: 2 18 30;
-  --prussian-950: 1 10 18;
-
-  /* Cyan/Aqua — accent */
-  --wisteria-50: 230 249 252;
-  --wisteria-100: 204 243 248;
-  --wisteria-200: 153 230 240;
-  --wisteria-300: 102 215 230;
-  --wisteria-400: 56 198 218;
-  --wisteria-500: 6 182 212;
-  --wisteria-600: 5 150 175;
-  --wisteria-700: 4 116 136;
-  --wisteria-800: 3 80 96;
-  --wisteria-900: 1 42 52;
-  --wisteria-950: 1 26 32;
-
-  /* Light Blue Gray — surface */
-  --lavender-50: 243 247 249;
-  --lavender-100: 232 239 244;
-  --lavender-200: 216 228 236;
-  --lavender-300: 188 210 222;
-  --lavender-400: 156 187 205;
-  --lavender-500: 124 161 183;
-  --lavender-600: 96 133 157;
-  --lavender-700: 72 103 124;
-  --lavender-800: 50 73 89;
-  --lavender-900: 30 44 54;
-  --lavender-950: 18 27 34;
-
-  /* Coral — highlight */
-  --sand-50: 254 241 238;
-  --sand-100: 252 221 214;
-  --sand-200: 249 186 173;
-  --sand-300: 245 151 132;
-  --sand-400: 241 117 93;
-  --sand-500: 236 84 56;
-  --sand-600: 210 64 38;
-  --sand-700: 168 50 30;
-  --sand-800: 118 36 22;
-  --sand-900: 64 20 12;
-  --sand-950: 38 12 7;
-
-  /* Ink stays consistent */
-  --ink-50: 230 232 234;
-  --ink-100: 179 182 188;
-  --ink-200: 128 133 142;
-  --ink-300: 77 83 96;
-  --ink-400: 38 42 52;
-  --ink-500: 8 12 22;
-  --ink-600: 6 10 18;
-  --ink-700: 5 8 14;
-  --ink-800: 3 5 10;
-  --ink-900: 2 3 6;
-  --ink-950: 1 1 3;
-}
-
-/* ─── Forest ─── */
-[data-theme="forest"] {
-  /* Dark Forest Green — primary */
-  --prussian-50: 232 242 236;
-  --prussian-100: 198 225 208;
-  --prussian-200: 140 195 161;
-  --prussian-300: 86 162 116;
-  --prussian-400: 44 121 76;
-  --prussian-500: 14 80 42;
-  --prussian-600: 11 66 35;
-  --prussian-700: 8 50 27;
-  --prussian-800: 6 36 19;
-  --prussian-900: 3 20 11;
-  --prussian-950: 2 12 6;
-
-  /* Emerald — accent */
-  --wisteria-50: 232 252 243;
-  --wisteria-100: 209 248 230;
-  --wisteria-200: 163 240 205;
-  --wisteria-300: 117 230 178;
-  --wisteria-400: 74 216 153;
-  --wisteria-500: 34 197 128;
-  --wisteria-600: 22 163 105;
-  --wisteria-700: 16 126 82;
-  --wisteria-800: 11 88 58;
-  --wisteria-900: 6 48 32;
-  --wisteria-950: 3 28 18;
-
-  /* Sage/Mint — surface */
-  --lavender-50: 244 248 244;
-  --lavender-100: 234 242 234;
-  --lavender-200: 216 232 218;
-  --lavender-300: 190 216 194;
-  --lavender-400: 160 196 166;
-  --lavender-500: 132 172 140;
-  --lavender-600: 104 146 114;
-  --lavender-700: 80 114 88;
-  --lavender-800: 56 80 62;
-  --lavender-900: 34 48 38;
-  --lavender-950: 20 30 22;
-
-  /* Amber — highlight */
-  --sand-50: 255 248 235;
-  --sand-100: 254 240 214;
-  --sand-200: 252 224 172;
-  --sand-300: 250 207 130;
-  --sand-400: 247 189 90;
-  --sand-500: 244 170 50;
-  --sand-600: 214 142 22;
-  --sand-700: 168 110 16;
-  --sand-800: 118 78 12;
-  --sand-900: 64 42 6;
-  --sand-950: 38 24 3;
-
-  /* Ink */
-  --ink-50: 232 234 232;
-  --ink-100: 182 186 182;
-  --ink-200: 132 138 132;
-  --ink-300: 82 90 82;
-  --ink-400: 40 46 40;
-  --ink-500: 6 12 6;
-  --ink-600: 5 10 5;
-  --ink-700: 4 8 4;
-  --ink-800: 3 5 3;
-  --ink-900: 1 3 1;
-  --ink-950: 1 1 1;
-}
-
-/* ─── Sunset ─── */
-[data-theme="sunset"] {
-  /* Deep Warm Charcoal — primary */
-  --prussian-50: 240 236 234;
-  --prussian-100: 222 214 208;
-  --prussian-200: 189 175 166;
-  --prussian-300: 152 134 122;
-  --prussian-400: 110 92 80;
-  --prussian-500: 66 52 42;
-  --prussian-600: 54 42 34;
-  --prussian-700: 42 33 26;
-  --prussian-800: 30 24 19;
-  --prussian-900: 18 14 11;
-  --prussian-950: 10 8 6;
-
-  /* Warm Orange/Amber — accent */
-  --wisteria-50: 255 244 235;
-  --wisteria-100: 254 231 211;
-  --wisteria-200: 253 206 168;
-  --wisteria-300: 251 180 124;
-  --wisteria-400: 249 155 82;
-  --wisteria-500: 246 130 42;
-  --wisteria-600: 220 106 22;
-  --wisteria-700: 172 82 16;
-  --wisteria-800: 120 58 12;
-  --wisteria-900: 66 32 6;
-  --wisteria-950: 38 18 4;
-
-  /* Cream/Warm Gray — surface */
-  --lavender-50: 250 247 244;
-  --lavender-100: 245 240 234;
-  --lavender-200: 236 228 218;
-  --lavender-300: 222 210 196;
-  --lavender-400: 204 188 170;
-  --lavender-500: 182 164 144;
-  --lavender-600: 156 138 120;
-  --lavender-700: 122 108 94;
-  --lavender-800: 86 76 66;
-  --lavender-900: 52 46 40;
-  --lavender-950: 32 28 24;
-
-  /* Rose — highlight */
-  --sand-50: 253 238 241;
-  --sand-100: 250 218 224;
-  --sand-200: 245 180 192;
-  --sand-300: 239 142 160;
-  --sand-400: 232 106 130;
-  --sand-500: 224 70 102;
-  --sand-600: 196 48 78;
-  --sand-700: 155 38 62;
-  --sand-800: 110 28 44;
-  --sand-900: 60 14 24;
-  --sand-950: 36 8 14;
-
-  /* Ink — warm black */
-  --ink-50: 236 234 232;
-  --ink-100: 188 184 180;
-  --ink-200: 140 134 128;
-  --ink-300: 92 86 80;
-  --ink-400: 48 44 40;
-  --ink-500: 12 10 8;
-  --ink-600: 10 8 6;
-  --ink-700: 8 6 5;
-  --ink-800: 5 4 3;
-  --ink-900: 3 2 2;
-  --ink-950: 1 1 1;
-}
-
-/* ─── Midnight ─── */
-[data-theme="midnight"] {
-  /* Deep Indigo — primary */
-  --prussian-50: 234 233 244;
-  --prussian-100: 206 204 230;
-  --prussian-200: 155 150 200;
-  --prussian-300: 108 100 168;
-  --prussian-400: 68 58 132;
-  --prussian-500: 30 22 96;
-  --prussian-600: 24 18 78;
-  --prussian-700: 18 14 60;
-  --prussian-800: 13 10 44;
-  --prussian-900: 7 5 26;
-  --prussian-950: 4 3 16;
-
-  /* Electric Blue — accent */
-  --wisteria-50: 232 240 255;
-  --wisteria-100: 209 224 254;
-  --wisteria-200: 163 194 252;
-  --wisteria-300: 117 164 250;
-  --wisteria-400: 72 134 248;
-  --wisteria-500: 30 106 245;
-  --wisteria-600: 14 84 214;
-  --wisteria-700: 10 66 170;
-  --wisteria-800: 8 48 122;
-  --wisteria-900: 4 26 68;
-  --wisteria-950: 2 16 42;
-
-  /* Cool Gray — surface */
-  --lavender-50: 244 244 248;
-  --lavender-100: 234 234 242;
-  --lavender-200: 218 218 232;
-  --lavender-300: 195 196 216;
-  --lavender-400: 168 170 198;
-  --lavender-500: 140 142 176;
-  --lavender-600: 112 114 152;
-  --lavender-700: 86 88 120;
-  --lavender-800: 60 62 86;
-  --lavender-900: 36 38 52;
-  --lavender-950: 22 22 34;
-
-  /* Gold — highlight */
-  --sand-50: 255 250 235;
-  --sand-100: 254 244 214;
-  --sand-200: 252 232 172;
-  --sand-300: 250 220 130;
-  --sand-400: 248 208 90;
-  --sand-500: 245 195 52;
-  --sand-600: 216 168 24;
-  --sand-700: 170 132 18;
-  --sand-800: 120 92 12;
-  --sand-900: 66 50 6;
-  --sand-950: 40 30 4;
-
-  /* Ink — cool black */
-  --ink-50: 232 232 236;
-  --ink-100: 180 180 190;
-  --ink-200: 128 128 142;
-  --ink-300: 78 78 94;
-  --ink-400: 38 38 50;
-  --ink-500: 4 4 14;
-  --ink-600: 3 3 11;
-  --ink-700: 2 2 8;
-  --ink-800: 2 2 6;
-  --ink-900: 1 1 3;
-  --ink-950: 0 0 2;
-}
+/* Alternative themes removed — Kinhold is the sole brand.
+   Future themes will be added via the theme system in BRAND_GUIDE.md */
 
 @layer base {
   html {
@@ -375,12 +107,14 @@
 
 @layer components {
   .card {
-    @apply bg-white rounded-card shadow-card p-4;
+    @apply bg-white shadow-card p-4;
+    border-radius: 12px;
     border: 1px solid rgb(var(--lavender-200));
   }
 
   .card-lg {
-    @apply bg-white rounded-card shadow-card-lg p-6;
+    @apply bg-white shadow-card-lg p-6;
+    border-radius: 12px;
     border: 1px solid rgb(var(--lavender-200));
   }
 
@@ -393,46 +127,49 @@
   }
 
   .btn {
-    @apply inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    border-radius: 10px;
   }
 
-  /* Primary button: Wisteria/accent */
+  /* Primary button: Gold accent */
   .btn-primary {
     @apply btn text-white shadow-sm;
     background-color: rgb(var(--wisteria-600));
   }
   .btn-primary:hover {
-    background-color: rgb(var(--wisteria-500));
+    background-color: rgb(var(--wisteria-400));
+    box-shadow: 0 4px 12px rgba(196, 151, 90, 0.25);
   }
   .btn-primary:active {
     background-color: rgb(var(--wisteria-700));
   }
   .btn-primary:focus {
-    --tw-ring-color: rgb(var(--wisteria-400));
+    --tw-ring-color: rgb(var(--wisteria-400) / 0.4);
   }
 
-  /* Secondary button: Lavender/surface fill with Prussian/primary text */
+  /* Secondary button: Outlined */
   .btn-secondary {
     @apply btn;
-    background-color: rgb(var(--lavender-200));
-    color: rgb(var(--prussian-500));
-    border: 1px solid rgb(var(--lavender-300));
+    background-color: transparent;
+    color: rgb(var(--ink-500));
+    border: 1px solid rgb(var(--lavender-200));
   }
   .btn-secondary:hover {
-    background-color: rgb(var(--lavender-300));
+    background-color: rgb(var(--lavender-50));
+    border-color: rgb(var(--lavender-300));
   }
   .btn-secondary:active {
-    background-color: rgb(var(--lavender-400));
+    background-color: rgb(var(--lavender-100));
   }
   .btn-secondary:focus {
-    --tw-ring-color: rgb(var(--wisteria-400));
+    --tw-ring-color: rgb(var(--wisteria-400) / 0.4);
   }
 
-  /* Accent button: Sand/highlight */
+  /* Accent button: Warm amber */
   .btn-accent {
     @apply btn shadow-sm;
     background-color: rgb(var(--sand-500));
-    color: rgb(var(--ink-500));
+    color: white;
   }
   .btn-accent:hover {
     background-color: rgb(var(--sand-400));
@@ -449,19 +186,19 @@
     @apply btn bg-red-600 text-white hover:bg-red-500 active:bg-red-700 focus:ring-red-400 shadow-sm;
   }
 
-  /* Ghost button: transparent with Prussian/primary text */
+  /* Ghost button: transparent */
   .btn-ghost {
     @apply btn bg-transparent;
     color: rgb(var(--prussian-500));
   }
   .btn-ghost:hover {
-    background-color: rgb(var(--lavender-200));
+    background-color: rgb(var(--lavender-100));
   }
   .btn-ghost:active {
-    background-color: rgb(var(--lavender-300));
+    background-color: rgb(var(--lavender-200));
   }
   .btn-ghost:focus {
-    --tw-ring-color: rgb(var(--wisteria-400));
+    --tw-ring-color: rgb(var(--wisteria-400) / 0.4);
   }
 
   .btn-sm {
@@ -512,18 +249,19 @@
     @apply badge bg-red-100 text-red-800;
   }
 
-  /* Input: white bg, lavender/surface border, wisteria/accent focus */
+  /* Input: warm border, gold focus */
   .input-base {
-    @apply w-full px-3 py-2 rounded-lg bg-white transition-all duration-200;
-    border: 1px solid rgb(var(--lavender-300));
+    @apply w-full px-3.5 py-2.5 bg-white transition-all duration-200;
+    border-radius: 10px;
+    border: 1px solid rgb(var(--lavender-200));
     color: rgb(var(--ink-500));
   }
   .input-base::placeholder {
-    color: rgb(var(--lavender-500));
+    color: rgb(var(--lavender-400));
   }
   .input-base:focus {
-    --tw-ring-color: rgb(var(--wisteria-400));
     @apply ring-2;
+    --tw-ring-color: rgb(var(--wisteria-400) / 0.3);
     border-color: rgb(var(--wisteria-400));
   }
 
@@ -578,12 +316,12 @@
 
   /* Animated checkbox */
   .checkbox-custom {
-    @apply relative w-[22px] h-[22px] rounded-full border-2 flex-shrink-0 cursor-pointer;
+    @apply relative w-6 h-6 rounded-full border-2 flex-shrink-0 cursor-pointer;
     transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
   }
 
   .checkbox-custom:hover {
-    background-color: rgb(var(--wisteria-400) / 0.12);
+    background-color: rgb(var(--wisteria-400) / 0.15);
   }
 
   .checkbox-custom.checked {
@@ -621,46 +359,47 @@
   }
 
   .dark .card-interactive:hover {
-    border-color: rgb(var(--wisteria-700));
+    border-color: rgb(var(--wisteria-400));
   }
 
   .dark .input-base {
-    background-color: rgb(var(--prussian-700));
-    border-color: rgb(var(--prussian-400));
-    color: rgb(var(--lavender-200));
+    background-color: rgb(var(--prussian-800));
+    border-color: rgb(var(--lavender-800));
+    color: rgb(var(--lavender-50));
   }
   .dark .input-base::placeholder {
-    color: rgb(var(--lavender-600));
+    color: rgb(var(--lavender-500));
   }
 
   .dark .btn-secondary {
-    background-color: rgb(var(--prussian-700));
-    color: rgb(var(--lavender-200));
-    border-color: rgb(var(--prussian-400));
+    background-color: transparent;
+    color: rgb(var(--lavender-50));
+    border-color: rgb(var(--lavender-800));
   }
   .dark .btn-secondary:hover {
-    background-color: rgb(var(--prussian-600));
+    background-color: rgb(var(--prussian-800));
+    border-color: rgb(var(--lavender-700));
   }
 
   .dark .btn-ghost {
-    color: rgb(var(--lavender-200));
+    color: rgb(var(--lavender-100));
   }
   .dark .btn-ghost:hover {
-    background-color: rgb(var(--prussian-700));
+    background-color: rgb(var(--prussian-800));
   }
 
   .dark .divider {
-    border-color: rgb(var(--prussian-400));
+    border-color: rgb(var(--lavender-800));
   }
 
   .dark .badge-primary {
-    background-color: rgb(var(--wisteria-600) / 0.2);
-    color: rgb(var(--wisteria-300));
+    background-color: rgb(var(--wisteria-400) / 0.15);
+    color: rgb(var(--wisteria-400));
   }
 
   .dark .badge-secondary {
-    background-color: rgb(var(--prussian-700));
-    color: rgb(var(--lavender-200));
+    background-color: rgb(var(--prussian-800));
+    color: rgb(var(--lavender-100));
   }
 
   .dark .badge-accent {
@@ -688,13 +427,12 @@
  * automatically adapt to every theme.
  */
 
-/* 1. Main page background — diagonal gradient for depth */
+/* 1. Main page background — warm subtle gradient */
 body {
   background: linear-gradient(
     150deg,
     rgb(var(--lavender-50)) 0%,
-    rgb(var(--wisteria-100)) 35%,
-    rgb(var(--lavender-100)) 65%,
+    rgb(var(--lavender-100)) 50%,
     rgb(var(--lavender-50)) 100%
   );
   min-height: 100vh;
@@ -704,21 +442,20 @@ body {
 body.dark {
   background: linear-gradient(
     150deg,
-    rgb(var(--prussian-900)) 0%,
-    rgb(var(--prussian-700)) 35%,
-    rgb(var(--prussian-800)) 65%,
-    rgb(var(--prussian-900)) 100%
+    rgb(var(--prussian-950)) 0%,
+    rgb(var(--prussian-900)) 50%,
+    rgb(var(--prussian-950)) 100%
   );
 }
 
-/* 2. Sidebar — accent-tinted depth gradient */
+/* 2. Sidebar — warm depth gradient */
 aside.bg-prussian-500,
 aside[class*="bg-prussian-500"] {
   background-image: linear-gradient(
     180deg,
-    rgb(var(--wisteria-400) / 0.35) 0%,
+    rgb(var(--wisteria-400) / 0.15) 0%,
     transparent 40%,
-    rgb(0 0 0 / 0.4) 100%
+    rgb(0 0 0 / 0.3) 100%
   );
 }
 
@@ -726,20 +463,20 @@ aside[class*="bg-prussian-500"] {
 .dark aside[class*="bg-prussian-900"] {
   background-image: linear-gradient(
     180deg,
-    rgb(var(--wisteria-600) / 0.4) 0%,
+    rgb(var(--wisteria-400) / 0.1) 0%,
     transparent 40%,
-    rgb(0 0 0 / 0.5) 100%
+    rgb(0 0 0 / 0.4) 100%
   );
 }
 
-/* 3. Bottom nav — accent-tinted depth */
+/* 3. Bottom nav — warm depth */
 nav.bg-prussian-500,
 nav[class*="bg-prussian-500"] {
   background-image: linear-gradient(
     0deg,
-    rgb(0 0 0 / 0.4) 0%,
+    rgb(0 0 0 / 0.3) 0%,
     transparent 50%,
-    rgb(var(--wisteria-400) / 0.25) 100%
+    rgb(var(--wisteria-400) / 0.1) 100%
   );
 }
 
@@ -747,21 +484,21 @@ nav[class*="bg-prussian-500"] {
 .dark nav[class*="bg-prussian-900"] {
   background-image: linear-gradient(
     0deg,
-    rgb(0 0 0 / 0.4) 0%,
+    rgb(0 0 0 / 0.3) 0%,
     transparent 50%,
-    rgb(var(--wisteria-600) / 0.3) 100%
+    rgb(var(--wisteria-400) / 0.08) 100%
   );
 }
 
-/* 4. Cards — glass sheen */
+/* 4. Cards — subtle warm sheen */
 @layer components {
   .card,
   .card-lg {
     background-image: linear-gradient(
       135deg,
       rgb(255 255 255 / 0.9) 0%,
-      rgb(255 255 255 / 0.3) 40%,
-      rgb(var(--wisteria-100) / 0.3) 100%
+      rgb(255 255 255 / 0.5) 40%,
+      rgb(var(--lavender-100) / 0.3) 100%
     );
   }
 
@@ -769,9 +506,9 @@ nav[class*="bg-prussian-500"] {
   .dark .card-lg {
     background-image: linear-gradient(
       135deg,
-      rgb(255 255 255 / 0.04) 0%,
+      rgb(255 255 255 / 0.03) 0%,
       transparent 40%,
-      rgb(var(--prussian-700) / 0.3) 100%
+      rgb(var(--prussian-800) / 0.3) 100%
     );
   }
 }
@@ -810,4 +547,216 @@ nav[class*="bg-prussian-500"] {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgb(var(--lavender-200) / 0.25);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Kinhold Brand — Landing & Auth Pages
+   Scoped styles for public-facing pages only.
+   Does NOT affect the authenticated app.
+   ═══════════════════════════════════════════════════════ */
+
+@layer components {
+  /* Page wrapper */
+  .kin-page {
+    @apply bg-kin-ivory text-kin-black antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .dark .kin-page {
+    @apply bg-kin-bg-dark text-kin-off-white;
+  }
+
+  /* Heading typography */
+  .kin-heading {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+    @apply font-semibold tracking-tight;
+  }
+
+  /* Navigation bar */
+  .kin-nav {
+    @apply bg-kin-ivory/80 backdrop-blur-xl border-b border-kin-border sticky top-0 z-50;
+  }
+  .dark .kin-nav {
+    @apply bg-kin-bg-dark/80 border-kin-border-dark;
+  }
+
+  /* Primary button — muted gold */
+  .kin-btn-primary {
+    @apply inline-flex items-center justify-center font-medium transition-all duration-200 text-sm;
+    background-color: #C4975A;
+    color: #FFFFFF;
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+  }
+  .kin-btn-primary:hover {
+    background-color: #D4A96A;
+    box-shadow: 0 4px 12px rgba(196, 151, 90, 0.25);
+  }
+  .kin-btn-primary:active {
+    background-color: #B38A50;
+  }
+  .kin-btn-primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #FAF8F5, 0 0 0 4px #C4975A;
+  }
+  .dark .kin-btn-primary:focus-visible {
+    box-shadow: 0 0 0 2px #121214, 0 0 0 4px #C4975A;
+  }
+
+  /* Secondary button — outlined */
+  .kin-btn-secondary {
+    @apply inline-flex items-center justify-center font-medium transition-all duration-200 text-sm;
+    background-color: transparent;
+    color: #1C1C1E;
+    border: 1px solid #E8E4DF;
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+  }
+  .dark .kin-btn-secondary {
+    color: #F0EDE9;
+    border-color: #2E2E32;
+  }
+  .kin-btn-secondary:hover {
+    background-color: #F5F3F0;
+    border-color: #D9D5CF;
+  }
+  .dark .kin-btn-secondary:hover {
+    background-color: #1C1C20;
+    border-color: #3a3a3f;
+  }
+  .kin-btn-secondary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #FAF8F5, 0 0 0 4px #C4975A;
+  }
+  .dark .kin-btn-secondary:focus-visible {
+    box-shadow: 0 0 0 2px #121214, 0 0 0 4px #C4975A;
+  }
+
+  /* Ghost button — text only */
+  .kin-btn-ghost {
+    @apply inline-flex items-center justify-center font-medium transition-all duration-200 text-sm;
+    background-color: transparent;
+    color: #6B6966;
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+  }
+  .dark .kin-btn-ghost {
+    color: #9C9895;
+  }
+  .kin-btn-ghost:hover {
+    color: #1C1C1E;
+    background-color: #F5F3F0;
+  }
+  .dark .kin-btn-ghost:hover {
+    color: #F0EDE9;
+    background-color: #1C1C20;
+  }
+
+  /* Card */
+  .kin-card {
+    @apply bg-white border border-kin-border;
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .dark .kin-card {
+    @apply bg-kin-surface-dark border-kin-border-dark;
+  }
+
+  /* Feature card — card with hover interaction */
+  .kin-feature-card {
+    @apply bg-white border border-kin-border transition-all duration-300;
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .dark .kin-feature-card {
+    @apply bg-kin-surface-dark border-kin-border-dark;
+  }
+  .kin-feature-card:hover {
+    border-color: #C4975A;
+    box-shadow: 0 4px 16px rgba(196, 151, 90, 0.1);
+  }
+  .dark .kin-feature-card:hover {
+    border-color: #D4A96A;
+    box-shadow: 0 4px 16px rgba(212, 169, 106, 0.08);
+  }
+
+  /* Input field */
+  .kin-input {
+    @apply w-full px-4 py-3 bg-white border border-kin-border text-kin-black transition-all duration-200 text-base;
+    border-radius: 10px;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .kin-input::placeholder {
+    color: #9C9895;
+  }
+  .kin-input:focus {
+    outline: none;
+    border-color: #C4975A;
+    box-shadow: 0 0 0 3px rgba(196, 151, 90, 0.15);
+  }
+  .dark .kin-input {
+    @apply bg-kin-surface-dark border-kin-border-dark text-kin-off-white;
+  }
+  .dark .kin-input::placeholder {
+    color: #6B6966;
+  }
+  .dark .kin-input:focus {
+    border-color: #D4A96A;
+    box-shadow: 0 0 0 3px rgba(212, 169, 106, 0.15);
+  }
+
+  /* Override existing component styles inside kin-page */
+  .kin-page .btn-primary {
+    background-color: #C4975A;
+    border-color: #C4975A;
+    border-radius: 10px;
+  }
+  .kin-page .btn-primary:hover {
+    background-color: #D4A96A;
+    border-color: #D4A96A;
+  }
+  .kin-page .input-base {
+    border-radius: 10px;
+    border-color: #E8E4DF;
+  }
+  .dark .kin-page .input-base {
+    border-color: #2E2E32;
+    background-color: #1C1C20;
+  }
+  .kin-page .input-base:focus {
+    border-color: #C4975A;
+    --tw-ring-color: rgba(196, 151, 90, 0.3);
+  }
+
+  /* Section spacing utility */
+  .kin-section {
+    @apply py-20 lg:py-28 px-6;
+  }
+
+  /* Muted text */
+  .kin-muted {
+    color: #6B6966;
+  }
+  .dark .kin-muted {
+    color: #9C9895;
+  }
+
+  /* Icon container — gold tinted background for feature icons */
+  .kin-icon-box {
+    @apply flex items-center justify-center w-10 h-10 rounded-lg;
+    background-color: rgba(196, 151, 90, 0.1);
+    color: #C4975A;
+  }
+  .dark .kin-icon-box {
+    background-color: rgba(196, 151, 90, 0.15);
+    color: #D4A96A;
+  }
+
+  /* Link styling */
+  .kin-link {
+    color: #C4975A;
+    @apply transition-colors duration-200;
+  }
+  .kin-link:hover {
+    color: #D4A96A;
+  }
 }

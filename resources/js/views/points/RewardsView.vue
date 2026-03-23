@@ -6,10 +6,10 @@
         <RouterLink to="/points" class="btn-ghost btn-sm rounded-lg">
           <ChevronLeftIcon class="w-5 h-5" />
         </RouterLink>
-        <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200">Rewards</h1>
+        <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Rewards</h1>
       </div>
       <div class="flex items-center gap-3">
-        <span class="text-sm font-bold text-wisteria-600 dark:text-wisteria-400">
+        <span class="text-sm font-bold font-mono text-wisteria-600 dark:text-wisteria-400">
           {{ pointsStore.bank }} pts
         </span>
         <button v-if="isParent" @click="showCreateForm = !showCreateForm" class="btn-primary btn-sm">

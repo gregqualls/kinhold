@@ -12,11 +12,11 @@ import { storeToRefs } from 'pinia'
  * or manual nth-weekday-of-month helpers.
  */
 const FIXED_HOLIDAYS = [
-  { month: 1, day: 1, name: "New Year's Day", emoji: '🎆', message: 'Happy New Year!' },
-  { month: 2, day: 14, name: "Valentine's Day", emoji: '💝', message: "Happy Valentine's Day!" },
-  { month: 7, day: 4, name: 'Independence Day', emoji: '🇺🇸', message: 'Happy 4th of July!' },
-  { month: 10, day: 31, name: 'Halloween', emoji: '🎃', message: 'Happy Halloween!' },
-  { month: 12, day: 25, name: 'Christmas', emoji: '🎄', message: 'Merry Christmas!' },
+  { month: 1, day: 1, name: "New Year's Day", emoji: 'sparkles', message: 'Happy New Year!' },
+  { month: 2, day: 14, name: "Valentine's Day", emoji: 'heart', message: "Happy Valentine's Day!" },
+  { month: 7, day: 4, name: 'Independence Day', emoji: 'star', message: 'Happy 4th of July!' },
+  { month: 10, day: 31, name: 'Halloween', emoji: 'moon', message: 'Happy Halloween!' },
+  { month: 12, day: 25, name: 'Christmas', emoji: 'gift', message: 'Merry Christmas!' },
 ]
 
 /**

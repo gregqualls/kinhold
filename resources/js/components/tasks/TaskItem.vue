@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group flex items-start gap-3 px-4 py-3 rounded-xl hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors cursor-pointer"
+    class="group flex items-start gap-3 px-4 py-3 rounded-[12px] hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors cursor-pointer"
     :class="{
       'opacity-60': task.completed_at,
     }"
@@ -71,7 +71,7 @@
         </span>
 
         <!-- Points -->
-        <span v-if="task.effective_points" class="text-[10px] font-medium text-sand-600 dark:text-sand-400">
+        <span v-if="task.effective_points" class="text-[10px] font-medium font-mono text-sand-600 dark:text-sand-400">
           {{ task.effective_points }}pts
         </span>
 

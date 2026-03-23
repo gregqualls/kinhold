@@ -5,7 +5,7 @@
 
     <!-- Welcome Header -->
     <div class="mb-6">
-      <h1 class="text-3xl font-bold text-prussian-500 dark:text-lavender-200">
+      <h1 class="text-3xl font-bold font-heading text-prussian-500 dark:text-lavender-200">
         {{ greeting }}, {{ currentUser?.name?.split(' ')[0] }}!
       </h1>
       <p class="text-sand-600 dark:text-sand-400">{{ dateMessage }}</p>
@@ -32,7 +32,7 @@
       <!-- Today's Events -->
       <BaseCard class="md:col-span-1 lg:col-span-2" shadow="lg">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
+          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
             <CalendarIcon class="w-5 h-5 text-wisteria-600" />
             Today's Events
           </h2>
@@ -66,7 +66,7 @@
       <!-- My Tasks -->
       <BaseCard shadow="lg">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
+          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
             <CheckCircleIcon class="w-5 h-5 text-sand-600" />
             My Tasks
           </h2>
@@ -95,7 +95,7 @@
                 <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
                   Due: {{ formatDate(task.due_date) }}
                 </p>
-                <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium">
+                <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium font-mono">
                   {{ task.effective_points }} pts
                 </span>
                 <span
@@ -121,7 +121,7 @@
       <!-- Points & Leaderboard -->
       <BaseCard v-if="enabledModules.points" shadow="lg">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
+          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
             <TrophyIcon class="w-5 h-5 text-wisteria-600" />
             Points
           </h2>
@@ -132,7 +132,7 @@
 
         <div class="mb-3">
           <p class="text-xs text-lavender-500 dark:text-lavender-400 uppercase tracking-wide font-medium">Your Balance</p>
-          <p class="text-2xl font-bold text-wisteria-600 dark:text-wisteria-400">{{ pointsStore.bank }} pts</p>
+          <p class="text-2xl font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ pointsStore.bank }} pts</p>
         </div>
 
         <LeaderboardStrip :leaderboard="pointsStore.leaderboard" />
@@ -141,7 +141,7 @@
       <!-- Featured Rewards -->
       <BaseCard v-if="enabledModules.points" shadow="lg">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
+          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
             <GiftIcon class="w-5 h-5 text-sand-500" />
             Rewards Shop
           </h2>
@@ -161,7 +161,7 @@
       <!-- Badges Showcase -->
       <BaseCard v-if="enabledModules.badges" shadow="lg">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
+          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
             <ShieldCheckIcon class="w-5 h-5 text-wisteria-600" />
             Badges
           </h2>
@@ -175,7 +175,7 @@
 
       <!-- Quick Actions -->
       <BaseCard shadow="lg">
-        <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-4 flex items-center gap-2">
+        <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4 flex items-center gap-2">
           <SparklesIcon class="w-5 h-5 text-sand-500" />
           Quick Actions
         </h2>
@@ -202,7 +202,7 @@
             class="flex items-center gap-3 p-3 rounded-lg hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
           >
             <ChatBubbleLeftIcon class="w-5 h-5 text-wisteria-600" />
-            <span class="font-medium text-prussian-500 dark:text-lavender-200">Ask Hub</span>
+            <span class="font-medium text-prussian-500 dark:text-lavender-200">Ask Kinhold</span>
           </RouterLink>
         </div>
       </BaseCard>
@@ -210,7 +210,7 @@
       <!-- Open Tasks (visible to everyone) -->
       <BaseCard v-if="openTasks.length > 0" class="md:col-span-1 lg:col-span-2" shadow="lg">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
+          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
             <UserGroupIcon class="w-5 h-5 text-sand-500" />
             Open Tasks
           </h2>
@@ -240,7 +240,7 @@
                 <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
                   Due: {{ formatDate(task.due_date) }}
                 </p>
-                <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium">
+                <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium font-mono">
                   {{ task.effective_points }} pts
                 </span>
                 <span

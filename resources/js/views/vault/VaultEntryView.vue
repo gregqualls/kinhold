@@ -10,7 +10,7 @@
           <ChevronLeftIcon class="w-5 h-5" />
         </button>
         <div class="flex-1 min-w-0">
-          <h1 class="text-xl font-bold text-prussian-500 dark:text-lavender-200 truncate">{{ currentEntry?.title || 'Entry' }}</h1>
+          <h1 class="text-xl font-bold font-heading text-prussian-500 dark:text-lavender-200 truncate">{{ currentEntry?.title || 'Entry' }}</h1>
           <p v-if="categoryName" class="text-xs text-lavender-500 dark:text-lavender-400 mt-0.5">{{ categoryName }}</p>
         </div>
 

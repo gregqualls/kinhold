@@ -24,7 +24,7 @@
           <div class="fixed inset-0" @click="close" />
 
           <!-- Dropdown -->
-          <div class="relative bg-white dark:bg-prussian-800 rounded-xl shadow-xl border border-lavender-200 dark:border-prussian-700 py-1 min-w-[180px] overflow-hidden">
+          <div class="relative bg-white dark:bg-prussian-800 rounded-[12px] shadow-xl border border-lavender-200 dark:border-prussian-700 py-1 min-w-[180px] overflow-hidden">
             <template v-for="(item, index) in items" :key="index">
               <!-- Divider -->
               <div v-if="item.divider" class="my-1 border-t border-lavender-100 dark:border-prussian-700" />

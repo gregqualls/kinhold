@@ -2,7 +2,7 @@
   <div class="p-4 md:p-6 max-w-4xl">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-prussian-500 dark:text-lavender-200">Badges</h1>
+      <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Badges</h1>
       <button v-if="isParent" @click="showCreateForm = !showCreateForm" class="btn-primary btn-sm">
         {{ showCreateForm ? 'Cancel' : '+ Create Badge' }}
       </button>

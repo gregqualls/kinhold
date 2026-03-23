@@ -10,7 +10,7 @@
           v-model="form.title"
           type="text"
           placeholder="Birthday, Game Day, Vacation..."
-          class="w-full px-3 py-2 rounded-lg border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 dark:placeholder-lavender-500 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 dark:placeholder-lavender-500 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
           required
         />
       </div>
@@ -23,7 +23,7 @@
         <input
           v-model="form.event_date"
           type="date"
-          class="w-full px-3 py-2 rounded-lg border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
           required
         />
       </div>
@@ -36,7 +36,7 @@
         <input
           v-model="form.event_time"
           type="time"
-          class="w-full px-3 py-2 rounded-lg border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
         />
       </div>
 
@@ -47,7 +47,7 @@
         </label>
         <select
           v-model="form.recurrence"
-          class="w-full px-3 py-2 rounded-lg border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
         >
           <option value="none">One-time event</option>
           <option value="yearly">Every year (birthdays, anniversaries)</option>
@@ -65,7 +65,7 @@
           v-model="form.description"
           rows="2"
           placeholder="Add details..."
-          class="w-full px-3 py-2 rounded-lg border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 dark:placeholder-lavender-500 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent resize-none"
+          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 dark:placeholder-lavender-500 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent resize-none"
         />
       </div>
 
@@ -116,14 +116,14 @@
     <template #footer>
       <button
         @click="$emit('close')"
-        class="px-4 py-2 text-sm font-medium text-lavender-600 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-lg transition-colors"
+        class="px-4 py-2 text-sm font-medium text-lavender-600 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-[10px] transition-colors"
       >
         Cancel
       </button>
       <button
         @click="handleSubmit"
         :disabled="!form.title || !form.event_date || isSaving"
-        class="px-4 py-2 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="px-4 py-2 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-700 rounded-[10px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {{ isSaving ? 'Saving...' : (event ? 'Update' : 'Create') }}
       </button>
