@@ -1,0 +1,21 @@
+{
+  "name": "Kinhold",
+  "short_name": "Kinhold",
+  "description": "The family hub for calendars, tasks, documents, and more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1B3A4B",
+  "theme_color": "#1B3A4B",
+  "icons": [
+    {
+      "src": "/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
