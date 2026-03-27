@@ -3,10 +3,11 @@
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-8">
-        <router-link to="/" class="inline-block">
-          <h1 class="text-4xl font-heading font-bold text-kin-gold mb-2">Kinhold</h1>
+        <router-link to="/" class="inline-flex flex-col items-center gap-3">
+          <img src="/images/logo-100.png" alt="Kinhold" class="w-16 h-16 rounded-2xl" />
+          <h1 class="text-4xl font-heading font-bold text-kin-gold">Kinhold</h1>
         </router-link>
-        <p class="kin-muted">Sign in to your family hub</p>
+        <p class="kin-muted mt-2">Sign in to your family hub</p>
       </div>
 
       <!-- Form Card -->
