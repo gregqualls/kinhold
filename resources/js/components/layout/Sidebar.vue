@@ -7,10 +7,10 @@
     <div class="px-3 py-5" :class="isCollapsed ? 'flex justify-center' : 'px-5'">
       <div class="flex items-center" :class="isCollapsed ? 'justify-center' : 'gap-3'">
         <div
-          class="w-9 h-9 rounded-[10px] bg-wisteria-400 flex items-center justify-center shadow-glow cursor-pointer select-none flex-shrink-0"
+          class="w-9 h-9 rounded-[10px] overflow-hidden cursor-pointer select-none flex-shrink-0"
           @click="onLogoClick"
         >
-          <span class="text-white font-bold text-sm">K</span>
+          <img src="/images/logo-100.png" alt="Kinhold" class="w-full h-full object-cover" />
         </div>
         <div v-if="!isCollapsed" class="min-w-0">
           <h1 class="text-sm font-heading font-bold text-white truncate">{{ familyName }}</h1>

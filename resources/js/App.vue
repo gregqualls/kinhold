@@ -10,7 +10,10 @@
 
       <!-- Mobile Header -->
       <div v-if="!isAuthPage" class="md:hidden bg-white dark:bg-prussian-800 px-4 py-2.5 flex items-center justify-between border-b border-lavender-200 dark:border-prussian-700">
-        <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ familyName }}</p>
+        <div class="flex items-center gap-2">
+          <img src="/images/logo-100.png" alt="Kinhold" class="w-7 h-7 rounded-lg" />
+          <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ familyName }}</p>
+        </div>
         <div class="flex items-center gap-2">
           <RouterLink
             to="/settings"
