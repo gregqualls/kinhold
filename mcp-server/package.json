@@ -1,7 +1,7 @@
 {
-  "name": "@q32hub/mcp-server",
+  "name": "@kinhold/mcp-server",
   "version": "1.0.0",
-  "description": "Model Context Protocol server for Q32 Hub family hub application",
+  "description": "Model Context Protocol server for Kinhold family hub application",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {

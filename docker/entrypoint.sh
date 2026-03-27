@@ -2,7 +2,7 @@
 
 set -e
 
-echo "Q32 Hub - Starting application..."
+echo "Kinhold - Starting application..."
 
 # Wait for PostgreSQL to be ready
 echo "Waiting for PostgreSQL..."

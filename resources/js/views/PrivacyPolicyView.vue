@@ -128,7 +128,7 @@
           <h2>Self-Hosting</h2>
           <p>
             Kinhold is open source (MIT license). If you self-host, your data stays entirely on your own infrastructure.
-            This privacy policy applies only to the instance at <strong>family.qthirtytwo.com</strong> operated by Greg Qualls.
+            This privacy policy applies only to the instance at <strong>kinhold.com</strong> operated by Greg Qualls.
           </p>
         </section>
 
@@ -191,7 +191,7 @@
           <span>&bull;</span>
           <RouterLink to="/terms" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Terms</RouterLink>
           <span>&bull;</span>
-          <a href="https://github.com/gregqualls/q32hub" target="_blank" rel="noopener" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">GitHub</a>
+          <a href="https://github.com/gregqualls/kinhold" target="_blank" rel="noopener" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">GitHub</a>
         </div>
       </div>
     </footer>

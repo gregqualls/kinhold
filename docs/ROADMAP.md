@@ -1,94 +1,157 @@
-# Q32 Hub — Feature Roadmap
+# Kinhold — Product Roadmap
 
-> Update this file when features move between phases or new ideas are captured.
-> Each feature has a status: SCAFFOLDED | IN PROGRESS | COMPLETE | DEFERRED
+> **Canonical tracking:** [GitHub Milestones](https://github.com/gregqualls/kinhold/milestones)
+> This file provides an overview. Individual issues on GitHub have full specs and discussion.
+>
+> Last updated: 2026-03-23
 
-## Phase 1: MVP — "Make It Work" (Current)
+---
 
-Goal: Get all 5 family members using the app daily. Focus on core functionality, not polish.
+## What's Already Built (MVP Complete)
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Email/password authentication | SCAFFOLDED | Sanctum, registration with family creation/join |
-| Family member management | SCAFFOLDED | Parent invites, role assignment |
-| Unified family calendar (read-only) | SCAFFOLDED | Google Calendar aggregation, color-coded per member |
-| Task management with tags | COMPLETE | Tag-based filtering replaces lists, inline editing, multi-tag support |
-| Family vault with encryption | SCAFFOLDED | Categories, encrypted entries, document uploads |
-| Vault permission management | SCAFFOLDED | Parent/child roles + per-item overrides |
-| AI chatbot (Claude) | SCAFFOLDED | Optional via API key, queries family data |
-| MCP server (full CRUD) | SCAFFOLDED | 26 tools, Sanctum token auth |
-| Mobile-first responsive UI | SCAFFOLDED | Bottom nav, cards, touch-friendly |
-| Docker Compose local dev | SCAFFOLDED | 5 services, one-command boot |
-| Upsun production config | COMPLETE | Deployed at family.qthirtytwo.com, GitHub integration auto-deploys |
-| GitHub open-source release | COMPLETE | Public repo at github.com/gregqualls/q32hub |
+These features are live and working:
 
-### MVP Milestones
-1. [ ] First successful local boot (docker-compose up, migrations, seed data)
-2. [ ] Register + login working end-to-end
-3. [ ] Create and complete a task from the UI
-4. [ ] Add a vault entry, verify encryption, verify child can/can't see it
-5. [ ] Connect one Google Calendar, see events in the hub
-6. [ ] Send a chatbot message, get a response using family data
-7. [ ] Use MCP server from Claude to create a task
-8. [ ] All 5 family members have accounts and have used it at least once
+| Feature | Status |
+|---------|--------|
+| Email/password auth + Google OAuth (Sanctum + Socialite) | COMPLETE |
+| Family creation, invite codes, parent/child roles | COMPLETE |
+| Managed child accounts (no email required) | COMPLETE |
+| Task management (CRUD, tags, priority, recurring via RRULE) | COMPLETE |
+| Family calendar (read-only Google Calendar + ICS aggregation) | COMPLETE |
+| Encrypted family vault (categories, per-item permissions, document uploads) | COMPLETE |
+| AI chatbot (Claude-powered, queries calendar/tasks/vault) | COMPLETE |
+| MCP server (26 tools, full CRUD via Claude Desktop/Code) | COMPLETE |
+| Gamification (points ledger, kudos, leaderboard, rewards store) | COMPLETE |
+| Badges (auto-triggered + custom, hidden badges) | COMPLETE |
+| Email notifications (weekly digest, task assigned/completed, invites) | COMPLETE |
+| Dark mode (full support across all views) | COMPLETE |
+| Mobile-first responsive UI | COMPLETE |
+| Production deploy on Upsun (auto-deploy from GitHub) | COMPLETE |
+| Open source on GitHub (MIT license) | COMPLETE |
 
-## Phase 2: "Make It Good" (Post-MVP)
+---
 
-Goal: Polish the experience, add quality-of-life features that make the family want to keep using it.
+## Phase 0: Foundations
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Google OAuth login | SCAFFOLDED | Backend + frontend done, needs Google Console redirect URI config |
-| Two-way calendar sync | DEFERRED | Create/edit events from hub, push to Google Calendar |
-| Recurring tasks | COMPLETE | Daily, weekly, monthly recurrence via RRULE + daily artisan command |
-| Task categories and filters | COMPLETE | Replaced task lists with tag-based filtering system |
-| Dark mode | IN PROGRESS | Toggle in Settings works, CSS architecture fixed, all views support dark:. Still needs: toggle in TopBar/mobile header for quick access |
-| Push notifications | DEFERRED | Task reminders, event alerts (PWA or web push) |
-| Email digest | DEFERRED | Daily/weekly summary email per family member |
-| Vault audit log | DEFERRED | Track who viewed/edited vault entries and when |
-| Vault version history | DEFERRED | See previous versions of vault entries |
-| Improved chatbot context | DEFERRED | Better retrieval, more data sources, smarter prompts |
-| PWA support | DEFERRED | Install to home screen, offline basic access |
-| Family activity feed | COMPLETE | Points feed shows all family activity (task completions, kudos, purchases, badges) |
+**Goal:** Establish core principles, fix usability, and prepare the product identity before adding more features.
 
-## Phase 3: "Make It Delightful" (Future)
+> *"We have feature bloat risk. Make what we have easy to use before building more."*
 
-Goal: Features that transform the app from a tool into something the family loves.
+| Issue | Title | Priority |
+|-------|-------|----------|
+| [#61](https://github.com/gregqualls/kinhold/issues/61) | Define core product principles | High |
+| [#62](https://github.com/gregqualls/kinhold/issues/62) | Branding: evaluate project name and identity | High |
+| [#63](https://github.com/gregqualls/kinhold/issues/63) | Onboarding wizard for new families | High |
+| [#64](https://github.com/gregqualls/kinhold/issues/64) | Chat: show setup prompt when no API key configured | Medium |
+| [#75](https://github.com/gregqualls/kinhold/issues/75) | MCP server: full API parity (points, rewards, badges, settings) | Critical |
+| [#76](https://github.com/gregqualls/kinhold/issues/76) | Claude connector: manage Kinhold from Claude.ai chat | High |
+| [#77](https://github.com/gregqualls/kinhold/issues/77) | New feature checklist: enforce MCP, docs, landing page updates | High |
+| ~~#78~~ | ~~Database seeder~~ — merged into #77 | — |
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Gamification system | COMPLETE | Points, kudos, leaderboard, badges with auto-triggers, feature toggles |
-| Rewards store | COMPLETE | Parent-created prizes purchasable with points (instant purchase) |
-| Real-money rewards | DEFERRED | Parents set $ values on tasks, track earnings for kids |
-| Meal planning | DEFERRED | Weekly meal calendar, recipe storage |
-| Grocery/shopping lists | DEFERRED | Shared lists, check-off items, maybe store aisle organization |
-| Family chat/messaging | DEFERRED | In-app messaging, announcements, polls |
-| Chore rotation | DEFERRED | Auto-assign rotating chores (dishes, trash, laundry) |
-| Budget & expenses | DEFERRED | Family budget tracking, kid allowances, expense categories |
-| School schedule integration | DEFERRED | Import school schedules, track assignments/grades |
+---
 
-## Phase 4: "Open Source Growth" (Aspirational)
+## Phase A: Make It Sticky
 
-Goal: Make Q32 Hub useful for any family, not just the Qualls family.
+**Goal:** Add the daily-driver features that make families open the app every day.
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Multi-family isolation | SCAFFOLDED | Data model already scoped by family_id — needs controller audit before first external user |
-| Plugin/module system | DEFERRED | Community can build and share modules |
-| More calendar providers | DEFERRED | Outlook, iCloud, CalDAV |
-| Mobile app (React Native) | DEFERRED | Native iOS/Android app using the same API |
-| Internationalization (i18n) | DEFERRED | Multi-language support |
-| Accessibility audit (a11y) | DEFERRED | WCAG 2.1 AA compliance |
-| Two-factor authentication | DEFERRED | TOTP or SMS-based 2FA |
-| Passkey/biometric login | DEFERRED | WebAuthn / FIDO2 support |
-| Family photo gallery | DEFERRED | Shared photos organized by date/event |
-| Emergency info page | DEFERRED | Quick-access emergency contacts, medical alerts, allergies |
-| Shared-with-external vault | DEFERRED | Share specific vault entries with doctor, lawyer, school |
-| Proactive AI reminders | DEFERRED | Chatbot sends reminders about upcoming events/tasks |
-| Webhook integrations | DEFERRED | Connect to IFTTT, Zapier, Home Assistant |
+> Shopping lists are the #1 most-used feature across every competitor. Meal planning drives grocery lists, which drive daily opens. These two features go hand-in-hand.
 
-## Ideas Parking Lot
+| Issue | Title | Priority |
+|-------|-------|----------|
+| [#65](https://github.com/gregqualls/kinhold/issues/65) | Shopping & grocery lists | Very High |
+| [#66](https://github.com/gregqualls/kinhold/issues/66) | Meal planning | High |
+| [#67](https://github.com/gregqualls/kinhold/issues/67) | AI chatbot: meal and grocery integrations | Medium |
 
-> Dump new ideas here. Don't evaluate or prioritize yet. Review during weekly planning.
+---
 
-- (none yet — Greg will fill this up fast)
+## Phase B: Make It Reachable
+
+**Goal:** Get the app onto phones, enable notifications, and start accepting payments.
+
+| Issue | Title | Priority |
+|-------|-------|----------|
+| [#68](https://github.com/gregqualls/kinhold/issues/68) | PWA support (service worker, manifest, installable) | Very High |
+| [#69](https://github.com/gregqualls/kinhold/issues/69) | Web push notifications | Very High |
+| [#70](https://github.com/gregqualls/kinhold/issues/70) | Stripe billing & subscription system | Critical |
+
+**Pricing model:**
+- Self-hosted: Free forever (MIT license)
+- Hosted (BYOK): $4.99/mo or $49.99/yr — bring your own Anthropic API key
+- Hosted (Managed AI): $9.99/mo — we provide the Claude API access
+- The only upsell is the API key. No feature gating.
+
+---
+
+## Phase C: Make It Complete
+
+**Goal:** Close the biggest functional gaps that prevent Kinhold from being a true family command center.
+
+| Issue | Title | Priority |
+|-------|-------|----------|
+| [#71](https://github.com/gregqualls/kinhold/issues/71) | Two-way Google Calendar sync (create/edit events) | High |
+| [#72](https://github.com/gregqualls/kinhold/issues/72) | Family announcements / bulletin board | Medium |
+
+---
+
+## Phase D: Make It Grow
+
+**Goal:** Differentiating features that attract new users and generate press/word-of-mouth.
+
+| Issue | Title | Priority |
+|-------|-------|----------|
+| [#73](https://github.com/gregqualls/kinhold/issues/73) | Allowance & money tracking for kids | Medium |
+| [#74](https://github.com/gregqualls/kinhold/issues/74) | AI photo-to-calendar: snap a flyer, extract events | High |
+
+---
+
+## Phase E: Make It Visible
+
+**Goal:** Public launch and community building.
+
+- Launch on r/selfhosted, Hacker News, Product Hunt
+- README polish with screenshots and demo video
+- One-click deploy options (Docker, Upsun, Railway)
+- Blog content: "Why we built an open-source family hub"
+- Family dashboard mode (optimized for a cheap tablet on the wall)
+- Branding finalized and applied everywhere
+
+---
+
+## Future Ideas (Parking Lot)
+
+> Ideas captured from competitive analysis and brainstorming. Not planned yet.
+
+- Vault overhaul (explore Obsidian-like or Standard Notes integration)
+- Vault audit log and version history
+- More calendar providers (Outlook, iCloud, CalDAV)
+- Family chat/messaging (beyond announcements)
+- Location sharing
+- Chore rotation system
+- Budget & expense tracking
+- School schedule integration
+- Plugin/module system for community extensions
+- Mobile app (React Native or Capacitor wrapper)
+- Internationalization (i18n)
+- Accessibility audit (WCAG 2.1 AA)
+- Two-factor authentication / passkeys
+- Family photo gallery
+- Emergency info page
+- Shared-with-external vault (share with doctor, lawyer, school)
+- Proactive AI reminders
+- Webhook integrations (IFTTT, Zapier, Home Assistant)
+
+---
+
+## Strategic Positioning
+
+> **"The open-source family hub that respects your privacy and actually gets smarter over time."**
+
+Three pillars no competitor combines:
+1. **Privacy-first** — self-hosted, encrypted vault, no ads, open source
+2. **AI-powered** — Claude chatbot queries your family data, MCP server for automation
+3. **Gamification that works** — points, badges, rewards that motivate the whole family
+
+Target audience (in go-to-market order):
+1. Self-hosters and privacy-conscious tech parents (r/selfhosted, HN, GitHub)
+2. AI-forward families who already use Claude/ChatGPT
+3. Parents frustrated with Cozi's decline looking for a modern alternative

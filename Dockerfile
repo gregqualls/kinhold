@@ -1,4 +1,4 @@
-# Multi-stage build for Q32 Hub
+# Multi-stage build for Kinhold
 
 # Stage 1: Node - Build Vue frontend assets
 FROM node:20-alpine as node

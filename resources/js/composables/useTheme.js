@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 
-const STORAGE_KEY = 'q32hub-theme'
+const STORAGE_KEY = 'kinhold-theme'
+const OLD_STORAGE_KEY = 'q32hub-theme'
 const DEFAULT_THEME = 'classic'
 
 const currentTheme = ref(DEFAULT_THEME)
@@ -26,6 +27,13 @@ export const themes = [
 
 export function useTheme() {
   const init = () => {
+    // Migrate from old storage key if present
+    const oldSaved = localStorage.getItem(OLD_STORAGE_KEY)
+    if (oldSaved) {
+      localStorage.setItem(STORAGE_KEY, oldSaved)
+      localStorage.removeItem(OLD_STORAGE_KEY)
+    }
+
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved && themes.some((t) => t.id === saved)) {
       currentTheme.value = saved

@@ -1,8 +1,8 @@
-import { Q32HubClient } from "../api-client.js";
+import { KinholdClient } from "../api-client.js";
 
 export function registerFamilyTools(
   server: any,
-  client: Q32HubClient
+  client: KinholdClient
 ): Map<string, Function> {
   const tools = new Map<string, Function>();
 
