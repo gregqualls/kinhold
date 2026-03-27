@@ -3,8 +3,9 @@
     <!-- Navigation -->
     <nav class="kin-nav">
       <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <router-link to="/" class="kin-heading text-xl text-kin-black dark:text-kin-off-white">
-          Kinhold
+        <router-link to="/" class="flex items-center gap-2">
+          <img src="/images/logo-100.png" alt="Kinhold" class="w-8 h-8 rounded-lg" />
+          <span class="kin-heading text-xl text-kin-black dark:text-kin-off-white">Kinhold</span>
         </router-link>
         <div class="flex items-center gap-3">
           <router-link to="/login" class="kin-btn-ghost text-sm">
@@ -126,6 +127,7 @@
     <footer class="border-t border-kin-border dark:border-kin-border-dark">
       <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div class="flex items-center gap-3">
+          <img src="/images/logo-100.png" alt="Kinhold" class="w-6 h-6 rounded-md" />
           <span class="font-heading font-semibold text-kin-black dark:text-kin-off-white">Kinhold</span>
           <span class="text-sm kin-muted">&copy; {{ new Date().getFullYear() }}</span>
         </div>
