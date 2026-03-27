@@ -1,6 +1,6 @@
-# Q32 Hub MCP Server
+# Kinhold MCP Server
 
-Model Context Protocol server for Q32 Hub, enabling Claude to interact with your family hub application.
+Model Context Protocol server for Kinhold, enabling Claude to interact with your family hub application.
 
 ## What it is
 
@@ -15,8 +15,8 @@ This MCP server allows Claude (via Claude Desktop or other MCP-compatible client
 
 ### Prerequisites
 - Node.js 18 or higher
-- A running Q32 Hub instance (local or remote)
-- A Sanctum API token from Q32 Hub
+- A running Kinhold instance (local or remote)
+- A Sanctum API token from Kinhold
 
 ### Setup
 
@@ -30,8 +30,8 @@ npm install
 npm run build
 ```
 
-3. Generate an API token in Q32 Hub:
-   - Log in to Q32 Hub
+3. Generate an API token in Kinhold:
+   - Log in to Kinhold
    - Go to Settings > API Tokens
    - Create a new token (or use an existing one)
    - Copy the token value
@@ -42,14 +42,14 @@ npm run build
 
 Set these before running the server:
 
-- `Q32HUB_API_URL`: Full URL to your Q32 Hub API (default: `http://localhost/api/v1`)
-- `Q32HUB_API_TOKEN`: Your Sanctum API token (required)
+- `KINHOLD_API_URL`: Full URL to your Kinhold API (default: `http://localhost/api/v1`)
+- `KINHOLD_API_TOKEN`: Your Sanctum API token (required)
 
 ### Example
 
 ```bash
-export Q32HUB_API_URL="http://q32hub.local/api/v1"
-export Q32HUB_API_TOKEN="your-sanctum-token-here"
+export KINHOLD_API_URL="http://kinhold.local/api/v1"
+export KINHOLD_API_TOKEN="your-sanctum-token-here"
 npm start
 ```
 
@@ -60,12 +60,12 @@ Add this to your Claude Desktop configuration file (`~/.claude_desktop_config.js
 ```json
 {
   "mcpServers": {
-    "q32hub": {
+    "kinhold": {
       "command": "node",
       "args": ["/path/to/mcp-server/dist/index.js"],
       "env": {
-        "Q32HUB_API_URL": "http://localhost/api/v1",
-        "Q32HUB_API_TOKEN": "your-sanctum-token-here"
+        "KINHOLD_API_URL": "http://localhost/api/v1",
+        "KINHOLD_API_TOKEN": "your-sanctum-token-here"
       }
     }
   }
@@ -140,16 +140,16 @@ npm run build
 ## Troubleshooting
 
 ### Connection refused
-- Ensure Q32 Hub is running and accessible at `Q32HUB_API_URL`
+- Ensure Kinhold is running and accessible at `KINHOLD_API_URL`
 - Check network connectivity and firewall rules
 
 ### Invalid API token
-- Verify the token is correct in Q32 Hub settings
+- Verify the token is correct in Kinhold settings
 - The token should start with a specific prefix (e.g., `sanctum_`)
 - Regenerate the token if needed
 
 ### Unauthorized errors
-- Confirm you're logged in to Q32 Hub
+- Confirm you're logged in to Kinhold
 - Check that the token has appropriate permissions
 - Ensure the token hasn't expired
 
@@ -165,7 +165,7 @@ MIT - See LICENSE file in the project root
 ## Support
 
 For issues or questions:
-1. Check Q32 Hub logs for API errors
+1. Check Kinhold logs for API errors
 2. Verify environment variables are set correctly
 3. Review the tool definitions above for usage patterns
 4. Report issues with full error messages and steps to reproduce

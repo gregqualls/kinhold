@@ -6,7 +6,7 @@ export interface ApiError {
   originalError?: Error;
 }
 
-export class Q32HubClient {
+export class KinholdClient {
   private client: AxiosInstance;
   private apiUrl: string;
   private apiToken: string;

@@ -7,7 +7,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { Q32HubClient } from "./api-client.js";
+import { KinholdClient } from "./api-client.js";
 import {
   registerTaskTools,
   taskToolDefinitions,
@@ -26,21 +26,21 @@ import {
   chatToolDefinitions,
 } from "./tools/chat.js";
 
-const apiUrl = process.env.Q32HUB_API_URL || "http://localhost/api/v1";
-const apiToken = process.env.Q32HUB_API_TOKEN || "";
+const apiUrl = process.env.KINHOLD_API_URL || "http://localhost/api/v1";
+const apiToken = process.env.KINHOLD_API_TOKEN || "";
 
 if (!apiToken) {
   console.error(
-    "Q32HUB_API_TOKEN environment variable is required"
+    "KINHOLD_API_TOKEN environment variable is required"
   );
   process.exit(1);
 }
 
-const client = new Q32HubClient(apiUrl, apiToken);
+const client = new KinholdClient(apiUrl, apiToken);
 
 const server = new Server(
   {
-    name: "q32hub",
+    name: "kinhold",
     version: "1.0.0",
   },
   {
@@ -126,10 +126,10 @@ server.setRequestHandler(
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("[Q32 Hub MCP] Server started successfully");
+  console.error("[Kinhold MCP] Server started successfully");
 }
 
 main().catch((error) => {
-  console.error("[Q32 Hub MCP] Fatal error:", error);
+  console.error("[Kinhold MCP] Fatal error:", error);
   process.exit(1);
 });

@@ -30,8 +30,8 @@ class GoogleCalendarService
     {
         $client = new Client();
         $client->setApplicationName(config('app.name'));
-        $client->setClientId(config('q32hub.google.client_id'));
-        $client->setClientSecret(config('q32hub.google.client_secret'));
+        $client->setClientId(config('kinhold.google.client_id'));
+        $client->setClientSecret(config('kinhold.google.client_secret'));
         $client->setAccessToken(json_decode($this->connection->access_token, true));
 
         // Assign client before refreshing so refreshToken() can use $this->client
@@ -131,9 +131,9 @@ class GoogleCalendarService
     {
         $client = new Client();
         $client->setApplicationName(config('app.name'));
-        $client->setClientId(config('q32hub.google.client_id'));
-        $client->setClientSecret(config('q32hub.google.client_secret'));
-        $client->setRedirectUri(config('q32hub.google.redirect_uri') ?: route('api.calendar.callback'));
+        $client->setClientId(config('kinhold.google.client_id'));
+        $client->setClientSecret(config('kinhold.google.client_secret'));
+        $client->setRedirectUri(config('kinhold.google.redirect_uri') ?: route('api.calendar.callback'));
         $client->setAccessType('offline');
         $client->setPrompt('consent');
 
@@ -166,9 +166,9 @@ class GoogleCalendarService
     {
         $client = new Client();
         $client->setApplicationName(config('app.name'));
-        $client->setClientId(config('q32hub.google.client_id'));
-        $client->setClientSecret(config('q32hub.google.client_secret'));
-        $client->setRedirectUri(config('q32hub.google.redirect_uri') ?: route('api.calendar.callback'));
+        $client->setClientId(config('kinhold.google.client_id'));
+        $client->setClientSecret(config('kinhold.google.client_secret'));
+        $client->setRedirectUri(config('kinhold.google.redirect_uri') ?: route('api.calendar.callback'));
 
         $token = $client->fetchAccessTokenWithAuthCode($code);
         $client->setAccessToken($token);

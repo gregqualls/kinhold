@@ -69,7 +69,7 @@ class ChatbotService
 
         // Fallback to .env for Anthropic
         if (empty($apiKey) && $providerSlug === 'anthropic') {
-            $apiKey = config('q32hub.chatbot.api_key');
+            $apiKey = config('kinhold.chatbot.api_key');
         }
 
         if (empty($apiKey)) {
@@ -129,7 +129,7 @@ class ChatbotService
     private function buildSystemPrompt(User $user, Family $family): string
     {
         return <<<PROMPT
-You are a helpful family assistant AI for the Q32 Hub family management application.
+You are a helpful family assistant AI for the Kinhold family management application.
 You help family members with tasks, scheduling, security information, and general questions.
 
 Current user: {$user->name}

@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Q32 Hub - First-Time Setup Script
+# Kinhold - First-Time Setup Script
 # Run this once after cloning the repo to get everything running.
 set -e
 
 echo ""
 echo "╔═══════════════════════════════════════╗"
-echo "║       Q32 Hub — First-Time Setup      ║"
+echo "║       Kinhold — First-Time Setup      ║"
 echo "╚═══════════════════════════════════════╝"
 echo ""
 
@@ -83,7 +83,7 @@ sleep 5
 
 # Wait for PostgreSQL to be ready
 for i in {1..30}; do
-    if $COMPOSE exec -T pgsql pg_isready -U q32hub -d q32hub &> /dev/null; then
+    if $COMPOSE exec -T pgsql pg_isready -U kinhold -d kinhold &> /dev/null; then
         break
     fi
     sleep 1

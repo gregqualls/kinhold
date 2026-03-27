@@ -1,11 +1,11 @@
-# Q32 Hub — Changelog
+# Kinhold — Changelog
 
 > Updated at the end of every working session. Newest entries first.
 
 ## 2026-03-17 — Session 7: Upsun Deployment & Google OAuth
 
 ### What Was Done
-- **Deployed Q32 Hub to Upsun** at `family.qthirtytwo.com`
+- **Deployed Kinhold to Upsun** at `family.kinhold.com`
   - Created project in Terra Nova org (project ID: `2rozcvqjtjdta`)
   - Connected to GitHub repo — pushes to `main` auto-deploy
   - Iterated on `.upsun/config.yaml` (php:8.4, n version manager, pdo_pgsql, Redis, storage mounts)
@@ -72,8 +72,8 @@
 - **Expanded `.env.example`** — full template with all config vars, no secrets
 - **Updated `.gitignore`** — added vendor, Laravel cache/session/view paths, .claude/, session captures, test-results
 - **Created initial git commit** — 207 files, 31,838 insertions
-- **Pushed to GitHub** — public repo at https://github.com/gregqualls/q32hub
-  - `gh repo create q32hub --public --source . --push`
+- **Pushed to GitHub** — public repo at https://github.com/gregqualls/kinhold
+  - `gh repo create kinhold --public --source . --push`
 
 ### Next Session TODO
 - Deploy to Upsun for personal/family use (plan documented below in Session 6 notes)

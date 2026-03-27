@@ -1,6 +1,6 @@
-# Contributing to Q32 Hub
+# Contributing to Kinhold
 
-Thanks for your interest in contributing! Q32 Hub is an open-source family hub and we welcome contributions of all kinds.
+Thanks for your interest in contributing! Kinhold is an open-source family hub and we welcome contributions of all kinds.
 
 ## Before you start
 
@@ -24,10 +24,10 @@ Thanks for your interest in contributing! Q32 Hub is an open-source family hub a
 brew install php@8.3 composer postgresql@16 redis node
 brew services start postgresql@16
 brew services start redis
-createdb q32hub
+createdb kinhold
 
-git clone https://github.com/gregqualls/q32hub.git
-cd q32hub
+git clone https://github.com/gregqualls/kinhold.git
+cd kinhold
 cp .env.example .env
 composer install
 npm install
