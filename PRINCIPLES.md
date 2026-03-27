@@ -1,6 +1,6 @@
-# Q32 Hub — Core Product Principles
+# Kinhold — Core Product Principles
 
-These principles guide every feature, design decision, and pull request in Q32 Hub. If a change conflicts with these principles, it needs a strong justification before merging.
+These principles guide every feature, design decision, and pull request in Kinhold. If a change conflicts with these principles, it needs a strong justification before merging.
 
 ## 1. Easy for busy parents
 
@@ -10,7 +10,7 @@ Use progressive disclosure: show the basics first, let power features be discove
 
 ## 2. Every family, every age
 
-Most family apps target households with little kids. Q32 Hub works for all of them — toddlers to teenagers to adult children still on the family plan.
+Most family apps target households with little kids. Kinhold works for all of them — toddlers to teenagers to adult children still on the family plan.
 
 A family of three and a family of ten should both feel at home. Gamification motivates a 7-year-old and a 17-year-old differently, so features should scale and adapt rather than assume one family shape. Don't design for the "ideal" family — design for real ones.
 
@@ -54,7 +54,7 @@ Every view starts at 375px and scales up. Touch targets are generous. Navigation
 
 Your family's data belongs to you.
 
-Q32 Hub is self-hostable, open source, and collects no telemetry. No ads, no tracking, no selling data. The hosted version at family.qthirtytwo.com follows the same rules — we make money from subscriptions, not surveillance. Users should never have to wonder who can see their information.
+Kinhold is self-hostable, open source, and collects no telemetry. No ads, no tracking, no selling data. The hosted version at family.kinhold.com follows the same rules — we make money from subscriptions, not surveillance. Users should never have to wonder who can see their information.
 
 ## 10. Open source, open community
 

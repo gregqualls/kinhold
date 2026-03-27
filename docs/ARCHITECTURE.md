@@ -1,4 +1,4 @@
-# Q32 Hub — Architecture & Technical Decisions
+# Kinhold — Architecture & Technical Decisions
 
 > This document records WHY we made each technical decision. Update it when decisions change.
 
@@ -69,7 +69,7 @@
 **Date:** 2026-03-16
 **Decision:** The AI chatbot is enabled/disabled based on whether `ANTHROPIC_API_KEY` is set in `.env`. No API key = feature hidden from UI.
 **Reasoning:** Not everyone wants or can afford AI features. For open-source users, this should be optional. For Greg, it's a core feature.
-**Implementation:** `config('q32hub.chatbot.enabled')` checks for API key presence. Frontend conditionally shows chat tab. Backend returns 503 if chatbot is called without a key.
+**Implementation:** `config('kinhold.chatbot.enabled')` checks for API key presence. Frontend conditionally shows chat tab. Backend returns 503 if chatbot is called without a key.
 
 ## Data Flow Patterns
 

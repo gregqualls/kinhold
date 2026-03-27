@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">Q32 Hub</h1>
+  <h1 align="center">Kinhold</h1>
   <p align="center">
     <strong>An open-source family hub for managing your household together.</strong>
   </p>
@@ -17,9 +17,9 @@
 
 ---
 
-Q32 Hub is a self-hosted family management app that brings tasks, calendar, sensitive documents, and gamification into one interface. Built mobile-first with dark mode and multiple color themes, it's designed for real families with kids who need a little motivation to get things done.
+Kinhold is a self-hosted family management app that brings tasks, calendar, sensitive documents, and gamification into one interface. Built mobile-first with dark mode and multiple color themes, it's designed for real families with kids who need a little motivation to get things done.
 
-Live at [family.qthirtytwo.com](https://family.qthirtytwo.com)
+Live at [family.kinhold.app](https://family.kinhold.app)
 
 ## Features
 
@@ -29,7 +29,7 @@ Live at [family.qthirtytwo.com](https://family.qthirtytwo.com)
 - **Family Calendar** — Aggregate Google Calendars from every family member, color-coded per person, with month/week/day views.
 - **Secure Vault** — Encrypted storage for sensitive family info (SSNs, medical records, insurance, financial data). Role-based permissions, tap-to-reveal fields, auto-clear clipboard.
 - **AI Chat** — Ask questions about your family data: "What tasks are due this week?", "What's the wifi password?", "When is the next dentist appointment?" Powered by Claude.
-- **MCP Server** — 26 tools for managing Q32 Hub through Claude Desktop or Claude Code. Full CRUD on tasks, vault, calendar, and family data.
+- **MCP Server** — 26 tools for managing Kinhold through Claude Desktop or Claude Code. Full CRUD on tasks, vault, calendar, and family data.
 
 ### Gamification
 
@@ -93,15 +93,15 @@ brew services start postgresql@16
 brew services start redis
 
 # Clone and set up
-git clone https://github.com/gregqualls/q32hub.git
-cd q32hub
+git clone https://github.com/gregqualls/kinhold.git
+cd kinhold
 cp .env.example .env
 composer install
 npm install
 php artisan key:generate
 
 # Create database and seed demo data
-createdb q32hub
+createdb kinhold
 php artisan migrate
 php artisan db:seed
 
@@ -113,8 +113,8 @@ npm run dev              # Terminal 2: Vite at localhost:5173
 ### Option 2: Docker
 
 ```bash
-git clone https://github.com/gregqualls/q32hub.git
-cd q32hub
+git clone https://github.com/gregqualls/kinhold.git
+cd kinhold
 cp .env.example .env
 chmod +x setup.sh && ./setup.sh
 ```
@@ -171,7 +171,7 @@ Settings:  GET /settings, PUT /settings
 
 ## MCP Server
 
-Manage Q32 Hub through Claude Desktop or Claude Code with 26 tools across tasks, calendar, vault, family, and search.
+Manage Kinhold through Claude Desktop or Claude Code with 26 tools across tasks, calendar, vault, family, and search.
 
 ```bash
 cd mcp-server && npm install && npm run build
@@ -182,12 +182,12 @@ Add to your Claude config:
 ```json
 {
   "mcpServers": {
-    "q32hub": {
+    "kinhold": {
       "command": "node",
-      "args": ["/path/to/q32hub/mcp-server/dist/index.js"],
+      "args": ["/path/to/kinhold/mcp-server/dist/index.js"],
       "env": {
-        "Q32HUB_API_URL": "http://localhost:8000/api/v1",
-        "Q32HUB_API_TOKEN": "your-sanctum-token"
+        "KINHOLD_API_URL": "http://localhost:8000/api/v1",
+        "KINHOLD_API_TOKEN": "your-sanctum-token"
       }
     }
   }
@@ -197,7 +197,7 @@ Add to your Claude config:
 ## Project Structure
 
 ```
-q32hub/
+kinhold/
 ├── app/
 │   ├── Console/Commands/       # Artisan commands (recurring tasks, badge seeding)
 │   ├── Enums/                  # FamilyRole, TaskPriority, PointTransactionType, BadgeTriggerType
@@ -219,35 +219,24 @@ q32hub/
 
 ## Deploying Your Own Instance
 
-Q32 Hub is designed to be forked and self-hosted. Every family gets their own instance with their own data.
+Kinhold is designed to be forked and self-hosted. Every family gets their own instance with their own data.
 
 1. Fork this repo on GitHub
 2. Connect your fork to [Upsun](https://upsun.com) (or any host that supports PHP + PostgreSQL + Redis)
 3. Set your environment variables (APP_KEY, DB creds, Google OAuth, Anthropic key)
 4. Deploy — the `.upsun/config.yaml` handles build and deploy hooks automatically
-5. To pull upstream updates: `git remote add upstream https://github.com/gregqualls/q32hub.git && git pull upstream main`
+5. To pull upstream updates: `git remote add upstream https://github.com/gregqualls/kinhold.git && git pull upstream main`
 
 ## Contributing
 
-Contributions are welcome! This is a real app used by a real family, so quality matters.
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Make your changes
-4. Ensure the build passes: `npx vite build`
-5. Commit with clear messages
-6. Open a Pull Request
-
-### Code Style
-
-- **PHP**: PSR-12 via Laravel Pint
-- **Vue**: Single File Components with `<script setup>`, Composition API
-- **CSS**: Tailwind utilities, mobile-first, dark mode via `dark:` variants in `@layer components`
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, code conventions, and our principles checklist. Every PR is evaluated against our [core product principles](PRINCIPLES.md).
 
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
+| [PRINCIPLES.md](PRINCIPLES.md) | Core product principles that guide every decision |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [CLAUDE.md](CLAUDE.md) | Project context for AI assistants |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical decisions and reasoning |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Feature roadmap with status |

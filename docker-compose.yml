@@ -5,15 +5,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: q32hub-app
+    container_name: kinhold-app
     restart: unless-stopped
     working_dir: /app
     environment:
       - DB_CONNECTION=pgsql
       - DB_HOST=pgsql
       - DB_PORT=5432
-      - DB_DATABASE=${DB_DATABASE:-q32hub}
-      - DB_USERNAME=${DB_USERNAME:-q32hub}
+      - DB_DATABASE=${DB_DATABASE:-kinhold}
+      - DB_USERNAME=${DB_USERNAME:-kinhold}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -36,7 +36,7 @@ services:
       redis:
         condition: service_started
     networks:
-      - q32hub
+      - kinhold
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/health || exit 1"]
       interval: 30s
@@ -46,7 +46,7 @@ services:
 
   web:
     image: nginx:latest
-    container_name: q32hub-web
+    container_name: kinhold-web
     restart: unless-stopped
     ports:
       - "80:80"
@@ -58,7 +58,7 @@ services:
     depends_on:
       - app
     networks:
-      - q32hub
+      - kinhold
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health || exit 1"]
       interval: 30s
@@ -67,11 +67,11 @@ services:
 
   pgsql:
     image: postgres:16-alpine
-    container_name: q32hub-pgsql
+    container_name: kinhold-pgsql
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-q32hub}
-      POSTGRES_USER: ${DB_USERNAME:-q32hub}
+      POSTGRES_DB: ${DB_DATABASE:-kinhold}
+      POSTGRES_USER: ${DB_USERNAME:-kinhold}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
@@ -79,23 +79,23 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - q32hub
+      - kinhold
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-q32hub} -d ${DB_DATABASE:-q32hub}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-kinhold} -d ${DB_DATABASE:-kinhold}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    container_name: q32hub-redis
+    container_name: kinhold-redis
     restart: unless-stopped
     volumes:
       - redis-data:/data
     ports:
       - "6379:6379"
     networks:
-      - q32hub
+      - kinhold
     command: redis-server --appendonly yes
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -108,14 +108,14 @@ services:
       context: .
       dockerfile: Dockerfile
       target: node
-    container_name: q32hub-node
+    container_name: kinhold-node
     working_dir: /app
     volumes:
       - ./:/app
       - /app/node_modules
     command: npm run build
     networks:
-      - q32hub
+      - kinhold
     environment:
       - NODE_ENV=${NODE_ENV:-production}
 
@@ -124,7 +124,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: php
-    container_name: q32hub-queue
+    container_name: kinhold-queue
     restart: unless-stopped
     working_dir: /app
     command: php artisan queue:work
@@ -132,8 +132,8 @@ services:
       - DB_CONNECTION=pgsql
       - DB_HOST=pgsql
       - DB_PORT=5432
-      - DB_DATABASE=${DB_DATABASE:-q32hub}
-      - DB_USERNAME=${DB_USERNAME:-q32hub}
+      - DB_DATABASE=${DB_DATABASE:-kinhold}
+      - DB_USERNAME=${DB_USERNAME:-kinhold}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -152,14 +152,14 @@ services:
       app:
         condition: service_healthy
     networks:
-      - q32hub
+      - kinhold
 
   scheduler:
     build:
       context: .
       dockerfile: Dockerfile
       target: php
-    container_name: q32hub-scheduler
+    container_name: kinhold-scheduler
     restart: unless-stopped
     working_dir: /app
     command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
@@ -167,8 +167,8 @@ services:
       - DB_CONNECTION=pgsql
       - DB_HOST=pgsql
       - DB_PORT=5432
-      - DB_DATABASE=${DB_DATABASE:-q32hub}
-      - DB_USERNAME=${DB_USERNAME:-q32hub}
+      - DB_DATABASE=${DB_DATABASE:-kinhold}
+      - DB_USERNAME=${DB_USERNAME:-kinhold}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -187,7 +187,7 @@ services:
       app:
         condition: service_healthy
     networks:
-      - q32hub
+      - kinhold
 
 volumes:
   pgsql-data:
@@ -196,5 +196,5 @@ volumes:
     driver: local
 
 networks:
-  q32hub:
+  kinhold:
     driver: bridge

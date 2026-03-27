@@ -41,9 +41,9 @@ class WelcomeNotification extends Notification implements ShouldQueue
         $appUrl = config('app.url');
 
         $message = (new MailMessage)
-            ->subject('Welcome to Q32 Hub!')
+            ->subject('Welcome to Kinhold!')
             ->greeting("Welcome, {$notifiable->name}!")
-            ->line("You've successfully joined **{$this->family->name}** on Q32 Hub.");
+            ->line("You've successfully joined **{$this->family->name}** on Kinhold.");
 
         if ($this->isNewFamily) {
             $message->line("As the family creator, you have full access to manage your family hub. Here's what you can do:");
