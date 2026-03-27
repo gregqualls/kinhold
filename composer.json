@@ -1,6 +1,6 @@
 {
-    "name": "q32hub/laravel-backend",
-    "description": "Q32 Hub - Family Hub Web Application Backend",
+    "name": "kinhold/laravel-backend",
+    "description": "Kinhold - Family Hub Web Application Backend",
     "type": "project",
     "license": "MIT",
     "require": {

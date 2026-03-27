@@ -87,7 +87,7 @@ class WeeklyDigestNotification extends Notification implements ShouldQueue
         }
 
         $message
-            ->action('Open Q32 Hub', $appUrl)
+            ->action('Open Kinhold', $appUrl)
             ->line("Have a great week!");
 
         return $message;

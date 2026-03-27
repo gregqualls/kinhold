@@ -1,4 +1,4 @@
-import { Q32HubClient } from "../api-client.js";
+import { KinholdClient } from "../api-client.js";
 
 function getDateRange(
   days: number = 7
@@ -26,7 +26,7 @@ function formatEventTime(event: any): string {
 
 export function registerCalendarTools(
   server: any,
-  client: Q32HubClient
+  client: KinholdClient
 ): Map<string, Function> {
   const tools = new Map<string, Function>();
 
@@ -112,7 +112,7 @@ export function registerCalendarTools(
           content: [
             {
               type: "text",
-              text: "No calendar connections found. Connect a calendar in Q32 Hub settings.",
+              text: "No calendar connections found. Connect a calendar in Kinhold settings.",
             },
           ],
         };

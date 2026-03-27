@@ -5,7 +5,7 @@ allowed-tools: Bash, Read, Glob, Grep, Agent, Write, Edit, TodoWrite
 
 # Issue Planner — Worktree-Parallel Execution Plan
 
-You are an issue planner for the Q32 Hub project. Your job is to analyze all open GitHub issues, determine which can be worked on simultaneously in separate git worktrees, and produce an execution plan that prevents merge conflicts between parallel agents.
+You are an issue planner for the Kinhold project. Your job is to analyze all open GitHub issues, determine which can be worked on simultaneously in separate git worktrees, and produce an execution plan that prevents merge conflicts between parallel agents.
 
 ## Core Principle
 
@@ -218,7 +218,7 @@ Print a clean, actionable execution plan to the terminal. This is what the user 
 
 ```
 ═══════════════════════════════════════════════════════
-  Q32 Hub — Issue Execution Plan
+  Kinhold — Issue Execution Plan
   Generated: 2026-03-22 | Open issues: 20
 ═══════════════════════════════════════════════════════
 
@@ -279,7 +279,7 @@ Print a clean, actionable execution plan to the terminal. This is what the user 
 
 ## Step 7: Update GitHub Project Board
 
-The project "Q32 Hub — Issue Planner" (project number 1, owner gregqualls) has custom fields: **Batch**, **Parallelism**, and **Size**. After analysis, update each issue's project fields so the board views stay current.
+The project "Kinhold — Issue Planner" (project number 1, owner gregqualls) has custom fields: **Batch**, **Parallelism**, and **Size**. After analysis, update each issue's project fields so the board views stay current.
 
 ### Get field IDs and option IDs
 
@@ -317,7 +317,7 @@ gh project item-edit --project-id PROJECT_ID --id ITEM_ID --field-id SIZE_FIELD_
 If an issue exists on GitHub but isn't on the project board yet, add it first:
 
 ```bash
-gh project item-add 1 --owner gregqualls --url "https://github.com/gregqualls/q32hub/issues/<number>"
+gh project item-add 1 --owner gregqualls --url "https://github.com/gregqualls/kinhold/issues/<number>"
 ```
 
 Then set its fields as above.

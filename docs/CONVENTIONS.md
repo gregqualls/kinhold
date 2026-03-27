@@ -1,4 +1,4 @@
-# Q32 Hub — Coding Conventions & Standards
+# Kinhold — Coding Conventions & Standards
 
 > Follow these conventions in every session. Update when the team agrees on changes.
 

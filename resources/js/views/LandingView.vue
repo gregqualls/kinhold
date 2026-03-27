@@ -137,7 +137,7 @@
             Terms
           </router-link>
           <a
-            href="https://github.com/gregqualls/q32hub"
+            href="https://github.com/gregqualls/kinhold"
             target="_blank"
             rel="noopener noreferrer"
             class="hover:text-kin-black dark:hover:text-kin-off-white transition-colors"

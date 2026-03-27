@@ -1,4 +1,4 @@
-# Q32 Hub — Project Context for Claude
+# Kinhold — Project Context for Claude
 
 > This file is automatically read at the start of every Claude session.
 > Keep it updated after every working session. It is the single source of truth.
@@ -10,9 +10,9 @@ Greg Qualls (glqualls@gmail.com)
 - Familiar with Laravel, prefers clear explanations for frontend/Vue concepts
 - Family: wife + 3 kids (ages 12, 14, 17 as of March 2026)
 
-## What Is Q32 Hub?
+## What Is Kinhold?
 
-An open-source family hub web application at **family.qthirtytwo.com**. It's a central place for the Qualls family (and eventually other families) to manage their shared life — calendar, tasks, important documents, and quick AI-powered answers about family data.
+An open-source family hub web application at **kinhold.app**. It's a central place for the Qualls family (and eventually other families) to manage their shared life — calendar, tasks, important documents, and quick AI-powered answers about family data.
 
 ## Tech Stack
 
@@ -29,7 +29,7 @@ An open-source family hub web application at **family.qthirtytwo.com**. It's a c
 | MCP Server | TypeScript/Node.js | Full CRUD, uses Sanctum API tokens |
 | Local Dev | Homebrew (preferred) or Docker | `brew install php composer postgresql redis` then `php artisan serve` |
 | Production | Upsun.com | Config in `.upsun/config.yaml` |
-| Domain | family.qthirtytwo.com | Not yet configured |
+| Domain | kinhold.app | Configured via Cloudflare |
 
 ## Architecture Principles
 
@@ -83,7 +83,7 @@ An open-source family hub web application at **family.qthirtytwo.com**. It's a c
 - TypeScript/Node.js, uses `@modelcontextprotocol/sdk`
 - 26 tools across: tasks, calendar, vault, family, search
 - Authenticates with Sanctum API token
-- Greg can manage Q32 Hub entirely through Claude Desktop or Claude Code
+- Greg can manage Kinhold entirely through Claude Desktop or Claude Code
 - **Future:** Webhooks, real-time sync
 
 ### 7. Points & Gamification (IMPLEMENTED)
@@ -108,7 +108,7 @@ An open-source family hub web application at **family.qthirtytwo.com**. It's a c
 ## File Structure (Key Directories)
 
 ```
-q32hub/
+kinhold/
 ├── app/
 │   ├── Http/Controllers/Api/V1/   # 12 controllers (Auth, Task, TaskList, Vault, Calendar, Chat, Family, Settings, Points, Rewards, Badges, base)
 │   ├── Http/Requests/             # Form request validation (Auth/, Task/, Vault/)
@@ -190,10 +190,10 @@ All routes are prefixed with `/api/v1/`. Auth routes are public, everything else
 brew install php@8.3 composer postgresql@16 redis
 brew services start postgresql@16
 brew services start redis
-createdb q32hub
-cd q32hub
+createdb kinhold
+cd kinhold
 cp .env.example .env
-# Edit .env: DB_HOST=127.0.0.1, DB_DATABASE=q32hub, DB_USERNAME=<mac-username>, DB_PASSWORD=
+# Edit .env: DB_HOST=127.0.0.1, DB_DATABASE=kinhold, DB_USERNAME=<mac-username>, DB_PASSWORD=
 composer install
 npm install
 php artisan key:generate
@@ -209,13 +209,13 @@ php artisan db:seed
 chmod +x setup.sh && ./setup.sh
 ```
 
-## Current Status (Updated: 2026-03-17)
+## Current Status (Updated: 2026-03-27)
 
-**Phase:** MVP deployed to production. Gamification system implemented. UI/UX overhaul in progress. **Pushed to GitHub as public open-source repo.**
+**Phase:** MVP deployed to production. Gamification system implemented. UI/UX overhaul in progress. Rebranded from Q32 Hub to Kinhold. **Pushed to GitHub as public open-source repo.**
 
-**Production:** Deployed on Upsun at `family.qthirtytwo.com` (project ID: `2rozcvqjtjdta`, Terra Nova org). GitHub integration auto-deploys on push to `main`. Never use `upsun push` — just push to GitHub.
+**Production:** Deployed on Upsun at `kinhold.app` (project ID: `2rozcvqjtjdta`, Terra Nova org). GitHub integration auto-deploys on push to `main`. PRs auto-create preview environments. Never use `upsun push` — just push to GitHub.
 
-**GitHub:** https://github.com/gregqualls/q32hub (public, MIT license)
+**GitHub:** https://github.com/gregqualls/kinhold (public, MIT license)
 
 **What works:**
 - App boots and runs locally (`php artisan serve` + `npm run dev`)
@@ -248,7 +248,7 @@ chmod +x setup.sh && ./setup.sh
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 
 **What's next:**
-- Add Google OAuth redirect URI in Google Cloud Console (`https://family.qthirtytwo.com/auth/google/callback`)
+- Add Google OAuth redirect URI in Google Cloud Console (`https://kinhold.app/auth/google/callback`)
 - Audit all controllers for family_id scoping before Corey's family signs up
 - Add dark mode toggle to TopBar (desktop) and mobile header for quick access
 - End-to-end testing of gamification flow (complete task → points → badge earned → toast)
@@ -258,29 +258,28 @@ chmod +x setup.sh && ./setup.sh
 
 ## Deployment Strategy (Upsun)
 
-**Problem:** Greg owns the open-source repo (`gregqualls/q32hub`) and also wants to deploy a personal instance for his family. Other users should be able to fork/deploy their own instance and pull upstream updates.
+**Problem:** Greg owns the open-source repo (`gregqualls/kinhold`) and also wants to deploy a personal instance for his family. Other users should be able to fork/deploy their own instance and pull upstream updates.
 
 **Solution: Single repo, Upsun connects directly to `main` branch.**
 
-- **No fork needed.** Greg owns the repo. Upsun connects directly to `gregqualls/q32hub`.
+- **No fork needed.** Greg owns the repo. Upsun connects directly to `gregqualls/kinhold`.
 - The `.upsun/config.yaml` is already in the repo (committed in Session 1).
 - Family-specific config (API keys, DB creds, domain) lives in Upsun environment variables — never in the repo.
 - Other users fork the repo, connect their fork to their own Upsun project (or any host), and pull upstream updates with `git pull upstream main`.
 
-**Deployment steps (for next session):**
-1. Create Upsun project via CLI or console
-2. Connect it to the GitHub repo (`gregqualls/q32hub`, `main` branch)
-3. Set environment variables on Upsun (APP_KEY, DB creds, Redis, Google OAuth, Anthropic key)
-4. Verify `.upsun/config.yaml` has correct build/deploy hooks (composer install, npm build, migrate, etc.)
-5. Push/deploy, run migrations, seed initial data
-6. Configure domain: family.qthirtytwo.com
-7. Set up SSL (Upsun handles this automatically)
+**Deployment steps (already complete):**
+1. Upsun project created and connected to GitHub repo (`gregqualls/kinhold`, `main` branch)
+2. Environment variables set on Upsun (APP_KEY, DB creds, Redis, Google OAuth, Anthropic key)
+3. `.upsun/config.yaml` has build/deploy hooks (composer install, npm build, migrate, etc.)
+4. Domain configured: kinhold.app (via Cloudflare)
+5. SSL handled automatically by Upsun
+6. PRs auto-create preview environments
 
 **For other users who want to deploy:**
-1. Fork `gregqualls/q32hub` on GitHub
+1. Fork `gregqualls/kinhold` on GitHub
 2. Connect their fork to their Upsun project (or Docker/VPS/whatever)
 3. Set their own environment variables
-4. To get updates: `git remote add upstream https://github.com/gregqualls/q32hub && git pull upstream main`
+4. To get updates: `git remote add upstream https://github.com/gregqualls/kinhold && git pull upstream main`
 
 ## Aspirational Features (Not Planned Yet)
 

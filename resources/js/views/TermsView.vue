@@ -35,7 +35,7 @@
         <section>
           <h2>2. Acceptance of Terms</h2>
           <p>
-            By creating an account or using Kinhold at <strong>family.qthirtytwo.com</strong>,
+            By creating an account or using Kinhold at <strong>kinhold.com</strong>,
             you agree to these Terms of Service and our
             <RouterLink to="/privacy" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Privacy Policy</RouterLink>.
             If you do not agree, do not use the service.
@@ -146,7 +146,7 @@
           <h2>12. Self-Hosting</h2>
           <p>
             Kinhold is open-source software. If you self-host your own instance, these Terms of Service
-            apply only to the hosted instance at <strong>family.qthirtytwo.com</strong>.
+            apply only to the hosted instance at <strong>kinhold.com</strong>.
             Self-hosted instances are your responsibility.
           </p>
         </section>
@@ -180,7 +180,7 @@
           <span>&bull;</span>
           <RouterLink to="/privacy" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Privacy</RouterLink>
           <span>&bull;</span>
-          <a href="https://github.com/gregqualls/q32hub" target="_blank" rel="noopener" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">GitHub</a>
+          <a href="https://github.com/gregqualls/kinhold" target="_blank" rel="noopener" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">GitHub</a>
         </div>
       </div>
     </footer>
