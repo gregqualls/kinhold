@@ -1,0 +1,52 @@
+name: Feature Request
+description: Propose a new feature for Kinhold
+title: "Feature: "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out the sections below.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this feature solve?
+      placeholder: "When I try to ..., I can't ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How should this work? Include UI, API, and data model ideas.
+      placeholder: "Add a new endpoint that ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any other approaches you thought about?
+
+  - type: checkboxes
+    id: ship-checklist
+    attributes:
+      label: Ship Checklist
+      description: |
+        A feature is NOT done until all of these are complete.
+        Check them off as you go during implementation.
+      options:
+        - label: "API endpoints implemented"
+        - label: "Vue frontend components built"
+        - label: "MCP server tools added (MCP is a primary interface — not optional)"
+        - label: "Pinia store created/updated"
+        - label: "Database seeder updated (demo data for self-hosters)"
+        - label: "Landing page updated (if it's not on the landing page, it doesn't exist)"
+        - label: "README updated (feature list, screenshots)"
+        - label: "ROADMAP.md updated"
+        - label: "CHANGELOG.md updated"
+        - label: "Tests written"
