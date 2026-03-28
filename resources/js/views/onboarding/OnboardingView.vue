@@ -77,7 +77,7 @@ import { useOnboardingStore } from '@/stores/onboarding'
 import WelcomeStep from './steps/WelcomeStep.vue'
 import InviteStep from './steps/InviteStep.vue'
 import CalendarStep from './steps/CalendarStep.vue'
-import TaskListStep from './steps/TaskListStep.vue'
+import TagsStep from './steps/TagsStep.vue'
 import FeaturesStep from './steps/FeaturesStep.vue'
 import FeaturesExplainerStep from './steps/FeaturesExplainerStep.vue'
 import CompleteStep from './steps/CompleteStep.vue'
@@ -92,7 +92,7 @@ const stepLoading = ref(false)
 const activeSteps = computed(() => {
   if (authStore.isParent) {
     // Welcome → Add Family → Calendar → Tags → Features → Complete
-    return [WelcomeStep, InviteStep, CalendarStep, TaskListStep, FeaturesStep, CompleteStep]
+    return [WelcomeStep, InviteStep, CalendarStep, TagsStep, FeaturesStep, CompleteStep]
   }
   // Joining member: Welcome → Calendar → What You Can Do → Complete
   return [WelcomeStep, CalendarStep, FeaturesExplainerStep, CompleteStep]

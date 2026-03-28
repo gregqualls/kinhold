@@ -31,7 +31,6 @@ class Task extends Model
      */
     protected $fillable = [
         'family_id',
-        'task_list_id',
         'created_by',
         'assigned_to',
         'title',
@@ -70,14 +69,6 @@ class Task extends Model
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
-    }
-
-    /**
-     * Task belongs to a TaskList.
-     */
-    public function taskList(): BelongsTo
-    {
-        return $this->belongsTo(TaskList::class);
     }
 
     /**

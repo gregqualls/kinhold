@@ -4,7 +4,6 @@ namespace App\Mcp\Tools;
 
 use App\Mcp\Tools\Concerns\ScopesToFamily;
 use App\Models\Task;
-use App\Models\TaskList;
 use App\Models\User;
 use App\Notifications\TaskAssignedNotification;
 use Carbon\Carbon;
@@ -25,7 +24,6 @@ class ManageTasks extends Tool
         return [
             'action' => $schema->string()->required()->enum(['list', 'create', 'update', 'delete'])->description('Action to perform'),
             'task_id' => $schema->string()->description('Task UUID (required for update/delete)'),
-            'list_id' => $schema->string()->description('Task list UUID to filter by or assign to'),
             'title' => $schema->string()->description('Task title (required for create)'),
             'description' => $schema->string()->description('Task description'),
             'assigned_to' => $schema->string()->description('UUID of the family member to assign the task to'),
@@ -53,9 +51,6 @@ class ManageTasks extends Tool
     {
         $query = Task::where('family_id', $this->familyId());
 
-        if ($listId = $request->get('list_id')) {
-            $query->where('task_list_id', $listId);
-        }
         if ($assignedTo = $request->get('assigned_to')) {
             $query->where('assigned_to', $assignedTo);
         }
@@ -65,7 +60,7 @@ class ManageTasks extends Tool
                 : $query->whereNull('completed_at');
         }
 
-        $tasks = $query->with(['assignee', 'taskList', 'tags'])
+        $tasks = $query->with(['assignee', 'tags'])
             ->orderByRaw('completed_at IS NOT NULL')
             ->orderBy('due_date')
             ->limit(50)
@@ -81,7 +76,6 @@ class ManageTasks extends Tool
                 'due_date' => $t->due_date?->format('Y-m-d'),
                 'assigned_to' => $t->assignee?->name,
                 'assigned_to_id' => $t->assigned_to,
-                'list' => $t->taskList?->name,
                 'is_family_task' => $t->is_family_task,
                 'points' => $t->getEffectivePoints(),
                 'tags' => $t->tags->pluck('name')->toArray(),
@@ -100,11 +94,6 @@ class ManageTasks extends Tool
         $family = $this->family();
         $user = $this->user();
 
-        // Validate list belongs to family
-        if ($listId = $request->get('list_id')) {
-            TaskList::where('family_id', $family->id)->findOrFail($listId);
-        }
-
         // Validate assignee belongs to family
         $assignedTo = $request->get('assigned_to');
         if ($assignedTo) {
@@ -122,7 +111,6 @@ class ManageTasks extends Tool
 
         $task = Task::create([
             'family_id' => $family->id,
-            'task_list_id' => $listId,
             'created_by' => $user->id,
             'title' => $title,
             'description' => $request->get('description'),
@@ -179,11 +167,6 @@ class ManageTasks extends Tool
             $assignedTo = $request->get('assigned_to');
             $this->family()->members()->findOrFail($assignedTo);
             $updates['assigned_to'] = $assignedTo;
-        }
-
-        if ($request->get('list_id') !== null) {
-            TaskList::where('family_id', $this->familyId())->findOrFail($request->get('list_id'));
-            $updates['task_list_id'] = $request->get('list_id');
         }
 
         if ($request->get('points') !== null && $user->isParent()) {
