@@ -79,6 +79,7 @@ import InviteStep from './steps/InviteStep.vue'
 import CalendarStep from './steps/CalendarStep.vue'
 import TaskListStep from './steps/TaskListStep.vue'
 import FeaturesStep from './steps/FeaturesStep.vue'
+import FeaturesExplainerStep from './steps/FeaturesExplainerStep.vue'
 import CompleteStep from './steps/CompleteStep.vue'
 
 const router = useRouter()
@@ -93,8 +94,8 @@ const activeSteps = computed(() => {
     // Welcome → Add Family → Calendar → Tags → Features → Complete
     return [WelcomeStep, InviteStep, CalendarStep, TaskListStep, FeaturesStep, CompleteStep]
   }
-  // Joining member: Welcome → Calendar → Complete
-  return [WelcomeStep, CalendarStep, CompleteStep]
+  // Joining member: Welcome → Calendar → What You Can Do → Complete
+  return [WelcomeStep, CalendarStep, FeaturesExplainerStep, CompleteStep]
 })
 
 const isLastStep = computed(() => store.currentStep === activeSteps.value.length - 1)
