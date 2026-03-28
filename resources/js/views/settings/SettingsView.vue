@@ -7,7 +7,9 @@
     <div v-if="!isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">My Profile</h2>
       <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-        <UserAvatar :user="currentUser" size="lg" />
+        <button @click="openAvatarEditor(currentUser)" class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-prussian-700 transition-all" title="Change avatar">
+          <UserAvatar :user="currentUser" size="lg" />
+        </button>
         <div>
           <p class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">{{ currentUser?.name }}</p>
           <p v-if="currentUser?.email" class="text-sm text-lavender-700 dark:text-lavender-400">{{ currentUser?.email }}</p>
@@ -98,7 +100,15 @@
           class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
         >
           <div class="flex items-center gap-3">
-            <UserAvatar :user="member" size="md" />
+            <button
+              v-if="isParent"
+              @click="openAvatarEditor(member)"
+              class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-prussian-700 transition-all"
+              title="Change avatar"
+            >
+              <UserAvatar :user="member" size="md" />
+            </button>
+            <UserAvatar v-else :user="member" size="md" />
             <div>
               <p class="font-semibold text-prussian-500 dark:text-lavender-200">{{ member.name }}</p>
               <p v-if="member.email" class="text-xs text-lavender-700 dark:text-lavender-400">{{ member.email }}</p>
@@ -918,6 +928,34 @@
       </div>
     </div>
 
+    <!-- Avatar Settings (parent only) -->
+    <div v-if="isParent" class="card-lg mb-6">
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Avatar Settings</h2>
+      <label class="flex items-center justify-between gap-4 cursor-pointer">
+        <div>
+          <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Allow children to change their own avatar</p>
+          <p class="text-xs text-lavender-600 dark:text-lavender-400">When off, only parents can set avatars for children.</p>
+        </div>
+        <button
+          type="button"
+          @click="toggleChildrenCanChangeAvatar"
+          :class="[
+            'relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 flex-shrink-0',
+            childrenCanChangeAvatar ? 'bg-[#C4975A]' : 'bg-lavender-300 dark:bg-prussian-600',
+          ]"
+          role="switch"
+          :aria-checked="childrenCanChangeAvatar"
+        >
+          <span
+            :class="[
+              'inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200',
+              childrenCanChangeAvatar ? 'translate-x-6' : 'translate-x-1',
+            ]"
+          />
+        </button>
+      </label>
+    </div>
+
     <!-- Setup Wizard (parent only) -->
     <div v-if="isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Setup Wizard</h2>
@@ -1054,6 +1092,16 @@
         </BaseButton>
       </div>
     </BaseModal>
+
+    <!-- Avatar Editor Modal -->
+    <AvatarEditor
+      :show="showAvatarEditor"
+      :target-user="avatarEditTarget"
+      :can-change="isParent || childrenCanChangeAvatar"
+      @close="showAvatarEditor = false"
+      @updated="handleAvatarUpdated"
+      @color-changed="authStore.fetchUser()"
+    />
   </div>
 </template>
 
@@ -1072,6 +1120,7 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BaseInput from '@/components/common/BaseInput.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
+import AvatarEditor from '@/components/common/AvatarEditor.vue'
 import {
   PlusIcon,
   TrashIcon,
@@ -1093,6 +1142,21 @@ const { currentTheme, setTheme: selectTheme } = useTheme()
 
 const { family, familyMembers, currentUser, isParent } = storeToRefs(authStore)
 const { connections } = storeToRefs(calendarStore)
+
+// Avatar editor
+const showAvatarEditor = ref(false)
+const avatarEditTarget = ref(null)
+const childrenCanChangeAvatar = ref(true)
+
+const openAvatarEditor = (user) => {
+  avatarEditTarget.value = user
+  showAvatarEditor.value = true
+}
+
+const handleAvatarUpdated = async (newAvatar) => {
+  await authStore.updateUserAvatar(newAvatar)
+  showAvatarEditor.value = false
+}
 
 // Family form
 const savingFamily = ref(false)
@@ -1687,6 +1751,20 @@ const saveTaskAssignment = async () => {
   savingTaskAssignment.value = false
 }
 
+// ---- Avatar Settings ----
+const toggleChildrenCanChangeAvatar = async () => {
+  const newValue = !childrenCanChangeAvatar.value
+  childrenCanChangeAvatar.value = newValue
+  try {
+    await api.put('/settings', { children_can_change_avatar: newValue })
+    await authStore.fetchUser()
+    success(newValue ? 'Children can now change their avatars.' : 'Avatar changes restricted to parents.')
+  } catch (err) {
+    childrenCanChangeAvatar.value = !newValue
+    notificationError('Failed to update avatar setting')
+  }
+}
+
 // ---- MCP Token ----
 const fetchMcpTokenStatus = async () => {
   mcpLoading.value = true
@@ -1782,6 +1860,9 @@ onMounted(async () => {
   const ta = settings.task_assignment || {}
   taskAssignment.mode = ta.mode || 'all'
   taskAssignment.users = ta.users || []
+
+  // Initialize avatar setting
+  childrenCanChangeAvatar.value = settings.children_can_change_avatar ?? true
 
   // Load AI settings from the settings API
   if (isParent.value) {

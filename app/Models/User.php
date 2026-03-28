@@ -31,6 +31,7 @@ class User extends Authenticatable
         'is_managed',
         'managed_by',
         'avatar',
+        'avatar_color',
         'date_of_birth',
         'timezone',
         'email_preferences',
