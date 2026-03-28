@@ -2,6 +2,58 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-28 — Session 8: Laravel-Native MCP Server
+
+### What Was Done
+- **Replaced TypeScript MCP server with Laravel-native MCP** using `laravel/mcp` v0.6.4
+  - Eliminated the separate Node.js process — MCP now runs directly in Laravel via `/mcp` endpoint
+  - No HTTP round-trips: tools access Eloquent models and services directly
+  - Auth via Sanctum bearer token (same token system, simpler setup)
+
+- **Built 18 consolidated MCP tools** (down from 26 individual tools in the TypeScript server)
+  - Each tool uses an `action` parameter to handle multiple operations, reducing schema/token overhead
+  - All tools scoped to authenticated user's family via `ScopesToFamily` trait
+  - Parent-only actions (deduct points, create rewards, manage vault) return errors for child users
+
+- **Tool inventory:**
+  - Family & Settings: `view-family`, `get-settings`, `search-family`
+  - Tasks: `manage-task-lists`, `manage-tasks`, `complete-task`, `manage-tags`
+  - Points & Rewards: `view-points`, `manage-points`, `manage-point-requests`, `manage-rewards`, `purchase-reward`
+  - Badges & Events: `manage-badges`, `view-earned-badges`, `manage-featured-events`
+  - Calendar & Vault: `view-calendar`, `manage-vault`, `manage-vault-access`
+
+- **Full content coverage:** Points, rewards, badges, featured events, and settings now have MCP tools (previously 0% coverage)
+
+### Files Created
+- `routes/ai.php` — MCP route registration
+- `app/Mcp/Servers/KinholdServer.php` — Main MCP server (18 tools)
+- `app/Mcp/Tools/Concerns/ScopesToFamily.php` — Shared trait for user/family context
+- `app/Mcp/Tools/ViewFamily.php`
+- `app/Mcp/Tools/GetSettings.php`
+- `app/Mcp/Tools/SearchFamily.php`
+- `app/Mcp/Tools/ManageTaskLists.php`
+- `app/Mcp/Tools/ManageTasks.php`
+- `app/Mcp/Tools/CompleteTask.php`
+- `app/Mcp/Tools/ManageTags.php`
+- `app/Mcp/Tools/ViewPoints.php`
+- `app/Mcp/Tools/ManagePoints.php`
+- `app/Mcp/Tools/ManagePointRequests.php`
+- `app/Mcp/Tools/ManageRewards.php`
+- `app/Mcp/Tools/PurchaseReward.php`
+- `app/Mcp/Tools/ManageBadges.php`
+- `app/Mcp/Tools/ViewEarnedBadges.php`
+- `app/Mcp/Tools/ManageFeaturedEvents.php`
+- `app/Mcp/Tools/ViewCalendar.php`
+- `app/Mcp/Tools/ManageVault.php`
+- `app/Mcp/Tools/ManageVaultAccess.php`
+- `.claude/commands/cleanup.md` — Post-merge cleanup command
+
+### Files Modified
+- `composer.json` — Added `laravel/mcp: ^0.6.4`
+
+### Removed
+- `mcp-server/` — Old TypeScript/Node.js MCP server (superseded by Laravel-native)
+
 ## 2026-03-17 — Session 7: Upsun Deployment & Google OAuth
 
 ### What Was Done
