@@ -25,6 +25,7 @@ class UserResource extends JsonResource
             'avatar' => $this->avatar,
             'date_of_birth' => $this->date_of_birth?->format('Y-m-d'),
             'timezone' => $this->timezone,
+            'onboarding_completed_at' => $this->onboarding_completed_at,
             'created_at' => $this->created_at,
         ];
     }

@@ -125,6 +125,7 @@ class FamilyController extends Controller
             'date_of_birth' => $validated['date_of_birth'] ?? null,
             'is_managed' => $isManaged,
             'managed_by' => $isManaged ? $user->id : null,
+            'onboarding_completed_at' => $isManaged ? now() : null,
         ]);
 
         // Send welcome email if the member has an email and send_email was requested

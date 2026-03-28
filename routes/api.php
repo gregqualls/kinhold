@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\RewardsController;
 use App\Http\Controllers\Api\V1\BadgesController;
 use App\Http\Controllers\Api\V1\FeaturedEventController;
 use App\Http\Controllers\Api\V1\McpTokenController;
+use App\Http\Controllers\Api\V1\OnboardingController;
 
 Route::prefix('v1')->group(function () {
     // Auth routes (no authentication required)
@@ -29,6 +30,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
         Route::post('/auth/switch-profile', [AuthController::class, 'switchProfile']);
+        Route::patch('/user', [AuthController::class, 'updateProfile']);
+
+        // Onboarding
+        Route::get('/onboarding/status', [OnboardingController::class, 'status']);
+        Route::post('/onboarding/complete', [OnboardingController::class, 'complete']);
 
         // Family
         Route::prefix('/family')->group(function () {

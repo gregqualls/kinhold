@@ -918,6 +918,17 @@
       </div>
     </div>
 
+    <!-- Setup Wizard (parent only) -->
+    <div v-if="isParent" class="card-lg mb-6">
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Setup Wizard</h2>
+      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        Re-run the setup wizard to invite members, connect calendars, or configure features.
+      </p>
+      <BaseButton variant="secondary" @click="$router.push({ name: 'Onboarding' })">
+        Re-run Setup Wizard
+      </BaseButton>
+    </div>
+
     <!-- Add/Edit Member Modal -->
     <BaseModal
       :show="showMemberModal"
