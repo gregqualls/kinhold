@@ -20,13 +20,7 @@ class ViewEarnedBadges extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'user_id' => [
-                    'type' => 'string',
-                    'description' => 'User UUID (defaults to current user)',
-                ],
-            ],
+            'user_id' => $schema->string()->description('User UUID (defaults to current user)'),
         ];
     }
 

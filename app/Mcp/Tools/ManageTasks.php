@@ -23,62 +23,18 @@ class ManageTasks extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['list', 'create', 'update', 'delete'],
-                    'description' => 'Action to perform',
-                ],
-                'task_id' => [
-                    'type' => 'string',
-                    'description' => 'Task UUID (required for update/delete)',
-                ],
-                'list_id' => [
-                    'type' => 'string',
-                    'description' => 'Task list UUID to filter by or assign to',
-                ],
-                'title' => [
-                    'type' => 'string',
-                    'description' => 'Task title (required for create)',
-                ],
-                'description' => [
-                    'type' => 'string',
-                    'description' => 'Task description',
-                ],
-                'assigned_to' => [
-                    'type' => 'string',
-                    'description' => 'UUID of the family member to assign the task to',
-                ],
-                'due_date' => [
-                    'type' => 'string',
-                    'description' => 'Due date in YYYY-MM-DD format',
-                ],
-                'priority' => [
-                    'type' => 'string',
-                    'enum' => ['low', 'medium', 'high'],
-                    'description' => 'Task priority',
-                ],
-                'is_family_task' => [
-                    'type' => 'boolean',
-                    'description' => 'Whether any family member can complete this task',
-                ],
-                'points' => [
-                    'type' => 'integer',
-                    'description' => 'Points awarded on completion (parent only)',
-                ],
-                'status' => [
-                    'type' => 'string',
-                    'enum' => ['pending', 'completed'],
-                    'description' => 'Filter by status (for list action)',
-                ],
-                'tag_ids' => [
-                    'type' => 'array',
-                    'items' => ['type' => 'string'],
-                    'description' => 'Array of tag UUIDs to attach',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['list', 'create', 'update', 'delete'])->description('Action to perform'),
+            'task_id' => $schema->string()->description('Task UUID (required for update/delete)'),
+            'list_id' => $schema->string()->description('Task list UUID to filter by or assign to'),
+            'title' => $schema->string()->description('Task title (required for create)'),
+            'description' => $schema->string()->description('Task description'),
+            'assigned_to' => $schema->string()->description('UUID of the family member to assign the task to'),
+            'due_date' => $schema->string()->description('Due date in YYYY-MM-DD format'),
+            'priority' => $schema->string()->enum(['low', 'medium', 'high'])->description('Task priority'),
+            'is_family_task' => $schema->boolean()->description('Whether any family member can complete this task'),
+            'points' => $schema->integer()->description('Points awarded on completion (parent only)'),
+            'status' => $schema->string()->enum(['pending', 'completed'])->description('Filter by status (for list action)'),
+            'tag_ids' => $schema->array()->items($schema->string())->description('Array of tag UUIDs to attach'),
         ];
     }
 

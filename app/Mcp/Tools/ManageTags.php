@@ -19,27 +19,10 @@ class ManageTags extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['list', 'create', 'delete'],
-                    'description' => 'Action to perform',
-                ],
-                'tag_id' => [
-                    'type' => 'string',
-                    'description' => 'Tag UUID (required for delete)',
-                ],
-                'name' => [
-                    'type' => 'string',
-                    'description' => 'Tag name (required for create)',
-                ],
-                'color' => [
-                    'type' => 'string',
-                    'description' => 'Hex color for the tag (e.g. #FF5733)',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['list', 'create', 'delete'])->description('Action to perform'),
+            'tag_id' => $schema->string()->description('Tag UUID (required for delete)'),
+            'name' => $schema->string()->description('Tag name (required for create)'),
+            'color' => $schema->string()->description('Hex color for the tag (e.g. #FF5733)'),
         ];
     }
 

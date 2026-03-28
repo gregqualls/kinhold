@@ -19,39 +19,13 @@ class ManageRewards extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['list', 'create', 'update', 'delete'],
-                    'description' => 'Action to perform',
-                ],
-                'reward_id' => [
-                    'type' => 'string',
-                    'description' => 'Reward UUID (required for update/delete)',
-                ],
-                'title' => [
-                    'type' => 'string',
-                    'description' => 'Reward title (required for create)',
-                ],
-                'description' => [
-                    'type' => 'string',
-                    'description' => 'Reward description',
-                ],
-                'point_cost' => [
-                    'type' => 'integer',
-                    'description' => 'Points required to purchase (required for create)',
-                ],
-                'icon' => [
-                    'type' => 'string',
-                    'description' => 'Emoji or icon for the reward',
-                ],
-                'is_active' => [
-                    'type' => 'boolean',
-                    'description' => 'Whether the reward is available for purchase',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['list', 'create', 'update', 'delete'])->description('Action to perform'),
+            'reward_id' => $schema->string()->description('Reward UUID (required for update/delete)'),
+            'title' => $schema->string()->description('Reward title (required for create)'),
+            'description' => $schema->string()->description('Reward description'),
+            'point_cost' => $schema->integer()->description('Points required to purchase (required for create)'),
+            'icon' => $schema->string()->description('Emoji or icon for the reward'),
+            'is_active' => $schema->boolean()->description('Whether the reward is available for purchase'),
         ];
     }
 

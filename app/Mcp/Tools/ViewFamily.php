@@ -20,19 +20,8 @@ class ViewFamily extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['info', 'members', 'member'],
-                    'description' => 'Action to perform',
-                ],
-                'member_id' => [
-                    'type' => 'string',
-                    'description' => 'User UUID (required for member action)',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['info', 'members', 'member'])->description('Action to perform'),
+            'member_id' => $schema->string()->description('User UUID (required for member action)'),
         ];
     }
 

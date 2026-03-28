@@ -24,23 +24,9 @@ class ViewCalendar extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['events', 'connections', 'sync'],
-                    'description' => 'Action to perform',
-                ],
-                'start' => [
-                    'type' => 'string',
-                    'description' => 'Start date in YYYY-MM-DD format (defaults to today)',
-                ],
-                'end' => [
-                    'type' => 'string',
-                    'description' => 'End date in YYYY-MM-DD format (defaults to 3 months from now)',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['events', 'connections', 'sync'])->description('Action to perform'),
+            'start' => $schema->string()->description('Start date in YYYY-MM-DD format (defaults to today)'),
+            'end' => $schema->string()->description('End date in YYYY-MM-DD format (defaults to 3 months from now)'),
         ];
     }
 

@@ -23,19 +23,8 @@ class CompleteTask extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['complete', 'uncomplete'],
-                    'description' => 'Whether to complete or uncomplete the task',
-                ],
-                'task_id' => [
-                    'type' => 'string',
-                    'description' => 'UUID of the task',
-                ],
-            ],
-            'required' => ['action', 'task_id'],
+            'action' => $schema->string()->required()->enum(['complete', 'uncomplete'])->description('Whether to complete or uncomplete the task'),
+            'task_id' => $schema->string()->required()->description('UUID of the task'),
         ];
     }
 

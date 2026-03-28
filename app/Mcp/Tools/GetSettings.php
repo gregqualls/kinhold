@@ -19,10 +19,7 @@ class GetSettings extends Tool
 
     public function schema($schema): array
     {
-        return [
-            'type' => 'object',
-            'properties' => new \stdClass(),
-        ];
+        return [];
     }
 
     public function handle(Request $request): Response

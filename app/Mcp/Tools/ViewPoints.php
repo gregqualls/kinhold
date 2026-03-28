@@ -22,28 +22,10 @@ class ViewPoints extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['bank', 'leaderboard', 'feed'],
-                    'description' => 'Action to perform',
-                ],
-                'user_id' => [
-                    'type' => 'string',
-                    'description' => 'User UUID (for bank action, defaults to current user)',
-                ],
-                'period' => [
-                    'type' => 'string',
-                    'enum' => ['daily', 'weekly', 'monthly'],
-                    'description' => 'Leaderboard period (defaults to family setting)',
-                ],
-                'limit' => [
-                    'type' => 'integer',
-                    'description' => 'Number of feed items to return (default 20)',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['bank', 'leaderboard', 'feed'])->description('Action to perform'),
+            'user_id' => $schema->string()->description('User UUID (for bank action, defaults to current user)'),
+            'period' => $schema->string()->enum(['daily', 'weekly', 'monthly'])->description('Leaderboard period (defaults to family setting)'),
+            'limit' => $schema->integer()->description('Number of feed items to return (default 20)'),
         ];
     }
 

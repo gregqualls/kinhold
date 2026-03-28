@@ -22,23 +22,9 @@ class PurchaseReward extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['purchase', 'history'],
-                    'description' => 'Action to perform',
-                ],
-                'reward_id' => [
-                    'type' => 'string',
-                    'description' => 'Reward UUID (required for purchase)',
-                ],
-                'user_id' => [
-                    'type' => 'string',
-                    'description' => 'Filter history by user UUID',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['purchase', 'history'])->description('Action to perform'),
+            'reward_id' => $schema->string()->description('Reward UUID (required for purchase)'),
+            'user_id' => $schema->string()->description('Filter history by user UUID'),
         ];
     }
 
