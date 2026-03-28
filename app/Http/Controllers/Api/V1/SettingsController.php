@@ -51,6 +51,7 @@ class SettingsController extends Controller
                     'mode' => 'all',
                     'users' => [],
                 ],
+                'children_can_change_avatar' => $settings['children_can_change_avatar'] ?? true,
             ],
         ], 200);
     }
@@ -97,6 +98,7 @@ class SettingsController extends Controller
             'task_assignment.mode' => 'nullable|string|in:all,parents_only,users',
             'task_assignment.users' => 'nullable|array',
             'task_assignment.users.*' => 'uuid|exists:users,id',
+            'children_can_change_avatar' => 'nullable|boolean',
         ]);
 
         $settings = $family->settings ?? [];
@@ -166,6 +168,10 @@ class SettingsController extends Controller
             ];
         }
 
+        if ($request->has('children_can_change_avatar')) {
+            $settings['children_can_change_avatar'] = (bool) $validated['children_can_change_avatar'];
+        }
+
         // Encrypt the API key before storing. Only update if a non-empty value is sent.
         // Sending an empty string clears the key.
         if ($request->has('ai_api_key')) {
@@ -200,6 +206,7 @@ class SettingsController extends Controller
                     'mode' => 'all',
                     'users' => [],
                 ],
+                'children_can_change_avatar' => $settings['children_can_change_avatar'] ?? true,
             ],
         ], 200);
     }

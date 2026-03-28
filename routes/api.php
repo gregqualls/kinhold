@@ -30,6 +30,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/user', [AuthController::class, 'user']);
         Route::post('/auth/switch-profile', [AuthController::class, 'switchProfile']);
         Route::patch('/user', [AuthController::class, 'updateProfile']);
+        Route::post('/user/avatar', [AuthController::class, 'uploadAvatar']);
+        Route::delete('/user/avatar', [AuthController::class, 'deleteAvatar']);
+        Route::put('/user/avatar/preset', [AuthController::class, 'setPresetAvatar']);
+        Route::post('/user/avatar/google', [AuthController::class, 'restoreGoogleAvatar']);
 
         // Onboarding
         Route::get('/onboarding/status', [OnboardingController::class, 'status']);
@@ -157,6 +161,9 @@ Route::prefix('v1')->group(function () {
             Route::delete('/token', [McpTokenController::class, 'destroy']);
         });
     });
+
+    // Avatar serving (public — avatars are visible to all family members)
+    Route::get('/user/avatar/{userId}', [AuthController::class, 'serveAvatar']);
 
     // Calendar OAuth callback (public, stateless — Google redirects via GET)
     Route::get('/calendar/callback', [CalendarController::class, 'handleCallback'])->name('api.calendar.callback');
