@@ -161,6 +161,9 @@ Route::prefix('v1')->group(function () {
         });
     });
 
+    // Avatar serving (public — avatars are visible to all family members)
+    Route::get('/user/avatar/{userId}', [AuthController::class, 'serveAvatar']);
+
     // Calendar OAuth callback (public, stateless — Google redirects via GET)
     Route::get('/calendar/callback', [CalendarController::class, 'handleCallback'])->name('api.calendar.callback');
 });
