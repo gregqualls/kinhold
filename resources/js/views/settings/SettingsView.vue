@@ -412,7 +412,7 @@
     <div class="card-lg mb-6">
       <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Connect AI Assistant</h2>
       <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
-        Connect Claude Desktop or Claude Code to manage your family hub via MCP.
+        Connect any MCP-compatible AI assistant to manage your family hub.
       </p>
 
       <!-- Status row -->
@@ -464,31 +464,34 @@
           </div>
         </div>
 
-        <!-- Claude Desktop Config -->
+        <!-- Client tabs -->
         <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Claude Desktop</label>
-            <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('desktop', mcpGenerated.claudeDesktopConfig)">
-              <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-              {{ mcpCopied.desktop ? 'Copied!' : 'Copy Config' }}
-            </BaseButton>
+          <div class="flex flex-wrap gap-1 border-b border-lavender-200 dark:border-prussian-700 mb-3">
+            <button
+              v-for="client in mcpGenerated.clients"
+              :key="client.id"
+              @click="mcpActiveClient = client.id"
+              :class="[
+                'px-3 py-1.5 text-sm font-medium rounded-t-lg transition-colors -mb-px',
+                mcpActiveClient === client.id
+                  ? 'border border-b-white dark:border-b-prussian-800 border-lavender-200 dark:border-prussian-700 text-prussian-500 dark:text-lavender-200 bg-white dark:bg-prussian-800'
+                  : 'text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200',
+              ]"
+            >
+              {{ client.name }}
+            </button>
           </div>
-          <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-1">Add to your <code class="text-xs">claude_desktop_config.json</code>:</p>
-          <pre class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto whitespace-pre">{{ mcpGenerated.claudeDesktopConfig }}</pre>
-        </div>
 
-        <!-- Claude Code Command -->
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Claude Code</label>
-            <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('code', mcpGenerated.claudeCodeCommand)">
-              <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-              {{ mcpCopied.code ? 'Copied!' : 'Copy Command' }}
-            </BaseButton>
-          </div>
-          <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-1">Run in your terminal:</p>
-          <div class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto">
-            {{ mcpGenerated.claudeCodeCommand }}
+          <!-- Active client config -->
+          <div v-for="client in mcpGenerated.clients" :key="client.id" v-show="mcpActiveClient === client.id">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ client.instructions }}</p>
+              <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, client.command || client.configJson)">
+                <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                {{ mcpCopied[client.id] ? 'Copied!' : 'Copy' }}
+              </BaseButton>
+            </div>
+            <pre class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
           </div>
         </div>
       </div>
@@ -1084,15 +1087,11 @@ const mcpToken = reactive({
 const mcpGenerated = reactive({
   show: false,
   plainToken: '',
-  claudeDesktopConfig: '',
-  claudeCodeCommand: '',
+  clients: [],
   mcpUrl: '',
 })
-const mcpCopied = reactive({
-  token: false,
-  desktop: false,
-  code: false,
-})
+const mcpActiveClient = ref('claude_desktop')
+const mcpCopied = reactive({})
 
 // Module access (granular)
 const savingModules = ref(false)
@@ -1675,9 +1674,15 @@ const handleGenerateMcpToken = async () => {
     mcpToken.lastUsedAt = null
     mcpGenerated.show = true
     mcpGenerated.plainToken = data.plain_token
-    mcpGenerated.claudeDesktopConfig = JSON.stringify(data.claude_desktop_config, null, 2)
-    mcpGenerated.claudeCodeCommand = data.claude_code_command
     mcpGenerated.mcpUrl = data.mcp_url
+    mcpGenerated.clients = data.clients.map(c => ({
+      ...c,
+      configJson: c.config ? JSON.stringify(c.config, null, 2) : null,
+    }))
+    mcpActiveClient.value = data.clients[0]?.id || 'claude_desktop'
+    // Reset copy state for all clients
+    mcpCopied.token = false
+    data.clients.forEach(c => { mcpCopied[c.id] = false })
     success('MCP token generated!')
   } catch (err) {
     notificationError(err.response?.data?.message || 'Failed to generate token')

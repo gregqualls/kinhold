@@ -38,23 +38,47 @@ class McpTokenController extends Controller
         $plainToken = $token->plainTextToken;
         $mcpUrl = rtrim(config('app.url'), '/') . '/mcp';
 
+        $serverConfig = [
+            'kinhold' => [
+                'type' => 'streamable-http',
+                'url' => $mcpUrl,
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $plainToken,
+                ],
+            ],
+        ];
+
         return response()->json([
             'has_token' => true,
             'created_at' => $token->accessToken->created_at,
             'plain_token' => $plainToken,
             'mcp_url' => $mcpUrl,
-            'claude_desktop_config' => [
-                'mcpServers' => [
-                    'kinhold' => [
-                        'type' => 'streamable-http',
-                        'url' => $mcpUrl,
-                        'headers' => [
-                            'Authorization' => 'Bearer ' . $plainToken,
-                        ],
-                    ],
+            'clients' => [
+                [
+                    'id' => 'claude_desktop',
+                    'name' => 'Claude Desktop',
+                    'instructions' => 'Add to your claude_desktop_config.json:',
+                    'config' => ['mcpServers' => $serverConfig],
+                ],
+                [
+                    'id' => 'claude_code',
+                    'name' => 'Claude Code',
+                    'instructions' => 'Run in your terminal:',
+                    'command' => 'claude mcp add kinhold --transport streamable-http --url ' . escapeshellarg($mcpUrl) . ' --header ' . escapeshellarg('Authorization: Bearer ' . $plainToken),
+                ],
+                [
+                    'id' => 'cursor',
+                    'name' => 'Cursor',
+                    'instructions' => 'Add to ~/.cursor/mcp.json (global) or .cursor/mcp.json (project):',
+                    'config' => ['mcpServers' => $serverConfig],
+                ],
+                [
+                    'id' => 'windsurf',
+                    'name' => 'Windsurf',
+                    'instructions' => 'Add to ~/.codeium/windsurf/mcp_config.json:',
+                    'config' => ['mcpServers' => $serverConfig],
                 ],
             ],
-            'claude_code_command' => 'claude mcp add kinhold --transport streamable-http --url ' . escapeshellarg($mcpUrl) . ' --header ' . escapeshellarg('Authorization: Bearer ' . $plainToken),
         ]);
     }
 
