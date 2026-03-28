@@ -26,7 +26,7 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 | Cache/Queue | Redis 7 | Sessions, cache, queue driver |
 | Auth | Laravel Sanctum + Socialite | Cookie SPA, token MCP, Google OAuth via Socialite |
 | Encryption | Laravel app-level | Vault sensitive fields encrypted at rest |
-| MCP Server | TypeScript/Node.js | Full CRUD, uses Sanctum API tokens |
+| MCP Server | Laravel-native (`laravel/mcp`) | 18 tools at `/mcp`, Sanctum bearer token auth |
 | Local Dev | Homebrew (preferred) or Docker | `brew install php composer postgresql redis` then `php artisan serve` |
 | Production | Upsun.com | Config in `.upsun/config.yaml` |
 | Domain | kinhold.app | Configured via Cloudflare |
@@ -79,11 +79,15 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 - Suggested quick questions, chat history
 - **Future:** Proactive reminders, family digest emails
 
-### 6. MCP Server (MVP — SCAFFOLDED)
-- TypeScript/Node.js, uses `@modelcontextprotocol/sdk`
-- 26 tools across: tasks, calendar, vault, family, search
-- Authenticates with Sanctum API token
-- Greg can manage Kinhold entirely through Claude Desktop or Claude Code
+### 6. MCP Server (IMPLEMENTED — Laravel-Native)
+- Laravel-native via `laravel/mcp` package — runs at `/mcp` endpoint, no separate process
+- 18 consolidated tools (action-based) covering all modules: tasks, points, rewards, badges, calendar, vault, featured events, family, settings, search
+- Authenticates with Sanctum bearer token
+- Direct model/service access (no HTTP round-trips)
+- `ScopesToFamily` trait scopes all queries to authenticated user's family
+- Parent-only write actions enforced at tool level
+- Greg manages Kinhold entirely through Claude Desktop or Claude Code
+- **Legacy:** `mcp-server/` TypeScript directory still exists but is superseded
 - **Future:** Webhooks, real-time sync
 
 ### 7. Points & Gamification (IMPLEMENTED)
@@ -117,7 +121,8 @@ kinhold/
 │   ├── Services/                  # Business logic (GoogleCalendar, VaultEncryption, Chatbot, Points, Badge)
 │   ├── Policies/                  # Authorization (Task, TaskList, VaultEntry, Family)
 │   ├── Console/Commands/          # Artisan commands (GenerateRecurringTasks)
-│   └── Enums/                     # FamilyRole, TaskPriority, PermissionLevel, PointTransactionType, BadgeTriggerType
+│   ├── Enums/                     # FamilyRole, TaskPriority, PermissionLevel, PointTransactionType, BadgeTriggerType
+│   └── Mcp/                      # Laravel-native MCP server (Servers/, Tools/, Tools/Concerns/)
 ├── database/migrations/           # 17 migrations (timestamped)
 ├── resources/js/
 │   ├── components/                # Reusable Vue components (layout/, common/, calendar/, tasks/, vault/, chat/, points/, badges/)
@@ -126,7 +131,7 @@ kinhold/
 │   ├── services/                  # API client (axios)
 │   ├── composables/               # Vue composables (useNotification, useFamilyColors)
 │   └── router/                    # Vue Router config
-├── mcp-server/src/                # MCP server (index.ts, api-client.ts, tools/*.ts)
+├── routes/ai.php                  # MCP route registration (/mcp endpoint)
 ├── docker/                        # Nginx, PHP config, entrypoint
 ├── docs/                          # Architecture, roadmap, conventions
 └── .upsun/                        # Production deployment config
