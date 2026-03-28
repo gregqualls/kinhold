@@ -408,6 +408,92 @@
       </div>
     </div>
 
+    <!-- Connect AI Assistant -->
+    <div class="card-lg mb-6">
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Connect AI Assistant</h2>
+      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        Connect Claude Desktop or Claude Code to manage your family hub via MCP.
+      </p>
+
+      <!-- Status row -->
+      <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+        <div>
+          <div class="flex items-center gap-2">
+            <p class="font-medium text-prussian-500 dark:text-lavender-200">MCP Connection</p>
+            <span v-if="mcpToken.hasToken" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+              Connected
+            </span>
+            <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-lavender-100 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-400">
+              Not Connected
+            </span>
+          </div>
+          <p v-if="mcpToken.lastUsedAt" class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+            Last used: {{ new Date(mcpToken.lastUsedAt).toLocaleDateString() }}
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <BaseButton v-if="mcpToken.hasToken" variant="ghost" size="sm" @click="handleRevokeMcpToken" :loading="mcpRevoking">
+            Revoke
+          </BaseButton>
+          <BaseButton variant="secondary" size="sm" @click="handleGenerateMcpToken" :loading="mcpGenerating">
+            {{ mcpToken.hasToken ? 'Regenerate Token' : 'Generate Token' }}
+          </BaseButton>
+        </div>
+      </div>
+
+      <!-- One-time token display -->
+      <div v-if="mcpGenerated.show" class="mt-4 space-y-4">
+        <!-- Warning -->
+        <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <p class="text-sm text-amber-800 dark:text-amber-200 font-medium">
+            This token is shown only once. Copy what you need now — you won't be able to see it again.
+          </p>
+        </div>
+
+        <!-- Bearer Token -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Bearer Token</label>
+            <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('token', mcpGenerated.plainToken)">
+              <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+              {{ mcpCopied.token ? 'Copied!' : 'Copy' }}
+            </BaseButton>
+          </div>
+          <div class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-green-400 p-3 rounded-lg overflow-x-auto">
+            {{ mcpGenerated.plainToken }}
+          </div>
+        </div>
+
+        <!-- Claude Desktop Config -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Claude Desktop</label>
+            <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('desktop', mcpGenerated.claudeDesktopConfig)">
+              <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+              {{ mcpCopied.desktop ? 'Copied!' : 'Copy Config' }}
+            </BaseButton>
+          </div>
+          <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-1">Add to your <code class="text-xs">claude_desktop_config.json</code>:</p>
+          <pre class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto whitespace-pre">{{ mcpGenerated.claudeDesktopConfig }}</pre>
+        </div>
+
+        <!-- Claude Code Command -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Claude Code</label>
+            <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('code', mcpGenerated.claudeCodeCommand)">
+              <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+              {{ mcpCopied.code ? 'Copied!' : 'Copy Command' }}
+            </BaseButton>
+          </div>
+          <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-1">Run in your terminal:</p>
+          <div class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto">
+            {{ mcpGenerated.claudeCodeCommand }}
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Appearance -->
     <div class="card-lg mb-6">
       <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Appearance</h2>
@@ -986,6 +1072,28 @@ const aiConfig = reactive({
   hasSavedKey: false,
 })
 
+// MCP Token
+const mcpLoading = ref(false)
+const mcpGenerating = ref(false)
+const mcpRevoking = ref(false)
+const mcpToken = reactive({
+  hasToken: false,
+  createdAt: null,
+  lastUsedAt: null,
+})
+const mcpGenerated = reactive({
+  show: false,
+  plainToken: '',
+  claudeDesktopConfig: '',
+  claudeCodeCommand: '',
+  mcpUrl: '',
+})
+const mcpCopied = reactive({
+  token: false,
+  desktop: false,
+  code: false,
+})
+
 // Module access (granular)
 const savingModules = ref(false)
 const moduleAccessState = reactive({
@@ -1544,6 +1652,65 @@ const saveTaskAssignment = async () => {
   savingTaskAssignment.value = false
 }
 
+// ---- MCP Token ----
+const fetchMcpTokenStatus = async () => {
+  mcpLoading.value = true
+  try {
+    const { data } = await api.get('/mcp/token')
+    mcpToken.hasToken = data.has_token
+    mcpToken.createdAt = data.created_at
+    mcpToken.lastUsedAt = data.last_used_at
+  } catch {
+    // Silent — defaults are fine
+  }
+  mcpLoading.value = false
+}
+
+const handleGenerateMcpToken = async () => {
+  mcpGenerating.value = true
+  try {
+    const { data } = await api.post('/mcp/token')
+    mcpToken.hasToken = true
+    mcpToken.createdAt = data.created_at
+    mcpToken.lastUsedAt = null
+    mcpGenerated.show = true
+    mcpGenerated.plainToken = data.plain_token
+    mcpGenerated.claudeDesktopConfig = JSON.stringify(data.claude_desktop_config, null, 2)
+    mcpGenerated.claudeCodeCommand = data.claude_code_command
+    mcpGenerated.mcpUrl = data.mcp_url
+    success('MCP token generated!')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to generate token')
+  }
+  mcpGenerating.value = false
+}
+
+const handleRevokeMcpToken = async () => {
+  mcpRevoking.value = true
+  try {
+    await api.delete('/mcp/token')
+    mcpToken.hasToken = false
+    mcpToken.createdAt = null
+    mcpToken.lastUsedAt = null
+    mcpGenerated.show = false
+    mcpGenerated.plainToken = ''
+    success('MCP token revoked.')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to revoke token')
+  }
+  mcpRevoking.value = false
+}
+
+const copyMcpSnippet = async (field, text) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    mcpCopied[field] = true
+    setTimeout(() => { mcpCopied[field] = false }, 2000)
+  } catch {
+    notificationError('Failed to copy to clipboard')
+  }
+}
+
 // ---- Init ----
 onMounted(async () => {
   familyForm.name = family.value?.name || ''
@@ -1591,6 +1758,7 @@ onMounted(async () => {
   }
 
   await calendarStore.fetchConnections()
+  fetchMcpTokenStatus()
 
   // Load email preferences
   if (currentUser.value?.email) {
