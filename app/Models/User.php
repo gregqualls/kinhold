@@ -32,6 +32,7 @@ class User extends Authenticatable
         'managed_by',
         'avatar',
         'avatar_color',
+        'google_avatar',
         'date_of_birth',
         'timezone',
         'email_preferences',

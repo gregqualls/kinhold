@@ -69,6 +69,7 @@ class GoogleAuthController extends Controller
             $user->update([
                 'google_id' => $googleUser->getId(),
                 'avatar' => $user->avatar ?? $googleUser->getAvatar(),
+                'google_avatar' => $googleUser->getAvatar(),
             ]);
 
             $token = $user->createToken('google_auth')->plainTextToken;
@@ -88,6 +89,7 @@ class GoogleAuthController extends Controller
             'email' => $googleUser->getEmail(),
             'google_id' => $googleUser->getId(),
             'avatar' => $googleUser->getAvatar(),
+            'google_avatar' => $googleUser->getAvatar(),
             'family_id' => $family->id,
             'family_role' => 'parent',
         ]);

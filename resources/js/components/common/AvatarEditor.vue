@@ -53,8 +53,18 @@
                 </div>
               </div>
 
-              <!-- Upload Photo -->
-              <div class="mb-6">
+              <!-- Google Photo + Upload Photo -->
+              <div class="mb-6 space-y-2">
+                <!-- Use Google Photo (only shown if available and not already using it) -->
+                <button
+                  v-if="targetUser?.google_avatar && !isUsingGoogleAvatar"
+                  @click="useGoogleAvatar"
+                  :disabled="loading || !canChange"
+                  class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-xl text-sm font-medium text-prussian-500 dark:text-lavender-200 hover:border-[#C4975A] hover:text-[#C4975A] dark:hover:border-[#C4975A] dark:hover:text-[#C4975A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <img :src="targetUser.google_avatar" class="w-5 h-5 rounded-full object-cover" alt="" />
+                  Use Google Photo
+                </button>
                 <button
                   @click="triggerUpload"
                   :disabled="loading || !canChange"
@@ -164,6 +174,11 @@ const previewUser = computed(() => ({
   avatar_color: selectedColor.value,
 }))
 
+const isUsingGoogleAvatar = computed(() => {
+  const current = previewUser.value?.avatar
+  return current === props.targetUser?.google_avatar
+})
+
 const isSelected = (presetKey) => {
   const avatar = previewUser.value?.avatar
   return avatar === `phosphor:${presetKey}`
@@ -248,6 +263,20 @@ const removeAvatar = async () => {
     console.error('Avatar removal failed:', err)
   } finally {
     removing.value = false
+  }
+}
+
+const useGoogleAvatar = async () => {
+  const googleUrl = props.targetUser?.google_avatar
+  if (!googleUrl) return
+
+  localAvatar.value = googleUrl
+  try {
+    const { data } = await api.post('/user/avatar/google')
+    emit('updated', data.user.avatar)
+  } catch (err) {
+    console.error('Google avatar restore failed:', err)
+    localAvatar.value = null
   }
 }
 
