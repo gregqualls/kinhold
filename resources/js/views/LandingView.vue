@@ -185,13 +185,22 @@
             </div>
           </div>
         </div>
-        <!-- Right column: screenshot -->
-        <div class="rounded-xl shadow-card-xl border border-kin-border dark:border-kin-border-dark overflow-hidden">
-          <img
-            src="/images/screenshots/gamification.png"
-            alt="Gamification features"
-            class="w-full h-auto"
-          />
+        <!-- Right column: screenshots -->
+        <div class="space-y-4">
+          <div class="rounded-xl shadow-card-xl border border-kin-border dark:border-kin-border-dark overflow-hidden">
+            <img
+              src="/images/screenshots/gamification.png"
+              alt="Points feed and leaderboard"
+              class="w-full h-auto"
+            />
+          </div>
+          <div class="rounded-xl shadow-card border border-kin-border dark:border-kin-border-dark overflow-hidden">
+            <img
+              src="/images/screenshots/rewards.png"
+              alt="Rewards store"
+              class="w-full h-auto"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -363,11 +372,11 @@ const showcaseTabs = [
     id: 'gamification',
     label: 'Gamification',
     icon: TrophyIcon,
-    image: '/images/screenshots/gamification.png',
+    image: '/images/screenshots/badges.png',
     bullets: [
-      'Points for completing tasks',
-      'Steam-style badges with hidden achievements',
-      'Rewards store where kids spend points',
+      'Earn points by completing tasks — parents give kudos for extra effort',
+      'Steam-style badges with hidden achievements to unlock',
+      'Rewards store where kids spend points on prizes parents set',
     ],
   },
 ]

@@ -67,7 +67,7 @@ Turn chores into a game your kids actually want to play.
 ## Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/dashboard-light.png" alt="Dashboard (Light Mode)" width="360" />
+  <img src="docs/screenshots/hero.png" alt="Dashboard (Light Mode)" width="360" />
   &nbsp;&nbsp;
   <img src="docs/screenshots/dashboard-dark.png" alt="Dashboard (Dark Mode)" width="360" />
 </p>
@@ -84,7 +84,7 @@ Turn chores into a game your kids actually want to play.
 <summary><strong>More screenshots</strong></summary>
 <br />
 <p align="center">
-  <img src="docs/screenshots/tasks.png" alt="Task Lists" width="360" />
+  <img src="docs/screenshots/tasks-desktop.png" alt="Task Lists" width="360" />
   &nbsp;&nbsp;
   <img src="docs/screenshots/calendar.png" alt="Calendar" width="360" />
 </p>
