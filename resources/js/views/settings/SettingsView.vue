@@ -18,169 +18,352 @@
       </div>
     </div>
 
-    <!-- Family Settings (parent only) -->
-    <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Family Information</h2>
+    <!-- ============================================ -->
+    <!-- PARENT VIEW — Collapsible Sections           -->
+    <!-- ============================================ -->
+    <template v-if="isParent">
 
-      <form @submit.prevent="updateFamily" class="space-y-4">
-        <BaseInput
-          v-model="familyForm.name"
-          label="Family Name"
-          placeholder="The Johnsons"
-          :error="familyErrors.name"
-        />
-
-        <div class="flex gap-3 justify-end">
-          <BaseButton variant="ghost" @click="cancelEditFamily">
-            Cancel
-          </BaseButton>
-          <BaseButton variant="primary" :loading="savingFamily">
-            Save Changes
-          </BaseButton>
-        </div>
-      </form>
-    </div>
-
-    <!-- Invite Code (parent only) -->
-    <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Family Invite Code</h2>
-      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
-        Share this code with family members so they can join during registration.
-      </p>
-
-      <div class="flex items-center gap-3">
-        <div class="flex-1 px-4 py-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg font-mono text-lg tracking-widest text-prussian-500 dark:text-lavender-200 text-center">
-          {{ inviteCode || '...' }}
-        </div>
-        <BaseButton variant="secondary" size="sm" @click="copyInviteCode" :disabled="!inviteCode">
-          <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-          {{ copied ? 'Copied!' : 'Copy' }}
-        </BaseButton>
-      </div>
-
-      <!-- Send invite by email -->
-      <div class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
-        <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">Send Invite by Email</p>
-        <form @submit.prevent="handleSendInviteEmail" class="flex items-end gap-3">
-          <div class="flex-1">
-            <input
-              v-model="inviteEmail"
-              type="email"
-              placeholder="name@example.com"
-              class="input-base"
-              required
-            />
+      <!-- Section 1: Family -->
+      <SettingsSection
+        id="family"
+        title="Family"
+        description="Manage your family info, members, and invites"
+        :icon="UsersIcon"
+        :model-value="expandedSections.has('family')"
+        @update:model-value="val => toggleSection('family', val)"
+      >
+        <!-- Family Name -->
+        <form @submit.prevent="updateFamily" class="space-y-4 mb-6">
+          <BaseInput
+            v-model="familyForm.name"
+            label="Family Name"
+            placeholder="The Johnsons"
+            :error="familyErrors.name"
+          />
+          <div class="flex gap-3 justify-end">
+            <BaseButton variant="ghost" @click="cancelEditFamily">Cancel</BaseButton>
+            <BaseButton variant="primary" :loading="savingFamily">Save Changes</BaseButton>
           </div>
-          <BaseButton variant="secondary" size="sm" :loading="sendingInvite" :disabled="!inviteCode">
-            <EnvelopeIcon class="w-4 h-4 mr-1" />
-            Send
-          </BaseButton>
         </form>
-        <p v-if="inviteEmailSent" class="text-sm text-green-600 dark:text-green-400 mt-2">
-          Invite sent!
-        </p>
-      </div>
-    </div>
 
-    <!-- Family Members -->
-    <div class="card-lg mb-6">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200">Family Members</h2>
-        <BaseButton v-if="isParent" variant="secondary" size="sm" @click="openAddMemberModal">
-          <PlusIcon class="w-4 h-4 mr-2" />
-          Add Member
-        </BaseButton>
-      </div>
+        <!-- Invite Code -->
+        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
+          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Family Invite Code</h3>
+          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+            Share this code with family members so they can join during registration.
+          </p>
 
-      <!-- Members List -->
-      <div class="space-y-3">
-        <div
-          v-for="member in familyMembers"
-          :key="member.id"
-          class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
-        >
           <div class="flex items-center gap-3">
-            <button
-              v-if="isParent"
-              @click="openAvatarEditor(member)"
-              class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-prussian-700 transition-all"
-              title="Change avatar"
+            <div class="flex-1 px-4 py-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg font-mono text-lg tracking-widest text-prussian-500 dark:text-lavender-200 text-center">
+              {{ inviteCode || '...' }}
+            </div>
+            <BaseButton variant="secondary" size="sm" @click="copyInviteCode" :disabled="!inviteCode">
+              <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+              {{ copied ? 'Copied!' : 'Copy' }}
+            </BaseButton>
+          </div>
+
+          <!-- Send invite by email -->
+          <div class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
+            <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">Send Invite by Email</p>
+            <form @submit.prevent="handleSendInviteEmail" class="flex items-end gap-3">
+              <div class="flex-1">
+                <input
+                  v-model="inviteEmail"
+                  type="email"
+                  placeholder="name@example.com"
+                  class="input-base"
+                  required
+                />
+              </div>
+              <BaseButton variant="secondary" size="sm" :loading="sendingInvite" :disabled="!inviteCode">
+                <EnvelopeIcon class="w-4 h-4 mr-1" />
+                Send
+              </BaseButton>
+            </form>
+            <p v-if="inviteEmailSent" class="text-sm text-green-600 dark:text-green-400 mt-2">
+              Invite sent!
+            </p>
+          </div>
+        </div>
+
+        <!-- Family Members -->
+        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-prussian-500 dark:text-lavender-200">Family Members</h3>
+            <BaseButton variant="secondary" size="sm" @click="openAddMemberModal">
+              <PlusIcon class="w-4 h-4 mr-2" />
+              Add Member
+            </BaseButton>
+          </div>
+
+          <div class="space-y-3">
+            <div
+              v-for="member in familyMembers"
+              :key="member.id"
+              class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
             >
-              <UserAvatar :user="member" size="md" />
-            </button>
-            <UserAvatar v-else :user="member" size="md" />
-            <div>
-              <p class="font-semibold text-prussian-500 dark:text-lavender-200">{{ member.name }}</p>
-              <p v-if="member.email" class="text-xs text-lavender-700 dark:text-lavender-400">{{ member.email }}</p>
-              <p v-else class="text-xs text-lavender-600 dark:text-lavender-500 italic">Managed account</p>
-              <div class="flex items-center gap-2 mt-1">
-                <span :class="[
-                  'text-xs px-2 py-0.5 rounded-full font-medium',
-                  member.family_role === 'parent' || member.role === 'parent'
-                    ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/30 dark:text-wisteria-300'
-                    : 'bg-lavender-200 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-300'
-                ]">
-                  {{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}
-                </span>
-                <span v-if="member.is_managed" class="text-xs px-2 py-0.5 rounded-full bg-sand-100 text-sand-700 dark:bg-sand-900/30 dark:text-sand-300 font-medium">
-                  Managed
-                </span>
+              <div class="flex items-center gap-3">
+                <button
+                  @click="openAvatarEditor(member)"
+                  class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-prussian-700 transition-all"
+                  title="Change avatar"
+                >
+                  <UserAvatar :user="member" size="md" />
+                </button>
+                <div>
+                  <p class="font-semibold text-prussian-500 dark:text-lavender-200">{{ member.name }}</p>
+                  <p v-if="member.email" class="text-xs text-lavender-700 dark:text-lavender-400">{{ member.email }}</p>
+                  <p v-else class="text-xs text-lavender-600 dark:text-lavender-500 italic">Managed account</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span :class="[
+                      'text-xs px-2 py-0.5 rounded-full font-medium',
+                      member.family_role === 'parent' || member.role === 'parent'
+                        ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/30 dark:text-wisteria-300'
+                        : 'bg-lavender-200 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-300'
+                    ]">
+                      {{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}
+                    </span>
+                    <span v-if="member.is_managed" class="text-xs px-2 py-0.5 rounded-full bg-sand-100 text-sand-700 dark:bg-sand-900/30 dark:text-sand-300 font-medium">
+                      Managed
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="member.id !== currentUser?.id" class="flex items-center gap-1">
+                <button
+                  v-if="member.is_managed"
+                  @click="openSwitchToModal(member)"
+                  class="p-2 hover:bg-wisteria-100 dark:hover:bg-wisteria-900/20 rounded-lg transition-colors"
+                  title="Switch to this profile"
+                >
+                  <ArrowsRightLeftIcon class="w-4 h-4 text-wisteria-600 dark:text-wisteria-400" />
+                </button>
+                <button
+                  @click="openEditMemberModal(member)"
+                  class="p-2 hover:bg-lavender-100 dark:hover:bg-prussian-600 rounded-lg transition-colors"
+                  title="Edit member"
+                >
+                  <PencilIcon class="w-4 h-4 text-prussian-400 dark:text-lavender-400" />
+                </button>
+                <button
+                  @click="confirmRemoveMember(member)"
+                  class="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  title="Remove member"
+                >
+                  <TrashIcon class="w-4 h-4 text-red-600" />
+                </button>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Actions (parent only, not for self) -->
-          <div v-if="isParent && member.id !== currentUser?.id" class="flex items-center gap-1">
-            <!-- Switch to managed child -->
-            <button
-              v-if="member.is_managed"
-              @click="openSwitchToModal(member)"
-              class="p-2 hover:bg-wisteria-100 dark:hover:bg-wisteria-900/20 rounded-lg transition-colors"
-              title="Switch to this profile"
-            >
-              <ArrowsRightLeftIcon class="w-4 h-4 text-wisteria-600 dark:text-wisteria-400" />
-            </button>
+        <!-- Setup Wizard (relocated here from bottom) -->
+        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4">
+          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Setup Wizard</h3>
+          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+            Re-run the setup wizard to invite members, connect calendars, or configure features.
+          </p>
+          <BaseButton variant="secondary" @click="$router.push({ name: 'Onboarding' })">
+            Re-run Setup Wizard
+          </BaseButton>
+        </div>
+      </SettingsSection>
 
-            <!-- Edit -->
-            <button
-              @click="openEditMemberModal(member)"
-              class="p-2 hover:bg-lavender-100 dark:hover:bg-prussian-600 rounded-lg transition-colors"
-              title="Edit member"
-            >
-              <PencilIcon class="w-4 h-4 text-prussian-400 dark:text-lavender-400" />
-            </button>
+      <!-- Section 2: Tasks & Points -->
+      <SettingsSection
+        v-if="moduleToggles.tasks || moduleToggles.points"
+        id="tasks-points"
+        title="Tasks & Points"
+        description="Configure task behavior, points, and rewards"
+        :icon="ClipboardDocumentListIcon"
+        :model-value="expandedSections.has('tasks-points')"
+        @update:model-value="val => toggleSection('tasks-points', val)"
+      >
+        <!-- Tasks module access -->
+        <div class="mb-6">
+          <div
+            v-for="module in tasksPointsModules"
+            :key="module.id"
+            class="p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg mb-3"
+          >
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+              <div>
+                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ module.name }}</p>
+                <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ module.description }}</p>
+              </div>
+              <div class="flex gap-1.5 shrink-0">
+                <button
+                  @click="setModuleMode(module.id, 'all')"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                >Everyone</button>
+                <button
+                  @click="setModuleMode(module.id, 'roles', ['parent'])"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                >Parents Only</button>
+                <button
+                  @click="setModuleMode(module.id, 'off')"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-red-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                >Off</button>
+                <button
+                  @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                >Custom</button>
+              </div>
+            </div>
 
-            <!-- Remove -->
-            <button
-              @click="confirmRemoveMember(member)"
-              class="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-              title="Remove member"
-            >
-              <TrashIcon class="w-4 h-4 text-red-600" />
-            </button>
+            <!-- Per-member checkboxes -->
+            <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-lavender-200 dark:border-prussian-600">
+              <p class="text-xs font-medium text-prussian-400 dark:text-lavender-300 mb-2">Select family members:</p>
+              <div class="flex flex-wrap gap-2">
+                <label
+                  v-for="member in familyMembers"
+                  :key="member.id"
+                  class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-prussian-800 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+                >
+                  <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" @change="toggleMemberAccess(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" />
+                  <UserAvatar :user="member" size="xs" />
+                  <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ member.name }}</span>
+                  <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-lavender-500 dark:text-lavender-400 italic">(always)</span>
+                </label>
+              </div>
+            </div>
+
+            <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-2">
+              <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
+              <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
+              <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
+              <template v-else-if="moduleAccessState[module.id]?.mode === 'users'">{{ getSelectedMemberNames(module.id) || 'No members selected (parents always have access).' }}</template>
+            </p>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- API Configuration (parent only) -->
-    <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">API Configuration</h2>
-
-      <div class="space-y-4">
-        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <p class="text-sm text-blue-900 dark:text-blue-200">
-            Configure API keys for enhanced features like AI chat and calendar integration.
+        <!-- Leaderboard Period -->
+        <div v-if="moduleToggles.points" class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-4">
+          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
+            Leaderboard Reset Period
+          </label>
+          <select v-model="leaderboardPeriod" class="input-base w-full max-w-xs">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+          <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+            How often the leaderboard resets. Does not affect point balances.
           </p>
+
+          <!-- Kudos Cost Toggle -->
+          <div class="mt-4">
+            <ToggleSwitch
+              :model-value="kudosCostEnabled"
+              @update:model-value="kudosCostEnabled = $event"
+              label="Kudos cost points"
+              description="Giving kudos deducts 1 point from the giver's bank. Prevents trading kudos back and forth."
+            />
+          </div>
         </div>
 
+        <!-- Default Task Points -->
+        <div v-if="moduleToggles.tasks && moduleToggles.points" class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-4">
+          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Default Task Points</h3>
+          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+            Set how many points are awarded by default for each task priority level. Tasks with explicitly set points are not affected.
+          </p>
+
+          <div class="space-y-3">
+            <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Low Priority</label>
+              </div>
+              <input v-model.number="defaultPoints.low" type="number" min="0" max="1000" class="input-base w-24 text-center" />
+              <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+            </div>
+            <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Medium Priority</label>
+              </div>
+              <input v-model.number="defaultPoints.medium" type="number" min="0" max="1000" class="input-base w-24 text-center" />
+              <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+            </div>
+            <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">High Priority</label>
+              </div>
+              <input v-model.number="defaultPoints.high" type="number" min="0" max="1000" class="input-base w-24 text-center" />
+              <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task Assignment -->
+        <div v-if="moduleToggles.tasks" class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-4">
+          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Task Assignment</h3>
+          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+            Control which family members can assign tasks to others. Parents can always assign tasks to anyone.
+          </p>
+
+          <div class="space-y-3">
+            <label
+              v-for="option in taskAssignmentOptions"
+              :key="option.value"
+              class="flex items-start gap-3 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+            >
+              <input v-model="taskAssignment.mode" type="radio" :value="option.value" name="task_assignment_mode" class="mt-0.5 rounded-full" />
+              <div class="flex-1">
+                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ option.label }}</p>
+                <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ option.description }}</p>
+              </div>
+            </label>
+          </div>
+
+          <div v-if="taskAssignment.mode === 'users'" class="mt-4 pl-4 border-l-2 border-wisteria-300 dark:border-wisteria-700">
+            <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-3">Select which children can assign tasks to others:</p>
+            <div class="space-y-2">
+              <label
+                v-for="child in childMembers"
+                :key="child.id"
+                class="flex items-center gap-3 p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+              >
+                <input type="checkbox" :value="child.id" v-model="taskAssignment.users" class="rounded" />
+                <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">{{ child.name }}</span>
+              </label>
+              <p v-if="childMembers.length === 0" class="text-sm text-lavender-600 dark:text-lavender-400 italic">
+                No child members in the family yet.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save button -->
+        <div class="flex justify-end pt-4 border-t border-lavender-200 dark:border-prussian-700">
+          <BaseButton variant="primary" :loading="savingTasksPoints" @click="saveTasksPointsSection">
+            Save Changes
+          </BaseButton>
+        </div>
+      </SettingsSection>
+
+      <!-- Section 3: AI & Integrations -->
+      <SettingsSection
+        id="ai-integrations"
+        title="AI & Integrations"
+        description="API keys, calendar connections, and MCP"
+        :icon="CpuChipIcon"
+        :model-value="expandedSections.has('ai-integrations')"
+        @update:model-value="val => toggleSection('ai-integrations', val)"
+      >
         <!-- AI Provider Selection -->
-        <div>
+        <div class="mb-6">
+          <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg mb-4">
+            <p class="text-sm text-blue-900 dark:text-blue-200">
+              Configure API keys for enhanced features like AI chat and calendar integration.
+            </p>
+          </div>
+
           <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
             AI Provider (for Kinhold AI)
           </label>
 
-          <!-- Provider Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             <button
               v-for="provider in aiProviders"
@@ -193,7 +376,6 @@
                   : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 dark:hover:border-prussian-500 bg-white dark:bg-prussian-800/50',
               ]"
             >
-              <!-- Check indicator -->
               <div
                 v-if="aiConfig.provider === provider.slug"
                 class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 dark:bg-wisteria-400 flex items-center justify-center"
@@ -202,12 +384,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-
-              <!-- Provider Icon -->
               <div class="w-10 h-10 mb-2 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
                 <span class="text-lg font-bold">{{ providerIcon(provider.slug) }}</span>
               </div>
-
               <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ provider.name }}</p>
               <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">{{ provider.default_model }}</p>
             </button>
@@ -270,17 +449,119 @@
           </div>
 
           <div class="flex gap-3 justify-end pt-3">
-            <BaseButton variant="ghost" @click="resetAiConfig">
-              Reset
-            </BaseButton>
-            <BaseButton variant="primary" :loading="savingAi" @click="saveAiSettings">
-              Save AI Settings
-            </BaseButton>
+            <BaseButton variant="ghost" @click="resetAiConfig">Reset</BaseButton>
+            <BaseButton variant="primary" :loading="savingAi" @click="saveAiSettings">Save AI Settings</BaseButton>
+          </div>
+        </div>
+
+        <!-- Connect AI Assistant (MCP Token) -->
+        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
+          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Connect AI Assistant</h3>
+          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+            Connect any MCP-compatible AI assistant to manage your family hub.
+          </p>
+
+          <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+            <div>
+              <div class="flex items-center gap-2">
+                <p class="font-medium text-prussian-500 dark:text-lavender-200">MCP Connection</p>
+                <span v-if="mcpToken.hasToken" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                  Connected
+                </span>
+                <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-lavender-100 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-400">
+                  Not Connected
+                </span>
+              </div>
+              <p v-if="mcpToken.lastUsedAt" class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+                Last used: {{ new Date(mcpToken.lastUsedAt).toLocaleDateString() }}
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <BaseButton v-if="mcpToken.hasToken" variant="ghost" size="sm" @click="handleRevokeMcpToken" :loading="mcpRevoking">
+                Revoke
+              </BaseButton>
+              <BaseButton variant="secondary" size="sm" @click="handleGenerateMcpToken" :loading="mcpGenerating">
+                {{ mcpToken.hasToken ? 'Regenerate Token' : 'Generate Token' }}
+              </BaseButton>
+            </div>
+          </div>
+
+          <!-- One-time token display -->
+          <div v-if="mcpGenerated.show" class="mt-4 space-y-4">
+            <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <p class="text-sm text-amber-800 dark:text-amber-200 font-medium">
+                This token is shown only once. Copy what you need now — you won't be able to see it again.
+              </p>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Bearer Token</label>
+                <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('token', mcpGenerated.plainToken)">
+                  <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                  {{ mcpCopied.token ? 'Copied!' : 'Copy' }}
+                </BaseButton>
+              </div>
+              <div class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-green-400 p-3 rounded-lg overflow-x-auto">
+                {{ mcpGenerated.plainToken }}
+              </div>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap gap-1 border-b border-lavender-200 dark:border-prussian-700 mb-3">
+                <button
+                  v-for="client in mcpGenerated.clients"
+                  :key="client.id"
+                  @click="mcpActiveClient = client.id"
+                  :class="[
+                    'px-3 py-1.5 text-sm font-medium rounded-t-lg transition-colors -mb-px',
+                    mcpActiveClient === client.id
+                      ? 'border border-b-white dark:border-b-prussian-800 border-lavender-200 dark:border-prussian-700 text-prussian-500 dark:text-lavender-200 bg-white dark:bg-prussian-800'
+                      : 'text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200',
+                  ]"
+                >
+                  {{ client.name }}
+                </button>
+              </div>
+
+              <div v-for="client in mcpGenerated.clients" :key="client.id" v-show="mcpActiveClient === client.id">
+                <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-2">{{ client.instructions }}</p>
+
+                <template v-if="client.steps">
+                  <ol class="list-decimal list-inside space-y-2 text-sm text-prussian-500 dark:text-lavender-200 mb-3">
+                    <li v-for="(step, i) in client.steps" :key="i" class="leading-relaxed">{{ step }}</li>
+                  </ol>
+                </template>
+
+                <template v-else-if="client.details">
+                  <div class="space-y-2 mb-2">
+                    <div v-for="(value, label) in client.details" :key="label" class="flex items-start gap-2">
+                      <span class="text-xs font-medium text-lavender-600 dark:text-lavender-400 uppercase min-w-[80px]">{{ label.replace('_', ' ') }}</span>
+                      <code class="text-sm font-mono text-prussian-500 dark:text-lavender-200 break-all">{{ value }}</code>
+                    </div>
+                  </div>
+                  <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, Object.entries(client.details).map(([k, v]) => k + ': ' + v).join('\n'))">
+                    <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                    {{ mcpCopied[client.id] ? 'Copied!' : 'Copy Details' }}
+                  </BaseButton>
+                </template>
+
+                <template v-else>
+                  <div class="flex items-center justify-end mb-1">
+                    <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, client.command || client.configJson)">
+                      <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                      {{ mcpCopied[client.id] ? 'Copied!' : 'Copy' }}
+                    </BaseButton>
+                  </div>
+                  <pre class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
+                </template>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Google Calendar -->
-        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4">
+        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
           <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-3">Google Calendar Sync</h3>
           <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
             Connect your Google Calendar to sync events into the family hub.
@@ -296,13 +577,7 @@
                 <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ conn.calendar_name || 'Google Calendar' }}</p>
                 <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">{{ currentUser?.name }}</p>
               </div>
-              <BaseButton
-                variant="ghost"
-                size="sm"
-                @click="handleDisconnectCalendar(conn.id)"
-              >
-                Disconnect
-              </BaseButton>
+              <BaseButton variant="ghost" size="sm" @click="handleDisconnectCalendar(conn.id)">Disconnect</BaseButton>
             </div>
 
             <div v-if="userCalendarConnections.length === 0" class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
@@ -312,23 +587,11 @@
                   <span class="badge badge-warning">Not Connected</span>
                 </p>
               </div>
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :loading="connectingCalendar"
-                @click="handleConnectCalendar"
-              >
-                Connect
-              </BaseButton>
+              <BaseButton variant="secondary" size="sm" :loading="connectingCalendar" @click="handleConnectCalendar">Connect</BaseButton>
             </div>
 
             <div v-if="userCalendarConnections.length > 0" class="flex justify-end">
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :loading="connectingCalendar"
-                @click="handleConnectCalendar"
-              >
+              <BaseButton variant="secondary" size="sm" :loading="connectingCalendar" @click="handleConnectCalendar">
                 Reconnect / Add Calendars
               </BaseButton>
             </div>
@@ -360,32 +623,15 @@
           <form @submit.prevent="handleSubscribeUrl" class="space-y-3">
             <div>
               <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1">Calendar URL</label>
-              <input
-                v-model="icsForm.url"
-                type="url"
-                placeholder="https://example.com/calendar.ics"
-                class="input-base"
-                required
-              />
+              <input v-model="icsForm.url" type="url" placeholder="https://example.com/calendar.ics" class="input-base" required />
             </div>
             <div>
               <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1">Calendar Name (optional)</label>
-              <input
-                v-model="icsForm.name"
-                type="text"
-                placeholder="My Calendar"
-                class="input-base"
-              />
+              <input v-model="icsForm.name" type="text" placeholder="My Calendar" class="input-base" />
               <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">If left blank, the name will be auto-detected from the calendar data.</p>
             </div>
             <div class="flex justify-end">
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                :loading="subscribingUrl"
-              >
-                Subscribe
-              </BaseButton>
+              <BaseButton variant="secondary" size="sm" :loading="subscribingUrl">Subscribe</BaseButton>
             </div>
           </form>
 
@@ -404,568 +650,225 @@
                 <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ conn.calendar_name || 'ICS Calendar' }}</p>
                 <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">URL subscription</p>
               </div>
-              <BaseButton
-                variant="ghost"
-                size="sm"
-                @click="handleDisconnectCalendar(conn.id)"
-              >
-                Unsubscribe
-              </BaseButton>
+              <BaseButton variant="ghost" size="sm" @click="handleDisconnectCalendar(conn.id)">Unsubscribe</BaseButton>
             </div>
           </div>
         </div>
+      </SettingsSection>
 
-      </div>
-    </div>
-
-    <!-- Connect AI Assistant -->
-    <div class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Connect AI Assistant</h2>
-      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
-        Connect any MCP-compatible AI assistant to manage your family hub.
-      </p>
-
-      <!-- Status row -->
-      <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-        <div>
-          <div class="flex items-center gap-2">
-            <p class="font-medium text-prussian-500 dark:text-lavender-200">MCP Connection</p>
-            <span v-if="mcpToken.hasToken" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-              Connected
-            </span>
-            <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-lavender-100 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-400">
-              Not Connected
-            </span>
-          </div>
-          <p v-if="mcpToken.lastUsedAt" class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
-            Last used: {{ new Date(mcpToken.lastUsedAt).toLocaleDateString() }}
-          </p>
-        </div>
-        <div class="flex items-center gap-2">
-          <BaseButton v-if="mcpToken.hasToken" variant="ghost" size="sm" @click="handleRevokeMcpToken" :loading="mcpRevoking">
-            Revoke
-          </BaseButton>
-          <BaseButton variant="secondary" size="sm" @click="handleGenerateMcpToken" :loading="mcpGenerating">
-            {{ mcpToken.hasToken ? 'Regenerate Token' : 'Generate Token' }}
-          </BaseButton>
-        </div>
-      </div>
-
-      <!-- One-time token display -->
-      <div v-if="mcpGenerated.show" class="mt-4 space-y-4">
-        <!-- Warning -->
-        <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-          <p class="text-sm text-amber-800 dark:text-amber-200 font-medium">
-            This token is shown only once. Copy what you need now — you won't be able to see it again.
-          </p>
-        </div>
-
-        <!-- Bearer Token -->
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Bearer Token</label>
-            <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('token', mcpGenerated.plainToken)">
-              <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-              {{ mcpCopied.token ? 'Copied!' : 'Copy' }}
-            </BaseButton>
-          </div>
-          <div class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-green-400 p-3 rounded-lg overflow-x-auto">
-            {{ mcpGenerated.plainToken }}
-          </div>
-        </div>
-
-        <!-- Client tabs -->
-        <div>
-          <div class="flex flex-wrap gap-1 border-b border-lavender-200 dark:border-prussian-700 mb-3">
-            <button
-              v-for="client in mcpGenerated.clients"
-              :key="client.id"
-              @click="mcpActiveClient = client.id"
-              :class="[
-                'px-3 py-1.5 text-sm font-medium rounded-t-lg transition-colors -mb-px',
-                mcpActiveClient === client.id
-                  ? 'border border-b-white dark:border-b-prussian-800 border-lavender-200 dark:border-prussian-700 text-prussian-500 dark:text-lavender-200 bg-white dark:bg-prussian-800'
-                  : 'text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200',
-              ]"
-            >
-              {{ client.name }}
-            </button>
-          </div>
-
-          <!-- Active client config -->
-          <div v-for="client in mcpGenerated.clients" :key="client.id" v-show="mcpActiveClient === client.id">
-            <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-2">{{ client.instructions }}</p>
-
-            <!-- Step-by-step instructions (ChatGPT) -->
-            <template v-if="client.steps">
-              <ol class="list-decimal list-inside space-y-2 text-sm text-prussian-500 dark:text-lavender-200 mb-3">
-                <li v-for="(step, i) in client.steps" :key="i" class="leading-relaxed">{{ step }}</li>
-              </ol>
-            </template>
-
-            <!-- Connection details (Other/Generic) -->
-            <template v-else-if="client.details">
-              <div class="space-y-2 mb-2">
-                <div v-for="(value, label) in client.details" :key="label" class="flex items-start gap-2">
-                  <span class="text-xs font-medium text-lavender-600 dark:text-lavender-400 uppercase min-w-[80px]">{{ label.replace('_', ' ') }}</span>
-                  <code class="text-sm font-mono text-prussian-500 dark:text-lavender-200 break-all">{{ value }}</code>
-                </div>
+      <!-- Section 4: Feature Access -->
+      <SettingsSection
+        id="feature-access"
+        title="Feature Access"
+        description="Control which features each family member can access"
+        :icon="ShieldCheckIcon"
+        badge="Parent"
+        :model-value="expandedSections.has('feature-access')"
+        @update:model-value="val => toggleSection('feature-access', val)"
+      >
+        <div class="space-y-4">
+          <div
+            v-for="module in otherModules"
+            :key="module.id"
+            class="p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
+          >
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+              <div>
+                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ module.name }}</p>
+                <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ module.description }}</p>
               </div>
-              <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, Object.entries(client.details).map(([k, v]) => k + ': ' + v).join('\n'))">
-                <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-                {{ mcpCopied[client.id] ? 'Copied!' : 'Copy Details' }}
-              </BaseButton>
-            </template>
-
-            <!-- Config file or CLI command (Claude Desktop, Claude Code) -->
-            <template v-else>
-              <div class="flex items-center justify-end mb-1">
-                <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, client.command || client.configJson)">
-                  <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-                  {{ mcpCopied[client.id] ? 'Copied!' : 'Copy' }}
-                </BaseButton>
+              <div class="flex gap-1.5 shrink-0">
+                <button
+                  @click="setModuleMode(module.id, 'all')"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                >Everyone</button>
+                <button
+                  @click="setModuleMode(module.id, 'roles', ['parent'])"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                >Parents Only</button>
+                <button
+                  @click="setModuleMode(module.id, 'off')"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-red-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                >Off</button>
+                <button
+                  @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                >Custom</button>
               </div>
-              <pre class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
-            </template>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Appearance -->
-    <div class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Appearance</h2>
-
-      <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-800 rounded-lg">
-        <div>
-          <p class="font-medium text-prussian-500 dark:text-lavender-200">Dark Mode</p>
-          <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">Switch between light and dark themes</p>
-        </div>
-        <button
-          @click="toggleDarkMode"
-          :class="[
-            'relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-wisteria-400 focus:ring-offset-2',
-            isDark ? 'bg-wisteria-500' : 'bg-lavender-300',
-          ]"
-        >
-          <span
-            :class="[
-              'pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-              isDark ? 'translate-x-5' : 'translate-x-0',
-            ]"
-          >
-            <span class="flex items-center justify-center h-full">
-              <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-wisteria-500" />
-              <SunIcon v-else class="w-3.5 h-3.5 text-sand-500" />
-            </span>
-          </span>
-        </button>
-      </div>
-
-      <!-- Color Theme Picker -->
-      <div class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
-        <p class="font-medium text-prussian-500 dark:text-lavender-200 mb-1">Color Theme</p>
-        <p class="text-xs text-lavender-700 dark:text-lavender-400 mb-3">Choose a color palette for the app</p>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <button
-            v-for="theme in availableThemes"
-            :key="theme.id"
-            @click="selectTheme(theme.id)"
-            :class="[
-              'relative flex flex-col p-3 rounded-xl border-2 transition-all duration-200 text-left',
-              currentTheme === theme.id
-                ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 dark:ring-wisteria-400/20 bg-lavender-50 dark:bg-prussian-800'
-                : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 dark:hover:border-prussian-500 bg-white dark:bg-prussian-800/50',
-            ]"
-          >
-            <!-- Check indicator -->
-            <div
-              v-if="currentTheme === theme.id"
-              class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 dark:bg-wisteria-400 flex items-center justify-center"
-            >
-              <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-              </svg>
             </div>
 
-            <!-- Color swatches -->
-            <div class="flex gap-1.5 mb-2">
-              <span
-                class="w-8 h-8 rounded-lg shadow-sm"
-                :style="{ backgroundColor: theme.colors.primary }"
-              />
-              <span
-                class="w-8 h-8 rounded-lg shadow-sm"
-                :style="{ backgroundColor: theme.colors.accent }"
-              />
-              <span
-                class="w-8 h-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600"
-                :style="{ backgroundColor: theme.colors.surface }"
-              />
-              <span
-                class="w-8 h-8 rounded-lg shadow-sm"
-                :style="{ backgroundColor: theme.colors.highlight }"
-              />
+            <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-lavender-200 dark:border-prussian-600">
+              <p class="text-xs font-medium text-prussian-400 dark:text-lavender-300 mb-2">Select family members:</p>
+              <div class="flex flex-wrap gap-2">
+                <label
+                  v-for="member in familyMembers"
+                  :key="member.id"
+                  class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-prussian-800 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+                >
+                  <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" @change="toggleMemberAccess(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" />
+                  <UserAvatar :user="member" size="xs" />
+                  <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ member.name }}</span>
+                  <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-lavender-500 dark:text-lavender-400 italic">(always)</span>
+                </label>
+              </div>
             </div>
 
-            <!-- Theme name and description -->
-            <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ theme.name }}</p>
-            <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ theme.description }}</p>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Email Notifications -->
-    <div v-if="currentUser?.email" class="card-lg mb-6">
-      <div class="flex items-center gap-2 mb-4">
-        <EnvelopeIcon class="w-5 h-5 text-wisteria-500 dark:text-wisteria-400" />
-        <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200">Email Notifications</h2>
-      </div>
-      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
-        Choose which email notifications you'd like to receive.
-      </p>
-
-      <div class="space-y-3">
-        <div
-          v-for="pref in emailPreferenceOptions"
-          :key="pref.key"
-          class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
-        >
-          <div class="flex-1 mr-4">
-            <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ pref.label }}</p>
-            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">{{ pref.description }}</p>
-          </div>
-          <button
-            @click="toggleEmailPref(pref.key)"
-            :class="[
-              'relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-wisteria-400 focus:ring-offset-2',
-              emailPrefs[pref.key] ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-600',
-            ]"
-          >
-            <span
-              :class="[
-                'pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                emailPrefs[pref.key] ? 'translate-x-5' : 'translate-x-0',
-              ]"
-            />
-          </button>
-        </div>
-      </div>
-
-      <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
-        <BaseButton variant="primary" :loading="savingEmailPrefs" @click="saveEmailPreferences">
-          Save Email Preferences
-        </BaseButton>
-      </div>
-    </div>
-
-    <!-- Feature Access Control (parent only) -->
-    <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Feature Access Control</h2>
-      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
-        Control which features each family member can access. Parents always have access unless a feature is turned off entirely.
-      </p>
-
-      <!-- Access control per module -->
-      <div class="space-y-4">
-        <div
-          v-for="module in availableModules"
-          :key="module.id"
-          class="p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
-        >
-          <!-- Module header with quick-action buttons -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-            <div>
-              <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ module.name }}</p>
-              <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ module.description }}</p>
-            </div>
-            <div class="flex gap-1.5 shrink-0">
-              <button
-                @click="setModuleMode(module.id, 'all')"
-                :class="[
-                  'px-2.5 py-1 text-xs font-medium rounded-full transition-colors',
-                  moduleAccessState[module.id]?.mode === 'all'
-                    ? 'bg-wisteria-500 text-white'
-                    : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500',
-                ]"
-              >
-                Everyone
-              </button>
-              <button
-                @click="setModuleMode(module.id, 'roles', ['parent'])"
-                :class="[
-                  'px-2.5 py-1 text-xs font-medium rounded-full transition-colors',
-                  moduleAccessState[module.id]?.mode === 'roles'
-                    ? 'bg-wisteria-500 text-white'
-                    : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500',
-                ]"
-              >
-                Parents Only
-              </button>
-              <button
-                @click="setModuleMode(module.id, 'off')"
-                :class="[
-                  'px-2.5 py-1 text-xs font-medium rounded-full transition-colors',
-                  moduleAccessState[module.id]?.mode === 'off'
-                    ? 'bg-red-500 text-white'
-                    : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500',
-                ]"
-              >
-                Off
-              </button>
-              <button
-                @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
-                :class="[
-                  'px-2.5 py-1 text-xs font-medium rounded-full transition-colors',
-                  moduleAccessState[module.id]?.mode === 'users'
-                    ? 'bg-wisteria-500 text-white'
-                    : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500',
-                ]"
-              >
-                Custom
-              </button>
-            </div>
-          </div>
-
-          <!-- Per-member checkboxes (shown only in 'users' mode) -->
-          <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-lavender-200 dark:border-prussian-600">
-            <p class="text-xs font-medium text-prussian-400 dark:text-lavender-300 mb-2">Select family members:</p>
-            <div class="flex flex-wrap gap-2">
-              <label
-                v-for="member in familyMembers"
-                :key="member.id"
-                class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-prussian-800 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
-              >
-                <input
-                  type="checkbox"
-                  :checked="isMemberSelected(module.id, member.id)"
-                  @change="toggleMemberAccess(module.id, member.id)"
-                  class="rounded"
-                  :disabled="(member.family_role || member.role) === 'parent'"
-                />
-                <UserAvatar :user="member" size="xs" />
-                <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ member.name }}</span>
-                <span
-                  v-if="(member.family_role || member.role) === 'parent'"
-                  class="text-xs text-lavender-500 dark:text-lavender-400 italic"
-                >(always)</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Mode summary -->
-          <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-2">
-            <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
-            <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
-            <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
-            <template v-else-if="moduleAccessState[module.id]?.mode === 'users'">
-              {{ getSelectedMemberNames(module.id) || 'No members selected (parents always have access).' }}
-            </template>
-          </p>
-        </div>
-      </div>
-
-      <!-- Leaderboard Period -->
-      <div v-if="moduleAccessState.points?.mode !== 'off'" class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
-        <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
-          Leaderboard Reset Period
-        </label>
-        <select v-model="leaderboardPeriod" class="input-base w-full max-w-xs">
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-        <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
-          How often the leaderboard resets. Does not affect point balances.
-        </p>
-
-        <!-- Kudos Cost Toggle -->
-        <div class="flex items-center justify-between mt-4 p-4 bg-lavender-50 dark:bg-prussian-800 rounded-lg">
-          <div class="flex-1 mr-4">
-            <p class="font-medium text-prussian-500 dark:text-lavender-200">Kudos cost points</p>
-            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">
-              Giving kudos deducts 1 point from the giver's bank. Prevents trading kudos back and forth.
+            <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-2">
+              <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
+              <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
+              <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
+              <template v-else-if="moduleAccessState[module.id]?.mode === 'users'">{{ getSelectedMemberNames(module.id) || 'No members selected (parents always have access).' }}</template>
             </p>
           </div>
-          <button
-            @click="kudosCostEnabled = !kudosCostEnabled"
-            :class="[
-              'relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-wisteria-400 focus:ring-offset-2',
-              kudosCostEnabled ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-600',
-            ]"
-          >
-            <span
+        </div>
+
+        <div class="flex gap-3 justify-end pt-4 border-t border-lavender-200 dark:border-prussian-700 mt-4">
+          <BaseButton variant="primary" :loading="savingModules" @click="saveModuleSettings">
+            Save Preferences
+          </BaseButton>
+        </div>
+      </SettingsSection>
+
+      <!-- Section 5: Appearance -->
+      <SettingsSection
+        id="appearance"
+        title="Appearance"
+        description="Dark mode and color themes"
+        :icon="SwatchIcon"
+        :model-value="expandedSections.has('appearance')"
+        @update:model-value="val => toggleSection('appearance', val)"
+      >
+        <!-- Dark Mode -->
+        <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-800 rounded-lg">
+          <div>
+            <p class="font-medium text-prussian-500 dark:text-lavender-200">Dark Mode</p>
+            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">Switch between light and dark themes</p>
+          </div>
+          <ToggleSwitch :model-value="isDark" @update:model-value="toggleDarkMode">
+            <template #thumb>
+              <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-wisteria-500" />
+              <SunIcon v-else class="w-3.5 h-3.5 text-sand-500" />
+            </template>
+          </ToggleSwitch>
+        </div>
+
+        <!-- Color Theme Picker -->
+        <div class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
+          <p class="font-medium text-prussian-500 dark:text-lavender-200 mb-1">Color Theme</p>
+          <p class="text-xs text-lavender-700 dark:text-lavender-400 mb-3">Choose a color palette for the app</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <button
+              v-for="theme in availableThemes"
+              :key="theme.id"
+              @click="selectTheme(theme.id)"
               :class="[
-                'pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                kudosCostEnabled ? 'translate-x-5' : 'translate-x-0',
+                'relative flex flex-col p-3 rounded-xl border-2 transition-all duration-200 text-left',
+                currentTheme === theme.id
+                  ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 dark:ring-wisteria-400/20 bg-lavender-50 dark:bg-prussian-800'
+                  : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 dark:hover:border-prussian-500 bg-white dark:bg-prussian-800/50',
               ]"
-            />
-          </button>
-        </div>
-      </div>
-
-      <div class="flex gap-3 justify-end pt-4 border-t border-lavender-200 dark:border-prussian-700 mt-4">
-        <BaseButton variant="primary" :loading="savingModules" @click="saveModuleSettings">
-          Save Preferences
-        </BaseButton>
-      </div>
-    </div>
-
-    <!-- Default Task Points (parent only, when tasks + points enabled) -->
-    <div v-if="isParent && moduleToggles.tasks && moduleToggles.points" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Default Task Points</h2>
-      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
-        Set how many points are awarded by default for each task priority level. Tasks with explicitly set points are not affected.
-      </p>
-
-      <div class="space-y-3">
-        <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Low Priority</label>
+            >
+              <div
+                v-if="currentTheme === theme.id"
+                class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 dark:bg-wisteria-400 flex items-center justify-center"
+              >
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="flex gap-1.5 mb-2">
+                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.primary }" />
+                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.accent }" />
+                <span class="w-8 h-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600" :style="{ backgroundColor: theme.colors.surface }" />
+                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.highlight }" />
+              </div>
+              <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ theme.name }}</p>
+              <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ theme.description }}</p>
+            </button>
           </div>
-          <input
-            v-model.number="defaultPoints.low"
-            type="number"
-            min="0"
-            max="1000"
-            class="input-base w-24 text-center"
+        </div>
+      </SettingsSection>
+
+      <!-- Section 6: Notifications -->
+      <SettingsSection
+        v-if="currentUser?.email"
+        id="notifications"
+        title="Notifications"
+        description="Email notification preferences"
+        :icon="BellIcon"
+        :model-value="expandedSections.has('notifications')"
+        @update:model-value="val => toggleSection('notifications', val)"
+      >
+        <div class="space-y-3">
+          <ToggleSwitch
+            v-for="pref in emailPreferenceOptions"
+            :key="pref.key"
+            :model-value="emailPrefs[pref.key]"
+            @update:model-value="emailPrefs[pref.key] = $event"
+            :label="pref.label"
+            :description="pref.description"
           />
-          <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
         </div>
 
-        <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Medium Priority</label>
+        <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
+          <BaseButton variant="primary" :loading="savingEmailPrefs" @click="saveEmailPreferences">
+            Save Email Preferences
+          </BaseButton>
+        </div>
+      </SettingsSection>
+
+
+    </template>
+
+    <!-- ============================================ -->
+    <!-- CHILD VIEW — Flat cards (unchanged)          -->
+    <!-- ============================================ -->
+    <template v-if="!isParent">
+      <!-- Appearance -->
+      <div class="card-lg mb-6">
+        <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Appearance</h2>
+        <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-800 rounded-lg">
+          <div>
+            <p class="font-medium text-prussian-500 dark:text-lavender-200">Dark Mode</p>
+            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">Switch between light and dark themes</p>
           </div>
-          <input
-            v-model.number="defaultPoints.medium"
-            type="number"
-            min="0"
-            max="1000"
-            class="input-base w-24 text-center"
-          />
-          <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
-        </div>
-
-        <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">High Priority</label>
-          </div>
-          <input
-            v-model.number="defaultPoints.high"
-            type="number"
-            min="0"
-            max="1000"
-            class="input-base w-24 text-center"
-          />
-          <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+          <ToggleSwitch :model-value="isDark" @update:model-value="toggleDarkMode">
+            <template #thumb>
+              <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-wisteria-500" />
+              <SunIcon v-else class="w-3.5 h-3.5 text-sand-500" />
+            </template>
+          </ToggleSwitch>
         </div>
       </div>
 
-      <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
-        <BaseButton variant="primary" :loading="savingDefaultPoints" @click="saveDefaultPoints">
-          Save Default Points
-        </BaseButton>
-      </div>
-    </div>
-
-    <!-- Task Assignment Permissions (parent only, when tasks enabled) -->
-    <div v-if="isParent && moduleToggles.tasks" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Task Assignment</h2>
-      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
-        Control which family members can assign tasks to others. Parents can always assign tasks to anyone.
-      </p>
-
-      <div class="space-y-3">
-        <label
-          v-for="option in taskAssignmentOptions"
-          :key="option.value"
-          class="flex items-start gap-3 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
-        >
-          <input
-            v-model="taskAssignment.mode"
-            type="radio"
-            :value="option.value"
-            name="task_assignment_mode"
-            class="mt-0.5 rounded-full"
+      <!-- Email Notifications (if they have an email) -->
+      <div v-if="currentUser?.email" class="card-lg mb-6">
+        <div class="flex items-center gap-2 mb-4">
+          <EnvelopeIcon class="w-5 h-5 text-wisteria-500 dark:text-wisteria-400" />
+          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200">Email Notifications</h2>
+        </div>
+        <div class="space-y-3">
+          <ToggleSwitch
+            v-for="pref in emailPreferenceOptions"
+            :key="pref.key"
+            :model-value="emailPrefs[pref.key]"
+            @update:model-value="emailPrefs[pref.key] = $event"
+            :label="pref.label"
+            :description="pref.description"
           />
-          <div class="flex-1">
-            <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ option.label }}</p>
-            <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ option.description }}</p>
-          </div>
-        </label>
-      </div>
-
-      <!-- Per-child checkboxes (when mode is 'users') -->
-      <div v-if="taskAssignment.mode === 'users'" class="mt-4 pl-4 border-l-2 border-wisteria-300 dark:border-wisteria-700">
-        <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-3">Select which children can assign tasks to others:</p>
-        <div class="space-y-2">
-          <label
-            v-for="child in childMembers"
-            :key="child.id"
-            class="flex items-center gap-3 p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
-          >
-            <input
-              type="checkbox"
-              :value="child.id"
-              v-model="taskAssignment.users"
-              class="rounded"
-            />
-            <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">{{ child.name }}</span>
-          </label>
-          <p v-if="childMembers.length === 0" class="text-sm text-lavender-600 dark:text-lavender-400 italic">
-            No child members in the family yet.
-          </p>
+        </div>
+        <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
+          <BaseButton variant="primary" :loading="savingEmailPrefs" @click="saveEmailPreferences">
+            Save Email Preferences
+          </BaseButton>
         </div>
       </div>
+    </template>
 
-      <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
-        <BaseButton variant="primary" :loading="savingTaskAssignment" @click="saveTaskAssignment">
-          Save Task Assignment
-        </BaseButton>
-      </div>
-    </div>
-
-    <!-- Avatar Settings (parent only) -->
-    <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Avatar Settings</h2>
-      <label class="flex items-center justify-between gap-4 cursor-pointer">
-        <div>
-          <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Allow children to change their own avatar</p>
-          <p class="text-xs text-lavender-600 dark:text-lavender-400">When off, only parents can set avatars for children.</p>
-        </div>
-        <button
-          type="button"
-          @click="toggleChildrenCanChangeAvatar"
-          :class="[
-            'relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 flex-shrink-0',
-            childrenCanChangeAvatar ? 'bg-[#C4975A]' : 'bg-lavender-300 dark:bg-prussian-600',
-          ]"
-          role="switch"
-          :aria-checked="childrenCanChangeAvatar"
-        >
-          <span
-            :class="[
-              'inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200',
-              childrenCanChangeAvatar ? 'translate-x-6' : 'translate-x-1',
-            ]"
-          />
-        </button>
-      </label>
-    </div>
-
-    <!-- Setup Wizard (parent only) -->
-    <div v-if="isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Setup Wizard</h2>
-      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
-        Re-run the setup wizard to invite members, connect calendars, or configure features.
-      </p>
-      <BaseButton variant="secondary" @click="$router.push({ name: 'Onboarding' })">
-        Re-run Setup Wizard
-      </BaseButton>
-    </div>
+    <!-- ============================================ -->
+    <!-- MODALS (always at root level)                -->
+    <!-- ============================================ -->
 
     <!-- Add/Edit Member Modal -->
     <BaseModal
@@ -1028,9 +931,7 @@
         />
 
         <div class="flex gap-2 justify-end pt-4">
-          <BaseButton variant="ghost" @click="closeMemberModal">
-            Cancel
-          </BaseButton>
+          <BaseButton variant="ghost" @click="closeMemberModal">Cancel</BaseButton>
           <BaseButton variant="primary" :loading="savingMember">
             {{ editingMember ? 'Save Changes' : 'Add Member' }}
           </BaseButton>
@@ -1053,14 +954,9 @@
       <p v-else class="text-sm text-lavender-600 dark:text-lavender-400 mt-2">
         Their account will be unlinked from your family but not deleted.
       </p>
-
       <div class="flex gap-2 justify-end pt-4">
-        <BaseButton variant="ghost" @click="showRemoveConfirm = false">
-          Cancel
-        </BaseButton>
-        <BaseButton variant="danger" :loading="removingLoading" @click="handleRemoveMember">
-          Remove
-        </BaseButton>
+        <BaseButton variant="ghost" @click="showRemoveConfirm = false">Cancel</BaseButton>
+        <BaseButton variant="danger" :loading="removingLoading" @click="handleRemoveMember">Remove</BaseButton>
       </div>
     </BaseModal>
 
@@ -1082,11 +978,8 @@
           </ul>
         </div>
       </div>
-
       <div class="flex gap-2 justify-end pt-4">
-        <BaseButton variant="ghost" @click="closeSwitchToModal">
-          Cancel
-        </BaseButton>
+        <BaseButton variant="ghost" @click="closeSwitchToModal">Cancel</BaseButton>
         <BaseButton variant="primary" :loading="switchingTo" @click="handleSwitchToProfile">
           Switch to {{ switchingToMember?.name }}
         </BaseButton>
@@ -1106,7 +999,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted, watch } from 'vue'
+import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
@@ -1115,12 +1008,13 @@ import api from '@/services/api'
 import { useNotification } from '@/composables/useNotification'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useTheme, themes as availableThemes } from '@/composables/useTheme'
-import BaseCard from '@/components/common/BaseCard.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseInput from '@/components/common/BaseInput.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
 import AvatarEditor from '@/components/common/AvatarEditor.vue'
+import ToggleSwitch from '@/components/common/ToggleSwitch.vue'
+import SettingsSection from '@/components/settings/SettingsSection.vue'
 import {
   PlusIcon,
   TrashIcon,
@@ -1130,6 +1024,12 @@ import {
   ClipboardDocumentIcon,
   ArrowsRightLeftIcon,
   EnvelopeIcon,
+  UsersIcon,
+  ClipboardDocumentListIcon,
+  CpuChipIcon,
+  ShieldCheckIcon,
+  SwatchIcon,
+  BellIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -1143,10 +1043,23 @@ const { currentTheme, setTheme: selectTheme } = useTheme()
 const { family, familyMembers, currentUser, isParent } = storeToRefs(authStore)
 const { connections } = storeToRefs(calendarStore)
 
+// ---- Section expand/collapse state ----
+const expandedSections = ref(new Set(['family']))
+
+const toggleSection = (id, open) => {
+  const next = new Set(expandedSections.value)
+  if (open) next.add(id)
+  else next.delete(id)
+  expandedSections.value = next
+}
+
 // Avatar editor
 const showAvatarEditor = ref(false)
 const avatarEditTarget = ref(null)
-const childrenCanChangeAvatar = ref(true)
+const childrenCanChangeAvatar = computed(() => {
+  const mode = moduleAccessState.avatars?.mode
+  return mode === 'all' || mode === undefined
+})
 
 const openAvatarEditor = (user) => {
   avatarEditTarget.value = user
@@ -1154,7 +1067,17 @@ const openAvatarEditor = (user) => {
 }
 
 const handleAvatarUpdated = async (newAvatar) => {
-  await authStore.updateUserAvatar(newAvatar)
+  const targetId = avatarEditTarget.value?.id
+  if (targetId && targetId !== currentUser.value?.id) {
+    // Updated another member — refresh the member in the family list
+    if (family.value?.members) {
+      const member = family.value.members.find((m) => m.id === targetId)
+      if (member) member.avatar = newAvatar
+    }
+    await authStore.fetchUser()
+  } else {
+    await authStore.updateUserAvatar(newAvatar)
+  }
   showAvatarEditor.value = false
 }
 
@@ -1202,6 +1125,7 @@ const moduleAccessState = reactive({
   chat: { mode: 'all' },
   points: { mode: 'all' },
   badges: { mode: 'all' },
+  avatars: { mode: 'all' },
 })
 // Legacy compat: moduleToggles is derived from moduleAccessState
 const moduleToggles = computed(() => {
@@ -1235,6 +1159,23 @@ const taskAssignmentOptions = [
 ]
 const childMembers = computed(() =>
   familyMembers.value.filter((m) => (m.family_role || m.role) === 'child')
+)
+
+// Split modules: tasks/points vs everything else
+const availableModules = [
+  { id: 'calendar', name: 'Calendar', description: 'View and manage family events' },
+  { id: 'tasks', name: 'Tasks', description: 'Create and assign tasks' },
+  { id: 'vault', name: 'Family Vault', description: 'Secure information storage' },
+  { id: 'chat', name: 'Kinhold AI', description: 'AI-powered assistant' },
+  { id: 'points', name: 'Points & Rewards', description: 'Earn points, give kudos, purchase rewards' },
+  { id: 'badges', name: 'Badges', description: 'Achievement badges and milestones' },
+  { id: 'avatars', name: 'Avatar Changes', description: 'Who can change profile avatars' },
+]
+const tasksPointsModules = computed(() =>
+  availableModules.filter((m) => m.id === 'tasks' || m.id === 'points')
+)
+const otherModules = computed(() =>
+  availableModules.filter((m) => m.id !== 'tasks' && m.id !== 'points')
 )
 
 // Invite code
@@ -1341,15 +1282,6 @@ const saveEmailPreferences = async () => {
   savingEmailPrefs.value = false
 }
 
-const availableModules = [
-  { id: 'calendar', name: 'Calendar', description: 'View and manage family events' },
-  { id: 'tasks', name: 'Tasks', description: 'Create and assign tasks' },
-  { id: 'vault', name: 'Family Vault', description: 'Secure information storage' },
-  { id: 'chat', name: 'Kinhold AI', description: 'AI-powered assistant' },
-  { id: 'points', name: 'Points & Rewards', description: 'Earn points, give kudos, purchase rewards' },
-  { id: 'badges', name: 'Badges', description: 'Achievement badges and milestones' },
-]
-
 // ---- Module access helpers ----
 const setModuleMode = (moduleId, mode, extra = []) => {
   if (mode === 'all' || mode === 'off') {
@@ -1357,7 +1289,6 @@ const setModuleMode = (moduleId, mode, extra = []) => {
   } else if (mode === 'roles') {
     moduleAccessState[moduleId] = { mode: 'roles', roles: extra.length ? extra : ['parent'] }
   } else if (mode === 'users') {
-    // When switching to 'users' mode, pre-select all parent IDs + any previously selected
     const parentIds = (familyMembers.value || [])
       .filter((m) => (m.family_role || m.role) === 'parent')
       .map((m) => m.id)
@@ -1508,7 +1439,6 @@ const handleSaveMember = async () => {
   savingMember.value = true
 
   if (editingMember.value) {
-    // Update existing member
     const data = {
       name: memberForm.name,
       role: memberForm.role,
@@ -1524,7 +1454,6 @@ const handleSaveMember = async () => {
       notificationError(result.error)
     }
   } else {
-    // Add new member
     const data = {
       name: memberForm.name,
       role: memberForm.role,
@@ -1667,18 +1596,16 @@ const saveAiSettings = async () => {
       ai_provider: aiConfig.provider,
       ai_model: aiConfig.model || '',
     }
-    // Only send the key if the user typed something new
     if (aiConfig.apiKey) {
       payload.ai_api_key = aiConfig.apiKey
     }
     const { data } = await api.put('/settings', payload)
-    // Update local state from response
     if (data.settings) {
       aiConfig.maskedKey = data.settings.ai_api_key_masked || ''
       aiConfig.hasSavedKey = data.settings.ai_has_key || false
       aiProviders.value = data.settings.ai_providers || aiProviders.value
     }
-    aiConfig.apiKey = '' // Clear input after save
+    aiConfig.apiKey = ''
     showAiKey.value = false
     await authStore.fetchUser()
     success('AI settings saved!')
@@ -1692,7 +1619,6 @@ const saveAiSettings = async () => {
 const saveModuleSettings = async () => {
   savingModules.value = true
   try {
-    // Build the module_access payload from local state
     const module_access = {}
     for (const mod of availableModules) {
       const state = moduleAccessState[mod.id]
@@ -1703,10 +1629,15 @@ const saveModuleSettings = async () => {
       module_access[mod.id] = rule
     }
 
+    // Translate avatars module access to legacy boolean for backward compat
+    const avatarMode = moduleAccessState.avatars?.mode
+    const children_can_change_avatar = avatarMode === 'all' || avatarMode === undefined
+
     await api.put('/settings', {
       module_access,
       leaderboard_period: leaderboardPeriod.value,
       kudos_cost_enabled: kudosCostEnabled.value,
+      children_can_change_avatar,
     })
     await authStore.fetchUser()
     success('Preferences saved!')
@@ -1751,19 +1682,49 @@ const saveTaskAssignment = async () => {
   savingTaskAssignment.value = false
 }
 
-// ---- Avatar Settings ----
-const toggleChildrenCanChangeAvatar = async () => {
-  const newValue = !childrenCanChangeAvatar.value
-  childrenCanChangeAvatar.value = newValue
+// ---- Combined Tasks & Points save ----
+const savingTasksPoints = ref(false)
+const saveTasksPointsSection = async () => {
+  savingTasksPoints.value = true
   try {
-    await api.put('/settings', { children_can_change_avatar: newValue })
+    // Build a single payload with all tasks/points settings
+    const module_access = {}
+    for (const mod of availableModules) {
+      const state = moduleAccessState[mod.id]
+      if (!state) continue
+      const rule = { mode: state.mode }
+      if (state.mode === 'roles') rule.roles = state.roles || ['parent']
+      if (state.mode === 'users') rule.users = state.users || []
+      module_access[mod.id] = rule
+    }
+
+    const avatarMode = moduleAccessState.avatars?.mode
+    const children_can_change_avatar = avatarMode === 'all' || avatarMode === undefined
+
+    const payload = {
+      module_access,
+      leaderboard_period: leaderboardPeriod.value,
+      kudos_cost_enabled: kudosCostEnabled.value,
+      children_can_change_avatar,
+      default_points_low: defaultPoints.low,
+      default_points_medium: defaultPoints.medium,
+      default_points_high: defaultPoints.high,
+      task_assignment: {
+        mode: taskAssignment.mode,
+        users: taskAssignment.users,
+      },
+    }
+
+    await api.put('/settings', payload)
     await authStore.fetchUser()
-    success(newValue ? 'Children can now change their avatars.' : 'Avatar changes restricted to parents.')
+    success('Tasks & points settings saved!')
   } catch (err) {
-    childrenCanChangeAvatar.value = !newValue
-    notificationError('Failed to update avatar setting')
+    notificationError(err.response?.data?.message || 'Failed to save settings')
   }
+  savingTasksPoints.value = false
 }
+
+
 
 // ---- MCP Token ----
 const fetchMcpTokenStatus = async () => {
@@ -1794,7 +1755,6 @@ const handleGenerateMcpToken = async () => {
       configJson: c.config ? JSON.stringify(c.config, null, 2) : null,
     }))
     mcpActiveClient.value = data.clients[0]?.id || 'claude_desktop'
-    // Reset copy state for all clients
     mcpCopied.token = false
     data.clients.forEach(c => { mcpCopied[c.id] = false })
     success('MCP token generated!')
@@ -1841,10 +1801,8 @@ onMounted(async () => {
 
   for (const mod of availableModules) {
     if (moduleAccessFromApi[mod.id]) {
-      // Use granular access data
       moduleAccessState[mod.id] = { ...moduleAccessFromApi[mod.id] }
     } else {
-      // Fall back to legacy boolean
       moduleAccessState[mod.id] = { mode: legacyModules[mod.id] === false ? 'off' : 'all' }
     }
   }
@@ -1861,8 +1819,14 @@ onMounted(async () => {
   taskAssignment.mode = ta.mode || 'all'
   taskAssignment.users = ta.users || []
 
-  // Initialize avatar setting
-  childrenCanChangeAvatar.value = settings.children_can_change_avatar ?? true
+  // Initialize avatar access from module_access or legacy boolean
+  if (moduleAccessFromApi.avatars) {
+    moduleAccessState.avatars = { ...moduleAccessFromApi.avatars }
+  } else {
+    // Convert legacy boolean to module access mode
+    const canChange = settings.children_can_change_avatar ?? true
+    moduleAccessState.avatars = { mode: canChange ? 'all' : 'roles', roles: canChange ? [] : ['parent'] }
+  }
 
   // Load AI settings from the settings API
   if (isParent.value) {
@@ -1899,6 +1863,14 @@ onMounted(async () => {
   } else if (route.query.calendar_error) {
     calendarError.value = route.query.calendar_error
     router.replace({ path: '/settings' })
+  }
+
+  // Handle hash deep-linking — expand the target section
+  const hash = window.location.hash.slice(1)
+  if (hash) {
+    expandedSections.value.add(hash)
+    await nextTick()
+    document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 })
 </script>
