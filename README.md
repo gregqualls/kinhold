@@ -1,35 +1,46 @@
 <p align="center">
-  <h1 align="center">Kinhold</h1>
-  <p align="center">
-    <strong>An open-source family hub for managing your household together.</strong>
-  </p>
-  <p align="center">
-    Tasks &bull; Calendar &bull; Vault &bull; Points &bull; Badges &bull; Rewards &bull; AI Chat
-  </p>
-  <p align="center">
-    <a href="#features">Features</a> &bull;
-    <a href="#quick-start">Quick Start</a> &bull;
-    <a href="#tech-stack">Tech Stack</a> &bull;
-    <a href="#screenshots">Screenshots</a> &bull;
-    <a href="#contributing">Contributing</a>
-  </p>
+  <img src="https://raw.githubusercontent.com/gregqualls/kinhold/main/public/images/logo-100.png" alt="Kinhold Logo" width="80" />
+</p>
+
+<h1 align="center">Kinhold</h1>
+
+<p align="center">
+  <strong>The open-source family hub. Tasks, calendar, vault, gamification, and AI — self-hosted, private, yours.</strong>
+</p>
+
+<p align="center">
+  <a href="#features">Features</a> &bull;
+  <a href="#screenshots">Screenshots</a> &bull;
+  <a href="#quick-start">Quick Start</a> &bull;
+  <a href="#tech-stack">Tech Stack</a> &bull;
+  <a href="#mcp-server">MCP Server</a> &bull;
+  <a href="#contributing">Contributing</a>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
+  <a href="https://github.com/gregqualls/kinhold/stargazers"><img src="https://img.shields.io/github/stars/gregqualls/kinhold?style=social" alt="GitHub Stars" /></a>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/hero.png" alt="Kinhold Hero" width="720" />
 </p>
 
 ---
 
 Kinhold is a self-hosted family management app that brings tasks, calendar, sensitive documents, and gamification into one interface. Built mobile-first with dark mode and multiple color themes, it's designed for real families with kids who need a little motivation to get things done.
 
-Live at [family.kinhold.app](https://family.kinhold.app)
+Live at [kinhold.app](https://kinhold.app)
 
 ## Features
 
 ### Core Modules
 
 - **Task Management** — Multiple task lists, priorities, due dates, assignees. Family tasks anyone can claim. Recurring tasks via RRULE (daily, weekly, monthly). Points awarded on completion.
-- **Family Calendar** — Aggregate Google Calendars from every family member, color-coded per person, with month/week/day views.
+- **Family Calendar** — Aggregate Google Calendars from every family member, color-coded per person, with month/week/day views. Manual calendar events let families add events without needing a Google Calendar connection.
 - **Secure Vault** — Encrypted storage for sensitive family info (SSNs, medical records, insurance, financial data). Role-based permissions, tap-to-reveal fields, auto-clear clipboard.
 - **AI Chat** — Ask questions about your family data: "What tasks are due this week?", "What's the wifi password?", "When is the next dentist appointment?" Powered by Claude.
-- **MCP Server** — 26 tools for managing Kinhold through Claude Desktop or Claude Code. Full CRUD on tasks, vault, calendar, and family data.
+- **MCP Server** — 18 tools for managing Kinhold through Claude Desktop or Claude Code. Full CRUD on tasks, vault, calendar, and family data. Laravel-native, no separate process.
 
 ### Gamification
 
@@ -56,15 +67,33 @@ Turn chores into a game your kids actually want to play.
 ## Screenshots
 
 <p align="center">
+  <img src="docs/screenshots/dashboard-light.png" alt="Dashboard (Light Mode)" width="360" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/dashboard-dark.png" alt="Dashboard (Dark Mode)" width="360" />
+</p>
+
+<p align="center">
   <img src="docs/screenshots/points-feed.png" alt="Points Feed" width="250" />
   &nbsp;&nbsp;
   <img src="docs/screenshots/badges.png" alt="Badges" width="250" />
   &nbsp;&nbsp;
   <img src="docs/screenshots/rewards.png" alt="Rewards Store" width="250" />
 </p>
+
+<details>
+<summary><strong>More screenshots</strong></summary>
+<br />
 <p align="center">
-  <img src="docs/screenshots/tasks.png" alt="Task Lists" width="250" />
+  <img src="docs/screenshots/tasks.png" alt="Task Lists" width="360" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/calendar.png" alt="Calendar" width="360" />
 </p>
+<p align="center">
+  <img src="docs/screenshots/vault.png" alt="Vault" width="360" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/chat.png" alt="AI Chat" width="360" />
+</p>
+</details>
 
 ## Tech Stack
 
@@ -78,7 +107,7 @@ Turn chores into a game your kids actually want to play.
 | Cache/Queue | Redis 7 |
 | Auth | Laravel Sanctum + Google OAuth via Socialite |
 | AI | Anthropic Claude API (multi-provider ready) |
-| MCP Server | TypeScript, Node.js |
+| MCP Server | Laravel-native (PHP, 18 tools) |
 | Build | Vite 5 |
 | Hosting | [Upsun](https://upsun.com) |
 
@@ -171,28 +200,52 @@ Settings:  GET /settings, PUT /settings
 
 ## MCP Server
 
-Manage Kinhold through Claude Desktop or Claude Code with 26 tools across tasks, calendar, vault, family, and search.
+Kinhold includes a Laravel-native MCP server that lets you manage your family hub entirely through AI clients like Claude Desktop, Claude Code, Cursor, or Windsurf. The server runs at the `/mcp` endpoint using Laravel's built-in MCP support — no separate process, no TypeScript, no Node.js.
 
-```bash
-cd mcp-server && npm install && npm run build
-```
+Authentication uses Sanctum bearer tokens. Generate a token in **Settings > MCP Token** within the app, then add it to your AI client config.
 
-Add to your Claude config:
+### Claude Desktop Configuration
 
 ```json
 {
   "mcpServers": {
     "kinhold": {
-      "command": "node",
-      "args": ["/path/to/kinhold/mcp-server/dist/index.js"],
-      "env": {
-        "KINHOLD_API_URL": "http://localhost:8000/api/v1",
-        "KINHOLD_API_TOKEN": "your-sanctum-token"
+      "type": "streamableHttp",
+      "url": "https://kinhold.app/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_SANCTUM_TOKEN"
       }
     }
   }
 }
 ```
+
+For local development, use `http://localhost:8000/mcp` as the URL.
+
+### Available Tools (18)
+
+| Tool | Description |
+|------|-------------|
+| ManageTaskLists | Create, update, delete, and list task lists |
+| ManageTasks | Create, update, delete, and list tasks |
+| CompleteTask | Mark tasks complete or incomplete |
+| ManageTags | Create, update, delete, and list tags |
+| ViewPoints | View point balances, leaderboard, and activity feed |
+| ManagePoints | Give kudos and deduct points |
+| ManagePointRequests | Handle point requests from family members |
+| ManageRewards | Create, update, delete, and list rewards |
+| PurchaseReward | Purchase a reward with points |
+| ManageBadges | Create, update, delete, and list badges |
+| ViewEarnedBadges | View earned badges for family members |
+| ManageFeaturedEvents | Set and manage featured events on the dashboard |
+| ViewCalendar | View aggregated family calendar events |
+| ManageVault | Create, update, delete, and list vault entries |
+| ManageVaultAccess | Set per-user permissions on vault entries |
+| ViewFamily | View family members and family info |
+| GetSettings | Retrieve app and family settings |
+| SearchFamily | Search across tasks, vault, and calendar |
+
+All tools are scoped to the authenticated user's family. Write operations require the `parent` role.
 
 ## Project Structure
 
@@ -201,18 +254,20 @@ kinhold/
 ├── app/
 │   ├── Console/Commands/       # Artisan commands (recurring tasks, badge seeding)
 │   ├── Enums/                  # FamilyRole, TaskPriority, PointTransactionType, BadgeTriggerType
-│   ├── Http/Controllers/Api/   # 14 REST controllers
-│   ├── Models/                 # 16 Eloquent models
+│   ├── Http/Controllers/Api/   # 16 REST controllers
+│   ├── Mcp/                    # Laravel-native MCP server
+│   │   ├── Servers/            # MCP server registration
+│   │   └── Tools/              # 18 MCP tool classes
+│   ├── Models/                 # 17 Eloquent models
 │   ├── Policies/               # Authorization policies
 │   └── Services/               # Business logic (Points, Badges, Calendar, Vault, Chat)
-├── database/migrations/        # 29 migrations
+├── database/migrations/        # 30 migrations
 ├── resources/js/
 │   ├── components/             # Vue components (layout, common, tasks, vault, points, badges, etc.)
-│   ├── views/                  # 18 page views across 10 modules
+│   ├── views/                  # 19 page views across 10 modules
 │   ├── stores/                 # 8 Pinia stores
 │   ├── composables/            # Vue composables (notifications, dark mode, themes, colors)
 │   └── router/                 # Vue Router with auth guards
-├── mcp-server/                 # TypeScript MCP server (26 tools)
 ├── .upsun/                     # Production deployment config
 └── docs/                       # Architecture, roadmap, conventions
 ```
@@ -231,6 +286,8 @@ Kinhold is designed to be forked and self-hosted. Every family gets their own in
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, code conventions, and our principles checklist. Every PR is evaluated against our [core product principles](PRINCIPLES.md).
 
+Found a bug or have an idea? Open an issue on [GitHub Issues](https://github.com/gregqualls/kinhold/issues). Want to discuss the project? Start a thread in [GitHub Discussions](https://github.com/gregqualls/kinhold/discussions).
+
 ## Documentation
 
 | Document | Purpose |
@@ -247,13 +304,11 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup inst
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan. Coming up:
 
-- Manual calendar mode (create events without Google)
+- ~~Manual calendar mode (create events without Google)~~ Done
 - Profile pictures and avatars
 - Granular access control per module
-- Reward auctions (kids bid on prizes)
-- Family voting and polls
-- Customizable dashboard layout
 - Meal planning and grocery lists
+- Mobile app (PWA)
 
 ## License
 

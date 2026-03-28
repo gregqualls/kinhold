@@ -24,7 +24,7 @@
       <div class="absolute top-20 -left-32 w-96 h-96 bg-kin-gold/5 rounded-full blur-3xl" aria-hidden="true"></div>
       <div class="absolute bottom-10 -right-32 w-80 h-80 bg-kin-gold/5 rounded-full blur-3xl" aria-hidden="true"></div>
 
-      <div class="max-w-4xl mx-auto px-6 pt-24 pb-20 lg:pt-36 lg:pb-32 text-center relative">
+      <div class="max-w-4xl mx-auto px-6 pt-24 pb-12 lg:pt-36 lg:pb-16 text-center relative">
         <h1 class="kin-heading text-5xl sm:text-6xl lg:text-7xl text-kin-black dark:text-kin-off-white leading-tight">
           Your family's<br>private hub
         </h1>
@@ -40,11 +40,91 @@
             See Features
           </a>
         </div>
+
+        <!-- Social proof -->
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+          <div class="flex items-center gap-3 text-sm kin-muted">
+            <span>MIT Licensed</span>
+            <span class="hidden sm:inline text-kin-border dark:text-kin-border-dark">&middot;</span>
+            <span>Open Source</span>
+            <span class="hidden sm:inline text-kin-border dark:text-kin-border-dark">&middot;</span>
+            <span>Self-Hosted</span>
+          </div>
+          <a href="https://github.com/gregqualls/kinhold" target="_blank" rel="noopener noreferrer">
+            <img
+              src="https://img.shields.io/github/stars/gregqualls/kinhold?style=social"
+              alt="GitHub stars"
+              class="h-5"
+            />
+          </a>
+        </div>
+
+        <!-- Hero screenshot -->
+        <div class="mt-12 max-w-5xl mx-auto">
+          <div class="rounded-xl shadow-card-xl border border-kin-border dark:border-kin-border-dark overflow-hidden">
+            <img
+              src="/images/screenshots/dashboard-hero.png"
+              alt="Kinhold dashboard"
+              class="w-full h-auto"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Showcase -->
+    <section class="kin-section">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="kin-heading text-3xl lg:text-4xl text-kin-black dark:text-kin-off-white">
+            See it in action
+          </h2>
+        </div>
+
+        <!-- Tab buttons -->
+        <div class="flex items-center justify-center gap-2 mb-10">
+          <button
+            v-for="tab in showcaseTabs"
+            :key="tab.id"
+            @click="activeShowcaseTab = tab.id"
+            class="kin-btn-ghost text-sm px-5 py-2.5 transition-all duration-200"
+            :class="activeShowcaseTab === tab.id
+              ? 'bg-kin-gold/10 text-kin-gold border-b-2 border-kin-gold font-semibold'
+              : ''"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <!-- Tab content -->
+        <div v-for="tab in showcaseTabs" :key="tab.id" v-show="activeShowcaseTab === tab.id">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
+            <!-- Screenshot -->
+            <div class="rounded-xl shadow-card-xl border border-kin-border dark:border-kin-border-dark overflow-hidden order-1 lg:order-1">
+              <img
+                :src="tab.image"
+                :alt="tab.label + ' preview'"
+                class="w-full h-auto"
+              />
+            </div>
+            <!-- Bullets -->
+            <div class="order-2 lg:order-2 space-y-5">
+              <div v-for="(bullet, i) in tab.bullets" :key="i" class="flex gap-3">
+                <div class="kin-icon-box shrink-0 w-8 h-8 mt-0.5">
+                  <component :is="tab.icon" class="w-4 h-4" />
+                </div>
+                <p class="text-sm lg:text-base text-kin-black dark:text-kin-off-white leading-relaxed">
+                  {{ bullet }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Features -->
-    <section id="features" class="kin-section">
+    <section id="features" class="kin-section bg-kin-cream dark:bg-kin-surface-dark">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-16">
           <h2 class="kin-heading text-3xl lg:text-4xl text-kin-black dark:text-kin-off-white">
@@ -71,6 +151,45 @@
               {{ feature.description }}
             </p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gamification Spotlight -->
+    <section class="kin-section">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <!-- Left column: text -->
+        <div>
+          <h2 class="kin-heading text-3xl lg:text-4xl text-kin-black dark:text-kin-off-white">
+            Turn chores into a game your kids want to play
+          </h2>
+          <p class="mt-4 kin-muted text-lg leading-relaxed">
+            A built-in gamification system that turns mundane household tasks into motivating challenges.
+            Kids earn, compete, and spend &mdash; all within the family.
+          </p>
+          <div class="mt-8 space-y-6">
+            <div v-for="item in gamificationHighlights" :key="item.title" class="flex gap-4">
+              <div class="kin-icon-box shrink-0 mt-0.5">
+                <component :is="item.icon" class="w-5 h-5" />
+              </div>
+              <div>
+                <h3 class="font-heading font-semibold text-kin-black dark:text-kin-off-white">
+                  {{ item.title }}
+                </h3>
+                <p class="mt-1 text-sm kin-muted leading-relaxed">
+                  {{ item.description }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Right column: screenshot -->
+        <div class="rounded-xl shadow-card-xl border border-kin-border dark:border-kin-border-dark overflow-hidden">
+          <img
+            src="/images/screenshots/gamification.png"
+            alt="Gamification features"
+            class="w-full h-auto"
+          />
         </div>
       </div>
     </section>
@@ -106,8 +225,48 @@
       </div>
     </section>
 
-    <!-- Final CTA -->
+    <!-- Self-Hosting CTA -->
     <section class="kin-section">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="kin-heading text-3xl lg:text-4xl text-kin-black dark:text-kin-off-white">
+          Your data, your server
+        </h2>
+        <p class="mt-4 kin-muted text-lg max-w-2xl mx-auto">
+          Fork, configure, deploy. Your family's data never touches our servers.
+        </p>
+
+        <!-- Steps -->
+        <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
+          <div v-for="step in selfHostSteps" :key="step.title" class="flex flex-col items-center">
+            <div class="kin-icon-box w-14 h-14 rounded-xl mb-4">
+              <component :is="step.icon" class="w-6 h-6" />
+            </div>
+            <h3 class="font-heading font-semibold text-kin-black dark:text-kin-off-white text-sm">
+              {{ step.title }}
+            </h3>
+            <p class="mt-1 text-xs kin-muted">{{ step.subtitle }}</p>
+          </div>
+        </div>
+
+        <!-- CTA buttons -->
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="https://github.com/gregqualls/kinhold"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="kin-btn-secondary text-base px-8 py-3.5"
+          >
+            View on GitHub
+          </a>
+          <router-link to="/register" class="kin-btn-primary text-base px-8 py-3.5">
+            Get Started
+          </router-link>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="kin-section bg-kin-cream dark:bg-kin-surface-dark">
       <div class="max-w-3xl mx-auto text-center">
         <h2 class="kin-heading text-3xl lg:text-4xl text-kin-black dark:text-kin-off-white">
           Get your family organized
@@ -156,6 +315,7 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
@@ -166,13 +326,55 @@ import {
   LockClosedIcon,
   CodeBracketIcon,
   DevicePhoneMobileIcon,
+  GiftIcon,
+  ChartBarIcon,
+  RocketLaunchIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/vue/24/outline'
+
+const activeShowcaseTab = ref('tasks')
+
+const showcaseTabs = [
+  {
+    id: 'tasks',
+    label: 'Tasks',
+    icon: ClipboardDocumentCheckIcon,
+    image: '/images/screenshots/tasks-preview.png',
+    bullets: [
+      'Multiple task lists with priorities and due dates',
+      'Assign to family members or leave open for anyone',
+      'Recurring tasks auto-generate daily, weekly, or monthly',
+    ],
+  },
+  {
+    id: 'calendar',
+    label: 'Calendar',
+    icon: CalendarDaysIcon,
+    image: '/images/screenshots/dashboard-hero.png',
+    bullets: [
+      'Manual events for the whole family',
+      'Google Calendar sync for connected accounts',
+      'Color-coded per family member',
+    ],
+  },
+  {
+    id: 'gamification',
+    label: 'Gamification',
+    icon: TrophyIcon,
+    image: '/images/screenshots/gamification.png',
+    bullets: [
+      'Points for completing tasks',
+      'Steam-style badges with hidden achievements',
+      'Rewards store where kids spend points',
+    ],
+  },
+]
 
 const features = [
   {
     icon: CalendarDaysIcon,
     title: 'Shared Calendar',
-    description: 'Aggregate Google Calendars for every family member. Color-coded, with month, week, and day views.',
+    description: 'Add events manually or sync Google Calendars for every family member. Color-coded, with month, week, and day views.',
   },
   {
     icon: ClipboardDocumentCheckIcon,
@@ -192,12 +394,35 @@ const features = [
   {
     icon: SparklesIcon,
     title: 'AI Assistant',
-    description: "Ask questions about your family's data in plain English. Powered by Claude, with full MCP integration.",
+    description: "Ask questions about your family's data in plain English. Powered by Claude, with full MCP integration across every module.",
   },
   {
     icon: UserGroupIcon,
     title: 'Family Profiles',
     description: 'Parent and child roles with fine-grained permissions. Parents control what kids can see and do.',
+  },
+]
+
+const gamificationHighlights = [
+  {
+    icon: TrophyIcon,
+    title: 'Points',
+    description: 'Earn by completing tasks. Parents give kudos for extra effort.',
+  },
+  {
+    icon: ChartBarIcon,
+    title: 'Leaderboard',
+    description: 'Family rankings that reset weekly. Friendly competition.',
+  },
+  {
+    icon: ShieldCheckIcon,
+    title: 'Badges',
+    description: '27 achievements \u2014 some hidden until earned. Collect them all.',
+  },
+  {
+    icon: GiftIcon,
+    title: 'Rewards',
+    description: 'Parents set prizes with point costs. Kids redeem instantly.',
   },
 ]
 
@@ -215,12 +440,30 @@ const differentiators = [
   {
     icon: SparklesIcon,
     title: 'AI-native',
-    description: 'Manage your family hub through Claude or any AI assistant. Full MCP server with 26 tools built in.',
+    description: 'Manage your family hub through Claude or any AI assistant. Full MCP server with tools for every module.',
   },
   {
     icon: DevicePhoneMobileIcon,
     title: 'Mobile ready',
     description: 'Built mobile-first. Works beautifully on every screen size, from your phone to your desktop.',
+  },
+]
+
+const selfHostSteps = [
+  {
+    icon: CodeBracketIcon,
+    title: 'Fork the Repo',
+    subtitle: 'Clone from GitHub',
+  },
+  {
+    icon: WrenchScrewdriverIcon,
+    title: 'Set Your Config',
+    subtitle: 'Environment variables',
+  },
+  {
+    icon: RocketLaunchIcon,
+    title: 'Deploy Anywhere',
+    subtitle: 'Upsun, Docker, or VPS',
   },
 ]
 </script>
