@@ -155,9 +155,8 @@ All routes are prefixed with `/api/v1/`. Auth routes are public, everything else
 ## Database Schema (Key Tables)
 
 - `families` — id, name, slug, invite_code, settings (JSON)
-- `users` — id, family_id, name, email, password, family_role (enum), avatar, date_of_birth, timezone
-- `task_lists` — id, family_id, name, icon, color, sort_order, is_default
-- `tasks` — id, family_id, task_list_id, created_by, assigned_to, title, description, due_date, completed_at, priority (enum), is_family_task, points, recurrence_rule, recurrence_end, parent_task_id
+- `users` — id, family_id, name, email, password, family_role (enum), avatar, avatar_color, google_avatar, date_of_birth, timezone
+- `tasks` — id, family_id, created_by, assigned_to, title, description, due_date, completed_at, priority (enum), is_family_task, points, recurrence_rule, recurrence_end, parent_task_id
 - `vault_categories` — id, family_id, name, slug, icon, description
 - `vault_entries` — id, family_id, vault_category_id, created_by, title, encrypted_data (encrypted JSON), notes, metadata (JSON)
 - `vault_permissions` — id, vault_entry_id, user_id, permission_level (enum: view/edit)
@@ -214,9 +213,9 @@ php artisan db:seed
 chmod +x setup.sh && ./setup.sh
 ```
 
-## Current Status (Updated: 2026-03-27)
+## Current Status (Updated: 2026-03-28)
 
-**Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, and MCP server all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.**
+**Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, MCP server, and profile pictures all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.**
 
 **Production:** Deployed on Upsun at `kinhold.app` (project ID: `2rozcvqjtjdta`, Terra Nova org). GitHub integration auto-deploys on push to `main`. PRs auto-create preview environments. Never use `upsun push` — just push to GitHub.
 
@@ -237,6 +236,7 @@ chmod +x setup.sh && ./setup.sh
 - **Recurring tasks:** RRULE-based with daily artisan command
 - **Feature toggles:** Parents can enable/disable modules (calendar, tasks, vault, chat, points, badges)
 - **Onboarding wizard:** 5-step setup for parents (welcome, add family, calendar, tags, granular feature access). Simplified flow for joining members with feature explainer. Re-triggerable from Settings.
+- **Profile pictures:** Photo upload, 26 Phosphor icon presets (duotone), 12 brand color picker, Google photo restore. `avatar` stores URL/preset key/null. `avatar_color` stores chosen color name. `google_avatar` persists Google OAuth photo. Uploaded files served via `GET /api/v1/user/avatar/{userId}` (not symlink).
 - **Laravel-native MCP server:** 18 tools at `/mcp`, Sanctum bearer token auth, direct model access
 
 **Dark mode architecture (important for future work):**

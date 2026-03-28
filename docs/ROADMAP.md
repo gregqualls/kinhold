@@ -89,6 +89,7 @@ These features are live and working:
 | Issue | Title | Priority |
 |-------|-------|----------|
 | [#71](https://github.com/gregqualls/kinhold/issues/71) | Two-way Google Calendar sync (create/edit events) | High |
+| [#93](https://github.com/gregqualls/kinhold/issues/93) | Show tasks with due dates on the calendar view | Medium |
 | [#72](https://github.com/gregqualls/kinhold/issues/72) | Family announcements / bulletin board | Medium |
 
 ---
