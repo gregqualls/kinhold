@@ -223,6 +223,7 @@ const handleUpload = async (event) => {
   try {
     const formData = new FormData()
     formData.append('avatar', file)
+    if (props.targetUser?.id) formData.append('user_id', props.targetUser.id)
 
     const { data } = await api.post('/user/avatar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -245,7 +246,9 @@ const handleUpload = async (event) => {
 const selectPreset = async (presetKey) => {
   localAvatar.value = `phosphor:${presetKey}`
   try {
-    const { data } = await api.put('/user/avatar/preset', { preset: presetKey })
+    const payload = { preset: presetKey }
+    if (props.targetUser?.id) payload.user_id = props.targetUser.id
+    const { data } = await api.put('/user/avatar/preset', payload)
     emit('updated', data.user.avatar)
   } catch (err) {
     console.error('Preset avatar failed:', err)
@@ -256,7 +259,8 @@ const selectPreset = async (presetKey) => {
 const removeAvatar = async () => {
   removing.value = true
   try {
-    const { data } = await api.delete('/user/avatar')
+    const params = props.targetUser?.id ? { data: { user_id: props.targetUser.id } } : {}
+    const { data } = await api.delete('/user/avatar', params)
     localAvatar.value = null
     emit('updated', null)
   } catch (err) {
@@ -272,7 +276,8 @@ const useGoogleAvatar = async () => {
 
   localAvatar.value = googleUrl
   try {
-    const { data } = await api.post('/user/avatar/google')
+    const payload = props.targetUser?.id ? { user_id: props.targetUser.id } : {}
+    const { data } = await api.post('/user/avatar/google', payload)
     emit('updated', data.user.avatar)
   } catch (err) {
     console.error('Google avatar restore failed:', err)
@@ -283,7 +288,9 @@ const useGoogleAvatar = async () => {
 const selectColor = async (colorName) => {
   localColor.value = colorName
   try {
-    await api.patch('/user', { avatar_color: colorName })
+    const payload = { avatar_color: colorName }
+    if (props.targetUser?.id) payload.user_id = props.targetUser.id
+    await api.patch('/user', payload)
     emit('color-changed')
   } catch (err) {
     console.error('Color change failed:', err)
