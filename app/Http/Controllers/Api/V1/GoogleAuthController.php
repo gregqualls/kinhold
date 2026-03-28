@@ -63,7 +63,8 @@ class GoogleAuthController extends Controller
         }
 
         // 2. Check if a user with this email exists (link Google account)
-        $user = User::where('email', $googleUser->getEmail())->first();
+        //    Use case-insensitive match — Google may return different casing
+        $user = User::whereRaw('LOWER(email) = ?', [strtolower($googleUser->getEmail())])->first();
 
         if ($user) {
             // Link Google account to existing user
