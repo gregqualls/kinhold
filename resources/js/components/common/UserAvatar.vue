@@ -1,11 +1,12 @@
 <template>
   <!-- Uploaded photo or Google URL -->
   <img
-    v-if="avatarUrl"
+    v-if="avatarUrl && !imgError"
     :src="avatarUrl"
     :alt="user?.name"
     class="rounded-full object-cover flex-shrink-0"
     :class="sizeClasses"
+    @error="imgError = true"
   />
   <!-- Phosphor preset icon -->
   <div
@@ -28,7 +29,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useFamilyColors } from '@/composables/useFamilyColors'
 import { getPreset } from '@/components/common/avatarPresets'
 
@@ -45,6 +46,9 @@ const props = defineProps({
 })
 
 const { getColorForUser } = useFamilyColors()
+
+const imgError = ref(false)
+watch(() => props.user?.avatar, () => { imgError.value = false })
 
 const sizeClasses = computed(() => {
   const sizes = {

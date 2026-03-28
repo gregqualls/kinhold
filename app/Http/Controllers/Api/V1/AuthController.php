@@ -178,8 +178,8 @@ class AuthController extends Controller
         // Delete any existing uploaded avatar
         $this->deleteUploadedAvatarFile($user);
 
-        $path = $file->storeAs('avatars', "{$user->id}.{$ext}", 'public');
-        $url = Storage::disk('public')->url($path) . '?t=' . time();
+        $file->storeAs('avatars', "{$user->id}.{$ext}", 'public');
+        $url = url("/api/v1/user/avatar/{$user->id}") . '?t=' . time();
 
         $user->update(['avatar' => $url]);
 
@@ -271,6 +271,24 @@ class AuthController extends Controller
                 $disk->delete($path);
             }
         }
+    }
+
+    /**
+     * Serve a user's uploaded avatar image.
+     */
+    public function serveAvatar(string $userId)
+    {
+        $disk = Storage::disk('public');
+        foreach (['jpg', 'jpeg', 'png', 'gif', 'webp'] as $ext) {
+            $path = "avatars/{$userId}.{$ext}";
+            if ($disk->exists($path)) {
+                return response($disk->get($path), 200)
+                    ->header('Content-Type', $disk->mimeType($path))
+                    ->header('Cache-Control', 'public, max-age=86400');
+            }
+        }
+
+        abort(404);
     }
 
     /**
