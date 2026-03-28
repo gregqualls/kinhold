@@ -55,7 +55,8 @@ class GoogleAuthController extends Controller
         $user = User::where('google_id', $googleUser->getId())->first();
 
         if ($user) {
-            // Existing Google user — log them in
+            // Existing Google user — refresh Google avatar and log them in
+            $user->update(['google_avatar' => $googleUser->getAvatar()]);
             $token = $user->createToken('google_auth')->plainTextToken;
 
             return redirect('/login?token=' . $token);
@@ -69,6 +70,7 @@ class GoogleAuthController extends Controller
             $user->update([
                 'google_id' => $googleUser->getId(),
                 'avatar' => $user->avatar ?? $googleUser->getAvatar(),
+                'google_avatar' => $googleUser->getAvatar(),
             ]);
 
             $token = $user->createToken('google_auth')->plainTextToken;
@@ -88,6 +90,7 @@ class GoogleAuthController extends Controller
             'email' => $googleUser->getEmail(),
             'google_id' => $googleUser->getId(),
             'avatar' => $googleUser->getAvatar(),
+            'google_avatar' => $googleUser->getAvatar(),
             'family_id' => $family->id,
             'family_role' => 'parent',
         ]);
