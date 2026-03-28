@@ -142,6 +142,23 @@ class AuthController extends Controller
     }
 
     /**
+     * Update the authenticated user's profile.
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'timezone' => 'nullable|string|timezone',
+        ]);
+
+        $request->user()->update($validated);
+
+        return response()->json([
+            'user' => UserResource::make($request->user()->fresh()),
+            'message' => 'Profile updated.',
+        ]);
+    }
+
+    /**
      * Get the authenticated user with family data.
      */
     public function user(Request $request): JsonResponse

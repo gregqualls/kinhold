@@ -227,7 +227,9 @@ class CalendarController extends Controller
     public function connect(Request $request): JsonResponse
     {
         try {
-            $authUrl = GoogleCalendarService::getAuthUrl($request->user()->id);
+            $origin = $request->input('origin', 'settings');
+            $state = $request->user()->id . ':' . $origin;
+            $authUrl = GoogleCalendarService::getAuthUrl($state);
 
             return response()->json([
                 'auth_url' => $authUrl,
@@ -247,20 +249,34 @@ class CalendarController extends Controller
     public function handleCallback(Request $request)
     {
         $code = $request->query('code');
-        $userId = $request->query('state');
+        $rawState = $request->query('state');
 
-        if (!$code || !$userId) {
+        if (!$code || !$rawState) {
             return redirect('/settings?calendar_error=' . urlencode('Missing authorization code or user ID.'));
         }
+
+        // Parse origin from state (format: "userId:origin" or just "userId")
+        $parts = explode(':', $rawState, 2);
+        $userId = $parts[0];
+        $origin = $parts[1] ?? 'settings';
 
         try {
             $connections = GoogleCalendarService::handleCallback($code, $userId);
             $count = count($connections);
 
+            if ($origin === 'onboarding') {
+                return redirect('/onboarding?step=2&calendar_connected=' . $count);
+            }
+
             return redirect('/settings?calendar_connected=' . $count);
         } catch (\Exception $e) {
             \Log::error('Calendar OAuth callback failed: ' . $e->getMessage());
-            return redirect('/settings?calendar_error=' . urlencode('Failed to connect calendar: ' . $e->getMessage()));
+
+            $errorRedirect = $origin === 'onboarding'
+                ? '/onboarding?step=2&calendar_error=' . urlencode('Failed to connect calendar: ' . $e->getMessage())
+                : '/settings?calendar_error=' . urlencode('Failed to connect calendar: ' . $e->getMessage());
+
+            return redirect($errorRedirect);
         }
     }
 
