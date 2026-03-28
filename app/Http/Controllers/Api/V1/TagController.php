@@ -36,16 +36,20 @@ class TagController extends Controller
             'color' => 'nullable|string|max:20',
         ]);
 
-        $tag = Tag::create([
-            'family_id' => $family->id,
-            'name' => $validated['name'],
-            'color' => $validated['color'] ?? null,
-            'sort_order' => Tag::where('family_id', $family->id)->max('sort_order') + 1,
-        ]);
+        $tag = Tag::firstOrCreate(
+            [
+                'family_id' => $family->id,
+                'name' => $validated['name'],
+            ],
+            [
+                'color' => $validated['color'] ?? null,
+                'sort_order' => Tag::where('family_id', $family->id)->max('sort_order') + 1,
+            ]
+        );
 
         return response()->json([
             'tag' => TagResource::make($tag),
-        ], 201);
+        ], $tag->wasRecentlyCreated ? 201 : 200);
     }
 
     public function update(Request $request, Tag $tag): JsonResponse
