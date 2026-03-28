@@ -52,14 +52,6 @@ class Family extends Model
     }
 
     /**
-     * Family has many Task Lists.
-     */
-    public function taskLists(): HasMany
-    {
-        return $this->hasMany(TaskList::class);
-    }
-
-    /**
      * Family has many Vault Entries.
      */
     public function vaultEntries(): HasMany
