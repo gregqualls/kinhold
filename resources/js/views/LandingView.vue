@@ -97,7 +97,8 @@
         </div>
 
         <!-- Tab content -->
-        <div v-for="tab in showcaseTabs" :key="tab.id" v-show="activeShowcaseTab === tab.id">
+        <template v-for="tab in showcaseTabs" :key="tab.id">
+        <div v-show="activeShowcaseTab === tab.id">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
             <!-- Screenshot -->
             <div class="rounded-xl shadow-card-xl border border-kin-border dark:border-kin-border-dark overflow-hidden order-1 lg:order-1">
@@ -120,6 +121,7 @@
             </div>
           </div>
         </div>
+        </template>
       </div>
     </section>
 
