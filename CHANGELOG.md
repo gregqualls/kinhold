@@ -2,6 +2,41 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-28 — Session 9: Onboarding Wizard
+
+### What Was Done
+- **Built onboarding wizard** (issue #63) — 5-step guided setup for new families
+  - Welcome (family name, timezone), Add Family (inline member creation), Calendar (Google OAuth), Tags (preset tag creation), Features (granular module access controls)
+  - Simplified 3-step flow for joining members: Welcome → Calendar → Feature Explainer → Done
+  - Feature explainer shows accessible features with descriptions, locked features greyed out
+  - Router guard auto-redirects new users; existing users backfilled to skip
+  - Re-triggerable from Settings > "Re-run Setup Wizard"
+- **Closed Phase 0: Foundations milestone** — all 11 issues complete (100%)
+  - Also closed #76 (Claude connector) — completed in Session 8 but left open
+- **Created issue #89** — Remove task_list_id tech debt (tags-only organization)
+- **Added `PATCH /api/v1/user`** endpoint for profile updates (timezone)
+- **Updated CalendarController** — OAuth state now encodes origin for proper redirect back to wizard
+
+### Files Created
+- `app/Http/Controllers/Api/V1/OnboardingController.php`
+- `database/migrations/..._add_onboarding_completed_at_to_users_table.php`
+- `resources/js/stores/onboarding.js`
+- `resources/js/views/onboarding/OnboardingView.vue`
+- `resources/js/views/onboarding/steps/` — 7 step components (Welcome, Invite, Calendar, TaskList, Features, FeaturesExplainer, Complete)
+
+### Files Modified
+- `app/Models/User.php` — added `onboarding_completed_at` to fillable/casts
+- `app/Http/Resources/UserResource.php` — exposes `onboarding_completed_at`
+- `app/Http/Controllers/Api/V1/AuthController.php` — added `updateProfile` method
+- `app/Http/Controllers/Api/V1/CalendarController.php` — origin param in OAuth state
+- `app/Http/Controllers/Api/V1/FamilyController.php` — managed accounts auto-complete onboarding
+- `resources/js/router/index.js` — onboarding route + guard
+- `resources/js/App.vue` — hides sidebar/nav during wizard
+- `resources/js/views/settings/SettingsView.vue` — "Re-run Setup Wizard" section
+- `routes/api.php` — onboarding + user profile routes
+
+---
+
 ## 2026-03-28 — Session 8: Laravel-Native MCP Server
 
 ### What Was Done
