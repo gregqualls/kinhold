@@ -30,6 +30,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/user', [AuthController::class, 'user']);
         Route::post('/auth/switch-profile', [AuthController::class, 'switchProfile']);
         Route::patch('/user', [AuthController::class, 'updateProfile']);
+        Route::post('/user/avatar', [AuthController::class, 'uploadAvatar']);
+        Route::delete('/user/avatar', [AuthController::class, 'deleteAvatar']);
+        Route::put('/user/avatar/preset', [AuthController::class, 'setPresetAvatar']);
 
         // Onboarding
         Route::get('/onboarding/status', [OnboardingController::class, 'status']);

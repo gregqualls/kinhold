@@ -283,6 +283,21 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /**
+   * Optimistically update the user's avatar in local state, then refresh from server.
+   */
+  const updateUserAvatar = async (newAvatar) => {
+    if (user.value) {
+      user.value.avatar = newAvatar
+    }
+    // Also update the member entry in the family members list
+    if (family.value?.members) {
+      const member = family.value.members.find((m) => m.id === user.value?.id)
+      if (member) member.avatar = newAvatar
+    }
+    await fetchUser()
+  }
+
   return {
     // State
     user,
@@ -314,5 +329,6 @@ export const useAuthStore = defineStore('auth', () => {
     removeFamilyMember,
     getInviteCode,
     switchToProfile,
+    updateUserAvatar,
   }
 })
