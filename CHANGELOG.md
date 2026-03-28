@@ -2,6 +2,36 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-28 — Session 11: Settings Page Reorganization
+
+### What Was Done
+- **Settings page reorganized** into 7 collapsible sections (parent view) for better UX
+  - Family, Tasks & Points, AI & Integrations, Feature Access, Appearance, Notifications, Profiles & Avatars
+  - Related settings grouped together (task points + task assignment + task access now in one section)
+  - AI config + MCP token + calendar connections combined into "AI & Integrations"
+  - Setup wizard relocated into the Family section
+- **Created `ToggleSwitch.vue`** reusable component — standardizes all toggle switches
+  - Fixed avatar toggle inconsistency (was gold/smaller, now matches wisteria/standard size)
+  - Proper ARIA `role="switch"` and `aria-checked` on all toggles
+  - Supports `#thumb` slot for custom content (dark mode icons)
+- **Created `SettingsSection.vue`** collapsible card component
+  - Icon + title + description header with chevron indicator
+  - `v-show` body preserves reactive form state when collapsed
+  - URL hash deep-linking (e.g., `/settings#ai-integrations`)
+  - Multiple sections can be open simultaneously
+- **Created `docs/SETTINGS.md`** — documents storage map, component APIs, and how to add new settings
+- Child view unchanged (stays flat — too few items for collapsible sections)
+
+### Files Created
+- `resources/js/components/common/ToggleSwitch.vue`
+- `resources/js/components/settings/SettingsSection.vue`
+- `docs/SETTINGS.md`
+
+### Files Modified
+- `resources/js/views/settings/SettingsView.vue` — full template restructure, ToggleSwitch replacements, removed unused BaseCard import
+
+---
+
 ## 2026-03-28 — Session 10: Profile Pictures & Avatars
 
 ### What Was Done

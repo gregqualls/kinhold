@@ -150,12 +150,15 @@ class AuthController extends Controller
         $validated = $request->validate([
             'timezone' => 'nullable|string|timezone',
             'avatar_color' => 'nullable|string|in:teal,amber,sage,steel,plum,rose,sienna,lavender,cyan,olive,berry,forest',
+            'user_id' => 'nullable|string|exists:users,id',
         ]);
 
-        $request->user()->update($validated);
+        $target = $this->resolveAvatarTarget($request);
+        unset($validated['user_id']);
+        $target->update($validated);
 
         return response()->json([
-            'user' => UserResource::make($request->user()->fresh()),
+            'user' => UserResource::make($target->fresh()),
             'message' => 'Profile updated.',
         ]);
     }
@@ -165,8 +168,8 @@ class AuthController extends Controller
      */
     public function restoreGoogleAvatar(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $this->authorizeAvatarChange($user);
+        $user = $this->resolveAvatarTarget($request);
+        $this->authorizeAvatarChange($user, $request->user());
 
         if (!$user->google_avatar) {
             return response()->json(['message' => 'No Google photo available.'], 422);
@@ -186,8 +189,8 @@ class AuthController extends Controller
      */
     public function uploadAvatar(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $this->authorizeAvatarChange($user);
+        $user = $this->resolveAvatarTarget($request);
+        $this->authorizeAvatarChange($user, $request->user());
 
         $request->validate([
             'avatar' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
@@ -215,8 +218,8 @@ class AuthController extends Controller
      */
     public function deleteAvatar(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $this->authorizeAvatarChange($user);
+        $user = $this->resolveAvatarTarget($request);
+        $this->authorizeAvatarChange($user, $request->user());
 
         $this->deleteUploadedAvatarFile($user);
         $user->update(['avatar' => null]);
@@ -232,8 +235,8 @@ class AuthController extends Controller
      */
     public function setPresetAvatar(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $this->authorizeAvatarChange($user);
+        $user = $this->resolveAvatarTarget($request);
+        $this->authorizeAvatarChange($user, $request->user());
 
         $request->validate([
             'preset' => 'required|string|in:' . implode(',', self::AVATAR_PRESETS),
@@ -262,8 +265,39 @@ class AuthController extends Controller
     /**
      * Check if the user is allowed to change their avatar.
      */
-    private function authorizeAvatarChange(User $user): void
+    /**
+     * Resolve the target user for avatar changes.
+     * If user_id is provided and the requester is a parent in the same family, target that user.
+     * Otherwise, target the authenticated user.
+     */
+    private function resolveAvatarTarget(Request $request): User
     {
+        $currentUser = $request->user();
+        $targetId = $request->input('user_id');
+
+        if ($targetId && $targetId !== $currentUser->id) {
+            // Only parents can change another member's avatar
+            if (!$currentUser->isParent()) {
+                abort(403, 'Only parents can change another member\'s avatar.');
+            }
+
+            $target = User::where('id', $targetId)
+                ->where('family_id', $currentUser->family_id)
+                ->firstOrFail();
+
+            return $target;
+        }
+
+        return $currentUser;
+    }
+
+    private function authorizeAvatarChange(User $user, User $requester): void
+    {
+        // Parents can always change any family member's avatar
+        if ($requester->isParent() && $requester->family_id === $user->family_id) {
+            return;
+        }
+
         if ($user->isChild()) {
             $family = $user->family;
             $settings = $family->settings ?? [];
