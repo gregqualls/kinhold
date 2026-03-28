@@ -20,56 +20,17 @@ class ManageBadges extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['list', 'create', 'update', 'delete', 'award', 'revoke'],
-                    'description' => 'Action to perform',
-                ],
-                'badge_id' => [
-                    'type' => 'string',
-                    'description' => 'Badge UUID (required for update/delete/award/revoke)',
-                ],
-                'user_id' => [
-                    'type' => 'string',
-                    'description' => 'Target user UUID (required for award/revoke)',
-                ],
-                'name' => [
-                    'type' => 'string',
-                    'description' => 'Badge name (required for create)',
-                ],
-                'description' => [
-                    'type' => 'string',
-                    'description' => 'Badge description (required for create)',
-                ],
-                'icon' => [
-                    'type' => 'string',
-                    'description' => 'Icon name from preset list',
-                ],
-                'color' => [
-                    'type' => 'string',
-                    'description' => 'Hex color (e.g. #7d57a8)',
-                ],
-                'trigger_type' => [
-                    'type' => 'string',
-                    'enum' => ['points_earned', 'tasks_completed', 'task_streak', 'kudos_received', 'kudos_given', 'rewards_purchased', 'login_streak', 'custom'],
-                    'description' => 'What triggers this badge (required for create)',
-                ],
-                'trigger_threshold' => [
-                    'type' => 'integer',
-                    'description' => 'Threshold value for auto-trigger (null for custom badges)',
-                ],
-                'is_hidden' => [
-                    'type' => 'boolean',
-                    'description' => 'Whether badge is hidden until earned',
-                ],
-                'is_active' => [
-                    'type' => 'boolean',
-                    'description' => 'Whether badge is active',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['list', 'create', 'update', 'delete', 'award', 'revoke'])->description('Action to perform'),
+            'badge_id' => $schema->string()->description('Badge UUID (required for update/delete/award/revoke)'),
+            'user_id' => $schema->string()->description('Target user UUID (required for award/revoke)'),
+            'name' => $schema->string()->description('Badge name (required for create)'),
+            'description' => $schema->string()->description('Badge description (required for create)'),
+            'icon' => $schema->string()->description('Icon name from preset list'),
+            'color' => $schema->string()->description('Hex color (e.g. #7d57a8)'),
+            'trigger_type' => $schema->string()->enum(['points_earned', 'tasks_completed', 'task_streak', 'kudos_received', 'kudos_given', 'rewards_purchased', 'login_streak', 'custom'])->description('What triggers this badge (required for create)'),
+            'trigger_threshold' => $schema->integer()->description('Threshold value for auto-trigger (null for custom badges)'),
+            'is_hidden' => $schema->boolean()->description('Whether badge is hidden until earned'),
+            'is_active' => $schema->boolean()->description('Whether badge is active'),
         ];
     }
 

@@ -21,35 +21,12 @@ class ManageVault extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['list_categories', 'list', 'get', 'create', 'update', 'delete'],
-                    'description' => 'Action to perform',
-                ],
-                'entry_id' => [
-                    'type' => 'string',
-                    'description' => 'Vault entry UUID (required for get/update/delete)',
-                ],
-                'category_id' => [
-                    'type' => 'string',
-                    'description' => 'Category UUID (filter for list, required for create)',
-                ],
-                'title' => [
-                    'type' => 'string',
-                    'description' => 'Entry title (required for create)',
-                ],
-                'data' => [
-                    'type' => 'object',
-                    'description' => 'Key-value pairs to store (required for create, encrypted at rest)',
-                ],
-                'notes' => [
-                    'type' => 'string',
-                    'description' => 'Optional notes',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['list_categories', 'list', 'get', 'create', 'update', 'delete'])->description('Action to perform'),
+            'entry_id' => $schema->string()->description('Vault entry UUID (required for get/update/delete)'),
+            'category_id' => $schema->string()->description('Category UUID (filter for list, required for create)'),
+            'title' => $schema->string()->description('Entry title (required for create)'),
+            'data' => $schema->object()->description('Key-value pairs to store (required for create, encrypted at rest)'),
+            'notes' => $schema->string()->description('Optional notes'),
         ];
     }
 

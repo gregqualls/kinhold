@@ -23,24 +23,9 @@ class ManagePointRequests extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['list', 'approve', 'deny'],
-                    'description' => 'Action to perform',
-                ],
-                'request_id' => [
-                    'type' => 'string',
-                    'description' => 'Point request UUID (required for approve/deny)',
-                ],
-                'status' => [
-                    'type' => 'string',
-                    'enum' => ['pending', 'approved', 'denied'],
-                    'description' => 'Filter by status (for list action)',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['list', 'approve', 'deny'])->description('Action to perform'),
+            'request_id' => $schema->string()->description('Point request UUID (required for approve/deny)'),
+            'status' => $schema->string()->enum(['pending', 'approved', 'denied'])->description('Filter by status (for list action)'),
         ];
     }
 

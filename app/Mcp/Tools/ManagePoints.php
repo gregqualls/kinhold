@@ -19,27 +19,10 @@ class ManagePoints extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['kudos', 'deduct'],
-                    'description' => 'Action to perform',
-                ],
-                'user_id' => [
-                    'type' => 'string',
-                    'description' => 'Target family member UUID (required)',
-                ],
-                'points' => [
-                    'type' => 'integer',
-                    'description' => 'Points to deduct (required for deduct action)',
-                ],
-                'reason' => [
-                    'type' => 'string',
-                    'description' => 'Reason for kudos or deduction (required)',
-                ],
-            ],
-            'required' => ['action', 'user_id', 'reason'],
+            'action' => $schema->string()->required()->enum(['kudos', 'deduct'])->description('Action to perform'),
+            'user_id' => $schema->string()->required()->description('Target family member UUID (required)'),
+            'points' => $schema->integer()->description('Points to deduct (required for deduct action)'),
+            'reason' => $schema->string()->required()->description('Reason for kudos or deduction (required)'),
         ];
     }
 

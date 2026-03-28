@@ -20,56 +20,17 @@ class ManageFeaturedEvents extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['list', 'create', 'update', 'delete'],
-                    'description' => 'Action to perform',
-                ],
-                'event_id' => [
-                    'type' => 'string',
-                    'description' => 'Featured event UUID (required for update/delete)',
-                ],
-                'title' => [
-                    'type' => 'string',
-                    'description' => 'Event title (required for create)',
-                ],
-                'description' => [
-                    'type' => 'string',
-                    'description' => 'Event description',
-                ],
-                'event_date' => [
-                    'type' => 'string',
-                    'description' => 'Event date in YYYY-MM-DD format (required for create)',
-                ],
-                'event_time' => [
-                    'type' => 'string',
-                    'description' => 'Event time in HH:MM format',
-                ],
-                'icon' => [
-                    'type' => 'string',
-                    'description' => 'Emoji icon for the event',
-                ],
-                'color' => [
-                    'type' => 'string',
-                    'description' => 'Hex color (e.g. #8B5CF6)',
-                ],
-                'recurrence' => [
-                    'type' => 'string',
-                    'enum' => ['none', 'yearly', 'monthly', 'weekly'],
-                    'description' => 'Recurrence pattern',
-                ],
-                'is_countdown' => [
-                    'type' => 'boolean',
-                    'description' => 'Whether this is the countdown event on the dashboard',
-                ],
-                'is_active' => [
-                    'type' => 'boolean',
-                    'description' => 'Whether the event is active',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['list', 'create', 'update', 'delete'])->description('Action to perform'),
+            'event_id' => $schema->string()->description('Featured event UUID (required for update/delete)'),
+            'title' => $schema->string()->description('Event title (required for create)'),
+            'description' => $schema->string()->description('Event description'),
+            'event_date' => $schema->string()->description('Event date in YYYY-MM-DD format (required for create)'),
+            'event_time' => $schema->string()->description('Event time in HH:MM format'),
+            'icon' => $schema->string()->description('Emoji icon for the event'),
+            'color' => $schema->string()->description('Hex color (e.g. #8B5CF6)'),
+            'recurrence' => $schema->string()->enum(['none', 'yearly', 'monthly', 'weekly'])->description('Recurrence pattern'),
+            'is_countdown' => $schema->boolean()->description('Whether this is the countdown event on the dashboard'),
+            'is_active' => $schema->boolean()->description('Whether the event is active'),
         ];
     }
 

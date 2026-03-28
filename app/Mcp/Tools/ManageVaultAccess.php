@@ -20,28 +20,10 @@ class ManageVaultAccess extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['grant', 'revoke'],
-                    'description' => 'Action to perform',
-                ],
-                'entry_id' => [
-                    'type' => 'string',
-                    'description' => 'Vault entry UUID (required)',
-                ],
-                'user_id' => [
-                    'type' => 'string',
-                    'description' => 'Family member UUID to grant/revoke access (required)',
-                ],
-                'permission_level' => [
-                    'type' => 'string',
-                    'enum' => ['view', 'edit'],
-                    'description' => 'Permission level (default: view, for grant action)',
-                ],
-            ],
-            'required' => ['action', 'entry_id', 'user_id'],
+            'action' => $schema->string()->required()->enum(['grant', 'revoke'])->description('Action to perform'),
+            'entry_id' => $schema->string()->required()->description('Vault entry UUID (required)'),
+            'user_id' => $schema->string()->required()->description('Family member UUID to grant/revoke access (required)'),
+            'permission_level' => $schema->string()->enum(['view', 'edit'])->description('Permission level (default: view, for grant action)'),
         ];
     }
 

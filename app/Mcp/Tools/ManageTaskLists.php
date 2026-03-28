@@ -19,19 +19,8 @@ class ManageTaskLists extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'action' => [
-                    'type' => 'string',
-                    'enum' => ['list', 'create'],
-                    'description' => 'Action to perform',
-                ],
-                'name' => [
-                    'type' => 'string',
-                    'description' => 'Name for the new task list (required for create)',
-                ],
-            ],
-            'required' => ['action'],
+            'action' => $schema->string()->required()->enum(['list', 'create'])->description('Action to perform'),
+            'name' => $schema->string()->description('Name for the new task list (required for create)'),
         ];
     }
 

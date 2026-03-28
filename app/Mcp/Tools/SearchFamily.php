@@ -22,14 +22,7 @@ class SearchFamily extends Tool
     public function schema($schema): array
     {
         return [
-            'type' => 'object',
-            'properties' => [
-                'query' => [
-                    'type' => 'string',
-                    'description' => 'Search keywords',
-                ],
-            ],
-            'required' => ['query'],
+            'query' => $schema->string()->required()->description('Search keywords'),
         ];
     }
 
