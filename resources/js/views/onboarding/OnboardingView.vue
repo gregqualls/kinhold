@@ -6,27 +6,27 @@
     </div>
 
     <!-- Progress Dots -->
-    <div v-if="!store.isLastStep" class="flex items-center justify-center gap-2 pb-6">
+    <div v-if="!isLastStep" class="flex items-center justify-center gap-2 pb-6">
       <button
-        v-for="i in store.totalSteps - 1"
+        v-for="(step, i) in activeSteps.slice(0, -1)"
         :key="i"
         class="w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none"
-        :class="dotClass(i - 1)"
-        :aria-label="`Step ${i}`"
-        @click="store.goToStep(i - 1)"
+        :class="dotClass(i)"
+        :aria-label="`Step ${i + 1}`"
+        @click="store.goToStep(i)"
       />
     </div>
 
     <!-- Step Content -->
     <div class="flex-1 flex flex-col px-4 pb-4 max-w-lg mx-auto w-full">
       <Transition name="step-fade" mode="out-in">
-        <component :is="steps[store.currentStep]" :key="store.currentStep" />
+        <component :is="activeSteps[store.currentStep]" :key="store.currentStep" />
       </Transition>
 
       <!-- Navigation Footer -->
       <div class="mt-auto pt-6 flex items-center gap-3">
         <button
-          v-if="!store.isFirstStep && !store.isLastStep"
+          v-if="store.currentStep > 0 && !isLastStep"
           class="kin-btn-ghost"
           @click="store.prevStep()"
         >
@@ -36,7 +36,7 @@
         <div class="flex-1" />
 
         <button
-          v-if="!store.isLastStep"
+          v-if="!isLastStep"
           class="kin-btn-ghost"
           @click="handleSkip"
         >
@@ -44,7 +44,7 @@
         </button>
 
         <button
-          v-if="!store.isLastStep"
+          v-if="!isLastStep"
           class="kin-btn-primary"
           :disabled="stepLoading"
           @click="handleContinue"
@@ -57,7 +57,7 @@
         </button>
 
         <button
-          v-if="store.isLastStep"
+          v-if="isLastStep"
           class="kin-btn-primary w-full text-center"
           :disabled="store.isCompleting"
           @click="handleFinish"
@@ -70,8 +70,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, provide } from 'vue'
+import { ref, computed, onMounted, provide } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import { useOnboardingStore } from '@/stores/onboarding'
 import WelcomeStep from './steps/WelcomeStep.vue'
 import InviteStep from './steps/InviteStep.vue'
@@ -82,10 +83,21 @@ import CompleteStep from './steps/CompleteStep.vue'
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
 const store = useOnboardingStore()
 const stepLoading = ref(false)
 
-const steps = [WelcomeStep, InviteStep, CalendarStep, TaskListStep, FeaturesStep, CompleteStep]
+// Parents get the full wizard; joining members get a simplified flow
+const activeSteps = computed(() => {
+  if (authStore.isParent) {
+    // Welcome → Add Family → Calendar → Tags → Features → Complete
+    return [WelcomeStep, InviteStep, CalendarStep, TaskListStep, FeaturesStep, CompleteStep]
+  }
+  // Joining member: Welcome → Calendar → Complete
+  return [WelcomeStep, CalendarStep, CompleteStep]
+})
+
+const isLastStep = computed(() => store.currentStep === activeSteps.value.length - 1)
 
 // Allow step components to set loading state and register continue handlers
 const stepContinueHandler = ref(null)
@@ -105,11 +117,15 @@ async function handleContinue() {
     const result = await stepContinueHandler.value()
     if (result === false) return
   }
-  store.nextStep()
+  if (store.currentStep < activeSteps.value.length - 1) {
+    store.currentStep++
+  }
 }
 
 async function handleSkip() {
-  store.nextStep()
+  if (store.currentStep < activeSteps.value.length - 1) {
+    store.currentStep++
+  }
 }
 
 async function handleFinish() {

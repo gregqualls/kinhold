@@ -1,56 +1,94 @@
 <template>
   <div class="flex-1 flex flex-col">
-    <div class="text-center mb-8">
+    <div class="text-center mb-6">
       <h1 class="text-2xl font-heading font-bold text-kin-black dark:text-kin-off-white mb-2">
         Choose Your Features
       </h1>
       <p class="text-base text-kin-gray-500 dark:text-kin-gray-400">
-        Enable what your family needs. You can change these anytime in Settings.
+        Control which features are available and who can access them.
       </p>
     </div>
 
-    <div class="space-y-3">
+    <div class="space-y-3 overflow-y-auto">
       <div
         v-for="feature in features"
         :key="feature.key"
         class="p-4 rounded-xl border transition-all duration-200"
-        :class="feature.enabled
-          ? 'border-kin-gold/30 bg-kin-gold/5 dark:bg-kin-gold/10 dark:border-kin-gold/20'
-          : 'border-kin-border dark:border-kin-border-dark bg-white dark:bg-kin-surface-dark'"
+        :class="moduleState[feature.key]?.mode === 'off'
+          ? 'border-kin-border dark:border-kin-border-dark bg-white/50 dark:bg-kin-surface-dark/50 opacity-60'
+          : 'border-kin-gold/30 bg-kin-gold/5 dark:bg-kin-gold/10 dark:border-kin-gold/20'"
       >
-        <div class="flex items-center gap-4">
-          <div class="kin-icon-box flex-shrink-0">
+        <!-- Header: icon + name + description -->
+        <div class="flex items-start gap-3 mb-3">
+          <div class="kin-icon-box flex-shrink-0 mt-0.5">
             <component :is="feature.icon" class="w-5 h-5" />
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-kin-black dark:text-kin-off-white">{{ feature.name }}</p>
+            <p class="text-xs text-kin-gray-500 dark:text-kin-gray-400 mt-0.5">{{ feature.description }}</p>
           </div>
+        </div>
+
+        <!-- Access mode buttons -->
+        <div class="flex gap-1.5 ml-13">
           <button
-            class="relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-kin-gold/30 focus:ring-offset-2 dark:focus:ring-offset-kin-bg-dark"
-            :class="feature.enabled ? 'bg-kin-gold' : 'bg-kin-gray-200 dark:bg-kin-gray-700'"
-            role="switch"
-            :aria-checked="feature.enabled"
-            :aria-label="`Toggle ${feature.name}`"
-            @click="feature.enabled = !feature.enabled"
+            v-for="option in accessOptions"
+            :key="option.mode"
+            class="px-2.5 py-1 text-xs font-medium rounded-full transition-colors"
+            :class="isActiveMode(feature.key, option.mode)
+              ? option.activeClass
+              : 'bg-kin-gray-50 dark:bg-kin-gray-800 text-kin-gray-500 dark:text-kin-gray-400 hover:bg-kin-gray-100 dark:hover:bg-kin-gray-700'"
+            @click="setMode(feature.key, option.mode)"
           >
-            <span
-              class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
-              :class="feature.enabled ? 'translate-x-5' : 'translate-x-0'"
-            />
+            {{ option.label }}
           </button>
         </div>
-        <p class="text-xs text-kin-gray-500 dark:text-kin-gray-400 mt-2 ml-14">{{ feature.description }}</p>
+
+        <!-- Per-member checkboxes (Custom mode only) -->
+        <div v-if="moduleState[feature.key]?.mode === 'users'" class="mt-3 pt-3 border-t border-kin-border dark:border-kin-border-dark ml-13">
+          <p class="text-xs font-medium text-kin-gray-500 dark:text-kin-gray-400 mb-2">Select family members:</p>
+          <div class="flex flex-wrap gap-2">
+            <label
+              v-for="member in familyMembers"
+              :key="member.id"
+              class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-kin-surface-dark rounded-lg cursor-pointer hover:bg-kin-gray-50 dark:hover:bg-kin-gray-800 transition-colors text-sm"
+            >
+              <input
+                type="checkbox"
+                :checked="isMemberSelected(feature.key, member.id)"
+                @change="toggleMember(feature.key, member.id)"
+                class="rounded"
+                :disabled="(member.family_role || member.role) === 'parent'"
+              />
+              <span class="text-kin-black dark:text-kin-off-white">{{ member.name }}</span>
+              <span
+                v-if="(member.family_role || member.role) === 'parent'"
+                class="text-xs text-kin-gray-400 italic"
+              >(always)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Mode summary -->
+        <p class="text-xs text-kin-gray-400 mt-2 ml-13">
+          <template v-if="moduleState[feature.key]?.mode === 'all'">All family members can access this.</template>
+          <template v-else-if="moduleState[feature.key]?.mode === 'off'">Disabled for everyone.</template>
+          <template v-else-if="moduleState[feature.key]?.mode === 'roles'">Parents only.</template>
+          <template v-else-if="moduleState[feature.key]?.mode === 'users'">{{ getSelectedNames(feature.key) }}</template>
+        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, inject, onMounted } from 'vue'
+import { reactive, computed, inject, onMounted } from 'vue'
 import { useOnboardingStore } from '@/stores/onboarding'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import {
+  CalendarDaysIcon,
+  ClipboardDocumentListIcon,
   TrophyIcon,
   StarIcon,
   ChatBubbleLeftRightIcon,
@@ -61,51 +99,122 @@ const store = useOnboardingStore()
 const authStore = useAuthStore()
 const { setStepLoading, registerContinue } = inject('onboarding')
 
-const features = reactive([
+const familyMembers = computed(() => authStore.family?.members || [])
+
+const features = [
+  {
+    key: 'calendar',
+    name: 'Calendar',
+    description: 'View and manage family events from connected calendars.',
+    icon: CalendarDaysIcon,
+  },
+  {
+    key: 'tasks',
+    name: 'Tasks',
+    description: 'Create tasks, organize with tags, assign to family members.',
+    icon: ClipboardDocumentListIcon,
+  },
   {
     key: 'points',
     name: 'Points & Rewards',
-    description: 'Family members earn points when they complete tasks. Points go into a bank that can be spent on rewards you create — like screen time, a treat, or a day off chores. Parents can also give kudos (+1 point with a reason) or deduct points.',
+    description: 'Earn points for completing tasks. Points go into a bank that can be spent on rewards you create. Parents can give kudos or deduct points.',
     icon: TrophyIcon,
-    enabled: true,
   },
   {
     key: 'badges',
     name: 'Badges',
-    description: 'Achievements that unlock automatically — complete 10 tasks, earn 100 points, hit a 7-day streak. Hidden badges show as "???" until earned. Parents can also create custom badges and award them manually.',
+    description: 'Achievements that unlock automatically — task streaks, point milestones, and more. Parents can also create and award custom badges.',
     icon: StarIcon,
-    enabled: true,
   },
   {
     key: 'chat',
     name: 'AI Chat',
-    description: 'An AI assistant that knows your calendar, tasks, and vault. Ask things like "What\'s for dinner Tuesday?" or "What tasks are due this week?" You can add your own API key in Settings.',
+    description: 'An AI assistant that can answer questions about your calendar, tasks, and vault data.',
     icon: ChatBubbleLeftRightIcon,
-    enabled: true,
   },
   {
     key: 'vault',
     name: 'Family Vault',
-    description: 'Store sensitive family info — SSNs, insurance policies, medical records, school logins. Everything is encrypted. Parents see all entries; children only see what\'s shared with them.',
+    description: 'Encrypted storage for sensitive info — SSNs, insurance, medical records. Parents see everything; children only see what\'s shared with them.',
     icon: LockClosedIcon,
-    enabled: true,
   },
-])
+]
+
+const accessOptions = [
+  { mode: 'all', label: 'Everyone', activeClass: 'bg-kin-gold text-white' },
+  { mode: 'roles', label: 'Parents Only', activeClass: 'bg-kin-gold text-white' },
+  { mode: 'users', label: 'Custom', activeClass: 'bg-kin-gold text-white' },
+  { mode: 'off', label: 'Off', activeClass: 'bg-kin-error text-white' },
+]
+
+const moduleState = reactive({
+  calendar: { mode: 'all' },
+  tasks: { mode: 'all' },
+  points: { mode: 'all' },
+  badges: { mode: 'all' },
+  chat: { mode: 'all' },
+  vault: { mode: 'all' },
+})
+
+function isActiveMode(key, mode) {
+  return moduleState[key]?.mode === mode
+}
+
+function setMode(key, mode) {
+  if (mode === 'users') {
+    // Pre-select all parents when switching to custom
+    const parentIds = familyMembers.value
+      .filter(m => (m.family_role || m.role) === 'parent')
+      .map(m => m.id)
+    moduleState[key] = { mode: 'users', users: [...parentIds] }
+  } else if (mode === 'roles') {
+    moduleState[key] = { mode: 'roles', roles: ['parent'] }
+  } else {
+    moduleState[key] = { mode }
+  }
+}
+
+function isMemberSelected(key, memberId) {
+  return (moduleState[key]?.users || []).includes(memberId)
+}
+
+function toggleMember(key, memberId) {
+  const users = [...(moduleState[key]?.users || [])]
+  const idx = users.indexOf(memberId)
+  if (idx >= 0) {
+    users.splice(idx, 1)
+  } else {
+    users.push(memberId)
+  }
+  moduleState[key] = { ...moduleState[key], users }
+}
+
+function getSelectedNames(key) {
+  const userIds = moduleState[key]?.users || []
+  const names = familyMembers.value
+    .filter(m => userIds.includes(m.id))
+    .map(m => m.name)
+  return names.length ? names.join(', ') : 'No members selected (parents always have access).'
+}
 
 registerContinue(async () => {
-  // Only parents can toggle modules
   if (!authStore.isParent) return true
 
   setStepLoading(true)
   try {
-    const modules = {}
-    features.forEach(f => {
-      modules[f.key] = f.enabled
-    })
-    await api.put('/settings', { modules })
+    const module_access = {}
+    for (const f of features) {
+      const state = moduleState[f.key]
+      if (!state) continue
+      const rule = { mode: state.mode }
+      if (state.mode === 'roles') rule.roles = state.roles || ['parent']
+      if (state.mode === 'users') rule.users = state.users || []
+      module_access[f.key] = rule
+    }
+    await api.put('/settings', { module_access })
     return true
   } catch (err) {
-    console.error('Failed to save feature toggles:', err)
+    console.error('Failed to save feature access:', err)
     return false
   } finally {
     setStepLoading(false)
@@ -119,13 +228,20 @@ onMounted(() => {
     return
   }
 
-  // Pre-fill from status
-  if (store.status?.modules) {
-    features.forEach(f => {
-      if (store.status.modules[f.key] !== undefined) {
-        f.enabled = store.status.modules[f.key]
+  // Pre-fill from current family module_access if available
+  const access = authStore.family?.module_access
+  if (access) {
+    for (const key of Object.keys(moduleState)) {
+      if (access[key]) {
+        moduleState[key] = { ...access[key] }
       }
-    })
+    }
   }
 })
 </script>
+
+<style scoped>
+.ml-13 {
+  margin-left: 3.25rem;
+}
+</style>

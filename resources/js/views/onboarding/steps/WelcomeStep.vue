@@ -2,10 +2,10 @@
   <div class="flex-1 flex flex-col">
     <div class="text-center mb-8">
       <h1 class="text-2xl font-heading font-bold text-kin-black dark:text-kin-off-white mb-2">
-        Welcome to Kinhold
+        {{ isParent ? 'Welcome to Kinhold' : `Welcome to ${familyName || 'Kinhold'}` }}
       </h1>
       <p class="text-base text-kin-gray-500 dark:text-kin-gray-400">
-        Let's set up your family hub. This takes about 2 minutes.
+        {{ isParent ? "Let's set up your family hub. This takes about 2 minutes." : "Just a couple of quick things to get you set up." }}
       </p>
     </div>
 
