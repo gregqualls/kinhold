@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\PointRequestController;
 use App\Http\Controllers\Api\V1\RewardsController;
 use App\Http\Controllers\Api\V1\BadgesController;
 use App\Http\Controllers\Api\V1\FeaturedEventController;
+use App\Http\Controllers\Api\V1\McpTokenController;
 
 Route::prefix('v1')->group(function () {
     // Auth routes (no authentication required)
@@ -154,6 +155,13 @@ Route::prefix('v1')->group(function () {
             Route::put('/', [SettingsController::class, 'update']);
             Route::get('/email-preferences', [SettingsController::class, 'emailPreferences']);
             Route::put('/email-preferences', [SettingsController::class, 'updateEmailPreferences']);
+        });
+
+        // MCP Token
+        Route::prefix('/mcp')->group(function () {
+            Route::get('/token', [McpTokenController::class, 'show']);
+            Route::post('/token', [McpTokenController::class, 'store']);
+            Route::delete('/token', [McpTokenController::class, 'destroy']);
         });
     });
 

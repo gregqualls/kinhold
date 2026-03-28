@@ -408,6 +408,120 @@
       </div>
     </div>
 
+    <!-- Connect AI Assistant -->
+    <div class="card-lg mb-6">
+      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Connect AI Assistant</h2>
+      <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        Connect any MCP-compatible AI assistant to manage your family hub.
+      </p>
+
+      <!-- Status row -->
+      <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+        <div>
+          <div class="flex items-center gap-2">
+            <p class="font-medium text-prussian-500 dark:text-lavender-200">MCP Connection</p>
+            <span v-if="mcpToken.hasToken" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+              Connected
+            </span>
+            <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-lavender-100 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-400">
+              Not Connected
+            </span>
+          </div>
+          <p v-if="mcpToken.lastUsedAt" class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+            Last used: {{ new Date(mcpToken.lastUsedAt).toLocaleDateString() }}
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <BaseButton v-if="mcpToken.hasToken" variant="ghost" size="sm" @click="handleRevokeMcpToken" :loading="mcpRevoking">
+            Revoke
+          </BaseButton>
+          <BaseButton variant="secondary" size="sm" @click="handleGenerateMcpToken" :loading="mcpGenerating">
+            {{ mcpToken.hasToken ? 'Regenerate Token' : 'Generate Token' }}
+          </BaseButton>
+        </div>
+      </div>
+
+      <!-- One-time token display -->
+      <div v-if="mcpGenerated.show" class="mt-4 space-y-4">
+        <!-- Warning -->
+        <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <p class="text-sm text-amber-800 dark:text-amber-200 font-medium">
+            This token is shown only once. Copy what you need now — you won't be able to see it again.
+          </p>
+        </div>
+
+        <!-- Bearer Token -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Bearer Token</label>
+            <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('token', mcpGenerated.plainToken)">
+              <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+              {{ mcpCopied.token ? 'Copied!' : 'Copy' }}
+            </BaseButton>
+          </div>
+          <div class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-green-400 p-3 rounded-lg overflow-x-auto">
+            {{ mcpGenerated.plainToken }}
+          </div>
+        </div>
+
+        <!-- Client tabs -->
+        <div>
+          <div class="flex flex-wrap gap-1 border-b border-lavender-200 dark:border-prussian-700 mb-3">
+            <button
+              v-for="client in mcpGenerated.clients"
+              :key="client.id"
+              @click="mcpActiveClient = client.id"
+              :class="[
+                'px-3 py-1.5 text-sm font-medium rounded-t-lg transition-colors -mb-px',
+                mcpActiveClient === client.id
+                  ? 'border border-b-white dark:border-b-prussian-800 border-lavender-200 dark:border-prussian-700 text-prussian-500 dark:text-lavender-200 bg-white dark:bg-prussian-800'
+                  : 'text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200',
+              ]"
+            >
+              {{ client.name }}
+            </button>
+          </div>
+
+          <!-- Active client config -->
+          <div v-for="client in mcpGenerated.clients" :key="client.id" v-show="mcpActiveClient === client.id">
+            <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-2">{{ client.instructions }}</p>
+
+            <!-- Step-by-step instructions (ChatGPT) -->
+            <template v-if="client.steps">
+              <ol class="list-decimal list-inside space-y-2 text-sm text-prussian-500 dark:text-lavender-200 mb-3">
+                <li v-for="(step, i) in client.steps" :key="i" class="leading-relaxed">{{ step }}</li>
+              </ol>
+            </template>
+
+            <!-- Connection details (Other/Generic) -->
+            <template v-else-if="client.details">
+              <div class="space-y-2 mb-2">
+                <div v-for="(value, label) in client.details" :key="label" class="flex items-start gap-2">
+                  <span class="text-xs font-medium text-lavender-600 dark:text-lavender-400 uppercase min-w-[80px]">{{ label.replace('_', ' ') }}</span>
+                  <code class="text-sm font-mono text-prussian-500 dark:text-lavender-200 break-all">{{ value }}</code>
+                </div>
+              </div>
+              <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, Object.entries(client.details).map(([k, v]) => k + ': ' + v).join('\n'))">
+                <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                {{ mcpCopied[client.id] ? 'Copied!' : 'Copy Details' }}
+              </BaseButton>
+            </template>
+
+            <!-- Config file or CLI command (Claude Desktop, Claude Code) -->
+            <template v-else>
+              <div class="flex items-center justify-end mb-1">
+                <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, client.command || client.configJson)">
+                  <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                  {{ mcpCopied[client.id] ? 'Copied!' : 'Copy' }}
+                </BaseButton>
+              </div>
+              <pre class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Appearance -->
     <div class="card-lg mb-6">
       <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Appearance</h2>
@@ -986,6 +1100,24 @@ const aiConfig = reactive({
   hasSavedKey: false,
 })
 
+// MCP Token
+const mcpLoading = ref(false)
+const mcpGenerating = ref(false)
+const mcpRevoking = ref(false)
+const mcpToken = reactive({
+  hasToken: false,
+  createdAt: null,
+  lastUsedAt: null,
+})
+const mcpGenerated = reactive({
+  show: false,
+  plainToken: '',
+  clients: [],
+  mcpUrl: '',
+})
+const mcpActiveClient = ref('claude_desktop')
+const mcpCopied = reactive({})
+
 // Module access (granular)
 const savingModules = ref(false)
 const moduleAccessState = reactive({
@@ -1544,6 +1676,71 @@ const saveTaskAssignment = async () => {
   savingTaskAssignment.value = false
 }
 
+// ---- MCP Token ----
+const fetchMcpTokenStatus = async () => {
+  mcpLoading.value = true
+  try {
+    const { data } = await api.get('/mcp/token')
+    mcpToken.hasToken = data.has_token
+    mcpToken.createdAt = data.created_at
+    mcpToken.lastUsedAt = data.last_used_at
+  } catch {
+    // Silent — defaults are fine
+  }
+  mcpLoading.value = false
+}
+
+const handleGenerateMcpToken = async () => {
+  mcpGenerating.value = true
+  try {
+    const { data } = await api.post('/mcp/token')
+    mcpToken.hasToken = true
+    mcpToken.createdAt = data.created_at
+    mcpToken.lastUsedAt = null
+    mcpGenerated.show = true
+    mcpGenerated.plainToken = data.plain_token
+    mcpGenerated.mcpUrl = data.mcp_url
+    mcpGenerated.clients = data.clients.map(c => ({
+      ...c,
+      configJson: c.config ? JSON.stringify(c.config, null, 2) : null,
+    }))
+    mcpActiveClient.value = data.clients[0]?.id || 'claude_desktop'
+    // Reset copy state for all clients
+    mcpCopied.token = false
+    data.clients.forEach(c => { mcpCopied[c.id] = false })
+    success('MCP token generated!')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to generate token')
+  }
+  mcpGenerating.value = false
+}
+
+const handleRevokeMcpToken = async () => {
+  mcpRevoking.value = true
+  try {
+    await api.delete('/mcp/token')
+    mcpToken.hasToken = false
+    mcpToken.createdAt = null
+    mcpToken.lastUsedAt = null
+    mcpGenerated.show = false
+    mcpGenerated.plainToken = ''
+    success('MCP token revoked.')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to revoke token')
+  }
+  mcpRevoking.value = false
+}
+
+const copyMcpSnippet = async (field, text) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    mcpCopied[field] = true
+    setTimeout(() => { mcpCopied[field] = false }, 2000)
+  } catch {
+    notificationError('Failed to copy to clipboard')
+  }
+}
+
 // ---- Init ----
 onMounted(async () => {
   familyForm.name = family.value?.name || ''
@@ -1591,6 +1788,7 @@ onMounted(async () => {
   }
 
   await calendarStore.fetchConnections()
+  fetchMcpTokenStatus()
 
   // Load email preferences
   if (currentUser.value?.email) {
