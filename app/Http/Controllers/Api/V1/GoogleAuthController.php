@@ -55,7 +55,8 @@ class GoogleAuthController extends Controller
         $user = User::where('google_id', $googleUser->getId())->first();
 
         if ($user) {
-            // Existing Google user — log them in
+            // Existing Google user — refresh Google avatar and log them in
+            $user->update(['google_avatar' => $googleUser->getAvatar()]);
             $token = $user->createToken('google_auth')->plainTextToken;
 
             return redirect('/login?token=' . $token);
