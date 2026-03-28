@@ -47,10 +47,10 @@
             :key="event.id"
             class="flex items-start gap-3 pb-3 border-b border-lavender-200 dark:border-prussian-700 last:border-0 last:pb-0"
           >
-            <div class="w-2 h-full bg-wisteria-500 rounded-full mt-1" />
+            <div class="w-2 h-full rounded-full mt-1" :style="{ backgroundColor: event.user?.color || '#8B5CF6' }" />
             <div class="flex-1 min-w-0">
               <p class="font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ event.title }}</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ formatTime(event.start_date) }}</p>
+              <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ formatTime(event.start) }}</p>
             </div>
           </div>
         </div>
