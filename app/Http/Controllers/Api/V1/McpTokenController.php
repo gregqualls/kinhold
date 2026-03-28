@@ -61,22 +61,32 @@ class McpTokenController extends Controller
                     'config' => ['mcpServers' => $serverConfig],
                 ],
                 [
+                    'id' => 'chatgpt',
+                    'name' => 'ChatGPT',
+                    'instructions' => 'In ChatGPT, go to Settings > Connectors > Add, then enter:',
+                    'steps' => [
+                        'Open ChatGPT Settings > Connectors > Advanced > Developer Mode',
+                        'Click "Add connector"',
+                        'Set the URL to: ' . $mcpUrl,
+                        'Add authorization header: Bearer ' . $plainToken,
+                        'Save and start a new chat with the connector enabled',
+                    ],
+                ],
+                [
                     'id' => 'claude_code',
                     'name' => 'Claude Code',
                     'instructions' => 'Run in your terminal:',
                     'command' => 'claude mcp add kinhold --transport streamable-http --url ' . escapeshellarg($mcpUrl) . ' --header ' . escapeshellarg('Authorization: Bearer ' . $plainToken),
                 ],
                 [
-                    'id' => 'cursor',
-                    'name' => 'Cursor',
-                    'instructions' => 'Add to ~/.cursor/mcp.json (global) or .cursor/mcp.json (project):',
-                    'config' => ['mcpServers' => $serverConfig],
-                ],
-                [
-                    'id' => 'windsurf',
-                    'name' => 'Windsurf',
-                    'instructions' => 'Add to ~/.codeium/windsurf/mcp_config.json:',
-                    'config' => ['mcpServers' => $serverConfig],
+                    'id' => 'other',
+                    'name' => 'Other',
+                    'instructions' => 'Use these details to connect any MCP-compatible app:',
+                    'details' => [
+                        'url' => $mcpUrl,
+                        'transport' => 'streamable-http',
+                        'auth_header' => 'Authorization: Bearer ' . $plainToken,
+                    ],
                 ],
             ],
         ]);

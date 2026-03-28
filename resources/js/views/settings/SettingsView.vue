@@ -484,14 +484,39 @@
 
           <!-- Active client config -->
           <div v-for="client in mcpGenerated.clients" :key="client.id" v-show="mcpActiveClient === client.id">
-            <div class="flex items-center justify-between mb-1">
-              <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ client.instructions }}</p>
-              <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, client.command || client.configJson)">
+            <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-2">{{ client.instructions }}</p>
+
+            <!-- Step-by-step instructions (ChatGPT) -->
+            <template v-if="client.steps">
+              <ol class="list-decimal list-inside space-y-2 text-sm text-prussian-500 dark:text-lavender-200 mb-3">
+                <li v-for="(step, i) in client.steps" :key="i" class="leading-relaxed">{{ step }}</li>
+              </ol>
+            </template>
+
+            <!-- Connection details (Other/Generic) -->
+            <template v-else-if="client.details">
+              <div class="space-y-2 mb-2">
+                <div v-for="(value, label) in client.details" :key="label" class="flex items-start gap-2">
+                  <span class="text-xs font-medium text-lavender-600 dark:text-lavender-400 uppercase min-w-[80px]">{{ label.replace('_', ' ') }}</span>
+                  <code class="text-sm font-mono text-prussian-500 dark:text-lavender-200 break-all">{{ value }}</code>
+                </div>
+              </div>
+              <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, Object.entries(client.details).map(([k, v]) => k + ': ' + v).join('\n'))">
                 <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-                {{ mcpCopied[client.id] ? 'Copied!' : 'Copy' }}
+                {{ mcpCopied[client.id] ? 'Copied!' : 'Copy Details' }}
               </BaseButton>
-            </div>
-            <pre class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
+            </template>
+
+            <!-- Config file or CLI command (Claude Desktop, Claude Code) -->
+            <template v-else>
+              <div class="flex items-center justify-end mb-1">
+                <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, client.command || client.configJson)">
+                  <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                  {{ mcpCopied[client.id] ? 'Copied!' : 'Copy' }}
+                </BaseButton>
+              </div>
+              <pre class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
+            </template>
           </div>
         </div>
       </div>
