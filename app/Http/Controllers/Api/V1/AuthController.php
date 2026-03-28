@@ -161,6 +161,27 @@ class AuthController extends Controller
     }
 
     /**
+     * Restore the user's Google profile photo as their avatar.
+     */
+    public function restoreGoogleAvatar(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $this->authorizeAvatarChange($user);
+
+        if (!$user->google_avatar) {
+            return response()->json(['message' => 'No Google photo available.'], 422);
+        }
+
+        $this->deleteUploadedAvatarFile($user);
+        $user->update(['avatar' => $user->google_avatar]);
+
+        return response()->json([
+            'user' => UserResource::make($user->fresh()),
+            'message' => 'Google photo restored.',
+        ]);
+    }
+
+    /**
      * Upload a profile avatar image.
      */
     public function uploadAvatar(Request $request): JsonResponse
@@ -316,6 +337,7 @@ class AuthController extends Controller
                     'managed_by' => $m->managed_by,
                     'avatar' => $m->avatar,
                     'avatar_color' => $m->avatar_color,
+                    'google_avatar' => $m->google_avatar,
                     'date_of_birth' => $m->date_of_birth?->format('Y-m-d'),
                 ]),
             ] : null,

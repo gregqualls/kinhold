@@ -33,6 +33,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/user/avatar', [AuthController::class, 'uploadAvatar']);
         Route::delete('/user/avatar', [AuthController::class, 'deleteAvatar']);
         Route::put('/user/avatar/preset', [AuthController::class, 'setPresetAvatar']);
+        Route::post('/user/avatar/google', [AuthController::class, 'restoreGoogleAvatar']);
 
         // Onboarding
         Route::get('/onboarding/status', [OnboardingController::class, 'status']);

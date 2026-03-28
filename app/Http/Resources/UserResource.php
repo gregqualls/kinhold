@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             'managed_by' => $this->managed_by,
             'avatar' => $this->avatar,
             'avatar_color' => $this->avatar_color,
+            'google_avatar' => $this->google_avatar,
             'date_of_birth' => $this->date_of_birth?->format('Y-m-d'),
             'timezone' => $this->timezone,
             'onboarding_completed_at' => $this->onboarding_completed_at,
