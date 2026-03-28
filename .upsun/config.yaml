@@ -59,7 +59,7 @@ applications:
         mkdir -p storage/framework/cache
         mkdir -p storage/framework/views
         php artisan migrate --force
-        php artisan storage:link
+        php artisan storage:link || true
         php artisan db:seed --force
         php artisan app:seed-default-badges
         php artisan optimize:clear
