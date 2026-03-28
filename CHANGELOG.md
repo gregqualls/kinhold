@@ -2,6 +2,75 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-28 — Session 11: Settings Page Reorganization
+
+### What Was Done
+- **Settings page reorganized** into 7 collapsible sections (parent view) for better UX
+  - Family, Tasks & Points, AI & Integrations, Feature Access, Appearance, Notifications, Profiles & Avatars
+  - Related settings grouped together (task points + task assignment + task access now in one section)
+  - AI config + MCP token + calendar connections combined into "AI & Integrations"
+  - Setup wizard relocated into the Family section
+- **Created `ToggleSwitch.vue`** reusable component — standardizes all toggle switches
+  - Fixed avatar toggle inconsistency (was gold/smaller, now matches wisteria/standard size)
+  - Proper ARIA `role="switch"` and `aria-checked` on all toggles
+  - Supports `#thumb` slot for custom content (dark mode icons)
+- **Created `SettingsSection.vue`** collapsible card component
+  - Icon + title + description header with chevron indicator
+  - `v-show` body preserves reactive form state when collapsed
+  - URL hash deep-linking (e.g., `/settings#ai-integrations`)
+  - Multiple sections can be open simultaneously
+- **Created `docs/SETTINGS.md`** — documents storage map, component APIs, and how to add new settings
+- Child view unchanged (stays flat — too few items for collapsible sections)
+
+### Files Created
+- `resources/js/components/common/ToggleSwitch.vue`
+- `resources/js/components/settings/SettingsSection.vue`
+- `docs/SETTINGS.md`
+
+### Files Modified
+- `resources/js/views/settings/SettingsView.vue` — full template restructure, ToggleSwitch replacements, removed unused BaseCard import
+
+---
+
+## 2026-03-28 — Session 10: Profile Pictures & Avatars
+
+### What Was Done
+- **Profile pictures feature** (issue #18, PR #94) — full avatar management system
+  - Photo upload via controller-served route (works on Upsun mounts)
+  - 26 Phosphor icon presets across 5 categories (Animals, Nature, Space, Style, Vibes) — premium duotone weight
+  - 12 brand-approved color picker from the design guide
+  - Initials fallback with `@error` handling for broken images
+  - `AvatarEditor.vue` modal: color picker, upload, preset grid, "Use Google Photo" restore, remove
+  - `children_can_change_avatar` family setting (parent toggle)
+- **Installed `@phosphor-icons/vue`** (MIT, tree-shakeable) — also unlocks richer badge icons later
+- **Expanded `useFamilyColors`** to all 12 brand colors with user-selectable `avatar_color` column
+- **Google avatar persistence** — `google_avatar` column stores Google photo URL permanently, refreshed on every OAuth login, "Use Google Photo" button in editor
+- **Closed Phase 0 milestone** on GitHub (was 11/11 but still marked open)
+- **Closed #91** — duplicate tag prevention already fixed in `edf099f`
+
+### Files Created
+- `resources/js/components/common/AvatarEditor.vue`
+- `resources/js/components/common/avatarPresets.js`
+- `database/migrations/2026_03_28_203832_add_avatar_color_to_users_table.php`
+- `database/migrations/2026_03_28_211116_add_google_avatar_to_users_table.php`
+- `public/.user.ini`
+
+### Files Modified
+- `app/Http/Controllers/Api/V1/AuthController.php` — 5 new methods (upload, delete, preset, serve, restoreGoogle) + helpers
+- `app/Http/Controllers/Api/V1/GoogleAuthController.php` — saves google_avatar on all login paths
+- `app/Http/Controllers/Api/V1/SettingsController.php` — children_can_change_avatar setting
+- `app/Http/Resources/UserResource.php` — exposes avatar_color, google_avatar
+- `app/Models/User.php` — avatar_color, google_avatar fillable
+- `resources/js/components/common/UserAvatar.vue` — image/preset/initials priority chain with error fallback
+- `resources/js/composables/useFamilyColors.js` — all 12 brand colors, user choice support
+- `resources/js/stores/auth.js` — updateUserAvatar helper
+- `resources/js/views/settings/SettingsView.vue` — avatar editor integration, parent toggle
+- `routes/api.php` — 5 new avatar routes
+- `.upsun/config.yaml` — storage:link in deploy hook
+- `package.json` — @phosphor-icons/vue dependency
+
+---
+
 ## 2026-03-28 — Session 9: Onboarding Wizard
 
 ### What Was Done
