@@ -91,6 +91,9 @@ Route::prefix('v1')->group(function () {
         // Calendar (module: calendar)
         Route::prefix('/calendar')->middleware('module:calendar')->group(function () {
             Route::get('/events', [CalendarController::class, 'events']);
+            Route::post('/events', [CalendarController::class, 'storeEvent']);
+            Route::put('/events/{familyEvent}', [CalendarController::class, 'updateEvent']);
+            Route::delete('/events/{familyEvent}', [CalendarController::class, 'destroyEvent']);
             Route::get('/connections', [CalendarController::class, 'connections']);
             Route::post('/connect', [CalendarController::class, 'connect']);
             Route::delete('/connections/{connection}', [CalendarController::class, 'disconnect']);
