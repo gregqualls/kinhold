@@ -62,7 +62,23 @@ chmod +x setup.sh && ./setup.sh
 1. Fork the repo and create a branch from `main`.
 2. Make your changes. Keep commits focused.
 3. Ensure the frontend builds cleanly: `npx vite build`
-4. Open a pull request against `main` with a clear description of what and why.
+4. Run the **ship checklist** below before opening your PR.
+5. Open a pull request against `main` with a clear description of what and why.
+
+## Ship checklist
+
+A feature is **not done** until all applicable items are complete. This is enforced in our [feature issue template](.github/ISSUE_TEMPLATE/feature.yml).
+
+- [ ] API endpoints implemented
+- [ ] Vue frontend components built
+- [ ] **MCP server tools added** — MCP is a primary interface, not an afterthought
+- [ ] Pinia store created/updated
+- [ ] **Database seeder updated** — self-hosters must see the feature with demo data on first run
+- [ ] **Landing page updated** — if it's not on the landing page, it doesn't exist to new users
+- [ ] README updated (feature list, screenshots)
+- [ ] ROADMAP.md updated
+- [ ] CHANGELOG.md updated
+- [ ] Tests written
 
 ## Principles check
 
