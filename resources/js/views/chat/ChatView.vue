@@ -1,7 +1,36 @@
 <template>
   <div class="h-full flex flex-col">
+    <!-- Setup Prompt: No API Key -->
+    <div v-if="!checkingKey && !hasApiKey" class="flex-1 flex items-center justify-center px-4 md:px-6 py-4">
+      <div class="text-center max-w-sm">
+        <div class="w-16 h-16 rounded-2xl bg-golden-50 dark:bg-golden-900/20 flex items-center justify-center mx-auto mb-4">
+          <Cog6ToothIcon class="w-8 h-8 text-golden-500" />
+        </div>
+        <h2 class="text-xl font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-2">
+          {{ isParent ? 'Set Up AI Chat' : 'Chat Not Available' }}
+        </h2>
+        <p class="text-sm text-lavender-500 dark:text-lavender-400 mb-6">
+          <template v-if="isParent">
+            The AI assistant needs an API key to work. Add your Anthropic API key in
+            <strong>Settings &gt; API Configuration</strong> to activate this feature.
+          </template>
+          <template v-else>
+            This feature hasn't been set up yet. Ask a parent to configure it in Settings.
+          </template>
+        </p>
+        <router-link
+          v-if="isParent"
+          to="/settings"
+          class="inline-flex items-center gap-2 px-5 py-2.5 bg-wisteria-600 text-white rounded-xl hover:bg-wisteria-500 transition-colors text-sm font-medium"
+        >
+          Go to Settings
+          <ArrowRightIcon class="w-4 h-4" />
+        </router-link>
+      </div>
+    </div>
+
     <!-- Messages Container -->
-    <div ref="messagesContainer" class="flex-1 overflow-y-auto px-4 md:px-6 py-4">
+    <div v-else-if="!checkingKey" ref="messagesContainer" class="flex-1 overflow-y-auto px-4 md:px-6 py-4">
       <!-- Welcome / Empty State -->
       <div v-if="messages.length === 0 && !loading" class="flex items-center justify-center h-full">
         <div class="text-center max-w-sm">
@@ -87,7 +116,7 @@
     </div>
 
     <!-- Input Area -->
-    <div class="border-t border-lavender-200 dark:border-prussian-700 bg-white dark:bg-prussian-800 px-4 md:px-6 py-3 pb-safe-bottom">
+    <div v-if="!checkingKey && hasApiKey" class="border-t border-lavender-200 dark:border-prussian-700 bg-white dark:bg-prussian-800 px-4 md:px-6 py-3 pb-safe-bottom">
       <form @submit.prevent="handleSend" class="max-w-2xl mx-auto flex gap-2">
         <input
           v-model="messageInput"
@@ -109,13 +138,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
+import api from '@/services/api'
 import {
   SparklesIcon,
   PaperAirplaneIcon,
+  Cog6ToothIcon,
+  ArrowRightIcon,
 } from '@heroicons/vue/24/outline'
 
 const chatStore = useChatStore()
@@ -123,9 +155,12 @@ const authStore = useAuthStore()
 
 const { messages, loading } = storeToRefs(chatStore)
 const { currentUser } = storeToRefs(authStore)
+const isParent = computed(() => authStore.isParent)
 
 const messageInput = ref('')
 const messagesContainer = ref(null)
+const hasApiKey = ref(true) // assume true until checked to avoid flash
+const checkingKey = ref(true)
 
 const suggestedQuestions = [
   "What's on my calendar today?",
@@ -165,7 +200,16 @@ const quickSend = async (text) => {
 
 watch(messages, scrollToBottom, { deep: true })
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    const { data } = await api.get('/settings')
+    hasApiKey.value = data.settings?.ai_has_key || false
+  } catch {
+    // If settings fetch fails, let them try chatting (backend will error gracefully)
+    hasApiKey.value = true
+  } finally {
+    checkingKey.value = false
+  }
   scrollToBottom()
 })
 </script>
