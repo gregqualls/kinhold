@@ -25,6 +25,7 @@ const PointsFeedView = () => import('@/views/points/PointsFeedView.vue')
 const RewardsView = () => import('@/views/points/RewardsView.vue')
 const PointsHistoryView = () => import('@/views/points/PointsHistoryView.vue')
 const BadgesView = () => import('@/views/badges/BadgesView.vue')
+const OnboardingView = () => import('@/views/onboarding/OnboardingView.vue')
 
 const routes = [
   // Public landing page
@@ -61,6 +62,14 @@ const routes = [
     name: 'Register',
     component: RegisterView,
     meta: { requiresGuest: true },
+  },
+
+  // Onboarding
+  {
+    path: '/onboarding',
+    name: 'Onboarding',
+    component: OnboardingView,
+    meta: { requiresAuth: true, isOnboarding: true },
   },
 
   // App routes
@@ -186,6 +195,11 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     if (!authStore.isAuthenticated) {
       return next({ name: 'Login' })
+    }
+
+    // Redirect new users to onboarding (unless already there)
+    if (!to.meta.isOnboarding && authStore.user && !authStore.user.onboarding_completed_at) {
+      return next({ name: 'Onboarding' })
     }
   }
 
