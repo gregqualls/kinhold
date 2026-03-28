@@ -5,11 +5,14 @@
 ## 2026-03-28 — Session 11: Settings Page Reorganization
 
 ### What Was Done
-- **Settings page reorganized** into 7 collapsible sections (parent view) for better UX
-  - Family, Tasks & Points, AI & Integrations, Feature Access, Appearance, Notifications, Profiles & Avatars
+- **Settings page reorganized** into 6 collapsible sections (parent view) for better UX
+  - Family, Tasks & Points, AI & Integrations, Feature Access, Appearance, Notifications
+  - All sections start collapsed — click to expand what you need
   - Related settings grouped together (task points + task assignment + task access now in one section)
   - AI config + MCP token + calendar connections combined into "AI & Integrations"
   - Setup wizard relocated into the Family section
+  - Tasks & Points consolidated to a single "Save Changes" button (was 3 separate saves)
+- **Avatar permissions moved into Feature Access** — uses same Everyone/Parents Only/Off/Custom controls as other modules (was a standalone toggle in its own section)
 - **Created `ToggleSwitch.vue`** reusable component — standardizes all toggle switches
   - Fixed avatar toggle inconsistency (was gold/smaller, now matches wisteria/standard size)
   - Proper ARIA `role="switch"` and `aria-checked` on all toggles
@@ -18,7 +21,10 @@
   - Icon + title + description header with chevron indicator
   - `v-show` body preserves reactive form state when collapsed
   - URL hash deep-linking (e.g., `/settings#ai-integrations`)
-  - Multiple sections can be open simultaneously
+  - Toned-down dark mode hover state
+- **Fixed avatar bug** — parents editing a child's avatar would save to their own account instead
+  - Backend now accepts `user_id` param on all avatar endpoints, verifies parent+same-family
+  - Frontend passes `targetUser.id` in all AvatarEditor API calls
 - **Created `docs/SETTINGS.md`** — documents storage map, component APIs, and how to add new settings
 - Child view unchanged (stays flat — too few items for collapsible sections)
 
@@ -28,7 +34,9 @@
 - `docs/SETTINGS.md`
 
 ### Files Modified
-- `resources/js/views/settings/SettingsView.vue` — full template restructure, ToggleSwitch replacements, removed unused BaseCard import
+- `resources/js/views/settings/SettingsView.vue` — full template restructure into collapsible sections
+- `app/Http/Controllers/Api/V1/AuthController.php` — avatar target resolution for parent→child edits
+- `resources/js/components/common/AvatarEditor.vue` — passes user_id in all API calls
 
 ---
 
