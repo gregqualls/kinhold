@@ -20,7 +20,7 @@ These features are live and working:
 | Family calendar (read-only Google Calendar + ICS aggregation) | COMPLETE |
 | Encrypted family vault (categories, per-item permissions, document uploads) | COMPLETE |
 | AI chatbot (Claude-powered, queries calendar/tasks/vault) | COMPLETE |
-| MCP server (26 tools, full CRUD via Claude Desktop/Code) | COMPLETE |
+| MCP server (18 Laravel-native tools, full content coverage via Claude Desktop/Code) | COMPLETE |
 | Gamification (points ledger, kudos, leaderboard, rewards store) | COMPLETE |
 | Badges (auto-triggered + custom, hidden badges) | COMPLETE |
 | Email notifications (weekly digest, task assigned/completed, invites) | COMPLETE |
@@ -43,7 +43,7 @@ These features are live and working:
 | [#62](https://github.com/gregqualls/kinhold/issues/62) | Branding: evaluate project name and identity | High |
 | [#63](https://github.com/gregqualls/kinhold/issues/63) | Onboarding wizard for new families | High |
 | [#64](https://github.com/gregqualls/kinhold/issues/64) | Chat: show setup prompt when no API key configured | Medium |
-| [#75](https://github.com/gregqualls/kinhold/issues/75) | MCP server: full API parity (points, rewards, badges, settings) | Critical |
+| [#75](https://github.com/gregqualls/kinhold/issues/75) | MCP server: full API parity (points, rewards, badges, settings) — **18 tools built, pending TS cleanup** | Critical |
 | [#76](https://github.com/gregqualls/kinhold/issues/76) | Claude connector: manage Kinhold from Claude.ai chat | High |
 | [#77](https://github.com/gregqualls/kinhold/issues/77) | New feature checklist: enforce MCP, docs, landing page updates | High |
 | ~~#78~~ | ~~Database seeder~~ — merged into #77 | — |
