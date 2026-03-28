@@ -1044,7 +1044,7 @@ const { family, familyMembers, currentUser, isParent } = storeToRefs(authStore)
 const { connections } = storeToRefs(calendarStore)
 
 // ---- Section expand/collapse state ----
-const expandedSections = ref(new Set(['family']))
+const expandedSections = ref(new Set())
 
 const toggleSection = (id, open) => {
   const next = new Set(expandedSections.value)
