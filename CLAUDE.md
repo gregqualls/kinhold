@@ -216,7 +216,7 @@ chmod +x setup.sh && ./setup.sh
 
 ## Current Status (Updated: 2026-03-27)
 
-**Phase:** MVP deployed to production. Gamification system implemented. UI/UX overhaul in progress. Rebranded from Q32 Hub to Kinhold. **Pushed to GitHub as public open-source repo.**
+**Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, and MCP server all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.**
 
 **Production:** Deployed on Upsun at `kinhold.app` (project ID: `2rozcvqjtjdta`, Terra Nova org). GitHub integration auto-deploys on push to `main`. PRs auto-create preview environments. Never use `upsun push` — just push to GitHub.
 
@@ -236,6 +236,8 @@ chmod +x setup.sh && ./setup.sh
 - **Gamification system:** Points, kudos, leaderboard, rewards store, badges — all wired up
 - **Recurring tasks:** RRULE-based with daily artisan command
 - **Feature toggles:** Parents can enable/disable modules (calendar, tasks, vault, chat, points, badges)
+- **Onboarding wizard:** 5-step setup for parents (welcome, add family, calendar, tags, granular feature access). Simplified flow for joining members with feature explainer. Re-triggerable from Settings.
+- **Laravel-native MCP server:** 18 tools at `/mcp`, Sanctum bearer token auth, direct model access
 
 **Dark mode architecture (important for future work):**
 - `darkMode: 'class'` in Tailwind config — `<html class="dark">` toggles it

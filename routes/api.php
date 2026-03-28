@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\FamilyController;
-use App\Http\Controllers\Api\V1\TaskListController;
 use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\VaultController;
 use App\Http\Controllers\Api\V1\CalendarController;
@@ -44,21 +43,6 @@ Route::prefix('v1')->group(function () {
             Route::post('/members', [FamilyController::class, 'addMember']);
             Route::put('/members/{member}', [FamilyController::class, 'updateMember']);
             Route::delete('/members/{member}', [FamilyController::class, 'removeMember']);
-        });
-
-        // Task Lists (module: tasks)
-        Route::prefix('/task-lists')->middleware('module:tasks')->group(function () {
-            Route::get('/', [TaskListController::class, 'index']);
-            Route::post('/', [TaskListController::class, 'store']);
-            Route::get('/{taskList}', [TaskListController::class, 'show']);
-            Route::put('/{taskList}', [TaskListController::class, 'update']);
-            Route::delete('/{taskList}', [TaskListController::class, 'destroy']);
-
-            // Tasks under task list
-            Route::prefix('/{taskList}/tasks')->group(function () {
-                Route::get('/', [TaskController::class, 'index']);
-                Route::post('/', [TaskController::class, 'store']);
-            });
         });
 
         // Tags (module: tasks)

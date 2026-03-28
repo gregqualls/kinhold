@@ -55,7 +55,6 @@ class GenerateRecurringTasks extends Command
 
                 Task::create([
                     'family_id' => $template->family_id,
-                    'task_list_id' => $template->task_list_id,
                     'created_by' => $template->created_by,
                     'assigned_to' => $template->assigned_to,
                     'title' => $template->title,

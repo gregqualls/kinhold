@@ -7,7 +7,6 @@ use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
-use App\Models\TaskList;
 use App\Models\User;
 use App\Notifications\TaskAssignedNotification;
 use App\Notifications\TaskCompletedNotification;
@@ -46,11 +45,6 @@ class TaskController extends Controller
             });
         }
 
-        // Filter by task list (backward compat)
-        if ($request->filled('list')) {
-            $query->where('task_list_id', $request->query('list'));
-        }
-
         // Filter by status (complete/incomplete)
         if ($request->filled('status')) {
             if ($request->query('status') === 'complete') {
@@ -86,35 +80,12 @@ class TaskController extends Controller
     }
 
     /**
-     * Get tasks for a specific task list.
-     */
-    public function indexForList(Request $request, TaskList $taskList): JsonResponse
-    {
-        $this->authorize('view', $taskList);
-
-        $tasks = $taskList->tasks()
-            ->with(['creator', 'assignee', 'tags', 'parentTask'])
-            ->orderBy('sort_order')
-            ->get();
-
-        return response()->json([
-            'tasks' => TaskResource::collection($tasks),
-        ], 200);
-    }
-
-    /**
      * Create a new task.
      */
     public function store(StoreTaskRequest $request): JsonResponse
     {
         $family = $request->user()->currentFamily()->firstOrFail();
         $validated = $request->validated();
-
-        // Ensure task list belongs to current family if provided
-        if (!empty($validated['task_list_id'])) {
-            TaskList::where('family_id', $family->id)
-                ->findOrFail($validated['task_list_id']);
-        }
 
         // Validate assigned_to user is in same family if provided
         if ($request->filled('assigned_to')) {
@@ -136,7 +107,6 @@ class TaskController extends Controller
 
         $task = Task::create([
             'family_id' => $family->id,
-            'task_list_id' => $validated['task_list_id'] ?? null,
             'created_by' => $request->user()->id,
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,

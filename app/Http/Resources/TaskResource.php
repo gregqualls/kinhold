@@ -24,7 +24,6 @@ class TaskResource extends JsonResource
             'completed' => $this->completed_at !== null,
             'completed_at' => $this->completed_at,
             'sort_order' => $this->sort_order,
-            'task_list_id' => $this->task_list_id,
             'assigned_to_id' => $this->assigned_to,
             'points' => $this->points,
             'effective_points' => $this->getEffectivePoints(),

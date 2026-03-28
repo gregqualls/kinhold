@@ -19,7 +19,6 @@ class KinholdServer extends Server
         \App\Mcp\Tools\SearchFamily::class,
 
         // Tasks
-        \App\Mcp\Tools\ManageTaskLists::class,
         \App\Mcp\Tools\ManageTasks::class,
         \App\Mcp\Tools\CompleteTask::class,
         \App\Mcp\Tools\ManageTags::class,
