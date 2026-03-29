@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CalendarEventResource;
 use App\Models\CalendarConnection;
 use App\Models\FamilyEvent;
+use App\Models\Task;
 use App\Services\GoogleCalendarService;
 use App\Services\IcsCalendarService;
 use Carbon\Carbon;
@@ -99,6 +100,31 @@ class CalendarController extends Controller
                     'color' => $event->color ?? '#6366f1',
                 ],
                 'source' => 'manual',
+            ];
+        }
+
+        // ── Tasks with due dates ──
+        $tasks = Task::where('family_id', $familyId)
+            ->whereNotNull('due_date')
+            ->whereBetween('due_date', [$start, $end])
+            ->with('assignee:id,name')
+            ->get();
+
+        foreach ($tasks as $task) {
+            $allEvents[] = [
+                'id' => 'task-' . $task->id,
+                'title' => ($task->completed_at ? "\u{2705} " : '') . $task->title,
+                'description' => $task->description,
+                'start' => $task->due_date->toDateString(),
+                'end' => $task->due_date->toDateString(),
+                'all_day' => true,
+                'location' => null,
+                'calendar_id' => null,
+                'user' => [
+                    'name' => $task->assignee?->name ?? 'Unassigned',
+                    'color' => $task->completed_at ? '#9A9892' : '#B38A50',
+                ],
+                'source' => 'task',
             ];
         }
 
