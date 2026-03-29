@@ -262,7 +262,7 @@ class VaultController extends Controller
         $this->authorize('view', $entry);
 
         $validated = $request->validate([
-            'file' => 'required|file|max:10240', // 10MB max
+            'file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,gif,webp,doc,docx,xls,xlsx,txt,csv',
         ]);
 
         $file = $validated['file'];

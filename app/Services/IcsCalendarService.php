@@ -108,7 +108,22 @@ class IcsCalendarService
      */
     public static function subscribe(string $url, string $userId, ?string $name = null): CalendarConnection
     {
-        // Validate the URL is reachable and contains valid ICS data
+        // SECURITY: Validate URL scheme and block internal/private IP ranges (SSRF protection)
+        $parsed = parse_url($url);
+        $scheme = strtolower($parsed['scheme'] ?? '');
+        if (!in_array($scheme, ['http', 'https'])) {
+            throw new \Exception('Only HTTP and HTTPS URLs are supported.');
+        }
+
+        $host = $parsed['host'] ?? '';
+        $ip = gethostbyname($host);
+        if ($ip === $host && !filter_var($host, FILTER_VALIDATE_IP)) {
+            throw new \Exception('Could not resolve hostname.');
+        }
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+            throw new \Exception('Internal or private URLs are not allowed.');
+        }
+
         $response = Http::timeout(15)->get($url);
 
         if (!$response->successful()) {

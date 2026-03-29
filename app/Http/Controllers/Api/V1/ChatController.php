@@ -67,7 +67,7 @@ class ChatController extends Controller
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to process chat message: ' . $e->getMessage(),
+                'message' => 'Failed to process chat message. Please try again.',
             ], 500);
         }
     }

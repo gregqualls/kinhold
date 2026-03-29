@@ -23,8 +23,10 @@ class GrantPermissionRequest extends FormRequest
      */
     public function rules(): array
     {
+        $familyId = $this->user()->family_id;
+
         return [
-            'user_id' => 'required|exists:users,id',
+            'user_id' => "required|exists:users,id,family_id,{$familyId}",
             'permission_level' => 'required|in:view,edit',
         ];
     }

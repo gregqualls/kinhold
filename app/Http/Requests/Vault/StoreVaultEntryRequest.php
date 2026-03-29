@@ -23,13 +23,15 @@ class StoreVaultEntryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $familyId = $this->user()->family_id;
+
         return [
-            'vault_category_id' => 'required|exists:vault_categories,id',
+            'vault_category_id' => "required|exists:vault_categories,id,family_id,{$familyId}",
             'title' => 'required|string|max:255',
             'data' => 'required|array',
             'notes' => 'nullable|string',
             'permissions' => 'nullable|array',
-            'permissions.*' => 'exists:users,id',
+            'permissions.*' => "exists:users,id,family_id,{$familyId}",
         ];
     }
 }

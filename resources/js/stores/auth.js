@@ -186,16 +186,22 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Restore auth from saved token on app init
   const initAuth = async () => {
-    // Check for OAuth callback token in URL
+    // Check for OAuth callback auth code in URL (exchanged for token securely via POST)
     const urlParams = new URLSearchParams(window.location.search)
-    const oauthToken = urlParams.get('token')
+    const oauthCode = urlParams.get('code')
 
-    if (oauthToken) {
-      localStorage.setItem('auth_token', oauthToken)
-      api.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`
-      const cleanUrl = window.location.pathname
-      window.history.replaceState({}, document.title, cleanUrl)
-      await fetchUser()
+    if (oauthCode) {
+      // Clean URL immediately so the code isn't visible
+      window.history.replaceState({}, document.title, window.location.pathname)
+      try {
+        const response = await api.post('/auth/exchange', { code: oauthCode })
+        const oauthToken = response.data.token
+        localStorage.setItem('auth_token', oauthToken)
+        api.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`
+        await fetchUser()
+      } catch (err) {
+        error.value = 'Google sign-in failed. Please try again.'
+      }
       initialAuthChecked.value = true
       return
     }

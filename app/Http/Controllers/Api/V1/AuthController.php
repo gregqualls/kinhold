@@ -28,12 +28,14 @@ class AuthController extends Controller
 
         if ($request->filled('invite_code')) {
             $family = Family::where('invite_code', $request->validated('invite_code'))->firstOrFail();
-            $role = $request->validated('role', 'child');
+            // SECURITY: Always assign 'child' role when joining via invite code.
+            // Parents can promote members after they join.
+            $role = 'child';
         } else {
             $family = Family::create([
                 'name' => $request->validated('family_name'),
                 'slug' => Str::slug($request->validated('family_name')),
-                'invite_code' => Str::random(8),
+                'invite_code' => Str::random(16),
             ]);
             $role = 'parent';
         }

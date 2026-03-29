@@ -74,7 +74,7 @@ class FamilyController extends Controller
         // Generate invite code if not exists
         if (!$family->invite_code) {
             $family->update([
-                'invite_code' => Str::random(8),
+                'invite_code' => Str::random(16),
             ]);
         }
 
