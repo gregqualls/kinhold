@@ -352,103 +352,145 @@
         :model-value="expandedSections.has('ai-integrations')"
         @update:model-value="val => toggleSection('ai-integrations', val)"
       >
-        <!-- AI Provider Selection -->
+        <!-- AI Mode Toggle -->
         <div class="mb-6">
-          <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg mb-4">
-            <p class="text-sm text-blue-900 dark:text-blue-200">
-              Configure API keys for enhanced features like AI chat and calendar integration.
-            </p>
-          </div>
-
-          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
-            AI Provider (for Kinhold AI)
+          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-3">
+            AI Access
           </label>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+          <!-- Two-tab selector -->
+          <div class="grid grid-cols-2 gap-3 mb-5">
+            <!-- Kinhold AI tab -->
             <button
-              v-for="provider in aiProviders"
-              :key="provider.slug"
-              @click="selectAiProvider(provider.slug)"
+              @click="aiMode = 'kinhold'"
               :class="[
-                'relative flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 text-center',
-                aiConfig.provider === provider.slug
-                  ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 dark:ring-wisteria-400/20 bg-lavender-50 dark:bg-prussian-800'
-                  : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 dark:hover:border-prussian-500 bg-white dark:bg-prussian-800/50',
+                'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
+                aiMode === 'kinhold'
+                  ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 bg-lavender-50 dark:bg-prussian-800'
+                  : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 bg-white dark:bg-prussian-800/50',
               ]"
             >
-              <div
-                v-if="aiConfig.provider === provider.slug"
-                class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 dark:bg-wisteria-400 flex items-center justify-center"
-              >
+              <div v-if="aiMode === 'kinhold'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 flex items-center justify-center">
                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <div class="w-10 h-10 mb-2 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
-                <span class="text-lg font-bold">{{ providerIcon(provider.slug) }}</span>
+              <div class="w-8 h-8 rounded-lg bg-wisteria-100 dark:bg-wisteria-900/40 flex items-center justify-center mb-2">
+                <svg class="w-4 h-4 text-wisteria-600 dark:text-wisteria-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
               </div>
-              <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ provider.name }}</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">{{ provider.default_model }}</p>
+              <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">Use Kinhold AI</p>
+              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">Powered by Claude · Free in beta</p>
+            </button>
+
+            <!-- BYOK tab -->
+            <button
+              @click="aiMode = 'byok'"
+              :class="[
+                'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
+                aiMode === 'byok'
+                  ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 bg-lavender-50 dark:bg-prussian-800'
+                  : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 bg-white dark:bg-prussian-800/50',
+              ]"
+            >
+              <div v-if="aiMode === 'byok'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="w-8 h-8 rounded-lg bg-golden-100 dark:bg-golden-900/40 flex items-center justify-center mb-2">
+                <svg class="w-4 h-4 text-golden-600 dark:text-golden-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+              </div>
+              <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">My Own API Key</p>
+              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">Anthropic, OpenAI, or Google</p>
             </button>
           </div>
 
-          <!-- API Key Input -->
-          <div>
-            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
-              {{ selectedProviderName }} API Key
-            </label>
-            <div class="relative">
-              <input
-                v-model="aiConfig.apiKey"
-                :type="showAiKey ? 'text' : 'password'"
-                :placeholder="selectedProviderPlaceholder"
-                class="input-base pr-20"
-              />
+          <!-- Kinhold AI panel -->
+          <div v-if="aiMode === 'kinhold'" class="p-4 bg-wisteria-50 dark:bg-wisteria-900/20 border border-wisteria-200 dark:border-wisteria-800 rounded-lg">
+            <div class="flex items-start gap-3">
+              <svg class="w-5 h-5 text-wisteria-600 dark:text-wisteria-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p class="text-sm font-medium text-wisteria-800 dark:text-wisteria-200">You're all set</p>
+                <p class="text-xs text-wisteria-700 dark:text-wisteria-300 mt-0.5">
+                  Kinhold AI is powered by Anthropic's Claude. No API key needed — we handle it for you.
+                  This is free during the beta period.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- BYOK panel -->
+          <div v-if="aiMode === 'byok'" class="space-y-4">
+            <!-- Provider selection -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
-                type="button"
-                @click="showAiKey = !showAiKey"
-                class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs font-medium text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors"
+                v-for="provider in aiProviders"
+                :key="provider.slug"
+                @click="selectAiProvider(provider.slug)"
+                :class="[
+                  'relative flex flex-col items-center p-3 rounded-xl border-2 transition-all duration-200 text-center',
+                  aiConfig.provider === provider.slug
+                    ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 bg-lavender-50 dark:bg-prussian-800'
+                    : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 bg-white dark:bg-prussian-800/50',
+                ]"
               >
-                {{ showAiKey ? 'Hide' : 'Show' }}
+                <div class="w-8 h-8 mb-1.5 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
+                  <span class="text-base font-bold">{{ providerIcon(provider.slug) }}</span>
+                </div>
+                <p class="text-xs font-semibold text-prussian-500 dark:text-lavender-200">{{ provider.name }}</p>
               </button>
             </div>
-            <div class="flex items-center justify-between mt-1">
-              <p class="text-xs text-lavender-700 dark:text-lavender-400">
-                <template v-if="aiConfig.hasSavedKey && !aiConfig.apiKey">
-                  Current key: <span class="font-mono">{{ aiConfig.maskedKey }}</span>
-                </template>
-                <template v-else>
-                  Keep this secret. Used for family chat AI features.
-                </template>
+
+            <!-- API Key -->
+            <div>
+              <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1.5">
+                {{ selectedProviderName }} API Key
+              </label>
+              <div class="relative">
+                <input
+                  v-model="aiConfig.apiKey"
+                  :type="showAiKey ? 'text' : 'password'"
+                  :placeholder="selectedProviderPlaceholder"
+                  class="input-base pr-20"
+                />
+                <button type="button" @click="showAiKey = !showAiKey"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs font-medium text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 transition-colors">
+                  {{ showAiKey ? 'Hide' : 'Show' }}
+                </button>
+              </div>
+              <div class="flex items-center justify-between mt-1">
+                <p class="text-xs text-lavender-700 dark:text-lavender-400">
+                  <template v-if="aiConfig.hasSavedKey && !aiConfig.apiKey">
+                    Current key: <span class="font-mono">{{ aiConfig.maskedKey }}</span>
+                  </template>
+                  <template v-else>Keep this secret — stored encrypted.</template>
+                </p>
+                <a :href="selectedProviderHelpUrl" target="_blank" rel="noopener noreferrer"
+                  class="text-xs text-wisteria-600 dark:text-wisteria-400 hover:underline whitespace-nowrap ml-2">
+                  Get API key →
+                </a>
+              </div>
+            </div>
+
+            <!-- Model override -->
+            <div>
+              <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1.5">
+                Model Override <span class="font-normal text-lavender-500">(optional)</span>
+              </label>
+              <input v-model="aiConfig.model" type="text" :placeholder="selectedProviderDefaultModel" class="input-base" />
+              <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-1">
+                Leave blank to use {{ selectedProviderDefaultModel }}.
               </p>
-              <a
-                :href="selectedProviderHelpUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-xs text-wisteria-600 dark:text-wisteria-400 hover:underline whitespace-nowrap ml-2"
-              >
-                Get API key
-              </a>
             </div>
           </div>
 
-          <!-- Model Override -->
-          <div class="mt-3">
-            <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
-              Model Override (optional)
-            </label>
-            <input
-              v-model="aiConfig.model"
-              type="text"
-              :placeholder="selectedProviderDefaultModel"
-              class="input-base"
-            />
-            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-1">
-              Leave blank to use the default model ({{ selectedProviderDefaultModel }}).
-            </p>
-          </div>
-
-          <div class="flex gap-3 justify-end pt-3">
+          <div class="flex gap-3 justify-end pt-4">
             <BaseButton variant="ghost" @click="resetAiConfig">Reset</BaseButton>
             <BaseButton variant="primary" :loading="savingAi" @click="saveAiSettings">Save AI Settings</BaseButton>
           </div>
@@ -474,7 +516,7 @@
               </div>
               <div class="flex items-start gap-2">
                 <span class="font-medium min-w-[40px]">URL</span>
-                <code class="font-mono bg-wisteria-100 dark:bg-wisteria-900/40 px-1.5 py-0.5 rounded break-all">{{ mcpGenerated.mcpUrl || (window.location.origin + '/mcp') }}</code>
+                <code class="font-mono bg-wisteria-100 dark:bg-wisteria-900/40 px-1.5 py-0.5 rounded break-all">{{ mcpGenerated.mcpUrl || (appOrigin + '/mcp') }}</code>
               </div>
             </div>
             <p class="text-xs text-wisteria-600 dark:text-wisteria-300 mt-2">
@@ -1057,6 +1099,7 @@ import {
 
 const route = useRoute()
 const router = useRouter()
+const appOrigin = window.location.origin
 const authStore = useAuthStore()
 const calendarStore = useCalendarStore()
 const { success, error: notificationError } = useNotification()
@@ -1113,6 +1156,7 @@ const familyErrors = reactive({ name: '' })
 const savingAi = ref(false)
 const showAiKey = ref(false)
 const aiProviders = ref([])
+const aiMode = ref('kinhold') // 'kinhold' = use our key, 'byok' = bring your own
 const aiConfig = reactive({
   provider: 'anthropic',
   apiKey: '',
@@ -1616,10 +1660,11 @@ const saveAiSettings = async () => {
   savingAi.value = true
   try {
     const payload = {
+      ai_mode: aiMode.value,
       ai_provider: aiConfig.provider,
       ai_model: aiConfig.model || '',
     }
-    if (aiConfig.apiKey) {
+    if (aiMode.value === 'byok' && aiConfig.apiKey) {
       payload.ai_api_key = aiConfig.apiKey
     }
     const { data } = await api.put('/settings', payload)
@@ -1861,6 +1906,7 @@ onMounted(async () => {
       aiConfig.maskedKey = s.ai_api_key_masked || ''
       aiConfig.hasSavedKey = s.ai_has_key || false
       aiProviders.value = s.ai_providers || []
+      aiMode.value = s.ai_mode || (s.ai_has_key ? 'byok' : 'kinhold')
     } catch (err) {
       // Defaults are fine
     }
