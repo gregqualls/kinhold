@@ -57,17 +57,20 @@ class ChatbotService
         // Determine which provider to use
         $providerSlug = $settings['ai_provider'] ?? 'anthropic';
 
-        // Get the API key: family setting (encrypted) -> .env fallback for anthropic
+        // Get the API key based on ai_mode:
+        // 'kinhold' = use our platform key, 'byok' = use family's own key
+        $aiMode = $settings['ai_mode'] ?? 'kinhold';
         $apiKey = null;
-        if (!empty($settings['ai_api_key'])) {
+
+        if ($aiMode === 'byok' && !empty($settings['ai_api_key'])) {
             try {
                 $apiKey = decrypt($settings['ai_api_key']);
             } catch (\Exception $e) {
-                Log::warning('Failed to decrypt family AI API key, falling back to .env');
+                Log::warning('Failed to decrypt family AI API key, falling back to platform key');
             }
         }
 
-        // Fallback to .env for Anthropic
+        // Platform key: always available for anthropic (kinhold mode or byok fallback)
         if (empty($apiKey) && $providerSlug === 'anthropic') {
             $apiKey = config('kinhold.chatbot.api_key');
         }

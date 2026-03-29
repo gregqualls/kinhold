@@ -42,6 +42,7 @@ class SettingsController extends Controller
                 'default_points_low' => $settings['default_points_low'] ?? 5,
                 'default_points_medium' => $settings['default_points_medium'] ?? 10,
                 'default_points_high' => $settings['default_points_high'] ?? 20,
+                'ai_mode' => $settings['ai_mode'] ?? 'kinhold',
                 'ai_provider' => $settings['ai_provider'] ?? 'anthropic',
                 'ai_model' => $settings['ai_model'] ?? '',
                 'ai_api_key_masked' => $this->maskApiKey($settings),
@@ -91,6 +92,7 @@ class SettingsController extends Controller
             'default_points_low' => 'nullable|integer|min:0|max:1000',
             'default_points_medium' => 'nullable|integer|min:0|max:1000',
             'default_points_high' => 'nullable|integer|min:0|max:1000',
+            'ai_mode' => 'nullable|string|in:kinhold,byok',
             'ai_provider' => 'nullable|string|in:anthropic,openai,google',
             'ai_api_key' => 'nullable|string|max:500',
             'ai_model' => 'nullable|string|max:100',
@@ -152,6 +154,10 @@ class SettingsController extends Controller
         }
 
         // AI provider settings
+        if ($request->has('ai_mode')) {
+            $settings['ai_mode'] = $validated['ai_mode'];
+        }
+
         if ($request->has('ai_provider')) {
             $settings['ai_provider'] = $validated['ai_provider'];
         }
@@ -197,6 +203,7 @@ class SettingsController extends Controller
                 'default_points_low' => $settings['default_points_low'] ?? 5,
                 'default_points_medium' => $settings['default_points_medium'] ?? 10,
                 'default_points_high' => $settings['default_points_high'] ?? 20,
+                'ai_mode' => $settings['ai_mode'] ?? 'kinhold',
                 'ai_provider' => $settings['ai_provider'] ?? 'anthropic',
                 'ai_model' => $settings['ai_model'] ?? '',
                 'ai_api_key_masked' => $this->maskApiKey($settings),
