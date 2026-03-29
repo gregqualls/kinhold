@@ -461,6 +461,29 @@
             Connect any MCP-compatible AI assistant to manage your family hub.
           </p>
 
+          <!-- OAuth quick-connect info -->
+          <div class="p-4 bg-wisteria-50 dark:bg-wisteria-900/20 border border-wisteria-200 dark:border-wisteria-800 rounded-lg mb-4">
+            <p class="text-sm font-medium text-wisteria-800 dark:text-wisteria-200 mb-1">Quick Connect (Claude Desktop / ChatGPT)</p>
+            <p class="text-xs text-wisteria-700 dark:text-wisteria-300 mb-2">
+              Add Kinhold as a custom connector using OAuth — no token needed:
+            </p>
+            <div class="space-y-1 text-xs text-wisteria-600 dark:text-wisteria-300">
+              <div class="flex items-start gap-2">
+                <span class="font-medium min-w-[40px]">Name</span>
+                <code class="font-mono bg-wisteria-100 dark:bg-wisteria-900/40 px-1.5 py-0.5 rounded">Kinhold</code>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="font-medium min-w-[40px]">URL</span>
+                <code class="font-mono bg-wisteria-100 dark:bg-wisteria-900/40 px-1.5 py-0.5 rounded break-all">{{ mcpGenerated.mcpUrl || (window.location.origin + '/mcp') }}</code>
+              </div>
+            </div>
+            <p class="text-xs text-wisteria-600 dark:text-wisteria-300 mt-2">
+              Leave OAuth fields blank. You'll be prompted to sign in with Google when you connect.
+            </p>
+          </div>
+
+          <!-- Bearer token fallback (Claude Code / manual) -->
+          <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-2 font-medium">Advanced: Bearer Token (for Claude Code / manual setup)</p>
           <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
             <div>
               <div class="flex items-center gap-2">

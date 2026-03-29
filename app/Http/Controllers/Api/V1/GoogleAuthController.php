@@ -7,6 +7,8 @@ use App\Models\Family;
 use App\Models\User;
 use App\Services\BadgeService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -51,32 +53,82 @@ class GoogleAuthController extends Controller
             return redirect('/?auth_error=' . urlencode('Google authentication failed. Please try again.'));
         }
 
+        $isNewUser = ! User::where('google_id', $googleUser->getId())->exists()
+            && ! User::whereRaw('LOWER(email) = ?', [strtolower($googleUser->getEmail())])->exists();
+
+        $user = $this->findOrCreateUser($googleUser);
+        $token = $user->createToken('google_auth')->plainTextToken;
+
+        return redirect('/login?token=' . $token . ($isNewUser ? '&new_account=1' : ''));
+    }
+
+    /**
+     * Redirect to Google OAuth for session-based login.
+     *
+     * Used by Passport's /oauth/authorize endpoint which needs a web session.
+     * Unlike the SPA flow, this uses sessions (not stateless) so that after
+     * callback we can Auth::login() and redirect to /oauth/authorize.
+     */
+    public function oauthLogin(): RedirectResponse
+    {
+        return Socialite::driver('google')
+            ->redirectUrl(route('google.oauth-callback'))
+            ->redirect();
+    }
+
+    /**
+     * Handle Google OAuth callback for session-based login.
+     *
+     * Creates/finds the user, establishes a web session, then redirects
+     * to the originally intended URL (/oauth/authorize).
+     */
+    public function oauthCallback(): RedirectResponse
+    {
+        try {
+            $googleUser = Socialite::driver('google')
+                ->redirectUrl(route('google.oauth-callback'))
+                ->user();
+        } catch (\Exception $e) {
+            Log::error('Google OAuth callback failed (MCP oauth flow)', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect('/?auth_error=' . urlencode('Authentication failed.'));
+        }
+
+        $user = $this->findOrCreateUser($googleUser);
+
+        // Establish web session (key difference from the stateless SPA flow)
+        Auth::login($user);
+
+        // Redirect to the originally intended URL (/oauth/authorize?...)
+        return redirect()->intended('/');
+    }
+
+    /**
+     * Find an existing user by Google ID or email, or create a new one.
+     * Shared logic between the SPA callback and OAuth callback.
+     */
+    private function findOrCreateUser(object $googleUser): User
+    {
         // 1. Check if a user with this google_id already exists
         $user = User::where('google_id', $googleUser->getId())->first();
 
         if ($user) {
-            // Existing Google user — refresh Google avatar and log them in
             $user->update(['google_avatar' => $googleUser->getAvatar()]);
-            $token = $user->createToken('google_auth')->plainTextToken;
-
-            return redirect('/login?token=' . $token);
+            return $user;
         }
 
         // 2. Check if a user with this email exists (link Google account)
-        //    Use case-insensitive match — Google may return different casing
         $user = User::whereRaw('LOWER(email) = ?', [strtolower($googleUser->getEmail())])->first();
 
         if ($user) {
-            // Link Google account to existing user
             $user->update([
                 'google_id' => $googleUser->getId(),
                 'avatar' => $user->avatar ?? $googleUser->getAvatar(),
                 'google_avatar' => $googleUser->getAvatar(),
             ]);
-
-            $token = $user->createToken('google_auth')->plainTextToken;
-
-            return redirect('/login?token=' . $token);
+            return $user;
         }
 
         // 3. New user — create account + family
@@ -96,11 +148,8 @@ class GoogleAuthController extends Controller
             'family_role' => 'parent',
         ]);
 
-        // Seed default badges for the newly created family
         BadgeService::createDefaultBadges($family->id, $user->id);
 
-        $token = $user->createToken('google_auth')->plainTextToken;
-
-        return redirect('/login?token=' . $token . '&new_account=1');
+        return $user;
     }
 }
