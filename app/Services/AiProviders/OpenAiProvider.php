@@ -14,24 +14,36 @@ class OpenAiProvider implements AiProviderInterface
         $this->model = $model ?: self::defaultModel();
     }
 
-    public function ask(string $systemPrompt, string $userMessage): string
+    public function ask(string $systemPrompt, string $userMessage, array $conversationHistory = []): string
     {
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => $systemPrompt,
+            ],
+        ];
+
+        // Add conversation history
+        foreach ($conversationHistory as $msg) {
+            $messages[] = [
+                'role' => $msg['role'],
+                'content' => $msg['content'],
+            ];
+        }
+
+        // Add current user message
+        $messages[] = [
+            'role' => 'user',
+            'content' => $userMessage,
+        ];
+
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $this->apiKey,
             'Content-Type' => 'application/json',
         ])->timeout(60)->post('https://api.openai.com/v1/chat/completions', [
             'model' => $this->model,
             'max_tokens' => 1024,
-            'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => $systemPrompt,
-                ],
-                [
-                    'role' => 'user',
-                    'content' => $userMessage,
-                ],
-            ],
+            'messages' => $messages,
         ]);
 
         if ($response->failed()) {

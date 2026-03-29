@@ -14,9 +14,29 @@ class GoogleGeminiProvider implements AiProviderInterface
         $this->model = $model ?: self::defaultModel();
     }
 
-    public function ask(string $systemPrompt, string $userMessage): string
+    public function ask(string $systemPrompt, string $userMessage, array $conversationHistory = []): string
     {
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
+
+        $contents = [];
+
+        // Add conversation history (Gemini uses 'user' and 'model' roles)
+        foreach ($conversationHistory as $msg) {
+            $contents[] = [
+                'role' => $msg['role'] === 'assistant' ? 'model' : 'user',
+                'parts' => [
+                    ['text' => $msg['content']],
+                ],
+            ];
+        }
+
+        // Add current user message
+        $contents[] = [
+            'role' => 'user',
+            'parts' => [
+                ['text' => $userMessage],
+            ],
+        ];
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
@@ -26,14 +46,7 @@ class GoogleGeminiProvider implements AiProviderInterface
                     ['text' => $systemPrompt],
                 ],
             ],
-            'contents' => [
-                [
-                    'role' => 'user',
-                    'parts' => [
-                        ['text' => $userMessage],
-                    ],
-                ],
-            ],
+            'contents' => $contents,
             'generationConfig' => [
                 'maxOutputTokens' => 1024,
             ],
