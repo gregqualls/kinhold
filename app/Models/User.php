@@ -41,6 +41,18 @@ class User extends Authenticatable
     ];
 
     /**
+     * SECURITY: Attributes that should never come from user input.
+     * These are only set explicitly in controllers/services.
+     */
+    protected $guarded_from_request = [
+        'family_role',
+        'google_id',
+        'family_id',
+        'is_managed',
+        'managed_by',
+    ];
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>

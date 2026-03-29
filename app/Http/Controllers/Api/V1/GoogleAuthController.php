@@ -8,7 +8,9 @@ use App\Models\User;
 use App\Services\BadgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -57,9 +59,36 @@ class GoogleAuthController extends Controller
             && ! User::whereRaw('LOWER(email) = ?', [strtolower($googleUser->getEmail())])->exists();
 
         $user = $this->findOrCreateUser($googleUser);
+
+        // SECURITY: Use a short-lived, single-use auth code instead of exposing the token in the URL.
+        // The SPA exchanges this code for a real token via POST /api/v1/auth/exchange.
+        $authCode = Str::random(64);
+        Cache::put("auth_code:{$authCode}", $user->id, now()->addMinutes(2));
+
+        return redirect('/login?code=' . $authCode . ($isNewUser ? '&new_account=1' : ''));
+    }
+
+    /**
+     * Exchange a short-lived auth code for a Sanctum token.
+     * Called by the SPA after the OAuth redirect.
+     */
+    public function exchange(Request $request): JsonResponse
+    {
+        $request->validate(['code' => 'required|string|size:64']);
+
+        $userId = Cache::pull("auth_code:{$request->code}");
+
+        if (!$userId) {
+            return response()->json(['message' => 'Invalid or expired auth code'], 401);
+        }
+
+        $user = User::findOrFail($userId);
         $token = $user->createToken('google_auth')->plainTextToken;
 
-        return redirect('/login?token=' . $token . ($isNewUser ? '&new_account=1' : ''));
+        return response()->json([
+            'token' => $token,
+            'user' => new \App\Http\Resources\UserResource($user->load('family')),
+        ]);
     }
 
     /**
@@ -119,10 +148,21 @@ class GoogleAuthController extends Controller
             return $user;
         }
 
-        // 2. Check if a user with this email exists (link Google account)
+        // 2. Check if a user with this email exists
+        // SECURITY: Only auto-link if the user has no password set (was created via Google).
+        // If they registered with email/password, reject the login to prevent account takeover.
         $user = User::whereRaw('LOWER(email) = ?', [strtolower($googleUser->getEmail())])->first();
 
         if ($user) {
+            if ($user->password) {
+                // User registered with email/password — don't auto-link Google.
+                // They must link Google from within their authenticated session.
+                Log::warning('Google OAuth rejected: existing password-based account', [
+                    'email' => $user->email,
+                ]);
+                throw new \Exception('An account with this email already exists. Please log in with your password and link Google from Settings.');
+            }
+
             $user->update([
                 'google_id' => $googleUser->getId(),
                 'avatar' => $user->avatar ?? $googleUser->getAvatar(),
@@ -135,7 +175,7 @@ class GoogleAuthController extends Controller
         $family = Family::create([
             'name' => Str::before($googleUser->getName(), ' ') . ' Family',
             'slug' => Str::slug(Str::before($googleUser->getName(), ' ') . '-family'),
-            'invite_code' => Str::random(8),
+            'invite_code' => Str::random(16),
         ]);
 
         $user = User::create([
