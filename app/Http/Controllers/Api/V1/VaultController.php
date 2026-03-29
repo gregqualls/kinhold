@@ -295,6 +295,29 @@ class VaultController extends Controller
      * @param Document $document
      * @return JsonResponse
      */
+    /**
+     * Download a vault document.
+     */
+    public function downloadDocument(Request $request, Document $document)
+    {
+        // Ensure the document belongs to a vault entry in the user's family
+        $entry = $document->documentable;
+
+        if (!$entry || !($entry instanceof VaultEntry)) {
+            return response()->json(['message' => 'Document not found.'], 404);
+        }
+
+        $this->authorize('view', $entry);
+
+        $disk = \Storage::disk($document->disk ?? 'private');
+
+        if (!$disk->exists($document->path)) {
+            return response()->json(['message' => 'File not found.'], 404);
+        }
+
+        return $disk->download($document->path, $document->original_filename);
+    }
+
     public function deleteDocument(Request $request, Document $document): JsonResponse
     {
         $this->authorize('view', $document->vaultEntry);

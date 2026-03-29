@@ -14,8 +14,24 @@ class AnthropicProvider implements AiProviderInterface
         $this->model = $model ?: self::defaultModel();
     }
 
-    public function ask(string $systemPrompt, string $userMessage): string
+    public function ask(string $systemPrompt, string $userMessage, array $conversationHistory = []): string
     {
+        $messages = [];
+
+        // Add conversation history (last N turns)
+        foreach ($conversationHistory as $msg) {
+            $messages[] = [
+                'role' => $msg['role'],
+                'content' => $msg['content'],
+            ];
+        }
+
+        // Add current user message
+        $messages[] = [
+            'role' => 'user',
+            'content' => $userMessage,
+        ];
+
         $response = Http::withHeaders([
             'x-api-key' => $this->apiKey,
             'anthropic-version' => '2023-06-01',
@@ -24,12 +40,7 @@ class AnthropicProvider implements AiProviderInterface
             'model' => $this->model,
             'max_tokens' => 1024,
             'system' => $systemPrompt,
-            'messages' => [
-                [
-                    'role' => 'user',
-                    'content' => $userMessage,
-                ],
-            ],
+            'messages' => $messages,
         ]);
 
         if ($response->failed()) {

@@ -1,0 +1,76 @@
+/* Kinhold Email Theme */
+/* Brand colors: Gold accent #B38A50, Dark #373430, Surface #F5F2EE */
+
+/* Header */
+.header a {
+    color: #B38A50 !important;
+    font-size: 19px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* Body */
+body {
+    background-color: #F5F2EE;
+    color: #373430;
+}
+
+.body {
+    background-color: #F5F2EE;
+}
+
+.inner-body {
+    background-color: #ffffff;
+    border-color: #E4DED6;
+    border-width: 1px;
+}
+
+/* Headings */
+h1 {
+    color: #373430;
+    font-size: 18px;
+}
+
+/* Buttons */
+.button-primary {
+    background-color: #B38A50;
+    border-bottom: 8px solid #B38A50;
+    border-left: 18px solid #B38A50;
+    border-right: 18px solid #B38A50;
+    border-top: 8px solid #B38A50;
+}
+
+/* Links */
+a {
+    color: #B38A50;
+}
+
+/* Footer */
+.footer p {
+    color: #9A9892;
+    font-size: 12px;
+}
+
+/* Table */
+.table th {
+    border-bottom: 1px solid #E4DED6;
+}
+
+.table td {
+    color: #373430;
+}
+
+/* Panel (info/subcopy boxes) */
+.panel {
+    background-color: #FAF8F5;
+    border-left: 4px solid #B38A50;
+}
+
+.panel-item p {
+    color: #6B6966;
+}
+
+/* Subcopy */
+.subcopy p {
+    color: #9A9892;
+}

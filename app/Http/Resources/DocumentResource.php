@@ -19,7 +19,7 @@ class DocumentResource extends JsonResource
             'original_filename' => $this->original_filename,
             'mime_type' => $this->mime_type,
             'size' => $this->size,
-            'download_url' => route('documents.download', $this->id),
+            'download_url' => url("/api/v1/vault/documents/{$this->id}/download"),
             'created_at' => $this->created_at,
         ];
     }

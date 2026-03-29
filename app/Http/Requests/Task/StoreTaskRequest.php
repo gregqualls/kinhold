@@ -35,6 +35,7 @@ class StoreTaskRequest extends FormRequest
             'points' => 'nullable|integer|min:0',
             'recurrence_rule' => 'nullable|string|max:255',
             'recurrence_end' => 'nullable|date',
+            'allow_pileup' => 'nullable|boolean',
         ];
     }
 }

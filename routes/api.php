@@ -89,6 +89,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/entries/{entry}/permissions', [VaultController::class, 'grantPermission']);
             Route::delete('/entries/{entry}/permissions/{user}', [VaultController::class, 'revokePermission']);
             Route::post('/entries/{entry}/documents', [VaultController::class, 'uploadDocument']);
+            Route::get('/documents/{document}/download', [VaultController::class, 'downloadDocument']);
             Route::delete('/documents/{document}', [VaultController::class, 'deleteDocument']);
         });
 
