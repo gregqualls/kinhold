@@ -2,6 +2,43 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-29 — Session 12: AI Chat Activation + OAuth MCP Connector
+
+### What Was Done
+- **Laravel Passport OAuth 2.0 for MCP** — Claude Desktop can now connect with just the URL `https://kinhold.app/mcp`, no token copy-paste needed. Google OAuth popup → approve → connected.
+  - Installed `laravel/passport`, configured `api` guard, added `Mcp::oauthRoutes()`
+  - Added session-based Google OAuth login route (`/login` → `/auth/google/oauth-callback`) for Passport's consent screen
+  - Published and customized MCP authorize view (`resources/views/mcp/authorize.blade.php`)
+  - PASSPORT_PRIVATE_KEY / PASSPORT_PUBLIC_KEY set on Upsun via REST API (CLI couldn't parse PEM)
+  - SPA catch-all regex updated to not swallow `/oauth/` and `/.well-known/` routes
+- **Email notifications fixed** — Resend was being overridden by Upsun's platform SMTP injection. Disabled via `upsun environment:info enable_smtp false`. Confirmed delivery working.
+- **AI Chat activated** — Two-tab UI in Settings: "Use Kinhold AI" (platform key) vs "My Own API Key" (BYOK). `ai_mode` field added to family settings.
+  - `ChatbotService::resolveProvider()` respects `ai_mode` — kinhold mode uses `ANTHROPIC_API_KEY` env var, byok uses encrypted family key
+  - Fixed missing AI & Integrations section: `window.location.origin` in Vue template caused silent TypeError that dropped the entire `<SettingsSection>` — moved to `const appOrigin` in script setup
+  - Fixed chat gate: `ChatView.vue` now checks `ai_mode === 'kinhold'` OR `ai_has_key` (was only checking BYOK key)
+  - Fixed message display: API returns `{role, message}` but template expected `{sender, text}` — normalized in chat store
+  - Fixed model: API key account only has Claude 4.x models. `claude-3-5-sonnet-20241022` returns 404. Correct model is `claude-sonnet-4-5-20250929` (verified via models endpoint)
+- **4 GitHub issues created** for chat roadmap: #106 (expand context), #107 (child safety), #108 (hidden badge spoilers), #109 (stateless messages)
+
+### Files Modified
+- `composer.json` + 5 Passport migrations
+- `config/auth.php` — added Passport `api` guard
+- `app/Providers/AppServiceProvider.php` — Passport token expiry + auth view
+- `routes/ai.php` — `Mcp::oauthRoutes()` + `auth:api,sanctum` middleware
+- `routes/web.php` — OAuth login + callback routes, fixed SPA catch-all regex
+- `app/Http/Controllers/Api/V1/GoogleAuthController.php` — `oauthLogin()` + `oauthCallback()` for session flow
+- `resources/views/mcp/authorize.blade.php` — OAuth consent screen (published + customized)
+- `config/services.php` — standardized `RESEND_API_KEY`, default Anthropic model
+- `config/kinhold.php` — default Anthropic model
+- `.env.example` — updated mail section
+- `app/Services/ChatbotService.php` — `ai_mode` awareness in `resolveProvider()`
+- `app/Http/Controllers/Api/V1/SettingsController.php` — `ai_mode` in GET/PUT response + validation
+- `resources/js/views/settings/SettingsView.vue` — two-tab AI mode UI, `appOrigin` fix
+- `resources/js/views/chat/ChatView.vue` — chat gate fix
+- `resources/js/stores/chat.js` — normalize `{role,message}` → `{sender,text}`
+
+---
+
 ## 2026-03-28 — Session 11: Settings Page Reorganization
 
 ### What Was Done
