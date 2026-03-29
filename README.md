@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Elastic_2.0-blue.svg" alt="Elastic License 2.0" /></a>
   <a href="https://github.com/gregqualls/kinhold/stargazers"><img src="https://img.shields.io/github/stars/gregqualls/kinhold?style=social" alt="GitHub Stars" /></a>
 </p>
 
@@ -312,7 +312,10 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan. Coming up:
 
 ## License
 
-[MIT License](LICENSE) — use it, fork it, make it yours.
+Kinhold is licensed under the [Elastic License 2.0](LICENSE).
+
+**Free to use:** self-host it, fork it, modify it, run it for your family or internally at your company.
+**Not allowed:** white-labeling it, selling it, or offering it as a managed/hosted service to others.
 
 ---
 
