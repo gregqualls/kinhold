@@ -11,9 +11,9 @@
         @click="$emit('navigate')"
       >
         <!-- Icon -->
-        <span class="mb-2 select-none">
-          <template v-if="reward.icon">{{ reward.icon }}</template>
-          <GiftIcon v-else class="w-8 h-8 text-wisteria-500 dark:text-wisteria-400" />
+        <span class="mb-2 text-wisteria-500 dark:text-wisteria-400">
+          <IconRenderer v-if="reward.icon" :icon="reward.icon" :size="32" color="currentColor" />
+          <GiftIcon v-else class="w-8 h-8" />
         </span>
 
         <!-- Title -->
@@ -68,6 +68,7 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { StarIcon, CheckIcon, PlusIcon } from '@heroicons/vue/24/solid'
 import { GiftIcon } from '@heroicons/vue/24/outline'
+import IconRenderer from '@/components/common/IconRenderer.vue'
 
 const props = defineProps({
   rewards: {
