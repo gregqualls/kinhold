@@ -32,12 +32,20 @@ export const useChatStore = defineStore('chat', () => {
       // Remove optimistic message and add real one with AI response
       messages.value = messages.value.filter((m) => m.id !== optimisticId)
 
+      // Normalize API shape (role/message) → display shape (sender/text)
+      const normalize = (msg) => ({
+        id: msg.id,
+        text: msg.message ?? msg.text,
+        sender: msg.role ?? msg.sender,
+        created_at: msg.created_at,
+      })
+
       // Add the actual user message and AI response
       if (response.data.user_message) {
-        messages.value.push(response.data.user_message)
+        messages.value.push(normalize(response.data.user_message))
       }
       if (response.data.assistant_message) {
-        messages.value.push(response.data.assistant_message)
+        messages.value.push(normalize(response.data.assistant_message))
       }
       return { success: true }
     } catch (err) {
@@ -56,7 +64,12 @@ export const useChatStore = defineStore('chat', () => {
 
     try {
       const response = await api.get('/chat/history')
-      messages.value = response.data.messages
+      messages.value = (response.data.messages || []).map((msg) => ({
+        id: msg.id,
+        text: msg.message ?? msg.text,
+        sender: msg.role ?? msg.sender,
+        created_at: msg.created_at,
+      }))
       return { success: true }
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch chat history'
