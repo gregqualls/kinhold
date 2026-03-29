@@ -52,7 +52,7 @@ return [
     */
     'ai_providers' => [
         'anthropic' => [
-            'default_model' => env('AI_ANTHROPIC_MODEL', 'claude-sonnet-4-5-20250514'),
+            'default_model' => env('AI_ANTHROPIC_MODEL', 'claude-3-5-sonnet-20241022'),
         ],
         'openai' => [
             'default_model' => env('AI_OPENAI_MODEL', 'gpt-4o'),
