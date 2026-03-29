@@ -27,6 +27,11 @@ class VaultEntryPolicy
      */
     public function view(User $user, VaultEntry $entry): bool
     {
+        // SECURITY: Must belong to the same family
+        if ($user->family_id !== $entry->family_id) {
+            return false;
+        }
+
         if ($user->isParent()) {
             return true;
         }
@@ -54,6 +59,10 @@ class VaultEntryPolicy
      */
     public function update(User $user, VaultEntry $entry): bool
     {
+        if ($user->family_id !== $entry->family_id) {
+            return false;
+        }
+
         if ($user->isParent()) {
             return true;
         }
@@ -71,7 +80,7 @@ class VaultEntryPolicy
      */
     public function delete(User $user, VaultEntry $entry): bool
     {
-        return $user->isParent();
+        return $user->family_id === $entry->family_id && $user->isParent();
     }
 
     /**
@@ -83,6 +92,6 @@ class VaultEntryPolicy
      */
     public function managePermissions(User $user, VaultEntry $entry): bool
     {
-        return $user->isParent();
+        return $user->family_id === $entry->family_id && $user->isParent();
     }
 }

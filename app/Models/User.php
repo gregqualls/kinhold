@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, HasUuids, Notifiable;
 
@@ -38,6 +39,18 @@ class User extends Authenticatable
         'email_preferences',
         'easter_eggs_found',
         'onboarding_completed_at',
+    ];
+
+    /**
+     * SECURITY: Attributes that should never come from user input.
+     * These are only set explicitly in controllers/services.
+     */
+    protected $guarded_from_request = [
+        'family_role',
+        'google_id',
+        'family_id',
+        'is_managed',
+        'managed_by',
     ];
 
     /**

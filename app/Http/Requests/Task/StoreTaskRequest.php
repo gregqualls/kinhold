@@ -28,7 +28,7 @@ class StoreTaskRequest extends FormRequest
             'tag_ids' => 'nullable|array',
             'tag_ids.*' => 'exists:tags,id',
             'description' => 'nullable|string',
-            'assigned_to' => 'nullable|exists:users,id',
+            'assigned_to' => "nullable|exists:users,id,family_id,{$this->user()->family_id}",
             'due_date' => 'nullable|date',
             'priority' => 'nullable|in:low,medium,high',
             'is_family_task' => 'nullable|boolean',

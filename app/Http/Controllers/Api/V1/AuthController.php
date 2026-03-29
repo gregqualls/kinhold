@@ -28,12 +28,14 @@ class AuthController extends Controller
 
         if ($request->filled('invite_code')) {
             $family = Family::where('invite_code', $request->validated('invite_code'))->firstOrFail();
-            $role = $request->validated('role', 'child');
+            // SECURITY: Always assign 'child' role when joining via invite code.
+            // Parents can promote members after they join.
+            $role = 'child';
         } else {
             $family = Family::create([
                 'name' => $request->validated('family_name'),
                 'slug' => Str::slug($request->validated('family_name')),
-                'invite_code' => Str::random(8),
+                'invite_code' => Str::random(16),
             ]);
             $role = 'parent';
         }
@@ -55,6 +57,11 @@ class AuthController extends Controller
 
         // Send welcome email
         $user->notify(new WelcomeNotification($family, $isNewFamily));
+
+        // Send email verification (new users with email only, not managed accounts)
+        if ($user->email) {
+            $user->sendEmailVerificationNotification();
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -89,6 +96,20 @@ class AuthController extends Controller
             'token' => $token,
             'user' => UserResource::make($user->load('family')),
         ], 200);
+    }
+
+    /**
+     * Resend email verification notification.
+     */
+    public function resendVerification(Request $request): JsonResponse
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified'], 200);
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Verification email sent']);
     }
 
     /**

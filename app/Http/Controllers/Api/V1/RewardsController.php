@@ -72,6 +72,8 @@ class RewardsController extends Controller
      */
     public function update(Request $request, Reward $reward): JsonResponse
     {
+        abort_unless($reward->family_id === $request->user()->family_id, 404);
+
         if (!$request->user()->isParent()) {
             return response()->json(['message' => 'Only parents can update rewards'], 403);
         }
@@ -97,6 +99,8 @@ class RewardsController extends Controller
      */
     public function destroy(Request $request, Reward $reward): JsonResponse
     {
+        abort_unless($reward->family_id === $request->user()->family_id, 404);
+
         if (!$request->user()->isParent()) {
             return response()->json(['message' => 'Only parents can delete rewards'], 403);
         }
@@ -112,6 +116,7 @@ class RewardsController extends Controller
     public function purchase(Request $request, Reward $reward): JsonResponse
     {
         $user = $request->user();
+        abort_unless($reward->family_id === $user->family_id, 404);
 
         try {
             $result = $this->pointsService->redeemReward($reward, $user);
