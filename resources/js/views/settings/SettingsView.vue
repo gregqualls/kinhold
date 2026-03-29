@@ -516,7 +516,7 @@
               </div>
               <div class="flex items-start gap-2">
                 <span class="font-medium min-w-[40px]">URL</span>
-                <code class="font-mono bg-wisteria-100 dark:bg-wisteria-900/40 px-1.5 py-0.5 rounded break-all">{{ mcpGenerated.mcpUrl || (window.location.origin + '/mcp') }}</code>
+                <code class="font-mono bg-wisteria-100 dark:bg-wisteria-900/40 px-1.5 py-0.5 rounded break-all">{{ mcpGenerated.mcpUrl || (appOrigin + '/mcp') }}</code>
               </div>
             </div>
             <p class="text-xs text-wisteria-600 dark:text-wisteria-300 mt-2">
@@ -1099,6 +1099,7 @@ import {
 
 const route = useRoute()
 const router = useRouter()
+const appOrigin = window.location.origin
 const authStore = useAuthStore()
 const calendarStore = useCalendarStore()
 const { success, error: notificationError } = useNotification()

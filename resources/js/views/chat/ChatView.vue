@@ -203,7 +203,7 @@ watch(messages, scrollToBottom, { deep: true })
 onMounted(async () => {
   try {
     const { data } = await api.get('/settings')
-    hasApiKey.value = data.settings?.ai_has_key || false
+    hasApiKey.value = data.settings?.ai_mode === 'kinhold' || data.settings?.ai_has_key || false
   } catch {
     // If settings fetch fails, let them try chatting (backend will error gracefully)
     hasApiKey.value = true
