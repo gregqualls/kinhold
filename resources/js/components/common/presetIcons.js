@@ -39,6 +39,11 @@ import {
   PhGraduationCap,
   PhBook,
   PhPencil,
+  PhStethoscope,
+  PhPill,
+  PhCamera,
+  PhCar,
+  PhFlag,
 } from '@phosphor-icons/vue'
 
 /**
@@ -88,11 +93,20 @@ export const presetIconMap = {
 
   // Travel
   airplane: PhAirplane,
+  car: PhCar,
 
   // School
   graduation: PhGraduationCap,
   book: PhBook,
   pencil: PhPencil,
+
+  // Medical
+  stethoscope: PhStethoscope,
+  pill: PhPill,
+
+  // Misc
+  camera: PhCamera,
+  flag: PhFlag,
 }
 
 export const presetIconKeys = Object.keys(presetIconMap)
