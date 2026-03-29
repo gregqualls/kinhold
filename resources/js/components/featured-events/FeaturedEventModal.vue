@@ -74,20 +74,7 @@
         <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-2">
           Icon
         </label>
-        <div class="flex flex-wrap gap-2">
-          <button
-            v-for="emoji in emojiOptions"
-            :key="emoji"
-            type="button"
-            @click="form.icon = emoji"
-            class="w-10 h-10 rounded-lg flex items-center justify-center text-xl transition-all"
-            :class="form.icon === emoji
-              ? 'bg-wisteria-100 dark:bg-wisteria-900/40 ring-2 ring-wisteria-400 scale-110'
-              : 'bg-lavender-50 dark:bg-prussian-700 hover:bg-lavender-100 dark:hover:bg-prussian-600'"
-          >
-            {{ emoji }}
-          </button>
-        </div>
+        <IconPicker v-model="form.icon" />
       </div>
 
       <!-- Color picker -->
@@ -134,6 +121,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import BaseModal from '@/components/common/BaseModal.vue'
+import IconPicker from '@/components/common/IconPicker.vue'
 
 const props = defineProps({
   show: Boolean,
@@ -144,25 +132,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'save'])
-
-const emojiOptions = [
-  '\u{1F389}', // party popper
-  '\u{1F382}', // birthday cake
-  '\u{1F3C8}', // football
-  '\u26BD',     // soccer
-  '\u{1F3C0}', // basketball
-  '\u{1F384}', // christmas tree
-  '\u{1F3D6}\uFE0F', // beach
-  '\u{1F383}', // jack-o-lantern
-  '\u{1F381}', // wrapped gift
-  '\u{1F393}', // graduation cap
-  '\u2708\uFE0F', // airplane
-  '\u{1F3B5}', // musical note
-  '\u{1F4DA}', // books
-  '\u{1F3AE}', // game controller
-  '\u2764\uFE0F', // red heart
-  '\u2B50',     // star
-]
 
 const colorOptions = [
   { value: '#8B5CF6', label: 'Wisteria' },
@@ -180,7 +149,7 @@ const defaultForm = () => ({
   description: '',
   event_date: '',
   event_time: '',
-  icon: '\u{1F389}',
+  icon: 'confetti',
   color: '#8B5CF6',
   recurrence: 'none',
 })
@@ -199,7 +168,7 @@ watch(
           description: props.event.description || '',
           event_date: props.event.event_date || '',
           event_time: props.event.event_time || '',
-          icon: props.event.icon || '\u{1F389}',
+          icon: props.event.icon || 'confetti',
           color: props.event.color || '#8B5CF6',
           recurrence: props.event.recurrence || 'none',
         }
