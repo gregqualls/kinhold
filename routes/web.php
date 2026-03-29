@@ -18,6 +18,24 @@ use App\Http\Controllers\Api\V1\GoogleAuthController;
 Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
 
+// Email verification (signed URL from email)
+Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $request, string $id, string $hash) {
+    $user = \App\Models\User::findOrFail($id);
+
+    if (!hash_equals(sha1($user->getEmailForVerification()), $hash)) {
+        return redirect('/?verify_error=invalid');
+    }
+
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    return redirect('/login?verified=1');
+})->middleware('signed')->name('verification.verify');
+
+// Google account linking (from Settings, for existing email/password users)
+Route::get('/auth/google/link-callback', [GoogleAuthController::class, 'linkCallback'])->name('google.link-callback');
+
 // OAuth login flow for MCP clients (Passport needs a web session)
 // Uses a separate path so /login stays as the SPA catch-all (no conflict)
 Route::get('/login', [GoogleAuthController::class, 'oauthLogin'])->name('login');

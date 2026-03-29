@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Exceptions\PendingLinkException;
 use App\Http\Controllers\Controller;
 use App\Models\Family;
 use App\Models\User;
 use App\Services\BadgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -56,10 +59,173 @@ class GoogleAuthController extends Controller
         $isNewUser = ! User::where('google_id', $googleUser->getId())->exists()
             && ! User::whereRaw('LOWER(email) = ?', [strtolower($googleUser->getEmail())])->exists();
 
-        $user = $this->findOrCreateUser($googleUser);
+        try {
+            $user = $this->findOrCreateUser($googleUser);
+        } catch (PendingLinkException $e) {
+            // Redirect to the SPA link-confirmation page with the pending code
+            return redirect('/login?link_pending=' . $e->pendingCode . '&email=' . urlencode($e->email));
+        }
+
+        // SECURITY: Use a short-lived, single-use auth code instead of exposing the token in the URL.
+        // The SPA exchanges this code for a real token via POST /api/v1/auth/exchange.
+        $authCode = Str::random(64);
+        Cache::put("auth_code:{$authCode}", $user->id, now()->addMinutes(2));
+
+        return redirect('/login?code=' . $authCode . ($isNewUser ? '&new_account=1' : ''));
+    }
+
+    /**
+     * Exchange a short-lived auth code for a Sanctum token.
+     * Called by the SPA after the OAuth redirect.
+     */
+    public function exchange(Request $request): JsonResponse
+    {
+        $request->validate(['code' => 'required|string|size:64']);
+
+        $userId = Cache::pull("auth_code:{$request->code}");
+
+        if (!$userId) {
+            return response()->json(['message' => 'Invalid or expired auth code'], 401);
+        }
+
+        $user = User::findOrFail($userId);
         $token = $user->createToken('google_auth')->plainTextToken;
 
-        return redirect('/login?token=' . $token . ($isNewUser ? '&new_account=1' : ''));
+        return response()->json([
+            'token' => $token,
+            'user' => new \App\Http\Resources\UserResource($user->load('family')),
+        ]);
+    }
+
+    /**
+     * Confirm linking a Google account to an existing password-based account.
+     * The user enters their password to prove they own the account.
+     */
+    public function confirmLink(Request $request): JsonResponse
+    {
+        $request->validate([
+            'pending_code' => 'required|string|size:64',
+            'password' => 'required|string',
+        ]);
+
+        $pending = Cache::pull("google_link_pending:{$request->pending_code}");
+
+        if (!$pending) {
+            return response()->json(['message' => 'Link request expired. Please try again.'], 401);
+        }
+
+        $user = User::findOrFail($pending['user_id']);
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+            // Put it back so they can retry (but within the 10-min window)
+            Cache::put("google_link_pending:{$request->pending_code}", $pending, now()->addMinutes(5));
+            return response()->json(['message' => 'Incorrect password'], 401);
+        }
+
+        // Link the Google account
+        $user->update([
+            'google_id' => $pending['google_id'],
+            'google_avatar' => $pending['google_avatar'],
+        ]);
+
+        // Create a token and log them in
+        $token = $user->createToken('google_auth')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => new \App\Http\Resources\UserResource($user->load('family')),
+            'message' => 'Google account linked successfully!',
+        ]);
+    }
+
+    /**
+     * Initiate Google account linking from Settings (authenticated user).
+     * Returns the Google OAuth URL with a special state parameter.
+     */
+    public function linkRedirect(Request $request): JsonResponse
+    {
+        $state = encrypt('link:' . $request->user()->id);
+
+        $url = Socialite::driver('google')
+            ->stateless()
+            ->with(['state' => $state])
+            ->redirectUrl(url('/auth/google/link-callback'))
+            ->redirect()
+            ->getTargetUrl();
+
+        return response()->json(['url' => $url]);
+    }
+
+    /**
+     * Handle callback for Google account linking.
+     * Links the Google account to the authenticated user's existing account.
+     */
+    public function linkCallback(Request $request)
+    {
+        $rawState = $request->query('state');
+
+        try {
+            $decrypted = decrypt($rawState);
+        } catch (\Exception $e) {
+            return redirect('/settings?google_error=' . urlencode('Invalid link request.'));
+        }
+
+        if (!str_starts_with($decrypted, 'link:')) {
+            return redirect('/settings?google_error=' . urlencode('Invalid link request.'));
+        }
+
+        $userId = substr($decrypted, 5);
+
+        try {
+            $googleUser = Socialite::driver('google')
+                ->stateless()
+                ->redirectUrl(url('/auth/google/link-callback'))
+                ->user();
+        } catch (\Exception $e) {
+            Log::error('Google link callback failed', ['error' => $e->getMessage()]);
+            return redirect('/settings?google_error=' . urlencode('Google authentication failed.'));
+        }
+
+        $user = User::findOrFail($userId);
+
+        // Check if this Google account is already linked to a different user
+        $existing = User::where('google_id', $googleUser->getId())->where('id', '!=', $user->id)->first();
+        if ($existing) {
+            return redirect('/settings?google_error=' . urlencode('This Google account is already linked to another user.'));
+        }
+
+        // Check that the Google email matches the user's email
+        if (strtolower($googleUser->getEmail()) !== strtolower($user->email)) {
+            return redirect('/settings?google_error=' . urlencode('Google email does not match your account email.'));
+        }
+
+        $user->update([
+            'google_id' => $googleUser->getId(),
+            'google_avatar' => $googleUser->getAvatar(),
+        ]);
+
+        return redirect('/settings?google_linked=1');
+    }
+
+    /**
+     * Unlink Google account from the authenticated user.
+     */
+    public function unlink(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (!$user->google_id) {
+            return response()->json(['message' => 'No Google account linked'], 422);
+        }
+
+        // Don't allow unlinking if user has no password (would lock them out)
+        if (!$user->password) {
+            return response()->json(['message' => 'Set a password first before unlinking Google'], 422);
+        }
+
+        $user->update(['google_id' => null]);
+
+        return response()->json(['message' => 'Google account unlinked']);
     }
 
     /**
@@ -119,10 +285,25 @@ class GoogleAuthController extends Controller
             return $user;
         }
 
-        // 2. Check if a user with this email exists (link Google account)
+        // 2. Check if a user with this email exists
+        // SECURITY: Only auto-link if the user has no password set (was created via Google).
+        // If they registered with email/password, reject the login to prevent account takeover.
         $user = User::whereRaw('LOWER(email) = ?', [strtolower($googleUser->getEmail())])->first();
 
         if ($user) {
+            if ($user->password) {
+                // User registered with email/password — store Google info temporarily
+                // and redirect to a page where they can enter their password to confirm the link.
+                $pendingCode = Str::random(64);
+                Cache::put("google_link_pending:{$pendingCode}", [
+                    'user_id' => $user->id,
+                    'google_id' => $googleUser->getId(),
+                    'google_avatar' => $googleUser->getAvatar(),
+                ], now()->addMinutes(10));
+
+                throw new PendingLinkException($pendingCode, $user->email);
+            }
+
             $user->update([
                 'google_id' => $googleUser->getId(),
                 'avatar' => $user->avatar ?? $googleUser->getAvatar(),
@@ -135,7 +316,7 @@ class GoogleAuthController extends Controller
         $family = Family::create([
             'name' => Str::before($googleUser->getName(), ' ') . ' Family',
             'slug' => Str::slug(Str::before($googleUser->getName(), ' ') . '-family'),
-            'invite_code' => Str::random(8),
+            'invite_code' => Str::random(16),
         ]);
 
         $user = User::create([

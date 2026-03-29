@@ -28,6 +28,21 @@
         </div>
       </div>
 
+      <!-- Email Verification Banner -->
+      <div v-if="showVerificationBanner" class="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-2 flex items-center justify-between gap-2">
+        <p class="text-sm text-amber-800 dark:text-amber-300">
+          Please verify your email address. Check your inbox for a verification link.
+        </p>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button @click="handleResendVerification" :disabled="resendingVerification" class="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline disabled:opacity-50">
+            {{ resendingVerification ? 'Sending...' : 'Resend' }}
+          </button>
+          <button @click="dismissVerificationBanner" class="text-amber-500 hover:text-amber-700 dark:hover:text-amber-300">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      </div>
+
       <!-- Main Area -->
       <main
         class="flex-1 overflow-y-auto min-h-0"
@@ -111,6 +126,25 @@ provide('easterEggs', easterEggsRef)
 const isAuthPage = computed(() => {
   return ['Login', 'Register', 'Landing', 'Privacy', 'Terms', 'Onboarding'].includes(route.name)
 })
+
+// Email verification banner
+const verificationDismissed = ref(false)
+const resendingVerification = ref(false)
+const showVerificationBanner = computed(() => {
+  if (isAuthPage.value || verificationDismissed.value) return false
+  const u = currentUser.value
+  return u && u.email && !u.email_verified_at
+})
+
+const dismissVerificationBanner = () => {
+  verificationDismissed.value = true
+}
+
+const handleResendVerification = async () => {
+  resendingVerification.value = true
+  await authStore.resendVerification()
+  resendingVerification.value = false
+}
 </script>
 
 <style>

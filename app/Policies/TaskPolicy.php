@@ -27,7 +27,7 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        return $user->currentFamily()->first()->id === $task->taskList->family_id;
+        return $user->family_id === $task->family_id;
     }
 
     /**
@@ -50,8 +50,12 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return $user->id === $task->created_by 
-            || $user->id === $task->assigned_to 
+        if ($user->family_id !== $task->family_id) {
+            return false;
+        }
+
+        return $user->id === $task->created_by
+            || $user->id === $task->assigned_to
             || $user->isParent();
     }
 
@@ -64,6 +68,10 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
+        if ($user->family_id !== $task->family_id) {
+            return false;
+        }
+
         return $user->id === $task->created_by || $user->isParent();
     }
 
@@ -76,8 +84,12 @@ class TaskPolicy
      */
     public function complete(User $user, Task $task): bool
     {
+        if ($user->family_id !== $task->family_id) {
+            return false;
+        }
+
         // Family tasks can be completed by any family member
-        if ($task->is_family_task && $user->family_id === $task->family_id) {
+        if ($task->is_family_task) {
             return true;
         }
 

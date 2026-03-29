@@ -625,6 +625,37 @@
           </div>
         </div>
 
+        <!-- Google Account Linking -->
+        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
+          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-3">Google Account</h3>
+          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+            Link your Google account for quick sign-in. Your Google email must match your account email.
+          </p>
+
+          <div v-if="currentUser?.google_id" class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+              <span class="text-sm font-medium text-green-800 dark:text-green-300">Google account linked</span>
+            </div>
+            <BaseButton variant="ghost" size="sm" @click="handleUnlinkGoogle" :loading="unlinkingGoogle">Unlink</BaseButton>
+          </div>
+
+          <div v-else class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+            <div>
+              <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Not linked</p>
+              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">Sign in faster with Google</p>
+            </div>
+            <BaseButton variant="secondary" size="sm" :loading="linkingGoogle" @click="handleLinkGoogle">Link Google</BaseButton>
+          </div>
+
+          <div v-if="googleLinkError" class="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p class="text-xs text-red-700 dark:text-red-300">{{ googleLinkError }}</p>
+          </div>
+          <div v-if="googleLinked" class="mt-2 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <p class="text-xs text-green-700 dark:text-green-300">Google account linked successfully!</p>
+          </div>
+        </div>
+
         <!-- Google Calendar -->
         <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
           <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-3">Google Calendar Sync</h3>
@@ -1254,6 +1285,12 @@ const inviteEmail = ref('')
 const sendingInvite = ref(false)
 const inviteEmailSent = ref(false)
 
+// Google account linking
+const linkingGoogle = ref(false)
+const unlinkingGoogle = ref(false)
+const googleLinkError = ref('')
+const googleLinked = ref(false)
+
 // Calendar
 const connectingCalendar = ref(false)
 const disconnectingCalendar = ref(false)
@@ -1587,6 +1624,33 @@ const handleSwitchToProfile = async () => {
 }
 
 // ---- Calendar ----
+const handleLinkGoogle = async () => {
+  linkingGoogle.value = true
+  googleLinkError.value = ''
+  try {
+    const response = await api.get('/auth/google/link')
+    if (response.data.url) {
+      window.location.href = response.data.url
+    }
+  } catch (err) {
+    googleLinkError.value = 'Failed to start Google linking. Please try again.'
+  }
+  linkingGoogle.value = false
+}
+
+const handleUnlinkGoogle = async () => {
+  unlinkingGoogle.value = true
+  googleLinkError.value = ''
+  try {
+    await api.delete('/auth/google/unlink')
+    await authStore.fetchUser()
+    success('Google account unlinked')
+  } catch (err) {
+    googleLinkError.value = err.response?.data?.message || 'Failed to unlink Google account.'
+  }
+  unlinkingGoogle.value = false
+}
+
 const handleConnectCalendar = async () => {
   connectingCalendar.value = true
   calendarError.value = ''
@@ -1926,7 +1990,15 @@ onMounted(async () => {
   }
 
   // Handle OAuth redirect results
-  if (route.query.calendar_connected) {
+  if (route.query.google_linked) {
+    googleLinked.value = true
+    await authStore.fetchUser()
+    success('Google account linked!')
+    router.replace({ path: '/settings' })
+  } else if (route.query.google_error) {
+    googleLinkError.value = route.query.google_error
+    router.replace({ path: '/settings' })
+  } else if (route.query.calendar_connected) {
     success('Google Calendar connected successfully!')
     router.replace({ path: '/settings' })
   } else if (route.query.calendar_error) {

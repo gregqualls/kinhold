@@ -10,6 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(false)
   const error = ref(null)
   const initialAuthChecked = ref(false)
+  const pendingLink = ref(null) // { code, email } when Google OAuth needs password confirmation
   // Computed properties
   const isParent = computed(() => user.value?.role === 'parent')
   const familyMembers = computed(() => family.value?.members || [])
@@ -186,16 +187,32 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Restore auth from saved token on app init
   const initAuth = async () => {
-    // Check for OAuth callback token in URL
+    // Check for OAuth callback auth code in URL (exchanged for token securely via POST)
     const urlParams = new URLSearchParams(window.location.search)
-    const oauthToken = urlParams.get('token')
+    const oauthCode = urlParams.get('code')
 
-    if (oauthToken) {
-      localStorage.setItem('auth_token', oauthToken)
-      api.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`
-      const cleanUrl = window.location.pathname
-      window.history.replaceState({}, document.title, cleanUrl)
-      await fetchUser()
+    if (oauthCode) {
+      // Clean URL immediately so the code isn't visible
+      window.history.replaceState({}, document.title, window.location.pathname)
+      try {
+        const response = await api.post('/auth/exchange', { code: oauthCode })
+        const oauthToken = response.data.token
+        localStorage.setItem('auth_token', oauthToken)
+        api.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`
+        await fetchUser()
+      } catch (err) {
+        error.value = 'Google sign-in failed. Please try again.'
+      }
+      initialAuthChecked.value = true
+      return
+    }
+
+    // Check for pending Google account link (user has existing password account)
+    const linkPending = urlParams.get('link_pending')
+    if (linkPending) {
+      const linkEmail = urlParams.get('email') || ''
+      pendingLink.value = { code: linkPending, email: decodeURIComponent(linkEmail) }
+      window.history.replaceState({}, document.title, window.location.pathname)
       initialAuthChecked.value = true
       return
     }
@@ -212,6 +229,35 @@ export const useAuthStore = defineStore('auth', () => {
       await fetchUser()
     }
     initialAuthChecked.value = true
+  }
+
+  const confirmGoogleLink = async (pendingCode, password) => {
+    isLoading.value = true
+    try {
+      const response = await api.post('/auth/google/confirm-link', {
+        pending_code: pendingCode,
+        password,
+      })
+      const token = response.data.token
+      localStorage.setItem('auth_token', token)
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      pendingLink.value = null
+      await fetchUser()
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to link account' }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const resendVerification = async () => {
+    try {
+      await api.post('/email/resend')
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to send verification email' }
+    }
   }
 
   const updateFamilyName = async (name) => {
@@ -330,5 +376,8 @@ export const useAuthStore = defineStore('auth', () => {
     getInviteCode,
     switchToProfile,
     updateUserAvatar,
+    confirmGoogleLink,
+    resendVerification,
+    pendingLink,
   }
 })

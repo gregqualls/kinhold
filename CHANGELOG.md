@@ -2,6 +2,31 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-29 — Session 13: Security Audit + Google Linking + Email Verification
+
+### What Was Done
+- **Comprehensive security audit** — Found and fixed 22 vulnerabilities (3 Critical, 6 High, 8 Medium, 5 Low). Full details in PR #110.
+  - **Critical:** Cross-family data isolation (vault SSNs, tasks, rewards, badges accessible across families), OAuth token leaked in URL, no login rate limiting
+  - **High:** Google OAuth account takeover via email auto-linking, Calendar OAuth CSRF (unsigned state), SSRF via ICS subscription, vault accepted any file type
+  - **Medium:** Self-selecting parent role on invite join, weak passwords (only min:8), short invite codes, error messages leaking internals, cross-family validation gaps
+- **Google account linking** — Users who registered with email/password can now link Google from Settings. When trying Google sign-in with an existing account, they're prompted for their password to confirm the link (instead of being rejected).
+- **Email verification on registration** — New users get a verification email. Dismissable amber banner in the app until verified. Resend endpoint throttled to 3/min. Existing users grandfathered.
+- **41 automated tests** — 31 security tests + 5 Google link tests + 5 email verification tests. Model factories created (FamilyFactory, UserFactory).
+
+### Files Modified
+- 6 controllers (Auth, Google Auth, Badges, Rewards, Calendar, Chat, Vault)
+- 2 policies (VaultEntryPolicy, TaskPolicy) — added family_id checks to all methods
+- 4 form requests (RegisterRequest, StoreTaskRequest, StoreVaultEntryRequest, GrantPermissionRequest)
+- User model (MustVerifyEmail, guarded fields), UserResource (google_id boolean, email_verified_at)
+- IcsCalendarService (SSRF protection), routes/api.php (rate limiting, new endpoints), routes/web.php (verification, link callback)
+- SPA: auth store (code exchange, pending link, resend verification), LoginView (link confirmation UI), SettingsView (Google link/unlink), App.vue (verification banner)
+- New: PendingLinkException, FamilyFactory, UserFactory, SecurityTest, GoogleLinkTest, EmailVerificationTest
+
+### PR
+- #110 — `security/audit-and-fixes` (pending merge)
+
+---
+
 ## 2026-03-29 — Session 12: AI Chat Activation + OAuth MCP Connector
 
 ### What Was Done
