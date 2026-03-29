@@ -213,9 +213,9 @@ php artisan db:seed
 chmod +x setup.sh && ./setup.sh
 ```
 
-## Current Status (Updated: 2026-03-28)
+## Current Status (Updated: 2026-03-29)
 
-**Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, MCP server, and profile pictures all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.**
+**Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, MCP server, and profile pictures all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.** Security audit complete (PR #110).
 
 **Production:** Deployed on Upsun at `kinhold.app` (project ID: `2rozcvqjtjdta`, Terra Nova org). GitHub integration auto-deploys on push to `main`. PRs auto-create preview environments. Never use `upsun push` — just push to GitHub.
 
@@ -238,6 +238,10 @@ chmod +x setup.sh && ./setup.sh
 - **Onboarding wizard:** 5-step setup for parents (welcome, add family, calendar, tags, granular feature access). Simplified flow for joining members with feature explainer. Re-triggerable from Settings.
 - **Profile pictures:** Photo upload, 26 Phosphor icon presets (duotone), 12 brand color picker, Google photo restore. `avatar` stores URL/preset key/null. `avatar_color` stores chosen color name. `google_avatar` persists Google OAuth photo. Uploaded files served via `GET /api/v1/user/avatar/{userId}` (not symlink).
 - **Laravel-native MCP server:** 18 tools at `/mcp`, Sanctum bearer token auth, direct model access
+- **Security hardened:** Full audit completed (Session 13). Cross-family isolation on all policies/controllers, OAuth auth code exchange (not token-in-URL), rate limiting on auth endpoints, CSRF-protected calendar OAuth, SSRF protection on ICS, file type restrictions on vault uploads.
+- **Google account linking:** Email/password users can link Google from Settings or when attempting Google sign-in (password confirmation flow).
+- **Email verification:** Sent on registration, dismissable banner for unverified users. Existing users grandfathered.
+- **41 automated tests:** Security (31), Google link (5), email verification (5). Run with `./vendor/bin/phpunit`.
 
 **Dark mode architecture (important for future work):**
 - `darkMode: 'class'` in Tailwind config — `<html class="dark">` toggles it
