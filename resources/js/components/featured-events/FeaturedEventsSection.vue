@@ -33,11 +33,11 @@
         <!-- Icon -->
         <div class="relative flex-shrink-0">
           <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+            class="w-10 h-10 rounded-xl flex items-center justify-center"
             :class="isToday(event.event_date) ? 'shadow-md' : ''"
-            :style="{ backgroundColor: event.color + '20' }"
+            :style="{ backgroundColor: event.color + '20', color: event.color }"
           >
-            {{ event.icon }}
+            <IconRenderer :icon="event.icon || 'confetti'" :size="22" />
           </div>
           <!-- Countdown pin indicator -->
           <div
@@ -157,6 +157,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import FeaturedEventModal from './FeaturedEventModal.vue'
 import { StarIcon, PlusIcon, EllipsisVerticalIcon, ArrowPathIcon, ClockIcon } from '@heroicons/vue/24/outline'
+import IconRenderer from '@/components/common/IconRenderer.vue'
 
 const props = defineProps({
   isParent: Boolean,
