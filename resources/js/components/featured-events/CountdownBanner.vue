@@ -20,10 +20,10 @@
       <div class="relative flex items-center gap-3 md:gap-4">
         <!-- Event icon -->
         <div
-          class="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-2xl md:text-3xl bg-white/20 backdrop-blur-sm shadow-sm"
+          class="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-white/20 backdrop-blur-sm shadow-sm text-white"
           :class="{ 'animate-bounce-gentle': isToday }"
         >
-          {{ countdownEvent.icon }}
+          <IconRenderer :icon="countdownEvent.icon || 'confetti'" :size="28" />
         </div>
 
         <!-- Countdown content -->
@@ -44,9 +44,9 @@
           </p>
         </div>
 
-        <!-- Celebration particles for today -->
-        <div v-if="isToday" class="flex-shrink-0 text-2xl md:text-3xl animate-bounce-gentle">
-          &#127881;
+        <!-- Celebration icon for today -->
+        <div v-if="isToday" class="flex-shrink-0 animate-bounce-gentle text-white">
+          <IconRenderer icon="confetti" :size="32" />
         </div>
 
         <!-- Dismiss button -->
@@ -74,6 +74,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { DateTime } from 'luxon'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
+import IconRenderer from '@/components/common/IconRenderer.vue'
 
 const props = defineProps({
   countdownEvent: {

@@ -25,7 +25,10 @@
         <input v-model="newReward.title" class="input-base" placeholder="Reward name" />
         <input v-model.number="newReward.point_cost" type="number" min="1" class="input-base" placeholder="Point cost" />
         <input v-model="newReward.description" class="input-base sm:col-span-2" placeholder="Description (optional)" />
-        <input v-model="newReward.icon" class="input-base" placeholder="Emoji icon (e.g. 🍬)" />
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">Icon</label>
+          <IconPicker v-model="newReward.icon" />
+        </div>
       </div>
       <div class="flex justify-end mt-3">
         <button @click="createReward" :disabled="!newReward.title || !newReward.point_cost" class="btn-primary btn-sm">
@@ -60,6 +63,7 @@ import { storeToRefs } from 'pinia'
 import { usePointsStore } from '@/stores/points'
 import { useAuthStore } from '@/stores/auth'
 import RewardCard from '@/components/points/RewardCard.vue'
+import IconPicker from '@/components/common/IconPicker.vue'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 
 const pointsStore = usePointsStore()
