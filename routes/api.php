@@ -24,6 +24,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
     Route::post('/auth/exchange', [GoogleAuthController::class, 'exchange'])->middleware('throttle:10,1');
+    Route::post('/auth/google/confirm-link', [GoogleAuthController::class, 'confirmLink'])->middleware('throttle:5,1');
 
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -36,6 +37,13 @@ Route::prefix('v1')->group(function () {
         Route::delete('/user/avatar', [AuthController::class, 'deleteAvatar']);
         Route::put('/user/avatar/preset', [AuthController::class, 'setPresetAvatar']);
         Route::post('/user/avatar/google', [AuthController::class, 'restoreGoogleAvatar']);
+
+        // Google account linking
+        Route::get('/auth/google/link', [GoogleAuthController::class, 'linkRedirect']);
+        Route::delete('/auth/google/unlink', [GoogleAuthController::class, 'unlink']);
+
+        // Email verification
+        Route::post('/email/resend', [AuthController::class, 'resendVerification'])->middleware('throttle:3,1');
 
         // Onboarding
         Route::get('/onboarding/status', [OnboardingController::class, 'status']);
