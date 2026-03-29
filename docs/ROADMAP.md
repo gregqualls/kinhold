@@ -3,7 +3,7 @@
 > **Canonical tracking:** [GitHub Milestones](https://github.com/gregqualls/kinhold/milestones)
 > This file provides an overview. Individual issues on GitHub have full specs and discussion.
 >
-> Last updated: 2026-03-23
+> Last updated: 2026-03-29
 
 ---
 
@@ -47,6 +47,17 @@ These features are live and working:
 | [#76](https://github.com/gregqualls/kinhold/issues/76) | Claude connector: manage Kinhold from Claude.ai chat | High |
 | [#77](https://github.com/gregqualls/kinhold/issues/77) | New feature checklist: enforce MCP, docs, landing page updates | High |
 | ~~#78~~ | ~~Database seeder~~ — merged into #77 | — |
+
+---
+
+## Chat Improvements Backlog (newly created issues)
+
+| Issue | Title | Priority |
+|-------|-------|----------|
+| [#106](https://github.com/gregqualls/kinhold/issues/106) | Chat: expand context (calendar events, badges, points) | High |
+| [#107](https://github.com/gregqualls/kinhold/issues/107) | Chat: child safety — permissions, content filtering, moderation | **Critical (pre-Corey)** |
+| [#108](https://github.com/gregqualls/kinhold/issues/108) | Chat: hidden badges spoiled — don't reveal unearned badge details | Medium |
+| [#109](https://github.com/gregqualls/kinhold/issues/109) | Chat: stateless messages — pass conversation history to AI | High |
 
 ---
 
