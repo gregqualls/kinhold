@@ -32,12 +32,12 @@ applications:
       scheduler:
         commands:
           start: php artisan schedule:work
-    variables:
-      env:
-        N_PREFIX: "/app/.global"
     # Disable Upsun's built-in SMTP injection — we use Resend instead
     # Without this, Upsun overrides MAIL_MAILER=smtp at the platform level
     enable_smtp: false
+    variables:
+      env:
+        N_PREFIX: "/app/.global"
     dependencies:
       nodejs:
         n: "*"
