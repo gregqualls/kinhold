@@ -10,8 +10,45 @@
         <p class="kin-muted mt-2">Sign in to your family hub</p>
       </div>
 
+      <!-- Google Link Confirmation (when existing email/password user tries Google sign-in) -->
+      <div v-if="authStore.pendingLink" class="kin-card mb-4">
+        <div class="text-center mb-4">
+          <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-wisteria-100 dark:bg-wisteria-900/30 flex items-center justify-center">
+            <svg class="w-6 h-6 text-wisteria-600 dark:text-wisteria-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+          </div>
+          <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">Link Google Account</h2>
+          <p class="text-sm kin-muted mt-1">
+            An account exists for <strong>{{ authStore.pendingLink.email }}</strong>.
+            Enter your password to link Google sign-in.
+          </p>
+        </div>
+
+        <form @submit.prevent="handleConfirmLink" class="space-y-4">
+          <BaseInput
+            v-model="linkPassword"
+            label="Password"
+            type="password"
+            placeholder="Enter your password"
+            required
+            :error="linkError"
+          />
+
+          <div v-if="linkError" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-[10px]">
+            <p class="text-sm text-red-800 dark:text-red-300">{{ linkError }}</p>
+          </div>
+
+          <BaseButton variant="primary" size="lg" :loading="isLoading" class="w-full">
+            Link & Sign In
+          </BaseButton>
+
+          <button type="button" @click="authStore.pendingLink = null" class="w-full text-sm kin-muted hover:text-kin-gold transition-colors">
+            Cancel — sign in with password instead
+          </button>
+        </form>
+      </div>
+
       <!-- Form Card -->
-      <div class="kin-card">
+      <div v-else class="kin-card">
         <form @submit.prevent="handleLogin" class="space-y-4">
           <!-- Email -->
           <BaseInput
@@ -116,6 +153,8 @@ const form = reactive({
 })
 
 const googleLoading = ref(false)
+const linkPassword = ref('')
+const linkError = ref('')
 
 const errors = reactive({
   email: '',
@@ -153,6 +192,21 @@ const handleLogin = async () => {
   } else {
     errors.general = result.error || 'Login failed. Please try again.'
     notificationError(errors.general)
+  }
+}
+
+const handleConfirmLink = async () => {
+  linkError.value = ''
+  if (!linkPassword.value) {
+    linkError.value = 'Password is required'
+    return
+  }
+
+  const result = await authStore.confirmGoogleLink(authStore.pendingLink.code, linkPassword.value)
+  if (result.success) {
+    router.push({ name: 'Dashboard' })
+  } else {
+    linkError.value = result.error
   }
 }
 

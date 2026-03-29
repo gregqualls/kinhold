@@ -58,6 +58,11 @@ class AuthController extends Controller
         // Send welcome email
         $user->notify(new WelcomeNotification($family, $isNewFamily));
 
+        // Send email verification (new users with email only, not managed accounts)
+        if ($user->email) {
+            $user->sendEmailVerificationNotification();
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -91,6 +96,20 @@ class AuthController extends Controller
             'token' => $token,
             'user' => UserResource::make($user->load('family')),
         ], 200);
+    }
+
+    /**
+     * Resend email verification notification.
+     */
+    public function resendVerification(Request $request): JsonResponse
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified'], 200);
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Verification email sent']);
     }
 
     /**

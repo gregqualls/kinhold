@@ -27,6 +27,8 @@ class UserResource extends JsonResource
             'google_avatar' => $this->google_avatar,
             'date_of_birth' => $this->date_of_birth?->format('Y-m-d'),
             'timezone' => $this->timezone,
+            'google_id' => $this->google_id ? true : false, // boolean only, don't expose actual ID
+            'email_verified_at' => $this->email_verified_at,
             'onboarding_completed_at' => $this->onboarding_completed_at,
             'created_at' => $this->created_at,
         ];
