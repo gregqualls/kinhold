@@ -43,6 +43,7 @@ class Task extends Model
         'points',
         'recurrence_rule',
         'recurrence_end',
+        'allow_pileup',
         'parent_task_id',
     ];
 
@@ -60,6 +61,7 @@ class Task extends Model
             'is_family_task' => 'boolean',
             'points' => 'integer',
             'recurrence_end' => 'date',
+            'allow_pileup' => 'boolean',
         ];
     }
 

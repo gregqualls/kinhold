@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Badge;
+use App\Models\ChatMessage;
 use App\Models\Family;
 use App\Models\Task;
 use App\Models\VaultEntry;
@@ -39,8 +41,11 @@ class ChatbotService
         $systemPrompt = $this->buildSystemPrompt($user, $family);
         $userMessage = "{$message}\n\nFamily Context:\n{$context}";
 
+        // Fetch recent conversation history (last 10 messages = 5 turns)
+        $history = $this->getConversationHistory($user, 10);
+
         try {
-            return $provider->ask($systemPrompt, $userMessage);
+            return $provider->ask($systemPrompt, $userMessage, $history);
         } catch (\Exception $e) {
             Log::error('Chatbot error: ' . $e->getMessage());
             throw $e;
@@ -144,10 +149,33 @@ Guidelines:
 - Provide practical advice for family management
 - Respect privacy - only share information the user has access to
 - For children, avoid sharing detailed security/vault information they don't have access to
+- NEVER reveal details about hidden badges (name, description, criteria, or how to earn them). If asked, say "There are some surprise badges to discover!" but don't give specifics
 - Help with task planning, scheduling, and reminders
 - Be concise but helpful
 - Ask clarifying questions when needed
 PROMPT;
+    }
+
+    /**
+     * Get recent conversation history for multi-turn context.
+     */
+    private function getConversationHistory(User $user, int $limit = 10): array
+    {
+        try {
+            return ChatMessage::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get()
+                ->reverse()
+                ->map(fn ($msg) => [
+                    'role' => $msg->role,
+                    'content' => $msg->message,
+                ])
+                ->values()
+                ->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -171,6 +199,12 @@ PROMPT;
         $vaultSummary = $this->getAccessibleVaultSummary($user, $family);
         if (!empty($vaultSummary)) {
             $context[] = "Vault info: " . implode(', ', $vaultSummary);
+        }
+
+        // Badges (exclude hidden unearned badges)
+        $badgeSummary = $this->getBadgeSummary($user, $family);
+        if (!empty($badgeSummary)) {
+            $context[] = "Badges:\n" . implode("\n", $badgeSummary);
         }
 
         return implode("\n\n", $context);
@@ -216,6 +250,45 @@ PROMPT;
             })->count();
 
             return ["You have access to {$count} vault entries"];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get badge summary, excluding hidden badges the user hasn't earned.
+     */
+    private function getBadgeSummary(User $user, Family $family): array
+    {
+        try {
+            $earnedBadgeIds = $user->badges()->pluck('badges.id')->toArray();
+
+            $badges = Badge::where('family_id', $family->id)
+                ->where('is_active', true)
+                ->get();
+
+            $lines = [];
+            foreach ($badges as $badge) {
+                $earned = in_array($badge->id, $earnedBadgeIds);
+
+                // Never reveal hidden badge details unless earned
+                if ($badge->is_hidden && !$earned) {
+                    continue;
+                }
+
+                $status = $earned ? 'EARNED' : 'not yet earned';
+                $lines[] = "- {$badge->name}: {$badge->description} [{$status}]";
+            }
+
+            $hiddenCount = $badges->where('is_hidden', true)
+                ->whereNotIn('id', $earnedBadgeIds)
+                ->count();
+
+            if ($hiddenCount > 0) {
+                $lines[] = "- Plus {$hiddenCount} hidden surprise badge(s) to discover!";
+            }
+
+            return $lines;
         } catch (\Exception $e) {
             return [];
         }

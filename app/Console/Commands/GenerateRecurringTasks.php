@@ -27,29 +27,43 @@ class GenerateRecurringTasks extends Command
         $created = 0;
 
         foreach ($templates as $template) {
-            // Skip if there's already an incomplete instance of this template
-            $hasPending = Task::where('parent_task_id', $template->id)
+            $allowPileup = $template->allow_pileup ?? false;
+
+            // Get any incomplete (uncompleted) instances
+            $pendingInstances = Task::where('parent_task_id', $template->id)
                 ->whereNull('completed_at')
-                ->exists();
+                ->get();
 
-            if ($hasPending) {
-                continue;
-            }
+            if (!$allowPileup) {
+                // Default behavior: only ONE active instance at a time.
+                // If there's already an incomplete instance, update its due date
+                // to today (rolling forward) instead of creating a new one.
+                if ($pendingInstances->count() > 0) {
+                    // Keep only the most recent pending instance, update it to today
+                    $keeper = $pendingInstances->sortByDesc('due_date')->first();
+                    if ($keeper->due_date->lt($today)) {
+                        $keeper->update(['due_date' => $today]);
+                    }
 
-            $dates = $this->getOccurrenceDates($template->recurrence_rule, $today, $endDate);
+                    // Clean up any extra stale instances (shouldn't happen, but defensive)
+                    $staleIds = $pendingInstances->where('id', '!=', $keeper->id)->pluck('id');
+                    if ($staleIds->isNotEmpty()) {
+                        Task::whereIn('id', $staleIds)->delete();
+                        $this->info("Cleaned up {$staleIds->count()} stale instance(s) of '{$template->title}'.");
+                    }
 
-            foreach ($dates as $date) {
-                // Check if an instance already exists for this date
-                $exists = Task::where('parent_task_id', $template->id)
-                    ->whereDate('due_date', $date)
-                    ->exists();
-
-                if ($exists) {
                     continue;
                 }
 
-                // Check recurrence end
-                if ($template->recurrence_end && $date->gt($template->recurrence_end)) {
+                // No pending instance — create one for the next occurrence
+                $dates = $this->getOccurrenceDates($template->recurrence_rule, $today, $endDate);
+                $nextDate = $dates[0] ?? null;
+
+                if (!$nextDate) {
+                    continue;
+                }
+
+                if ($template->recurrence_end && $nextDate->gt($template->recurrence_end)) {
                     continue;
                 }
 
@@ -59,7 +73,7 @@ class GenerateRecurringTasks extends Command
                     'assigned_to' => $template->assigned_to,
                     'title' => $template->title,
                     'description' => $template->description,
-                    'due_date' => $date,
+                    'due_date' => $nextDate,
                     'priority' => $template->priority,
                     'is_family_task' => $template->is_family_task,
                     'points' => $template->points,
@@ -67,6 +81,43 @@ class GenerateRecurringTasks extends Command
                 ]);
 
                 $created++;
+            } else {
+                // Pileup mode: generate all instances in the window (original behavior).
+                // Useful for tasks like "take medication" where each missed dose matters.
+                if ($pendingInstances->isNotEmpty()) {
+                    continue;
+                }
+
+                $dates = $this->getOccurrenceDates($template->recurrence_rule, $today, $endDate);
+
+                foreach ($dates as $date) {
+                    $exists = Task::where('parent_task_id', $template->id)
+                        ->whereDate('due_date', $date)
+                        ->exists();
+
+                    if ($exists) {
+                        continue;
+                    }
+
+                    if ($template->recurrence_end && $date->gt($template->recurrence_end)) {
+                        continue;
+                    }
+
+                    Task::create([
+                        'family_id' => $template->family_id,
+                        'created_by' => $template->created_by,
+                        'assigned_to' => $template->assigned_to,
+                        'title' => $template->title,
+                        'description' => $template->description,
+                        'due_date' => $date,
+                        'priority' => $template->priority,
+                        'is_family_task' => $template->is_family_task,
+                        'points' => $template->points,
+                        'parent_task_id' => $template->id,
+                    ]);
+
+                    $created++;
+                }
             }
         }
 

@@ -9,10 +9,11 @@ interface AiProviderInterface
      *
      * @param string $systemPrompt The system prompt with context
      * @param string $userMessage The user's message with family context appended
+     * @param array $conversationHistory Previous messages as [{role: 'user'|'assistant', content: string}, ...]
      * @return string The AI's response text
      * @throws \RuntimeException If the API call fails
      */
-    public function ask(string $systemPrompt, string $userMessage): string;
+    public function ask(string $systemPrompt, string $userMessage, array $conversationHistory = []): string;
 
     /**
      * Get the provider's display name.
