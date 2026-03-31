@@ -46,9 +46,7 @@ class FeaturedEventController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can create featured events'], 403);
-        }
+        $this->authorize('create', FeaturedEvent::class);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -86,15 +84,13 @@ class FeaturedEventController extends Controller
      */
     public function update(Request $request, FeaturedEvent $featuredEvent): JsonResponse
     {
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can update featured events'], 403);
-        }
-
         // Ensure event belongs to user's family
         $family = $request->user()->currentFamily()->firstOrFail();
         if ($featuredEvent->family_id !== $family->id) {
             return response()->json(['message' => 'Not found'], 404);
         }
+
+        $this->authorize('update', $featuredEvent);
 
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
@@ -144,9 +140,7 @@ class FeaturedEventController extends Controller
      */
     public function setCountdown(Request $request, FeaturedEvent $featuredEvent): JsonResponse
     {
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can set the countdown event'], 403);
-        }
+        $this->authorize('update', $featuredEvent);
 
         $family = $request->user()->currentFamily()->firstOrFail();
         if ($featuredEvent->family_id !== $family->id) {
@@ -179,15 +173,13 @@ class FeaturedEventController extends Controller
      */
     public function destroy(Request $request, FeaturedEvent $featuredEvent): JsonResponse
     {
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can delete featured events'], 403);
-        }
-
         // Ensure event belongs to user's family
         $family = $request->user()->currentFamily()->firstOrFail();
         if ($featuredEvent->family_id !== $family->id) {
             return response()->json(['message' => 'Not found'], 404);
         }
+
+        $this->authorize('delete', $featuredEvent);
 
         $featuredEvent->delete();
 

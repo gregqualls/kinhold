@@ -2,6 +2,49 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-31 — Session 15: Unified Policy-Based Auth for MCP + API (#98)
+
+### What Was Done
+- **4 new Laravel Policies created** — `BadgePolicy`, `TagPolicy`, `RewardPolicy`, `FeaturedEventPolicy` — each enforcing parent-only write access as the single source of truth for both API and MCP layers.
+- **`authorize()` helper added to `ScopesToFamily` trait** — MCP tools can now delegate to Laravel Gate/policies via `$this->authorize($ability, $model)`, returning a structured error response if denied.
+- **`Badge::maskHidden()` static method** — Shared presentation logic extracted to the model. Web UI hides from all users (surprise mechanic preserved); MCP shows parents full badge details (management interface).
+- **8 MCP tools migrated** — `ManageBadges`, `ManageTags`, `ManageRewards`, `ManageFeaturedEvents`, `ManageTasks`, `ManageVault`, `ManageVaultAccess`, `CompleteTask` all replaced inline `requireParent()` / ad-hoc checks with policy-based `$this->authorize()` calls.
+- **4 API controllers migrated** — `TagController`, `RewardsController`, `BadgesController`, `FeaturedEventController` replaced remaining inline `isParent()` checks with `$this->authorize()` policy calls.
+- **4 new security tests** — `test_child_cannot_create_tag`, `test_child_cannot_delete_tag`, `test_child_sees_masked_hidden_badges`, `test_parent_sees_masked_hidden_badges_in_web_ui`. Total: 45 tests, all passing.
+- **MCP-first guardrails principle established** — Authorization for any module now lives in one policy file; both API and MCP inherit changes automatically. Foundation laid for Issue #107 (child access controls).
+
+### Files Modified
+- New: `app/Policies/BadgePolicy.php`, `TagPolicy.php`, `RewardPolicy.php`, `FeaturedEventPolicy.php`
+- Modified: `app/Mcp/Tools/Concerns/ScopesToFamily.php`, `app/Models/Badge.php`
+- Modified MCP tools: `ManageBadges.php`, `ManageTags.php`, `ManageRewards.php`, `ManageFeaturedEvents.php`, `ManageTasks.php`, `ManageVault.php`, `ManageVaultAccess.php`, `CompleteTask.php`
+- Modified controllers: `TagController.php`, `RewardsController.php`, `BadgesController.php`, `FeaturedEventController.php`
+- Modified: `tests/Feature/SecurityTest.php` (4 new tests)
+
+### PR
+- #114 — `fix/98-mcp-policy-auth` (merged)
+
+---
+
+## 2026-03-31 — Session 14: Self-Hosting Accessibility Planning
+
+### What Was Done
+- **Self-hosting accessibility research** — Analyzed n8n's open-source model (licensing, Docker setup, feature gating strategy) and mapped it to Kinhold's current external dependencies.
+- **Dependency audit** — Cataloged all external service requirements (PostgreSQL, Redis, SMTP, Google OAuth, Anthropic API) and identified which are truly required vs optional.
+- **3-sprint implementation plan** — Documented at `.claude/plans/self-hosting-accessibility.md`:
+  1. Zero-Config First Run: SQLite default, `docker-compose.simple.yml` (2 services), auto APP_KEY
+  2. Graceful Feature Degradation: runtime feature detection, `/api/v1/config` endpoint, conditional UI
+  3. DX & Polish: first-boot setup wizard, `SELF-HOSTING.md`, updated README
+- **New architecture principle** — Added #5 to CLAUDE.md: "Self-hostable by default — We don't gate features — we gate operational complexity."
+- **GitHub issue #113** — Created with full sprint checklists for tracking.
+
+### Files Modified
+- `CLAUDE.md` — Added architecture principle #5 (self-hostable by default)
+
+### No PR
+- Planning session only, no code changes to ship.
+
+---
+
 ## 2026-03-29 — Session 13: Security Audit + Google Linking + Email Verification
 
 ### What Was Done

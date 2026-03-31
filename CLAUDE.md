@@ -37,8 +37,9 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 2. **API-first** — Everything goes through the REST API. The SPA and MCP server are equal consumers.
 3. **Mobile-first** — Design for 375px phone screens first, scale up to desktop.
 4. **Open source friendly** — MIT license, Docker one-click setup, `.env` for all config.
-5. **Security-conscious** — Sensitive vault data encrypted at rest, role-based + per-item permissions, no secrets in code.
-6. **Future-proof** — Data models support future features (recurring tasks, kanban boards, budgets, etc.) even if the UI doesn't expose them yet.
+5. **Self-hostable by default** — We don't gate features — we gate operational complexity. The self-hosted version gets 100% of core features. Cloud (kinhold.app) adds managed services (OAuth, email, backups), not exclusive functionality.
+6. **Security-conscious** — Sensitive vault data encrypted at rest, role-based + per-item permissions, no secrets in code.
+7. **Future-proof** — Data models support future features (recurring tasks, kanban boards, budgets, etc.) even if the UI doesn't expose them yet.
 
 ## Modules (Current State)
 
@@ -119,7 +120,7 @@ kinhold/
 │   ├── Http/Resources/            # API response transformers
 │   ├── Models/                    # 14 Eloquent models (incl. PointTransaction, Reward, RewardPurchase, Badge)
 │   ├── Services/                  # Business logic (GoogleCalendar, VaultEncryption, Chatbot, Points, Badge)
-│   ├── Policies/                  # Authorization (Task, TaskList, VaultEntry, Family)
+│   ├── Policies/                  # Authorization (Task, TaskList, VaultEntry, Family, Badge, Tag, Reward, FeaturedEvent)
 │   ├── Console/Commands/          # Artisan commands (GenerateRecurringTasks)
 │   ├── Enums/                     # FamilyRole, TaskPriority, PermissionLevel, PointTransactionType, BadgeTriggerType
 │   └── Mcp/                      # Laravel-native MCP server (Servers/, Tools/, Tools/Concerns/)
@@ -213,7 +214,7 @@ php artisan db:seed
 chmod +x setup.sh && ./setup.sh
 ```
 
-## Current Status (Updated: 2026-03-29)
+## Current Status (Updated: 2026-03-31)
 
 **Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, MCP server, and profile pictures all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.** Security audit complete (PR #110).
 
@@ -239,9 +240,10 @@ chmod +x setup.sh && ./setup.sh
 - **Profile pictures:** Photo upload, 26 Phosphor icon presets (duotone), 12 brand color picker, Google photo restore. `avatar` stores URL/preset key/null. `avatar_color` stores chosen color name. `google_avatar` persists Google OAuth photo. Uploaded files served via `GET /api/v1/user/avatar/{userId}` (not symlink).
 - **Laravel-native MCP server:** 18 tools at `/mcp`, Sanctum bearer token auth, direct model access
 - **Security hardened:** Full audit completed (Session 13). Cross-family isolation on all policies/controllers, OAuth auth code exchange (not token-in-URL), rate limiting on auth endpoints, CSRF-protected calendar OAuth, SSRF protection on ICS, file type restrictions on vault uploads.
+- **Unified policy-based auth (Session 15):** 8 Laravel Policies (Task, TaskList, VaultEntry, Family, Badge, Tag, Reward, FeaturedEvent) serve as single source of truth for both API and MCP layers. `ScopesToFamily::authorize()` delegates to Gate from MCP tools. `Badge::maskHidden()` shared between API and MCP. Foundation for Issue #107 (child access controls) is in place.
 - **Google account linking:** Email/password users can link Google from Settings or when attempting Google sign-in (password confirmation flow).
 - **Email verification:** Sent on registration, dismissable banner for unverified users. Existing users grandfathered.
-- **41 automated tests:** Security (31), Google link (5), email verification (5). Run with `./vendor/bin/phpunit`.
+- **45 automated tests:** Security (35), Google link (5), email verification (5). Run with `./vendor/bin/phpunit`.
 
 **Dark mode architecture (important for future work):**
 - `darkMode: 'class'` in Tailwind config — `<html class="dark">` toggles it

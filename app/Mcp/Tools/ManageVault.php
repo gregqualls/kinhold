@@ -101,10 +101,8 @@ class ManageVault extends Tool
 
         $entry = VaultEntry::where('family_id', $this->familyId())->findOrFail($entryId);
 
-        // Permission check: children need explicit access
-        $user = $this->user();
-        if (!$user->isParent() && !$entry->permissions()->where('user_id', $user->id)->exists()) {
-            return Response::error('You do not have access to this entry.');
+        if ($denied = $this->authorize('view', $entry)) {
+            return $denied;
         }
 
         $encryptionService = app(VaultEncryptionService::class);
@@ -125,7 +123,7 @@ class ManageVault extends Tool
 
     private function createEntry(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
+        if ($denied = $this->authorize('create', VaultEntry::class)) {
             return $denied;
         }
 
@@ -166,16 +164,16 @@ class ManageVault extends Tool
 
     private function updateEntry(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
-            return $denied;
-        }
-
         $entryId = $request->get('entry_id');
         if (!$entryId) {
             return Response::error('entry_id is required for update.');
         }
 
         $entry = VaultEntry::where('family_id', $this->familyId())->findOrFail($entryId);
+
+        if ($denied = $this->authorize('update', $entry)) {
+            return $denied;
+        }
 
         $updates = [];
         if ($request->get('title') !== null) {
@@ -203,16 +201,16 @@ class ManageVault extends Tool
 
     private function deleteEntry(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
-            return $denied;
-        }
-
         $entryId = $request->get('entry_id');
         if (!$entryId) {
             return Response::error('entry_id is required for delete.');
         }
 
         $entry = VaultEntry::where('family_id', $this->familyId())->findOrFail($entryId);
+
+        if ($denied = $this->authorize('delete', $entry)) {
+            return $denied;
+        }
         $title = $entry->title;
         $entry->delete();
 

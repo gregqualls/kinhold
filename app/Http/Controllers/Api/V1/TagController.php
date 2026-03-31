@@ -29,6 +29,8 @@ class TagController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $this->authorize('create', Tag::class);
+
         $family = $request->user()->currentFamily()->firstOrFail();
 
         $validated = $request->validate([
@@ -56,6 +58,7 @@ class TagController extends Controller
     {
         $family = $request->user()->currentFamily()->firstOrFail();
         abort_unless($tag->family_id === $family->id, 403);
+        $this->authorize('update', $tag);
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -74,6 +77,7 @@ class TagController extends Controller
     {
         $family = $request->user()->currentFamily()->firstOrFail();
         abort_unless($tag->family_id === $family->id, 403);
+        $this->authorize('delete', $tag);
 
         $tag->delete();
 

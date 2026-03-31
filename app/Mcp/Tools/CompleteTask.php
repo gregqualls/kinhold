@@ -33,6 +33,10 @@ class CompleteTask extends Tool
         $task = Task::where('family_id', $this->familyId())
             ->findOrFail($request->get('task_id'));
 
+        if ($denied = $this->authorize('complete', $task)) {
+            return $denied;
+        }
+
         $user = $this->user();
         $pointsService = app(PointsService::class);
         $badgeService = app(BadgeService::class);

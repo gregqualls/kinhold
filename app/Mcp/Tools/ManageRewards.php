@@ -62,7 +62,7 @@ class ManageRewards extends Tool
 
     private function createReward(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
+        if ($denied = $this->authorize('create', Reward::class)) {
             return $denied;
         }
 
@@ -99,16 +99,16 @@ class ManageRewards extends Tool
 
     private function updateReward(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
-            return $denied;
-        }
-
         $rewardId = $request->get('reward_id');
         if (!$rewardId) {
             return Response::error('reward_id is required for update.');
         }
 
         $reward = Reward::where('family_id', $this->familyId())->findOrFail($rewardId);
+
+        if ($denied = $this->authorize('update', $reward)) {
+            return $denied;
+        }
 
         $updates = [];
         foreach (['title', 'description', 'point_cost', 'icon', 'is_active'] as $field) {
@@ -132,16 +132,16 @@ class ManageRewards extends Tool
 
     private function deleteReward(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
-            return $denied;
-        }
-
         $rewardId = $request->get('reward_id');
         if (!$rewardId) {
             return Response::error('reward_id is required for delete.');
         }
 
         $reward = Reward::where('family_id', $this->familyId())->findOrFail($rewardId);
+
+        if ($denied = $this->authorize('delete', $reward)) {
+            return $denied;
+        }
         $title = $reward->title;
         $reward->delete();
 
