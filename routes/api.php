@@ -38,6 +38,7 @@ Route::prefix('v1')->group(function () {
                     || config('mail.default') === 'log',
             ],
             'registration' => true,
+            'first_boot' => \App\Models\User::count() === 0,
         ]);
     });
 
