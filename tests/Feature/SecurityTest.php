@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Enums\BadgeTriggerType;
 use App\Enums\FamilyRole;
 use App\Models\Badge;
 use App\Models\Family;
 use App\Models\Reward;
+use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\VaultCategory;
@@ -611,5 +613,99 @@ class SecurityTest extends TestCase
         $this->getJson('/api/v1/rewards')->assertStatus(401);
         $this->getJson('/api/v1/badges')->assertStatus(401);
         $this->postJson('/api/v1/chat', ['message' => 'test'])->assertStatus(401);
+    }
+
+    // =========================================================================
+    // CHILD ACCESS RESTRICTIONS — Tags (Policy enforcement)
+    // =========================================================================
+
+    public function test_child_cannot_create_tag(): void
+    {
+        Sanctum::actingAs($this->childA);
+
+        $response = $this->postJson('/api/v1/tags', [
+            'name' => 'Chores',
+            'color' => '#FF5733',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_child_cannot_delete_tag(): void
+    {
+        $tag = Tag::create([
+            'family_id' => $this->familyA->id,
+            'name' => 'Homework',
+            'color' => '#3366FF',
+            'sort_order' => 1,
+        ]);
+
+        Sanctum::actingAs($this->childA);
+
+        $response = $this->deleteJson("/api/v1/tags/{$tag->id}");
+        $response->assertStatus(403);
+    }
+
+    // =========================================================================
+    // CHILD ACCESS RESTRICTIONS — Hidden Badge Masking
+    // =========================================================================
+
+    public function test_child_sees_masked_hidden_badges(): void
+    {
+        Badge::create([
+            'family_id' => $this->familyA->id,
+            'created_by' => $this->parentA->id,
+            'name' => 'Secret Achievement',
+            'description' => 'Complete 100 tasks to unlock this badge',
+            'icon' => 'trophy',
+            'color' => '#FFD700',
+            'trigger_type' => BadgeTriggerType::TasksCompleted,
+            'trigger_threshold' => 100,
+            'is_hidden' => true,
+        ]);
+
+        Sanctum::actingAs($this->childA);
+
+        $response = $this->getJson('/api/v1/badges');
+        $response->assertStatus(200);
+
+        $badges = $response->json('badges');
+        $hiddenBadge = collect($badges)->first(fn ($b) => $b['is_hidden'] === true);
+
+        $this->assertNotNull($hiddenBadge, 'Hidden badge should be in the list');
+        $this->assertEquals('???', $hiddenBadge['name']);
+        $this->assertEquals('Hidden badge — complete the challenge to reveal!', $hiddenBadge['description']);
+        $this->assertNull($hiddenBadge['icon']);
+        $this->assertEquals('#6b7280', $hiddenBadge['color']);
+    }
+
+    public function test_parent_sees_masked_hidden_badges_in_web_ui(): void
+    {
+        // Web UI hides badge details from ALL users (surprise mechanic).
+        // Parents manage badges through CRUD endpoints, not the listing.
+        // MCP tools show full details to parents since MCP is their management interface.
+        Badge::create([
+            'family_id' => $this->familyA->id,
+            'created_by' => $this->parentA->id,
+            'name' => 'Secret Achievement',
+            'description' => 'Complete 100 tasks to unlock this badge',
+            'icon' => 'trophy',
+            'color' => '#FFD700',
+            'trigger_type' => BadgeTriggerType::TasksCompleted,
+            'trigger_threshold' => 100,
+            'is_hidden' => true,
+        ]);
+
+        Sanctum::actingAs($this->parentA);
+
+        $response = $this->getJson('/api/v1/badges');
+        $response->assertStatus(200);
+
+        $badges = $response->json('badges');
+        $hiddenBadge = collect($badges)->first(fn ($b) => ($b['is_hidden'] ?? false) === true);
+
+        $this->assertNotNull($hiddenBadge, 'Hidden badge should be in the list');
+        // Web UI masks for everyone — parents manage via CRUD, not the listing
+        $this->assertEquals('???', $hiddenBadge['name']);
     }
 }

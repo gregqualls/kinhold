@@ -40,9 +40,7 @@ class RewardsController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can create rewards'], 403);
-        }
+        $this->authorize('create', Reward::class);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -73,10 +71,7 @@ class RewardsController extends Controller
     public function update(Request $request, Reward $reward): JsonResponse
     {
         abort_unless($reward->family_id === $request->user()->family_id, 404);
-
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can update rewards'], 403);
-        }
+        $this->authorize('update', $reward);
 
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
@@ -100,10 +95,7 @@ class RewardsController extends Controller
     public function destroy(Request $request, Reward $reward): JsonResponse
     {
         abort_unless($reward->family_id === $request->user()->family_id, 404);
-
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can delete rewards'], 403);
-        }
+        $this->authorize('delete', $reward);
 
         $reward->delete();
 

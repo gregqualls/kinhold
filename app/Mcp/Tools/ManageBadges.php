@@ -49,28 +49,40 @@ class ManageBadges extends Tool
 
     private function listBadges(): Response
     {
+        $user = $this->user();
+        $earnedBadgeIds = $user->badges()->pluck('badges.id')->toArray();
+
         $badges = Badge::where('family_id', $this->familyId())
             ->where('is_active', true)
             ->orderBy('sort_order')
             ->get();
 
         return Response::json([
-            'badges' => $badges->map(fn ($b) => [
-                'id' => $b->id,
-                'name' => $b->name,
-                'description' => $b->description,
-                'icon' => $b->icon,
-                'color' => $b->color,
-                'trigger_type' => $b->trigger_type->value,
-                'trigger_threshold' => $b->trigger_threshold,
-                'is_hidden' => $b->is_hidden,
-            ])->toArray(),
+            'badges' => $badges->map(function ($b) use ($earnedBadgeIds) {
+                $badgeData = [
+                    'id' => $b->id,
+                    'name' => $b->name,
+                    'description' => $b->description,
+                    'icon' => $b->icon,
+                    'color' => $b->color,
+                    'trigger_type' => $b->trigger_type->value,
+                    'trigger_threshold' => $b->trigger_threshold,
+                    'is_hidden' => $b->is_hidden,
+                ];
+
+                // Parents see full details for management; children get masked hidden badges
+                if (!$this->isParent()) {
+                    $badgeData = Badge::maskHidden($badgeData, in_array($b->id, $earnedBadgeIds));
+                }
+
+                return $badgeData;
+            })->toArray(),
         ]);
     }
 
     private function createBadge(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
+        if ($denied = $this->authorize('create', Badge::class)) {
             return $denied;
         }
 
@@ -109,16 +121,16 @@ class ManageBadges extends Tool
 
     private function updateBadge(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
-            return $denied;
-        }
-
         $badgeId = $request->get('badge_id');
         if (!$badgeId) {
             return Response::error('badge_id is required for update.');
         }
 
         $badge = Badge::where('family_id', $this->familyId())->findOrFail($badgeId);
+
+        if ($denied = $this->authorize('update', $badge)) {
+            return $denied;
+        }
 
         $updates = [];
         foreach (['name', 'description', 'icon', 'color', 'trigger_type', 'trigger_threshold', 'is_hidden', 'is_active'] as $field) {
@@ -137,16 +149,16 @@ class ManageBadges extends Tool
 
     private function deleteBadge(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
-            return $denied;
-        }
-
         $badgeId = $request->get('badge_id');
         if (!$badgeId) {
             return Response::error('badge_id is required for delete.');
         }
 
         $badge = Badge::where('family_id', $this->familyId())->findOrFail($badgeId);
+
+        if ($denied = $this->authorize('delete', $badge)) {
+            return $denied;
+        }
         $name = $badge->name;
         $badge->delete();
 
@@ -155,7 +167,7 @@ class ManageBadges extends Tool
 
     private function awardBadge(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
+        if ($denied = $this->authorize('award', Badge::class)) {
             return $denied;
         }
 
@@ -176,7 +188,7 @@ class ManageBadges extends Tool
 
     private function revokeBadge(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
+        if ($denied = $this->authorize('revoke', Badge::class)) {
             return $denied;
         }
 

@@ -154,6 +154,11 @@ class ManageTasks extends Tool
         }
 
         $task = Task::where('family_id', $this->familyId())->findOrFail($taskId);
+
+        if ($denied = $this->authorize('update', $task)) {
+            return $denied;
+        }
+
         $user = $this->user();
 
         $updates = [];
@@ -198,6 +203,11 @@ class ManageTasks extends Tool
         }
 
         $task = Task::where('family_id', $this->familyId())->findOrFail($taskId);
+
+        if ($denied = $this->authorize('delete', $task)) {
+            return $denied;
+        }
+
         $title = $task->title;
         $task->delete();
 
