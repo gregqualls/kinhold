@@ -103,7 +103,7 @@ Turn chores into a game your kids actually want to play.
 | Frontend | Vue 3 (Composition API, `<script setup>`) |
 | State | Pinia (8 stores) |
 | Styling | Tailwind CSS |
-| Database | PostgreSQL 16, UUIDs |
+| Database | PostgreSQL 16 (production) or SQLite (simple setup), UUIDs |
 | Cache/Queue | Redis 7 |
 | Auth | Laravel Sanctum + Google OAuth via Socialite |
 | AI | Anthropic Claude API (multi-provider ready) |
@@ -112,6 +112,18 @@ Turn chores into a game your kids actually want to play.
 | Hosting | [Upsun](https://upsun.com) |
 
 ## Quick Start
+
+### Easiest: Docker with SQLite (no dependencies)
+
+```bash
+git clone https://github.com/gregqualls/kinhold.git
+cd kinhold
+./setup-simple.sh
+```
+
+That's it. Open [http://localhost:8000](http://localhost:8000) and log in with `parent@demo.local` / `password`.
+
+This runs Kinhold with SQLite in a single container — no PostgreSQL or Redis needed. Great for trying it out or running for a small family. To upgrade to the full production stack (PostgreSQL + Redis), see Option 2 below.
 
 ### Option 1: Native (macOS — Recommended)
 
@@ -139,7 +151,7 @@ php artisan serve        # Terminal 1: API at localhost:8000
 npm run dev              # Terminal 2: Vite at localhost:5173
 ```
 
-### Option 2: Docker
+### Option 2: Docker (PostgreSQL + Redis — production)
 
 ```bash
 git clone https://github.com/gregqualls/kinhold.git
