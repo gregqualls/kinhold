@@ -37,8 +37,9 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 2. **API-first** — Everything goes through the REST API. The SPA and MCP server are equal consumers.
 3. **Mobile-first** — Design for 375px phone screens first, scale up to desktop.
 4. **Open source friendly** — MIT license, Docker one-click setup, `.env` for all config.
-5. **Security-conscious** — Sensitive vault data encrypted at rest, role-based + per-item permissions, no secrets in code.
-6. **Future-proof** — Data models support future features (recurring tasks, kanban boards, budgets, etc.) even if the UI doesn't expose them yet.
+5. **Self-hostable by default** — We don't gate features — we gate operational complexity. The self-hosted version gets 100% of core features. Cloud (kinhold.app) adds managed services (OAuth, email, backups), not exclusive functionality.
+6. **Security-conscious** — Sensitive vault data encrypted at rest, role-based + per-item permissions, no secrets in code.
+7. **Future-proof** — Data models support future features (recurring tasks, kanban boards, budgets, etc.) even if the UI doesn't expose them yet.
 
 ## Modules (Current State)
 

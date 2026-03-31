@@ -2,6 +2,26 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-03-31 — Session 14: Self-Hosting Accessibility Planning
+
+### What Was Done
+- **Self-hosting accessibility research** — Analyzed n8n's open-source model (licensing, Docker setup, feature gating strategy) and mapped it to Kinhold's current external dependencies.
+- **Dependency audit** — Cataloged all external service requirements (PostgreSQL, Redis, SMTP, Google OAuth, Anthropic API) and identified which are truly required vs optional.
+- **3-sprint implementation plan** — Documented at `.claude/plans/self-hosting-accessibility.md`:
+  1. Zero-Config First Run: SQLite default, `docker-compose.simple.yml` (2 services), auto APP_KEY
+  2. Graceful Feature Degradation: runtime feature detection, `/api/v1/config` endpoint, conditional UI
+  3. DX & Polish: first-boot setup wizard, `SELF-HOSTING.md`, updated README
+- **New architecture principle** — Added #5 to CLAUDE.md: "Self-hostable by default — We don't gate features — we gate operational complexity."
+- **GitHub issue #113** — Created with full sprint checklists for tracking.
+
+### Files Modified
+- `CLAUDE.md` — Added architecture principle #5 (self-hostable by default)
+
+### No PR
+- Planning session only, no code changes to ship.
+
+---
+
 ## 2026-03-29 — Session 13: Security Audit + Google Linking + Email Verification
 
 ### What Was Done
