@@ -55,6 +55,10 @@ class ManageTags extends Tool
 
     private function createTag(Request $request): Response
     {
+        if ($denied = $this->authorize('create', Tag::class)) {
+            return $denied;
+        }
+
         $name = $request->get('name');
         if (!$name) {
             return Response::error('name is required to create a tag.');
@@ -81,6 +85,10 @@ class ManageTags extends Tool
         }
 
         $tag = Tag::where('family_id', $this->familyId())->findOrFail($tagId);
+
+        if ($denied = $this->authorize('delete', $tag)) {
+            return $denied;
+        }
         $name = $tag->name;
         $tag->delete();
 

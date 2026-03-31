@@ -29,10 +29,6 @@ class ManageVaultAccess extends Tool
 
     public function handle(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
-            return $denied;
-        }
-
         return match ($request->get('action')) {
             'grant' => $this->grant($request),
             'revoke' => $this->revoke($request),
@@ -44,6 +40,10 @@ class ManageVaultAccess extends Tool
     {
         $entry = VaultEntry::where('family_id', $this->familyId())
             ->findOrFail($request->get('entry_id'));
+
+        if ($denied = $this->authorize('managePermissions', $entry)) {
+            return $denied;
+        }
 
         $target = $this->family()->members()->findOrFail($request->get('user_id'));
 
@@ -70,6 +70,10 @@ class ManageVaultAccess extends Tool
     {
         $entry = VaultEntry::where('family_id', $this->familyId())
             ->findOrFail($request->get('entry_id'));
+
+        if ($denied = $this->authorize('managePermissions', $entry)) {
+            return $denied;
+        }
 
         $target = $this->family()->members()->findOrFail($request->get('user_id'));
 
