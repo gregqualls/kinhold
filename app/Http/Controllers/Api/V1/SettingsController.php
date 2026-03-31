@@ -53,6 +53,14 @@ class SettingsController extends Controller
                     'users' => [],
                 ],
                 'children_can_change_avatar' => $settings['children_can_change_avatar'] ?? true,
+                'services' => [
+                    'google_oauth' => !empty(config('services.google.client_id')),
+                    'google_calendar' => !empty(config('kinhold.google.client_id')),
+                    'ai_platform_key' => !empty(config('kinhold.chatbot.api_key')),
+                    'ai_family_key' => !empty($settings['ai_api_key']),
+                    'mail' => !empty(config('mail.mailers.' . config('mail.default') . '.host'))
+                        || config('mail.default') === 'log',
+                ],
             ],
         ], 200);
     }
