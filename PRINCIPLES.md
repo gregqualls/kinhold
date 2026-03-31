@@ -58,7 +58,7 @@ Kinhold is self-hostable, open source, and collects no telemetry. No ads, no tra
 
 ## 10. Open source, open community
 
-MIT license. Transparent roadmap. Welcoming to contributors.
+Elastic License 2.0. Transparent roadmap. Welcoming to contributors.
 
 We build in the open because families deserve to know what software is running in their home. Contributors should find clear documentation, consistent code patterns, and a codebase that's approachable — not a wall of abstraction.
 

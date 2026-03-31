@@ -53,7 +53,7 @@ Kinhold is a self-hosted, open-source family hub built on Laravel 11 + Vue 3. It
 - Dark mode support across all views
 - Mobile-first responsive UI with bottom nav
 - Deployed on Upsun, auto-deploys from GitHub
-- Open source (MIT license) at github.com/gregqualls/kinhold
+- Open source (Elastic License 2.0) at github.com/gregqualls/kinhold
 - Docker support for self-hosting
 
 ---
