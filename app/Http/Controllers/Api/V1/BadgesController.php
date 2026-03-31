@@ -47,27 +47,12 @@ class BadgesController extends Controller
         $badgesData = $badges->map(function ($badge) use ($user, $earnedBadgeIds) {
             $isEarned = in_array($badge->id, $earnedBadgeIds);
 
-            // Hide details for hidden badges that aren't earned yet
-            if ($badge->is_hidden && !$isEarned) {
-                return [
-                    'id' => $badge->id,
-                    'name' => '???',
-                    'description' => 'Hidden badge — complete the challenge to reveal!',
-                    'icon' => null,
-                    'color' => '#6b7280',
-                    'is_hidden' => true,
-                    'is_earned' => false,
-                    'progress' => null,
-                    'threshold' => null,
-                ];
-            }
-
             $progress = null;
             if (!$isEarned && $badge->trigger_threshold) {
                 $progress = $this->badgeService->getCurrentValueForTrigger($user, $badge->trigger_type);
             }
 
-            return [
+            $badgeData = [
                 'id' => $badge->id,
                 'name' => $badge->name,
                 'description' => $badge->description,
@@ -83,6 +68,8 @@ class BadgesController extends Controller
                     ? $user->badges()->where('badges.id', $badge->id)->first()?->pivot->earned_at
                     : null,
             ];
+
+            return Badge::maskHidden($badgeData, $isEarned);
         });
 
         return response()->json([
@@ -95,9 +82,7 @@ class BadgesController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can create badges'], 403);
-        }
+        $this->authorize('create', Badge::class);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -134,10 +119,7 @@ class BadgesController extends Controller
     public function update(Request $request, Badge $badge): JsonResponse
     {
         abort_unless($badge->family_id === $request->user()->family_id, 404);
-
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can update badges'], 403);
-        }
+        $this->authorize('update', $badge);
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -163,10 +145,7 @@ class BadgesController extends Controller
     public function destroy(Request $request, Badge $badge): JsonResponse
     {
         abort_unless($badge->family_id === $request->user()->family_id, 404);
-
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can delete badges'], 403);
-        }
+        $this->authorize('delete', $badge);
 
         $badge->delete();
 
@@ -179,10 +158,7 @@ class BadgesController extends Controller
     public function award(Request $request, Badge $badge): JsonResponse
     {
         abort_unless($badge->family_id === $request->user()->family_id, 404);
-
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can award badges'], 403);
-        }
+        $this->authorize('award', Badge::class);
 
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
@@ -204,10 +180,7 @@ class BadgesController extends Controller
     public function revoke(Request $request, Badge $badge, string $userId): JsonResponse
     {
         abort_unless($badge->family_id === $request->user()->family_id, 404);
-
-        if (!$request->user()->isParent()) {
-            return response()->json(['message' => 'Only parents can revoke badges'], 403);
-        }
+        $this->authorize('revoke', Badge::class);
 
         $family = $request->user()->currentFamily()->firstOrFail();
         $targetUser = $family->members()->findOrFail($userId);

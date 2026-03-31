@@ -77,7 +77,7 @@ class ManageFeaturedEvents extends Tool
 
     private function createEvent(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
+        if ($denied = $this->authorize('create', FeaturedEvent::class)) {
             return $denied;
         }
 
@@ -125,16 +125,16 @@ class ManageFeaturedEvents extends Tool
 
     private function updateEvent(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
-            return $denied;
-        }
-
         $eventId = $request->get('event_id');
         if (!$eventId) {
             return Response::error('event_id is required for update.');
         }
 
         $event = FeaturedEvent::where('family_id', $this->familyId())->findOrFail($eventId);
+
+        if ($denied = $this->authorize('update', $event)) {
+            return $denied;
+        }
 
         $updates = [];
         foreach (['title', 'description', 'event_date', 'event_time', 'icon', 'color', 'recurrence', 'is_active'] as $field) {
@@ -169,16 +169,16 @@ class ManageFeaturedEvents extends Tool
 
     private function deleteEvent(Request $request): Response
     {
-        if ($denied = $this->requireParent()) {
-            return $denied;
-        }
-
         $eventId = $request->get('event_id');
         if (!$eventId) {
             return Response::error('event_id is required for delete.');
         }
 
         $event = FeaturedEvent::where('family_id', $this->familyId())->findOrFail($eventId);
+
+        if ($denied = $this->authorize('delete', $event)) {
+            return $denied;
+        }
         $title = $event->title;
         $event->delete();
 

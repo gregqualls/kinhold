@@ -55,4 +55,25 @@ class Badge extends Model
             ->withPivot(['earned_at', 'awarded_by'])
             ->withTimestamps();
     }
+
+    /**
+     * Mask hidden badge details for users who haven't earned them.
+     *
+     * Shared by both the API controller and MCP tools to ensure
+     * consistent hidden badge presentation.
+     */
+    public static function maskHidden(array $badgeData, bool $isEarned): array
+    {
+        if (($badgeData['is_hidden'] ?? false) && !$isEarned) {
+            return array_merge($badgeData, [
+                'name' => '???',
+                'description' => 'Hidden badge — complete the challenge to reveal!',
+                'icon' => null,
+                'color' => '#6b7280',
+                'is_earned' => false,
+            ]);
+        }
+
+        return $badgeData;
+    }
 }
