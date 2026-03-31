@@ -252,6 +252,13 @@ class CalendarController extends Controller
      */
     public function connect(Request $request): JsonResponse
     {
+        if (empty(config('kinhold.google.client_id')) || empty(config('kinhold.google.client_secret'))) {
+            return response()->json([
+                'message' => 'Google Calendar is not configured on this server. The server administrator needs to set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.',
+                'error_type' => 'configuration',
+            ], 422);
+        }
+
         try {
             $origin = $request->input('origin', 'settings');
             // SECURITY: Encrypt the state parameter to prevent CSRF on callback

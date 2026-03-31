@@ -663,7 +663,16 @@
             Connect your Google Calendar to sync events into the family hub.
           </p>
 
-          <div class="space-y-2">
+          <!-- Google OAuth not configured notice -->
+          <div v-if="authStore.services && !authStore.services.google_calendar" class="p-4 bg-golden-50 dark:bg-golden-900/20 rounded-xl mb-4">
+            <p class="text-sm font-medium text-golden-800 dark:text-golden-300 mb-1">Google Calendar Not Configured</p>
+            <p class="text-xs text-golden-700 dark:text-golden-400">
+              This server doesn't have Google OAuth credentials set up. You can still create manual events from the calendar page.
+              <template v-if="authStore.isParent"> Set <code class="bg-golden-100 dark:bg-golden-900/40 px-1 rounded">GOOGLE_CLIENT_ID</code> and <code class="bg-golden-100 dark:bg-golden-900/40 px-1 rounded">GOOGLE_CLIENT_SECRET</code> in your environment to enable Google Calendar sync.</template>
+            </p>
+          </div>
+
+          <div v-else class="space-y-2">
             <div
               v-for="conn in userCalendarConnections"
               :key="conn.id"

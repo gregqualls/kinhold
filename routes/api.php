@@ -26,6 +26,21 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/exchange', [GoogleAuthController::class, 'exchange'])->middleware('throttle:10,1');
     Route::post('/auth/google/confirm-link', [GoogleAuthController::class, 'confirmLink'])->middleware('throttle:5,1');
 
+    // Public config endpoint — tells frontend what services are available
+    Route::get('/config', function () {
+        return response()->json([
+            'app_name' => config('app.name', 'Kinhold'),
+            'services' => [
+                'google_oauth' => !empty(config('services.google.client_id')),
+                'google_calendar' => !empty(config('kinhold.google.client_id')),
+                'ai_platform_key' => !empty(config('kinhold.chatbot.api_key')),
+                'mail' => !empty(config('mail.mailers.' . config('mail.default') . '.host'))
+                    || config('mail.default') === 'log',
+            ],
+            'registration' => true,
+        ]);
+    });
+
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
         // Auth
