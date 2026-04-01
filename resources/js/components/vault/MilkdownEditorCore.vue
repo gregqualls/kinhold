@@ -44,7 +44,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Editor, rootCtx, defaultValueCtx, editorViewOptionsCtx } from '@milkdown/kit/core'
-import { commonmark, toggleStrongCommand, toggleEmphasisCommand, wrapInBlockquoteCommand, insertHrCommand } from '@milkdown/kit/preset/commonmark'
+import { commonmark, toggleStrongCommand, toggleEmphasisCommand, toggleInlineCodeCommand, wrapInBlockquoteCommand, insertHrCommand, headingSchema, paragraphSchema } from '@milkdown/kit/preset/commonmark'
 import { history } from '@milkdown/kit/plugin/history'
 import { clipboard } from '@milkdown/kit/plugin/clipboard'
 import { indent } from '@milkdown/kit/plugin/indent'
@@ -89,57 +89,40 @@ const insertHr = () => runCommand(insertHrCommand.key)
 
 const toggleHeading = (level) => {
   if (!editorInstance) return
-  // Insert heading by wrapping current line via markdown
   try {
     editorInstance.action((ctx) => {
       const view = ctx.get('editorView')
       if (!view) return
       const { state, dispatch } = view
-      const { $from } = state.selection
-      const lineStart = $from.start()
-      const lineText = $from.parent.textContent
-      const prefix = '#'.repeat(level) + ' '
+      const headingType = headingSchema.type(ctx)
+      const paragraphType = paragraphSchema.type(ctx)
 
-      // Check if line already has this heading level
-      const headingMatch = lineText.match(/^(#{1,6})\s/)
-      if (headingMatch && headingMatch[1].length === level) {
-        // Remove heading
-        const tr = state.tr.replaceWith(lineStart, lineStart + headingMatch[0].length, [])
-        dispatch(tr)
-      } else if (headingMatch) {
-        // Replace heading level
-        const tr = state.tr.replaceWith(lineStart, lineStart + headingMatch[0].length, state.schema.text(prefix))
-        dispatch(tr)
+      // If current block is already this heading level, convert back to paragraph
+      const { $from } = state.selection
+      if ($from.parent.type === headingType && $from.parent.attrs.level === level) {
+        dispatch(state.tr.setBlockType($from.before() + 1, $from.after() - 1, paragraphType))
       } else {
-        // Add heading
-        const tr = state.tr.insertText(prefix, lineStart)
-        dispatch(tr)
+        dispatch(state.tr.setBlockType($from.before() + 1, $from.after() - 1, headingType, { level }))
       }
     })
   } catch {
-    // Fallback: just insert markdown
+    // fallback
   }
 }
 
 const toggleBulletList = () => {
   if (!editorInstance) return
+  // Use markdown round-trip: get content, toggle list prefix, replace
   try {
-    editorInstance.action((ctx) => {
-      const view = ctx.get('editorView')
-      if (!view) return
-      const { state, dispatch } = view
-      const { $from } = state.selection
-      const lineStart = $from.start()
-      const lineText = $from.parent.textContent
-
-      if (lineText.startsWith('- ')) {
-        const tr = state.tr.replaceWith(lineStart, lineStart + 2, [])
-        dispatch(tr)
-      } else {
-        const tr = state.tr.insertText('- ', lineStart)
-        dispatch(tr)
-      }
+    const md = editorInstance.action(getMarkdown())
+    const lines = md.split('\n')
+    const newLines = lines.map((line) => {
+      if (line.startsWith('- ')) return line.slice(2)
+      if (line.trim()) return '- ' + line
+      return line
     })
+    skipNextUpdate = true
+    editorInstance.action(replaceAll(newLines.join('\n')))
   } catch {
     // fallback
   }
@@ -148,48 +131,22 @@ const toggleBulletList = () => {
 const toggleOrderedList = () => {
   if (!editorInstance) return
   try {
-    editorInstance.action((ctx) => {
-      const view = ctx.get('editorView')
-      if (!view) return
-      const { state, dispatch } = view
-      const { $from } = state.selection
-      const lineStart = $from.start()
-      const lineText = $from.parent.textContent
-
-      if (/^\d+\.\s/.test(lineText)) {
-        const match = lineText.match(/^\d+\.\s/)
-        const tr = state.tr.replaceWith(lineStart, lineStart + match[0].length, [])
-        dispatch(tr)
-      } else {
-        const tr = state.tr.insertText('1. ', lineStart)
-        dispatch(tr)
-      }
+    const md = editorInstance.action(getMarkdown())
+    const lines = md.split('\n')
+    let num = 1
+    const newLines = lines.map((line) => {
+      if (/^\d+\.\s/.test(line)) return line.replace(/^\d+\.\s/, '')
+      if (line.trim()) return `${num++}. ${line}`
+      return line
     })
+    skipNextUpdate = true
+    editorInstance.action(replaceAll(newLines.join('\n')))
   } catch {
     // fallback
   }
 }
 
-const toggleCode = () => {
-  if (!editorInstance) return
-  try {
-    editorInstance.action((ctx) => {
-      const view = ctx.get('editorView')
-      if (!view) return
-      const { state, dispatch } = view
-      const { from, to } = state.selection
-
-      if (from === to) return
-      const selectedText = state.doc.textBetween(from, to)
-      const isCode = selectedText.startsWith('`') && selectedText.endsWith('`')
-      const newText = isCode ? selectedText.slice(1, -1) : '`' + selectedText + '`'
-      const tr = state.tr.replaceWith(from, to, state.schema.text(newText))
-      dispatch(tr)
-    })
-  } catch {
-    // fallback
-  }
-}
+const toggleCode = () => runCommand(toggleInlineCodeCommand.key)
 
 onMounted(async () => {
   if (!editorRef.value) return
