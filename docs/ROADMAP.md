@@ -27,7 +27,7 @@ These features are live and working:
 | Dark mode (full support across all views) | COMPLETE |
 | Mobile-first responsive UI | COMPLETE |
 | Production deploy on Upsun (auto-deploy from GitHub) | COMPLETE |
-| Open source on GitHub (MIT license) | COMPLETE |
+| Open source on GitHub (Elastic License 2.0) | COMPLETE |
 
 ---
 
@@ -86,7 +86,7 @@ These features are live and working:
 | [#70](https://github.com/gregqualls/kinhold/issues/70) | Stripe billing & subscription system | Critical |
 
 **Pricing model:**
-- Self-hosted: Free forever (MIT license)
+- Self-hosted: Free forever (Elastic License 2.0)
 - Hosted (BYOK): $4.99/mo or $49.99/yr — bring your own Anthropic API key
 - Hosted (Managed AI): $9.99/mo — we provide the Claude API access
 - The only upsell is the API key. No feature gating.
