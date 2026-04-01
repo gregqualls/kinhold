@@ -16,7 +16,7 @@ class FamilyFactory extends Factory
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name),
+            'slug' => Str::slug($name) . '-' . Str::lower(Str::random(6)),
             'invite_code' => Str::random(16),
             'settings' => [],
         ];
