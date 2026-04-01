@@ -120,7 +120,7 @@ export const useVaultStore = defineStore('vault', () => {
     try {
       await api.post(`/vault/entries/${entryId}/permissions`, {
         user_id: userId,
-        level,
+        permission_level: level,
       })
       await fetchEntry(entryId)
       return { success: true }

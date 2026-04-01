@@ -22,8 +22,10 @@ class UpdateVaultEntryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $familyId = $this->user()->family_id;
+
         return [
-            'vault_category_id' => 'sometimes|exists:vault_categories,id',
+            'vault_category_id' => "sometimes|exists:vault_categories,id,family_id,{$familyId}",
             'title' => 'sometimes|string|max:255',
             'data' => 'sometimes|array',
             'notes' => 'nullable|string',

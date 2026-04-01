@@ -93,61 +93,71 @@
     <BaseModal
       :show="showCreateEntry"
       title="New Vault Entry"
-      @close="showCreateEntry = false"
+      size="lg"
+      @close="closeCreateModal"
     >
       <form class="space-y-5" @submit.prevent="handleCreateEntry">
-        <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Category</label>
-          <select v-model="entryForm.category_id" class="input-base">
-            <option :value="null">Select category...</option>
-            <option
-              v-for="cat in categories"
-              :key="cat.id"
-              :value="cat.id"
-            >
-              {{ cat.name }}
-            </option>
-          </select>
+        <div class="flex gap-3">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Title</label>
+            <input
+              v-model="entryForm.title"
+              placeholder="e.g., Family Doctor, WiFi Info"
+              class="input-base"
+            />
+          </div>
+          <div class="w-40">
+            <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Category</label>
+            <select v-model="entryForm.category_id" class="input-base">
+              <option :value="null">Select...</option>
+              <option
+                v-for="cat in categories"
+                :key="cat.id"
+                :value="cat.id"
+              >
+                {{ cat.name }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Title</label>
-          <input
-            v-model="entryForm.title"
-            placeholder="e.g., Health Insurance, Bank Account"
-            class="input-base"
+          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Content</label>
+          <MarkdownEditor
+            v-model="entryForm.body"
+            placeholder="Start typing... Use **bold**, *italic*, lists, tables, and more."
           />
         </div>
 
+        <!-- Sensitive Fields (collapsible) -->
         <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Notes (optional)</label>
-          <textarea
-            v-model="entryForm.notes"
-            rows="2"
-            placeholder="Any additional notes..."
-            class="input-base resize-none"
-          ></textarea>
-        </div>
+          <button
+            type="button"
+            class="flex items-center gap-1.5 text-xs font-medium text-lavender-500 dark:text-lavender-400 hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors"
+            @click="showSensitiveFields = !showSensitiveFields"
+          >
+            <LockClosedIcon class="w-3.5 h-3.5" />
+            {{ showSensitiveFields ? 'Hide' : 'Add' }} sensitive fields (passwords, SSNs, etc.)
+            <ChevronRightIcon class="w-3 h-3 transition-transform" :class="{ 'rotate-90': showSensitiveFields }" />
+          </button>
 
-        <!-- Dynamic fields based on category -->
-        <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-2">Fields</label>
-          <div class="space-y-3">
-            <div v-for="(field, i) in entryForm.fields" :key="i" class="flex gap-2">
+          <div v-if="showSensitiveFields" class="mt-3 space-y-3">
+            <div v-for="(field, i) in entryForm.sensitiveFields" :key="i" class="flex gap-2">
               <input
                 v-model="field.key"
-                placeholder="Field name"
+                placeholder="Label (e.g., Password)"
                 class="input-base flex-1"
               />
               <input
                 v-model="field.value"
                 placeholder="Value"
+                type="password"
                 class="input-base flex-1"
               />
               <button
                 type="button"
                 class="p-2 text-lavender-400 hover:text-red-500 transition-colors"
-                @click="entryForm.fields.splice(i, 1)"
+                @click="entryForm.sensitiveFields.splice(i, 1)"
               >
                 <XMarkIcon class="w-4 h-4" />
               </button>
@@ -155,7 +165,7 @@
             <button
               type="button"
               class="flex items-center gap-1.5 text-xs font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500"
-              @click="entryForm.fields.push({ key: '', value: '' })"
+              @click="entryForm.sensitiveFields.push({ key: '', value: '' })"
             >
               <PlusIcon class="w-3.5 h-3.5" />
               Add Field
@@ -164,7 +174,7 @@
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button type="button" class="flex-1 btn-secondary btn-md rounded-xl" @click="showCreateEntry = false">
+          <button type="button" class="flex-1 btn-secondary btn-md rounded-xl" @click="closeCreateModal">
             Cancel
           </button>
           <button type="submit" :disabled="!entryForm.title?.trim() || !entryForm.category_id || savingEntry" class="flex-1 btn-primary btn-md rounded-xl disabled:opacity-40">
@@ -186,6 +196,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
+import MarkdownEditor from '@/components/vault/MarkdownEditor.vue'
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -208,14 +219,17 @@ const { isParent } = storeToRefs(authStore)
 
 const searchQuery = ref('')
 const showCreateEntry = ref(false)
+const showSensitiveFields = ref(false)
 const savingEntry = ref(false)
 
-const entryForm = ref({
+const defaultForm = () => ({
   category_id: null,
   title: '',
-  notes: '',
-  fields: [{ key: '', value: '' }],
+  body: '',
+  sensitiveFields: [{ key: '', value: '' }],
 })
+
+const entryForm = ref(defaultForm())
 
 const filteredCategories = computed(() =>
   (categories.value || []).filter((cat) =>
@@ -262,29 +276,36 @@ const getCategoryTextClass = (iconType) => {
   return classes[iconType] || 'text-lavender-500'
 }
 
+const closeCreateModal = () => {
+  showCreateEntry.value = false
+  showSensitiveFields.value = false
+  entryForm.value = defaultForm()
+}
+
 const handleCreateEntry = async () => {
   if (!entryForm.value.title?.trim() || !entryForm.value.category_id) return
   savingEntry.value = true
 
-  const data = {
-    vault_category_id: entryForm.value.category_id,
-    title: entryForm.value.title,
-    notes: entryForm.value.notes,
-    encrypted_data: {},
-  }
-
-  // Build encrypted_data from fields
-  entryForm.value.fields.forEach((f) => {
+  const sensitiveFields = {}
+  entryForm.value.sensitiveFields.forEach((f) => {
     if (f.key?.trim() && f.value?.trim()) {
-      data.encrypted_data[f.key.trim()] = f.value.trim()
+      sensitiveFields[f.key.trim()] = f.value.trim()
     }
   })
 
-  const result = await vaultStore.createEntry(data)
+  const payload = {
+    vault_category_id: entryForm.value.category_id,
+    title: entryForm.value.title,
+    data: {
+      body: entryForm.value.body || '',
+      sensitive_fields: Object.keys(sensitiveFields).length > 0 ? sensitiveFields : undefined,
+    },
+  }
+
+  const result = await vaultStore.createEntry(payload)
   if (result.success) {
     success('Entry created!')
-    showCreateEntry.value = false
-    entryForm.value = { category_id: null, title: '', notes: '', fields: [{ key: '', value: '' }] }
+    closeCreateModal()
   } else {
     notifyError(result.error || 'Failed to create entry')
   }

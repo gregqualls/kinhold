@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.0.0",
+    "@milkdown/kit": "^7.20.0",
+    "@milkdown/theme-nord": "^7.20.0",
+    "@milkdown/vue": "^7.20.0",
     "@phosphor-icons/vue": "^2.2.1",
     "@vueuse/core": "^10.4.0",
     "axios": "^1.6.0",

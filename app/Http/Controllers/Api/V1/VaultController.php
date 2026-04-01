@@ -125,7 +125,7 @@ class VaultController extends Controller
     {
         $this->authorize('view', $entry);
 
-        $entry->load(['category', 'creator', 'permissions', 'documents']);
+        $entry->load(['category', 'creator', 'permissions.user', 'documents']);
 
         // Decrypt the data for display
         $entry->decrypted_data = $this->encryptionService->decrypt($entry->encrypted_data);
@@ -284,7 +284,13 @@ class VaultController extends Controller
 
     public function deleteDocument(Request $request, Document $document): JsonResponse
     {
-        $this->authorize('view', $document->vaultEntry);
+        $entry = $document->documentable;
+
+        if (! $entry || ! ($entry instanceof VaultEntry)) {
+            return response()->json(['message' => 'Document not found.'], 404);
+        }
+
+        $this->authorize('view', $entry);
 
         // Delete file from storage
         \Storage::disk($document->disk ?? 'private')->delete($document->path);
