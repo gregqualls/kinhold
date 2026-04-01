@@ -1,17 +1,56 @@
 <template>
-  <div ref="editorRef" class="milkdown-wrapper" :class="{ 'milkdown-readonly': readonly }"></div>
+  <div class="milkdown-wrapper" :class="{ 'milkdown-readonly': readonly }">
+    <!-- Toolbar -->
+    <div v-if="!readonly" class="milkdown-toolbar">
+      <button type="button" title="Bold (Ctrl+B)" @click="toggleBold">
+        <span class="font-bold">B</span>
+      </button>
+      <button type="button" title="Italic (Ctrl+I)" @click="toggleItalic">
+        <span class="italic">I</span>
+      </button>
+      <span class="milkdown-toolbar-divider"></span>
+      <button type="button" title="Heading 1" @click="toggleHeading(1)">
+        <span class="font-bold text-[10px]">H1</span>
+      </button>
+      <button type="button" title="Heading 2" @click="toggleHeading(2)">
+        <span class="font-bold text-[10px]">H2</span>
+      </button>
+      <button type="button" title="Heading 3" @click="toggleHeading(3)">
+        <span class="font-bold text-[10px]">H3</span>
+      </button>
+      <span class="milkdown-toolbar-divider"></span>
+      <button type="button" title="Bullet List" @click="toggleBulletList">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></svg>
+      </button>
+      <button type="button" title="Numbered List" @click="toggleOrderedList">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h10M7 16h10M3 8V6l1-1h1v3M3 12h2l-2 2h2M3 18h1.5L3 16h2" /></svg>
+      </button>
+      <span class="milkdown-toolbar-divider"></span>
+      <button type="button" title="Code" @click="toggleCode">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10 20 4-16m4 4 4 4-4 4M6 16l-4-4 4-4" /></svg>
+      </button>
+      <button type="button" title="Blockquote" @click="toggleBlockquote">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v4a1 1 0 0 0 1 1h3v0a2 2 0 0 1-2 2H4M15 7v4a1 1 0 0 0 1 1h3v0a2 2 0 0 1-2 2h-1" /></svg>
+      </button>
+      <button type="button" title="Horizontal Rule" @click="insertHr">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M3 12h18" /></svg>
+      </button>
+    </div>
+    <!-- Editor -->
+    <div ref="editorRef" class="milkdown-editor-container"></div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Editor, rootCtx, defaultValueCtx, editorViewOptionsCtx } from '@milkdown/kit/core'
-import { commonmark } from '@milkdown/kit/preset/commonmark'
+import { commonmark, toggleStrongCommand, toggleEmphasisCommand, wrapInBlockquoteCommand, insertHrCommand } from '@milkdown/kit/preset/commonmark'
 import { history } from '@milkdown/kit/plugin/history'
 import { clipboard } from '@milkdown/kit/plugin/clipboard'
 import { indent } from '@milkdown/kit/plugin/indent'
 import { trailing } from '@milkdown/kit/plugin/trailing'
 import { listener, listenerCtx } from '@milkdown/kit/plugin/listener'
-import { replaceAll, getMarkdown } from '@milkdown/kit/utils'
+import { replaceAll, getMarkdown, callCommand } from '@milkdown/kit/utils'
 
 const props = defineProps({
   modelValue: {
@@ -33,6 +72,124 @@ const emit = defineEmits(['update:modelValue'])
 const editorRef = ref(null)
 let editorInstance = null
 let skipNextUpdate = false
+
+const runCommand = (command, payload) => {
+  if (!editorInstance) return
+  try {
+    editorInstance.action(callCommand(command, payload))
+  } catch {
+    // Command may not be available
+  }
+}
+
+const toggleBold = () => runCommand(toggleStrongCommand.key)
+const toggleItalic = () => runCommand(toggleEmphasisCommand.key)
+const toggleBlockquote = () => runCommand(wrapInBlockquoteCommand.key)
+const insertHr = () => runCommand(insertHrCommand.key)
+
+const toggleHeading = (level) => {
+  if (!editorInstance) return
+  // Insert heading by wrapping current line via markdown
+  try {
+    editorInstance.action((ctx) => {
+      const view = ctx.get('editorView')
+      if (!view) return
+      const { state, dispatch } = view
+      const { $from } = state.selection
+      const lineStart = $from.start()
+      const lineText = $from.parent.textContent
+      const prefix = '#'.repeat(level) + ' '
+
+      // Check if line already has this heading level
+      const headingMatch = lineText.match(/^(#{1,6})\s/)
+      if (headingMatch && headingMatch[1].length === level) {
+        // Remove heading
+        const tr = state.tr.replaceWith(lineStart, lineStart + headingMatch[0].length, [])
+        dispatch(tr)
+      } else if (headingMatch) {
+        // Replace heading level
+        const tr = state.tr.replaceWith(lineStart, lineStart + headingMatch[0].length, state.schema.text(prefix))
+        dispatch(tr)
+      } else {
+        // Add heading
+        const tr = state.tr.insertText(prefix, lineStart)
+        dispatch(tr)
+      }
+    })
+  } catch {
+    // Fallback: just insert markdown
+  }
+}
+
+const toggleBulletList = () => {
+  if (!editorInstance) return
+  try {
+    editorInstance.action((ctx) => {
+      const view = ctx.get('editorView')
+      if (!view) return
+      const { state, dispatch } = view
+      const { $from } = state.selection
+      const lineStart = $from.start()
+      const lineText = $from.parent.textContent
+
+      if (lineText.startsWith('- ')) {
+        const tr = state.tr.replaceWith(lineStart, lineStart + 2, [])
+        dispatch(tr)
+      } else {
+        const tr = state.tr.insertText('- ', lineStart)
+        dispatch(tr)
+      }
+    })
+  } catch {
+    // fallback
+  }
+}
+
+const toggleOrderedList = () => {
+  if (!editorInstance) return
+  try {
+    editorInstance.action((ctx) => {
+      const view = ctx.get('editorView')
+      if (!view) return
+      const { state, dispatch } = view
+      const { $from } = state.selection
+      const lineStart = $from.start()
+      const lineText = $from.parent.textContent
+
+      if (/^\d+\.\s/.test(lineText)) {
+        const match = lineText.match(/^\d+\.\s/)
+        const tr = state.tr.replaceWith(lineStart, lineStart + match[0].length, [])
+        dispatch(tr)
+      } else {
+        const tr = state.tr.insertText('1. ', lineStart)
+        dispatch(tr)
+      }
+    })
+  } catch {
+    // fallback
+  }
+}
+
+const toggleCode = () => {
+  if (!editorInstance) return
+  try {
+    editorInstance.action((ctx) => {
+      const view = ctx.get('editorView')
+      if (!view) return
+      const { state, dispatch } = view
+      const { from, to } = state.selection
+
+      if (from === to) return
+      const selectedText = state.doc.textBetween(from, to)
+      const isCode = selectedText.startsWith('`') && selectedText.endsWith('`')
+      const newText = isCode ? selectedText.slice(1, -1) : '`' + selectedText + '`'
+      const tr = state.tr.replaceWith(from, to, state.schema.text(newText))
+      dispatch(tr)
+    })
+  } catch {
+    // fallback
+  }
+}
 
 onMounted(async () => {
   if (!editorRef.value) return
@@ -108,8 +265,22 @@ watch(
   @apply ring-0 border-transparent;
 }
 
+/* Toolbar */
+.milkdown-toolbar {
+  @apply flex items-center gap-0.5 px-2 py-1.5 border-b border-lavender-200 dark:border-prussian-600 bg-lavender-50/50 dark:bg-prussian-900/30;
+}
+
+.milkdown-toolbar button {
+  @apply w-7 h-7 flex items-center justify-center rounded-md text-lavender-500 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors text-xs;
+}
+
+.milkdown-toolbar-divider {
+  @apply w-px h-4 bg-lavender-200 dark:bg-prussian-600 mx-1;
+}
+
+/* Editor */
 .milkdown-editor {
-  @apply px-4 py-3 text-sm text-prussian-500 dark:text-lavender-200 outline-none min-h-[120px];
+  @apply px-4 py-3 text-sm text-prussian-500 dark:text-lavender-200 outline-none min-h-[160px];
 }
 
 .milkdown-readonly .milkdown-editor {

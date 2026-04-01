@@ -228,7 +228,7 @@
     <BaseModal
       :show="showEditModal"
       title="Edit Entry"
-      size="lg"
+      size="xl"
       @close="showEditModal = false"
     >
       <form class="space-y-5" @submit.prevent="handleUpdateEntry">

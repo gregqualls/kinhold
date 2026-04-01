@@ -170,7 +170,7 @@
     <BaseModal
       :show="showCreateEntry"
       title="New Vault Entry"
-      size="lg"
+      size="xl"
       @close="closeCreateModal"
     >
       <form class="space-y-5" @submit.prevent="handleCreateEntry">

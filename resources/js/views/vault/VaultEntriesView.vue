@@ -97,6 +97,86 @@
       @confirm="handleDeleteEntry"
       @cancel="deletingEntry = null"
     />
+
+    <!-- Create Entry Modal -->
+    <BaseModal
+      :show="showCreateEntry"
+      title="New Vault Entry"
+      size="xl"
+      @close="closeCreateModal"
+    >
+      <form class="space-y-5" @submit.prevent="handleCreateEntry">
+        <div>
+          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Title</label>
+          <input
+            v-model="entryForm.title"
+            placeholder="e.g., Family Doctor, WiFi Info"
+            class="input-base"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Content</label>
+          <MarkdownEditor
+            v-model="entryForm.body"
+            placeholder="Start typing... Use **bold**, *italic*, lists, and more."
+          />
+        </div>
+
+        <!-- Sensitive Fields (collapsible) -->
+        <div>
+          <button
+            type="button"
+            class="flex items-center gap-1.5 text-xs font-medium text-lavender-500 dark:text-lavender-400 hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors"
+            @click="showSensitiveFields = !showSensitiveFields"
+          >
+            <LockClosedIcon class="w-3.5 h-3.5" />
+            {{ showSensitiveFields ? 'Hide' : 'Add' }} sensitive fields (passwords, SSNs, etc.)
+            <ChevronRightIcon class="w-3 h-3 transition-transform" :class="{ 'rotate-90': showSensitiveFields }" />
+          </button>
+
+          <div v-if="showSensitiveFields" class="mt-3 space-y-3">
+            <div v-for="(field, i) in entryForm.sensitiveFields" :key="i" class="flex gap-2">
+              <input
+                v-model="field.key"
+                placeholder="Label (e.g., Password)"
+                class="input-base flex-1"
+              />
+              <input
+                v-model="field.value"
+                placeholder="Value"
+                type="password"
+                class="input-base flex-1"
+              />
+              <button
+                type="button"
+                class="p-2 text-lavender-400 hover:text-red-500 transition-colors"
+                @click="entryForm.sensitiveFields.splice(i, 1)"
+              >
+                <XMarkIcon class="w-4 h-4" />
+              </button>
+            </div>
+            <button
+              type="button"
+              class="flex items-center gap-1.5 text-xs font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500"
+              @click="entryForm.sensitiveFields.push({ key: '', value: '' })"
+            >
+              <PlusIcon class="w-3.5 h-3.5" />
+              Add Field
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" class="flex-1 btn-secondary btn-md rounded-xl" @click="closeCreateModal">
+            Cancel
+          </button>
+          <button type="submit" :disabled="!entryForm.title?.trim() || savingEntry" class="flex-1 btn-primary btn-md rounded-xl disabled:opacity-40">
+            {{ savingEntry ? 'Saving...' : 'Create Entry' }}
+          </button>
+        </div>
+      </form>
+    </BaseModal>
   </div>
 </template>
 
@@ -111,15 +191,17 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ContextMenu from '@/components/common/ContextMenu.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import BaseModal from '@/components/common/BaseModal.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
+import MarkdownEditor from '@/components/vault/MarkdownEditor.vue'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   LockClosedIcon,
   PlusIcon,
   MagnifyingGlassIcon,
-  PencilIcon,
   TrashIcon,
+  XMarkIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -134,7 +216,15 @@ const { isParent } = storeToRefs(authStore)
 const categorySlug = route.params.categorySlug
 const searchQuery = ref('')
 const showCreateEntry = ref(false)
+const showSensitiveFields = ref(false)
+const savingEntry = ref(false)
 const deletingEntry = ref(null)
+
+const entryForm = ref({
+  title: '',
+  body: '',
+  sensitiveFields: [{ key: '', value: '' }],
+})
 
 const filteredEntries = computed(() =>
   (entries.value || []).filter((entry) => {
@@ -162,6 +252,42 @@ const getEntryMenuItems = (entry) => [
   { divider: true },
   { label: 'Delete', icon: TrashIcon, variant: 'danger', action: () => { deletingEntry.value = entry } },
 ]
+
+const closeCreateModal = () => {
+  showCreateEntry.value = false
+  showSensitiveFields.value = false
+  entryForm.value = { title: '', body: '', sensitiveFields: [{ key: '', value: '' }] }
+}
+
+const handleCreateEntry = async () => {
+  if (!entryForm.value.title?.trim() || !currentCategory.value) return
+  savingEntry.value = true
+
+  const sensitiveFields = {}
+  entryForm.value.sensitiveFields.forEach((f) => {
+    if (f.key?.trim() && f.value?.trim()) {
+      sensitiveFields[f.key.trim()] = f.value.trim()
+    }
+  })
+
+  const payload = {
+    vault_category_id: currentCategory.value.id,
+    title: entryForm.value.title,
+    data: {
+      body: entryForm.value.body || '',
+      sensitive_fields: Object.keys(sensitiveFields).length > 0 ? sensitiveFields : undefined,
+    },
+  }
+
+  const result = await vaultStore.createEntry(payload)
+  if (result.success) {
+    success('Entry created!')
+    closeCreateModal()
+  } else {
+    notifyError(result.error || 'Failed to create entry')
+  }
+  savingEntry.value = false
+}
 
 const handleDeleteEntry = async () => {
   if (!deletingEntry.value) return
