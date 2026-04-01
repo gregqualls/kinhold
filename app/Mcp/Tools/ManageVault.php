@@ -247,7 +247,7 @@ class ManageVault extends Tool
             return Response::error('data is required to create a vault entry.');
         }
 
-        VaultCategory::where('family_id', $this->familyId())->findOrFail($categoryId);
+        $category = VaultCategory::where('family_id', $this->familyId())->findOrFail($categoryId);
 
         $encryptionService = app(VaultEncryptionService::class);
         $encryptedData = $encryptionService->encrypt($data);
@@ -263,8 +263,8 @@ class ManageVault extends Tool
         ]);
 
         return Response::json([
-            'message' => "Vault entry \"{$entry->title}\" created.".($isPersonal ? ' (personal)' : ''),
-            'entry' => ['id' => $entry->id, 'title' => $entry->title],
+            'message' => "Vault entry \"{$entry->title}\" created in {$category->name}.".($isPersonal ? ' (personal)' : ''),
+            'entry' => ['id' => $entry->id, 'title' => $entry->title, 'category' => $category->name],
         ]);
     }
 
