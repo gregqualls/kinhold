@@ -32,16 +32,16 @@
             <!-- Actions -->
             <div class="px-6 pb-6 pt-4 flex gap-3">
               <button
-                @click="$emit('cancel')"
                 class="flex-1 px-4 py-2.5 text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-lavender-100 dark:bg-prussian-700 hover:bg-lavender-200 dark:hover:bg-prussian-600 rounded-[10px] transition-colors"
+                @click="$emit('cancel')"
               >
                 {{ cancelText }}
               </button>
               <button
-                @click="$emit('confirm')"
                 class="flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-[10px] transition-colors"
                 :class="confirmBtnClass"
                 :disabled="loading"
+                @click="$emit('confirm')"
               >
                 <span v-if="loading" class="flex items-center justify-center gap-2">
                   <svg class="animate-spin w-4 h-4" viewBox="0 0 24 24">

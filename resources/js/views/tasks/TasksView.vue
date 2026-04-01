@@ -17,11 +17,11 @@
       <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
         <!-- All chip -->
         <button
-          @click="clearTagFilter"
           class="flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
           :class="selectedTagIds.length === 0
             ? 'bg-prussian-500 dark:bg-wisteria-600 text-white'
             : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+          @click="clearTagFilter"
         >
           All
         </button>
@@ -30,27 +30,27 @@
         <button
           v-for="tag in tags"
           :key="tag.id"
-          @click="toggleTagFilter(tag.id)"
           class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
           :class="isTagSelected(tag.id)
             ? 'text-white'
             : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
           :style="isTagSelected(tag.id) ? { backgroundColor: getTagHex(tag.color) } : {}"
+          @click="toggleTagFilter(tag.id)"
         >
           <span
             v-if="!isTagSelected(tag.id)"
             class="w-2 h-2 rounded-full flex-shrink-0"
             :style="{ backgroundColor: getTagHex(tag.color) }"
-          />
+          ></span>
           {{ tag.name }}
           <span class="opacity-70">{{ tag.incomplete_tasks_count || 0 }}</span>
         </button>
 
         <!-- Manage tags -->
         <button
-          @click="showTagManager = true"
           class="flex-shrink-0 p-1.5 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-full transition-colors"
           title="Manage tags"
+          @click="showTagManager = true"
         >
           <CogIcon class="w-4 h-4" />
         </button>
@@ -59,7 +59,7 @@
 
     <!-- Divider -->
     <div class="px-4 md:px-6">
-      <div class="border-t border-lavender-200 dark:border-prussian-700" />
+      <div class="border-t border-lavender-200 dark:border-prussian-700"></div>
     </div>
 
     <!-- Loading -->
@@ -91,8 +91,8 @@
       <!-- Completed section -->
       <div v-if="filteredCompletedTasks.length > 0" class="mt-4 px-4">
         <button
-          @click="showCompleted = !showCompleted"
           class="flex items-center gap-2 text-xs font-medium text-lavender-500 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors"
+          @click="showCompleted = !showCompleted"
         >
           <ChevronRightIcon
             class="w-3 h-3 transition-transform"
@@ -150,7 +150,7 @@
       :show="!!taskToDelete"
       title="Delete Task?"
       :message="`&quot;${taskToDelete?.title}&quot; will be permanently deleted.`"
-      confirmText="Delete"
+      confirm-text="Delete"
       @confirm="handleDeleteTask"
       @cancel="taskToDelete = null"
     />
@@ -182,35 +182,35 @@
             <span
               class="w-3 h-3 rounded-full flex-shrink-0"
               :style="{ backgroundColor: getTagHex(tag.color) }"
-            />
+            ></span>
             <span v-if="editingTag?.id !== tag.id" class="flex-1 text-sm text-prussian-500 dark:text-lavender-200">
               {{ tag.name }}
             </span>
             <input
               v-else
               v-model="editingTag.name"
+              class="flex-1 text-sm text-prussian-500 dark:text-lavender-200 bg-transparent border-b border-wisteria-400 outline-none"
               @keydown.enter="saveEditTag"
               @keydown.escape="editingTag = null"
-              class="flex-1 text-sm text-prussian-500 dark:text-lavender-200 bg-transparent border-b border-wisteria-400 outline-none"
             />
             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 v-if="editingTag?.id !== tag.id"
-                @click="editingTag = { id: tag.id, name: tag.name, color: tag.color }"
                 class="p-1 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 rounded"
+                @click="editingTag = { id: tag.id, name: tag.name, color: tag.color }"
               >
                 <PencilIcon class="w-3.5 h-3.5" />
               </button>
               <button
                 v-else
-                @click="saveEditTag"
                 class="p-1 text-emerald-500 hover:text-emerald-600 rounded"
+                @click="saveEditTag"
               >
                 <CheckIcon class="w-3.5 h-3.5" />
               </button>
               <button
-                @click="handleDeleteTag(tag)"
                 class="p-1 text-lavender-400 hover:text-red-500 rounded"
+                @click="handleDeleteTag(tag)"
               >
                 <TrashIcon class="w-3.5 h-3.5" />
               </button>
@@ -224,14 +224,14 @@
 
         <!-- Add new tag -->
         <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4">
-          <form @submit.prevent="handleCreateTag" class="flex gap-2">
+          <form class="flex gap-2" @submit.prevent="handleCreateTag">
             <div class="flex items-center gap-2 flex-1">
               <button
                 type="button"
-                @click="cycleNewTagColor"
                 class="w-6 h-6 rounded-full flex-shrink-0 border-2 border-white dark:border-prussian-700 shadow-sm"
                 :style="{ backgroundColor: getTagHex(newTagColor) }"
-              />
+                @click="cycleNewTagColor"
+              ></button>
               <input
                 v-model="newTagName"
                 placeholder="New tag name..."

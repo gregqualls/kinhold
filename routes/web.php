@@ -1,7 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\GoogleAuthController;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,14 +21,14 @@ Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
 
 // Email verification (signed URL from email)
-Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $request, string $id, string $hash) {
-    $user = \App\Models\User::findOrFail($id);
+Route::get('/email/verify/{id}/{hash}', function (Request $request, string $id, string $hash) {
+    $user = User::findOrFail($id);
 
-    if (!hash_equals(sha1($user->getEmailForVerification()), $hash)) {
+    if (! hash_equals(sha1($user->getEmailForVerification()), $hash)) {
         return redirect('/?verify_error=invalid');
     }
 
-    if (!$user->hasVerifiedEmail()) {
+    if (! $user->hasVerifiedEmail()) {
         $user->markEmailAsVerified();
     }
 

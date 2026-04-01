@@ -97,7 +97,7 @@ class PointsController extends Controller
             'message' => "Gave kudos to {$to->name}",
         ];
 
-        if (!empty($newBadges)) {
+        if (! empty($newBadges)) {
             $response['badges_earned'] = collect($newBadges)->map(fn ($b) => [
                 'id' => $b->id,
                 'name' => $b->name,
@@ -118,7 +118,7 @@ class PointsController extends Controller
     {
         $from = $request->user();
 
-        if (!$from->isParent()) {
+        if (! $from->isParent()) {
             return response()->json(['message' => 'Only parents can deduct points'], 403);
         }
 

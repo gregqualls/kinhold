@@ -22,7 +22,6 @@
       <p class="text-sm text-prussian-400 dark:text-lavender-400 mb-10">Last updated: March 22, 2026</p>
 
       <div class="prose-container space-y-8 text-prussian-500 dark:text-lavender-300">
-
         <section>
           <h2>Overview</h2>
           <p>
@@ -178,7 +177,6 @@
             <a href="mailto:glqualls@gmail.com" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">glqualls@gmail.com</a>.
           </p>
         </section>
-
       </div>
     </main>
 

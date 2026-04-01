@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasColumn('featured_events', 'recurrence')) {
+        if (! Schema::hasColumn('featured_events', 'recurrence')) {
             Schema::table('featured_events', function (Blueprint $table) {
                 $table->string('recurrence', 20)->default('none')->after('color');
             });

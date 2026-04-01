@@ -8,8 +8,8 @@
         <span class="text-sm flex-1">{{ message }}</span>
         <button
           v-if="undoable"
-          @click="$emit('undo')"
           class="text-sm font-semibold text-wisteria-300 hover:text-wisteria-200 uppercase tracking-wide"
+          @click="$emit('undo')"
         >
           Undo
         </button>

@@ -5,7 +5,7 @@
         v-if="show"
         class="fixed inset-0 bg-black/30 z-50"
         @click="$emit('close')"
-      />
+      ></div>
     </Transition>
 
     <Transition name="slide-panel">
@@ -18,8 +18,8 @@
         <div class="flex items-center justify-between px-6 py-4 border-b border-lavender-200 dark:border-prussian-700">
           <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">{{ title }}</h2>
           <button
-            @click="$emit('close')"
             class="p-2 -mr-2 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-lg transition-colors"
+            @click="$emit('close')"
           >
             <XMarkIcon class="w-5 h-5" />
           </button>
@@ -27,12 +27,12 @@
 
         <!-- Content -->
         <div class="flex-1 overflow-y-auto">
-          <slot />
+          <slot></slot>
         </div>
 
         <!-- Footer -->
         <div v-if="$slots.footer" class="border-t border-lavender-200 dark:border-prussian-700 px-6 py-4">
-          <slot name="footer" />
+          <slot name="footer"></slot>
         </div>
       </div>
     </Transition>

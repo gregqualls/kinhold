@@ -12,11 +12,11 @@ class FamilyFactory extends Factory
 
     public function definition(): array
     {
-        $name = fake('en_US')->lastName() . ' Family';
+        $name = fake('en_US')->lastName().' Family';
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name) . '-' . Str::lower(Str::random(6)),
+            'slug' => Str::slug($name).'-'.Str::lower(Str::random(6)),
             'invite_code' => Str::random(16),
             'settings' => [],
         ];

@@ -56,3 +56,45 @@ jobs:
 
       - name: Build
         run: npx vite build
+
+  lint:
+    name: Lint & Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_sqlite, mbstring, xml, ctype, json, bcmath
+          tools: composer:v2
+
+      - name: Prepare Laravel environment
+        run: |
+          mkdir -p bootstrap/cache storage/framework/{sessions,views,cache}
+          cp .env.example .env
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Check PHP formatting (Pint)
+        run: ./vendor/bin/pint --test
+
+      - name: Run static analysis (Larastan)
+        run: ./vendor/bin/phpstan analyse --memory-limit=512M
+        continue-on-error: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npx eslint resources/js/
+        continue-on-error: true

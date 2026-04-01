@@ -11,7 +11,9 @@ use Google\Service\Calendar\Event;
 class GoogleCalendarService
 {
     private CalendarConnection $connection;
+
     private Client $client;
+
     private Calendar $service;
 
     public function __construct(CalendarConnection $connection)
@@ -23,12 +25,10 @@ class GoogleCalendarService
 
     /**
      * Initialize Google API client.
-     *
-     * @return Client
      */
     private function initializeClient(): Client
     {
-        $client = new Client();
+        $client = new Client;
         $client->setApplicationName(config('app.name'));
         $client->setClientId(config('kinhold.google.client_id'));
         $client->setClientSecret(config('kinhold.google.client_secret'));
@@ -48,10 +48,6 @@ class GoogleCalendarService
 
     /**
      * Get events from Google Calendar.
-     *
-     * @param Carbon $start
-     * @param Carbon $end
-     * @return array
      */
     public function getEvents(Carbon $start, Carbon $end): array
     {
@@ -73,16 +69,14 @@ class GoogleCalendarService
 
             return $events;
         } catch (\Exception $e) {
-            \Log::error('Failed to fetch Google Calendar events: ' . $e->getMessage());
+            \Log::error('Failed to fetch Google Calendar events: '.$e->getMessage());
+
             return [];
         }
     }
 
     /**
      * Format Google Calendar event to standard format.
-     *
-     * @param Event $event
-     * @return array
      */
     private function formatEvent(Event $event): array
     {
@@ -95,7 +89,7 @@ class GoogleCalendarService
             'description' => $event->getDescription(),
             'start' => $start->getDateTime() ?? $start->getDate(),
             'end' => $end->getDateTime() ?? $end->getDate(),
-            'all_day' => !$start->getDateTime(),
+            'all_day' => ! $start->getDateTime(),
             'location' => $event->getLocation(),
             'calendar_id' => $this->connection->calendar_id,
         ];
@@ -103,8 +97,6 @@ class GoogleCalendarService
 
     /**
      * Refresh expired OAuth token.
-     *
-     * @return void
      */
     public function refreshToken(): void
     {
@@ -117,19 +109,17 @@ class GoogleCalendarService
                 'last_synced_at' => now(),
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to refresh Google Calendar token: ' . $e->getMessage());
+            \Log::error('Failed to refresh Google Calendar token: '.$e->getMessage());
             $this->connection->update(['is_active' => false]);
         }
     }
 
     /**
      * Get Google OAuth authorization URL.
-     *
-     * @return string
      */
-    public static function getAuthUrl(string $userId = null): string
+    public static function getAuthUrl(?string $userId = null): string
     {
-        $client = new Client();
+        $client = new Client;
         $client->setApplicationName(config('app.name'));
         $client->setClientId(config('kinhold.google.client_id'));
         $client->setClientSecret(config('kinhold.google.client_secret'));
@@ -153,8 +143,7 @@ class GoogleCalendarService
     /**
      * Handle OAuth callback and store connection.
      *
-     * @param string $code
-     * @param int $userId
+     * @param  int  $userId
      * @return CalendarConnection
      */
     /**
@@ -164,7 +153,7 @@ class GoogleCalendarService
      */
     public static function handleCallback(string $code, string $userId): array
     {
-        $client = new Client();
+        $client = new Client;
         $client->setApplicationName(config('app.name'));
         $client->setClientId(config('kinhold.google.client_id'));
         $client->setClientSecret(config('kinhold.google.client_secret'));
@@ -204,6 +193,7 @@ class GoogleCalendarService
                     'is_active' => true,
                 ]);
                 $connections[] = $existing;
+
                 continue;
             }
 

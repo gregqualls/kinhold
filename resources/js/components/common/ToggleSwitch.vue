@@ -13,13 +13,13 @@
       role="switch"
       :aria-checked="modelValue"
       :disabled="disabled"
-      @click="toggle"
       :class="[
         'relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-wisteria-400 focus:ring-offset-2 dark:focus:ring-offset-prussian-700',
         modelValue ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-600',
         disabled ? 'cursor-not-allowed' : '',
         size === 'sm' ? 'h-6 w-11' : 'h-7 w-12',
       ]"
+      @click="toggle"
     >
       <span
         :class="[
@@ -29,7 +29,7 @@
             : (modelValue ? 'translate-x-5 h-6 w-6' : 'translate-x-0 h-6 w-6'),
         ]"
       >
-        <slot name="thumb" />
+        <slot name="thumb"></slot>
       </span>
     </button>
   </div>
@@ -40,13 +40,13 @@
     role="switch"
     :aria-checked="modelValue"
     :disabled="disabled"
-    @click="toggle"
     :class="[
       'relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-wisteria-400 focus:ring-offset-2 dark:focus:ring-offset-prussian-700',
       modelValue ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-600',
       disabled ? 'cursor-not-allowed opacity-50' : '',
       size === 'sm' ? 'h-6 w-11' : 'h-7 w-12',
     ]"
+    @click="toggle"
   >
     <span
       :class="[
@@ -56,7 +56,7 @@
           : (modelValue ? 'translate-x-5 h-6 w-6' : 'translate-x-0 h-6 w-6'),
       ]"
     >
-      <slot name="thumb" />
+      <slot name="thumb"></slot>
     </span>
   </button>
 </template>

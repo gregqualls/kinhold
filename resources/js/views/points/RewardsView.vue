@@ -12,7 +12,7 @@
         <span class="text-sm font-bold font-mono text-wisteria-600 dark:text-wisteria-400">
           {{ pointsStore.bank }} pts
         </span>
-        <button v-if="isParent" @click="showCreateForm = !showCreateForm" class="btn-primary btn-sm">
+        <button v-if="isParent" class="btn-primary btn-sm" @click="showCreateForm = !showCreateForm">
           {{ showCreateForm ? 'Cancel' : '+ Add Reward' }}
         </button>
       </div>
@@ -31,7 +31,7 @@
         </div>
       </div>
       <div class="flex justify-end mt-3">
-        <button @click="createReward" :disabled="!newReward.title || !newReward.point_cost" class="btn-primary btn-sm">
+        <button :disabled="!newReward.title || !newReward.point_cost" class="btn-primary btn-sm" @click="createReward">
           Create Reward
         </button>
       </div>

@@ -15,8 +15,9 @@ class GenerateMcpToken extends Command
     {
         $user = User::where('email', $this->argument('email'))->first();
 
-        if (!$user) {
+        if (! $user) {
             $this->error("User not found: {$this->argument('email')}");
+
             return 1;
         }
 

@@ -47,8 +47,8 @@
             <button
               v-for="(q, idx) in suggestedQuestions"
               :key="idx"
-              @click="quickSend(q)"
               class="w-full text-left px-4 py-3 bg-white dark:bg-prussian-800 border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-300 dark:hover:border-wisteria-700 hover:bg-wisteria-50 dark:hover:bg-wisteria-900/10 rounded-xl transition-all text-sm text-prussian-500 dark:text-lavender-200"
+              @click="quickSend(q)"
             >
               {{ q }}
             </button>
@@ -106,9 +106,9 @@
           </div>
           <div class="bg-lavender-100 dark:bg-prussian-700 rounded-2xl rounded-bl-md px-4 py-3">
             <div class="flex gap-1">
-              <span class="w-2 h-2 bg-lavender-400 dark:bg-lavender-500 rounded-full animate-bounce" style="animation-delay: 0ms" />
-              <span class="w-2 h-2 bg-lavender-400 dark:bg-lavender-500 rounded-full animate-bounce" style="animation-delay: 150ms" />
-              <span class="w-2 h-2 bg-lavender-400 dark:bg-lavender-500 rounded-full animate-bounce" style="animation-delay: 300ms" />
+              <span class="w-2 h-2 bg-lavender-400 dark:bg-lavender-500 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
+              <span class="w-2 h-2 bg-lavender-400 dark:bg-lavender-500 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
+              <span class="w-2 h-2 bg-lavender-400 dark:bg-lavender-500 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
             </div>
           </div>
         </div>
@@ -117,7 +117,7 @@
 
     <!-- Input Area -->
     <div v-if="!checkingKey && hasApiKey" class="border-t border-lavender-200 dark:border-prussian-700 bg-white dark:bg-prussian-800 px-4 md:px-6 py-3 pb-safe-bottom">
-      <form @submit.prevent="handleSend" class="max-w-2xl mx-auto flex gap-2">
+      <form class="max-w-2xl mx-auto flex gap-2" @submit.prevent="handleSend">
         <input
           v-model="messageInput"
           type="text"

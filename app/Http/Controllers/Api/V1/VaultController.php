@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Vault\GrantPermissionRequest;
 use App\Http\Requests\Vault\StoreVaultEntryRequest;
 use App\Http\Requests\Vault\UpdateVaultEntryRequest;
-use App\Http\Requests\Vault\GrantPermissionRequest;
+use App\Http\Resources\DocumentResource;
 use App\Http\Resources\VaultCategoryResource;
 use App\Http\Resources\VaultEntryResource;
-use App\Http\Resources\DocumentResource;
+use App\Models\Document;
 use App\Models\VaultCategory;
 use App\Models\VaultEntry;
 use App\Models\VaultPermission;
-use App\Models\Document;
 use App\Services\VaultEncryptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,9 +28,6 @@ class VaultController extends Controller
 
     /**
      * Get all vault categories.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function categories(Request $request): JsonResponse
     {
@@ -48,9 +45,6 @@ class VaultController extends Controller
 
     /**
      * List vault entries accessible to the current user.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -84,9 +78,6 @@ class VaultController extends Controller
 
     /**
      * Create a new vault entry (parent only).
-     *
-     * @param StoreVaultEntryRequest $request
-     * @return JsonResponse
      */
     public function store(StoreVaultEntryRequest $request): JsonResponse
     {
@@ -129,10 +120,6 @@ class VaultController extends Controller
 
     /**
      * Get a specific vault entry with decrypted data.
-     *
-     * @param Request $request
-     * @param VaultEntry $entry
-     * @return JsonResponse
      */
     public function show(Request $request, VaultEntry $entry): JsonResponse
     {
@@ -150,10 +137,6 @@ class VaultController extends Controller
 
     /**
      * Update a vault entry.
-     *
-     * @param UpdateVaultEntryRequest $request
-     * @param VaultEntry $entry
-     * @return JsonResponse
      */
     public function update(UpdateVaultEntryRequest $request, VaultEntry $entry): JsonResponse
     {
@@ -175,10 +158,6 @@ class VaultController extends Controller
 
     /**
      * Delete a vault entry (parent only).
-     *
-     * @param Request $request
-     * @param VaultEntry $entry
-     * @return JsonResponse
      */
     public function destroy(Request $request, VaultEntry $entry): JsonResponse
     {
@@ -191,10 +170,6 @@ class VaultController extends Controller
 
     /**
      * Grant a user access to a vault entry (parent only).
-     *
-     * @param GrantPermissionRequest $request
-     * @param VaultEntry $entry
-     * @return JsonResponse
      */
     public function grantPermission(GrantPermissionRequest $request, VaultEntry $entry): JsonResponse
     {
@@ -231,11 +206,6 @@ class VaultController extends Controller
 
     /**
      * Revoke a user's access to a vault entry (parent only).
-     *
-     * @param Request $request
-     * @param VaultEntry $entry
-     * @param $userId
-     * @return JsonResponse
      */
     public function revokePermission(Request $request, VaultEntry $entry, $userId): JsonResponse
     {
@@ -252,10 +222,6 @@ class VaultController extends Controller
 
     /**
      * Upload a document to a vault entry.
-     *
-     * @param Request $request
-     * @param VaultEntry $entry
-     * @return JsonResponse
      */
     public function uploadDocument(Request $request, VaultEntry $entry): JsonResponse
     {
@@ -291,8 +257,6 @@ class VaultController extends Controller
     /**
      * Delete a document from a vault entry.
      *
-     * @param Request $request
-     * @param Document $document
      * @return JsonResponse
      */
     /**
@@ -303,7 +267,7 @@ class VaultController extends Controller
         // Ensure the document belongs to a vault entry in the user's family
         $entry = $document->documentable;
 
-        if (!$entry || !($entry instanceof VaultEntry)) {
+        if (! $entry || ! ($entry instanceof VaultEntry)) {
             return response()->json(['message' => 'Document not found.'], 404);
         }
 
@@ -311,7 +275,7 @@ class VaultController extends Controller
 
         $disk = \Storage::disk($document->disk ?? 'private');
 
-        if (!$disk->exists($document->path)) {
+        if (! $disk->exists($document->path)) {
             return response()->json(['message' => 'File not found.'], 404);
         }
 

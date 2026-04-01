@@ -17,9 +17,9 @@
             <div v-if="title" class="px-6 py-4 border-b border-lavender-200 dark:border-prussian-700 flex items-center justify-between">
               <h2 class="text-xl font-semibold text-prussian-500 dark:text-lavender-200">{{ title }}</h2>
               <button
-                @click="closeModal"
                 class="p-2 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-lg transition-colors text-lavender-500 dark:text-lavender-400"
                 aria-label="Close modal"
+                @click="closeModal"
               >
                 <XMarkIcon class="w-5 h-5" />
               </button>
@@ -27,12 +27,12 @@
 
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6">
-              <slot />
+              <slot></slot>
             </div>
 
             <!-- Footer -->
             <div v-if="$slots.footer" class="px-6 py-4 border-t border-lavender-200 dark:border-prussian-700 flex gap-3 justify-end">
-              <slot name="footer" />
+              <slot name="footer"></slot>
             </div>
           </div>
         </Transition>

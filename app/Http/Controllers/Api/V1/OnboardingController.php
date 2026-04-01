@@ -44,7 +44,7 @@ class OnboardingController extends Controller
     {
         $user = $request->user();
 
-        if (!$user->onboarding_completed_at) {
+        if (! $user->onboarding_completed_at) {
             $user->update(['onboarding_completed_at' => now()]);
         }
 

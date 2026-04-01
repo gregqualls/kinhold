@@ -74,7 +74,7 @@ class ManageVault extends Tool
         $entries = $query->orderByDesc('created_at')->get();
 
         // Children only see entries shared with them
-        if (!$user->isParent()) {
+        if (! $user->isParent()) {
             $entries = $entries->filter(
                 fn ($e) => $e->permissions()->where('user_id', $user->id)->exists()
             );
@@ -95,7 +95,7 @@ class ManageVault extends Tool
     private function getEntry(Request $request): Response
     {
         $entryId = $request->get('entry_id');
-        if (!$entryId) {
+        if (! $entryId) {
             return Response::error('entry_id is required for get.');
         }
 
@@ -128,17 +128,17 @@ class ManageVault extends Tool
         }
 
         $title = $request->get('title');
-        if (!$title) {
+        if (! $title) {
             return Response::error('title is required to create a vault entry.');
         }
 
         $categoryId = $request->get('category_id');
-        if (!$categoryId) {
+        if (! $categoryId) {
             return Response::error('category_id is required to create a vault entry.');
         }
 
         $data = $request->get('data');
-        if (!$data) {
+        if (! $data) {
             return Response::error('data is required to create a vault entry.');
         }
 
@@ -165,7 +165,7 @@ class ManageVault extends Tool
     private function updateEntry(Request $request): Response
     {
         $entryId = $request->get('entry_id');
-        if (!$entryId) {
+        if (! $entryId) {
             return Response::error('entry_id is required for update.');
         }
 
@@ -202,7 +202,7 @@ class ManageVault extends Tool
     private function deleteEntry(Request $request): Response
     {
         $entryId = $request->get('entry_id');
-        if (!$entryId) {
+        if (! $entryId) {
             return Response::error('entry_id is required for delete.');
         }
 

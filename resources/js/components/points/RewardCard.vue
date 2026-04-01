@@ -26,10 +26,10 @@
         {{ reward.point_cost }} pts
       </span>
       <button
-        @click="$emit('purchase', reward.id)"
         :disabled="!canAfford"
         class="btn-sm"
         :class="canAfford ? 'btn-primary' : 'btn-ghost opacity-50 cursor-not-allowed'"
+        @click="$emit('purchase', reward.id)"
       >
         {{ canAfford ? 'Purchase' : 'Need more pts' }}
       </button>

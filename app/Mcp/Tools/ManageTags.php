@@ -60,7 +60,7 @@ class ManageTags extends Tool
         }
 
         $name = $request->get('name');
-        if (!$name) {
+        if (! $name) {
             return Response::error('name is required to create a tag.');
         }
 
@@ -80,7 +80,7 @@ class ManageTags extends Tool
     private function deleteTag(Request $request): Response
     {
         $tagId = $request->get('tag_id');
-        if (!$tagId) {
+        if (! $tagId) {
             return Response::error('tag_id is required for delete.');
         }
 

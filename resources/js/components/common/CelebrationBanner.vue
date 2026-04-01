@@ -42,9 +42,9 @@
 
         <!-- Dismiss button -->
         <button
-          @click="dismissBirthday"
           class="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
           aria-label="Dismiss birthday banner"
+          @click="dismissBirthday"
         >
           <XMarkIcon class="w-5 h-5 text-white" />
         </button>
@@ -65,9 +65,9 @@
         </p>
 
         <button
-          @click="dismissHoliday"
           class="flex-shrink-0 w-6 h-6 rounded-full hover:bg-lavender-200 dark:hover:bg-prussian-600 flex items-center justify-center transition-colors"
           aria-label="Dismiss holiday banner"
+          @click="dismissHoliday"
         >
           <XMarkIcon class="w-4 h-4 text-prussian-400 dark:text-lavender-400" />
         </button>

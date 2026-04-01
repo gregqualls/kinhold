@@ -19,9 +19,6 @@ class ChatController extends Controller
 
     /**
      * Send a message and get AI response.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function send(Request $request): JsonResponse
     {
@@ -80,9 +77,6 @@ class ChatController extends Controller
 
     /**
      * Get recent chat history.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function history(Request $request): JsonResponse
     {

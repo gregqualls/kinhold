@@ -62,7 +62,7 @@ class ManagePoints extends Tool
         }
 
         $points = $request->get('points');
-        if (!$points || $points < 1) {
+        if (! $points || $points < 1) {
             return Response::error('points must be a positive integer for deduction.');
         }
 

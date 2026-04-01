@@ -45,7 +45,7 @@ class ManagePointRequests extends Tool
         $query = PointRequest::where('family_id', $this->familyId())
             ->with(['user:id,name', 'reviewer:id,name']);
 
-        if (!$user->isParent()) {
+        if (! $user->isParent()) {
             $query->where('user_id', $user->id);
         }
 
@@ -78,13 +78,13 @@ class ManagePointRequests extends Tool
         }
 
         $requestId = $request->get('request_id');
-        if (!$requestId) {
+        if (! $requestId) {
             return Response::error('request_id is required for approve.');
         }
 
         $pointRequest = PointRequest::where('family_id', $this->familyId())->findOrFail($requestId);
 
-        if (!$pointRequest->isPending()) {
+        if (! $pointRequest->isPending()) {
             return Response::error('This request has already been reviewed.');
         }
 
@@ -116,7 +116,7 @@ class ManagePointRequests extends Tool
             'transaction_id' => $transaction->id,
         ];
 
-        if (!empty($newBadges)) {
+        if (! empty($newBadges)) {
             $result['badges_earned'] = collect($newBadges)->map(fn ($b) => $b->name)->toArray();
         }
 
@@ -130,13 +130,13 @@ class ManagePointRequests extends Tool
         }
 
         $requestId = $request->get('request_id');
-        if (!$requestId) {
+        if (! $requestId) {
             return Response::error('request_id is required for deny.');
         }
 
         $pointRequest = PointRequest::where('family_id', $this->familyId())->findOrFail($requestId);
 
-        if (!$pointRequest->isPending()) {
+        if (! $pointRequest->isPending()) {
             return Response::error('This request has already been reviewed.');
         }
 

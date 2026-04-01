@@ -1,25 +1,34 @@
 # Session Handoff
 
 **Date:** 2026-04-01
-**Branch:** main (PRs #115 and #116 merged)
-**Last commit:** 5fb90f7 Merge pull request #116 from gregqualls/chore/open-source-hygiene
+**Branch:** chore/sdlc-pipeline-overhaul
+**Last commit:** ae5ba65 fix: restore .environment filename for Upsun deploy
 
 ## What Was Done This Session
-- **Self-hosting infrastructure (PR #115)** — Zero-dependency Docker setup with SQLite, single-container `docker-compose.simple.yml`, `setup-simple.sh` bootstrap script, auto APP_KEY generation, graceful feature degradation (Google OAuth/Calendar/AI Chat hide when not configured), first-boot auto-redirect, comprehensive `SELF-HOSTING.md` guide. Dockerfile bumped to PHP 8.4.
-- **Open-source hygiene (PR #116)** — Fixed license from MIT → Elastic License 2.0 everywhere, added CODE_OF_CONDUCT.md, SECURITY.md, GitHub Actions CI (PHPUnit + Vite build on PR/push), PR template. Fixed phpunit.xml for PHPUnit 11, fixed family factory slug uniqueness.
-- **Versioning issue created (#117)** — Semantic versioning, GitHub Releases workflow, and self-hosted update notification banner. Greg said "we are close to needing that in place."
+- Built complete SDLC pipeline: 7 new commands + 3 improved (`/check`, `/review`, `/pr`, `/qa`, `/merge`, `/fix`, `/playbook`, improved `/kickoff`, `/handoff`, `/ship`)
+- Installed and configured ESLint (flat config, Vue 3, browser globals), Pint (Laravel preset), PHPStan (level 5 + Larastan + baseline)
+- Auto-fixed entire codebase: 87 PHP files (Pint), 53 Vue files (ESLint attribute ordering)
+- Patched 2 security vulnerabilities: phpseclib (HIGH), league/commonmark (MEDIUM)
+- Added CI lint job (parallel with tests + frontend build), all 4 CI checks passing
+
+## Quality State
+- Tests: 45 tests, 90 assertions (pass, 2 deprecations)
+- Pint: pass
+- Larastan: pass (0 new errors, 203 baselined)
+- ESLint: pass (0 errors, 49 warnings — all `no-unused-vars`)
+- Build: pass (2341 modules)
 
 ## What's Next
-1. **Versioning + update notifications (#117)** — Greg flagged this as near-term priority. Semver in app config, git tags, release workflow, self-hosted update check banner.
-2. **Multi-tenant audit before Corey signs up** — Verify all controllers/policies enforce family_id scoping.
-3. **Phase A: Shopping lists (#65)** — The #1 daily-driver feature across all competitors.
+1. **Versioning + GitHub Releases** (Issue #117) — semantic versioning, release workflow, self-hosted update notifications
+2. **Audit all controllers for family_id scoping** — before Corey's family signs up
+3. **Address the 49 ESLint warnings** — mostly unused vars/imports that should be cleaned up
+4. **Address the 203 PHPStan baseline errors** — chip away over time, raise coverage threshold from 40%
 
 ## Blockers or Gotchas
-- **PHP 8.4 required** — `composer.lock` has Symfony 8.x packages requiring PHP 8.4+. Dockerfile already updated. Local dev runs PHP 8.5.
-- **`php` and `node` not on default PATH in sandbox** — Use `/opt/homebrew/bin/php` and `/opt/homebrew/Cellar/node/25.8.0/bin/node` (or check `.claude/launch.json` for current paths).
-- **CI uses SQLite in-memory** — Tests must be SQLite-compatible. Family factory slug uniqueness was fixed for this.
-- **DocumentResource bug**: `route('documents.download')` is not defined — vault document uploads work but response serialization fails. Pre-existing, low priority.
-- **License is Elastic License 2.0** — not MIT. This was corrected across all files this session.
+- `.environment` must NOT be renamed — Upsun auto-sources it during deploy (learned the hard way this session)
+- PHPStan baseline must be committed (not gitignored) so CI uses the same baseline
+- Pint formats differently on PHP 8.4 (CI) vs PHP 8.5 (local) — watch for `array_indentation` issues in chained closures
+- `composer` is at `/usr/local/bin/composer` on Greg's machine, not in homebrew PATH
 
 ## Open Questions
-- None — clean session.
+- None — pipeline is complete and all checks are green.

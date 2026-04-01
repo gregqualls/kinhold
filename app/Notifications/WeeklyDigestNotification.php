@@ -23,7 +23,7 @@ class WeeklyDigestNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        if (!$notifiable->wantsEmail('email_weekly_digest')) {
+        if (! $notifiable->wantsEmail('email_weekly_digest')) {
             return [];
         }
 
@@ -49,7 +49,7 @@ class WeeklyDigestNotification extends Notification implements ShouldQueue
         $tasksPending = $this->digest['tasks_pending'] ?? 0;
         $tasksOverdue = $this->digest['tasks_overdue'] ?? 0;
 
-        $message->line("**Tasks**");
+        $message->line('**Tasks**');
         $message->line("- {$tasksCompleted} completed this week");
         $message->line("- {$tasksPending} still pending");
 
@@ -62,7 +62,7 @@ class WeeklyDigestNotification extends Notification implements ShouldQueue
         $pointsBank = $this->digest['points_bank'] ?? 0;
 
         if ($pointsEarned > 0 || $pointsBank > 0) {
-            $message->line("**Points**");
+            $message->line('**Points**');
             $message->line("- {$pointsEarned} points earned this week");
             $message->line("- {$pointsBank} total in your bank");
         }
@@ -70,17 +70,17 @@ class WeeklyDigestNotification extends Notification implements ShouldQueue
         // Upcoming tasks
         $upcomingTasks = $this->digest['upcoming_tasks'] ?? [];
         if (count($upcomingTasks) > 0) {
-            $message->line("**Coming Up Next Week**");
+            $message->line('**Coming Up Next Week**');
             foreach (array_slice($upcomingTasks, 0, 5) as $task) {
                 $dueDate = $task['due_date'] ?? '';
-                $message->line("- {$task['title']}" . ($dueDate ? " (due {$dueDate})" : ''));
+                $message->line("- {$task['title']}".($dueDate ? " (due {$dueDate})" : ''));
             }
         }
 
         // Badges earned
         $badgesEarned = $this->digest['badges_earned'] ?? [];
         if (count($badgesEarned) > 0) {
-            $message->line("**Badges Earned**");
+            $message->line('**Badges Earned**');
             foreach ($badgesEarned as $badge) {
                 $message->line("- {$badge['name']}: {$badge['description']}");
             }
@@ -88,7 +88,7 @@ class WeeklyDigestNotification extends Notification implements ShouldQueue
 
         $message
             ->action('Open Kinhold', $appUrl)
-            ->line("Have a great week!");
+            ->line('Have a great week!');
 
         return $message;
     }

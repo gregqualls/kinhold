@@ -11,7 +11,7 @@
     ]"
     @click="$emit('click')"
   >
-    <slot />
+    <slot></slot>
   </div>
 </template>
 

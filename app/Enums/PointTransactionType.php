@@ -14,7 +14,7 @@ enum PointTransactionType: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::TaskCompletion => 'Task Completion',
             self::TaskReversal => 'Task Reversal',
             self::Kudos => 'Kudos',

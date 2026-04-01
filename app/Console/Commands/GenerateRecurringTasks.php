@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 class GenerateRecurringTasks extends Command
 {
     protected $signature = 'app:generate-recurring-tasks {--days=7 : How many days ahead to generate}';
+
     protected $description = 'Generate task instances from recurring task templates for the upcoming period';
 
     public function handle(): int
@@ -34,7 +35,7 @@ class GenerateRecurringTasks extends Command
                 ->whereNull('completed_at')
                 ->get();
 
-            if (!$allowPileup) {
+            if (! $allowPileup) {
                 // Default behavior: only ONE active instance at a time.
                 // If there's already an incomplete instance, update its due date
                 // to today (rolling forward) instead of creating a new one.
@@ -59,7 +60,7 @@ class GenerateRecurringTasks extends Command
                 $dates = $this->getOccurrenceDates($template->recurrence_rule, $today, $endDate);
                 $nextDate = $dates[0] ?? null;
 
-                if (!$nextDate) {
+                if (! $nextDate) {
                     continue;
                 }
 
@@ -166,10 +167,14 @@ class GenerateRecurringTasks extends Command
 
             foreach ($byDay as $day) {
                 $dayNum = $dayMap[strtoupper(trim($day))] ?? null;
-                if ($dayNum === null) continue;
+                if ($dayNum === null) {
+                    continue;
+                }
 
                 $current = $start->copy()->next($dayNum);
-                if ($current->lt($start)) $current->addWeek();
+                if ($current->lt($start)) {
+                    $current->addWeek();
+                }
 
                 // Also check if start itself is the target day
                 if ($start->dayOfWeek === $dayNum) {
@@ -201,12 +206,13 @@ class GenerateRecurringTasks extends Command
         $unique = [];
         foreach ($dates as $d) {
             $key = $d->toDateString();
-            if (!isset($unique[$key])) {
+            if (! isset($unique[$key])) {
                 $unique[$key] = $d;
             }
         }
 
         sort($unique);
+
         return array_values($unique);
     }
 }

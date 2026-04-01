@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Family;
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\Sanctum;
@@ -32,7 +32,7 @@ class EmailVerificationTest extends TestCase
         $this->assertNull($user->email_verified_at);
 
         // Verification notification should have been sent
-        Notification::assertSentTo($user, \Illuminate\Auth\Notifications\VerifyEmail::class);
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
 
     public function test_resend_verification_works(): void
@@ -46,7 +46,7 @@ class EmailVerificationTest extends TestCase
         $response = $this->postJson('/api/v1/email/resend');
 
         $response->assertStatus(200);
-        Notification::assertSentTo($user, \Illuminate\Auth\Notifications\VerifyEmail::class);
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
 
     public function test_resend_verification_skips_if_already_verified(): void
@@ -61,7 +61,7 @@ class EmailVerificationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(['message' => 'Email already verified']);
-        Notification::assertNotSentTo($user, \Illuminate\Auth\Notifications\VerifyEmail::class);
+        Notification::assertNotSentTo($user, VerifyEmail::class);
     }
 
     public function test_user_resource_includes_email_verified_at(): void

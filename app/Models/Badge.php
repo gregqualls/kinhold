@@ -64,7 +64,7 @@ class Badge extends Model
      */
     public static function maskHidden(array $badgeData, bool $isEarned): array
     {
-        if (($badgeData['is_hidden'] ?? false) && !$isEarned) {
+        if (($badgeData['is_hidden'] ?? false) && ! $isEarned) {
             return array_merge($badgeData, [
                 'name' => '???',
                 'description' => 'Hidden badge — complete the challenge to reveal!',

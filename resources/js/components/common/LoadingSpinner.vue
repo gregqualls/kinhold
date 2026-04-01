@@ -3,7 +3,7 @@
     class="animate-spin rounded-full border-2 border-lavender-300 dark:border-prussian-600 flex-shrink-0"
     :class="[sizeClasses, colorClasses]"
     :style="{ borderTopColor: `var(--spinner-color)` }"
-  />
+  ></div>
 </template>
 
 <script setup>

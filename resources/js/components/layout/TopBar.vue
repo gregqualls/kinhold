@@ -2,10 +2,10 @@
   <div class="px-6 py-3 flex items-center justify-end gap-4">
     <!-- Dark mode toggle -->
     <button
-      @click="toggleDarkMode"
       class="p-2 rounded-[10px] text-prussian-400 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
       :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
       aria-label="Toggle dark mode"
+      @click="toggleDarkMode"
     >
       <MoonIcon v-if="!isDark" class="w-5 h-5" />
       <SunIcon v-else class="w-5 h-5" />

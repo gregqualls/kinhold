@@ -17,7 +17,7 @@ class PointsService
     /**
      * Award points for completing a task.
      *
-     * @param bool $forceZero When true, awards 0 points (e.g., child completing own task).
+     * @param  bool  $forceZero  When true, awards 0 points (e.g., child completing own task).
      */
     public function awardTaskPoints(Task $task, User $user, bool $forceZero = false): PointTransaction
     {
@@ -58,7 +58,7 @@ class PointsService
     {
         $kudosCostEnabled = $family->settings['kudos_cost_enabled'] ?? false;
 
-        if ($kudosCostEnabled && !$from->hasSufficientPoints(1)) {
+        if ($kudosCostEnabled && ! $from->hasSufficientPoints(1)) {
             throw new \Exception('Not enough points to give kudos');
         }
 
@@ -104,7 +104,7 @@ class PointsService
      */
     public function redeemReward(Reward $reward, User $user): array
     {
-        if (!$user->hasSufficientPoints($reward->point_cost)) {
+        if (! $user->hasSufficientPoints($reward->point_cost)) {
             throw new \Exception('Insufficient points');
         }
 

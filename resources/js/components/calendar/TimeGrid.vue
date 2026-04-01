@@ -16,7 +16,7 @@
     </div>
 
     <!-- Time grid -->
-    <div class="overflow-y-auto" :style="{ maxHeight: maxHeight + 'px' }" ref="scrollContainer">
+    <div ref="scrollContainer" class="overflow-y-auto" :style="{ maxHeight: maxHeight + 'px' }">
       <div class="relative" :style="{ height: totalHeight + 'px' }">
         <!-- Hour lines -->
         <div

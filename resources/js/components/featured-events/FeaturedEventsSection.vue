@@ -7,8 +7,8 @@
       </h2>
       <button
         v-if="isParent"
-        @click="showCreateModal = true"
         class="flex items-center gap-1 text-sm font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500 transition-colors"
+        @click="showCreateModal = true"
       >
         <PlusIcon class="w-4 h-4" />
         Add Event
@@ -84,8 +84,8 @@
         <!-- Parent actions -->
         <div v-if="isParent" class="flex-shrink-0 relative">
           <button
-            @click.stop="toggleMenu(event.id)"
             class="p-1 rounded-lg hover:bg-lavender-200/50 dark:hover:bg-prussian-600/50 transition-colors text-lavender-400 dark:text-lavender-500"
+            @click.stop="toggleMenu(event.id)"
           >
             <EllipsisVerticalIcon class="w-4 h-4" />
           </button>
@@ -94,21 +94,21 @@
             class="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-prussian-800 rounded-lg shadow-lg border border-lavender-200 dark:border-prussian-700 z-10 py-1"
           >
             <button
-              @click="editEvent(event)"
               class="w-full text-left px-3 py-1.5 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700"
+              @click="editEvent(event)"
             >
               Edit
             </button>
             <button
-              @click="toggleCountdown(event)"
               class="w-full text-left px-3 py-1.5 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700 flex items-center gap-1.5"
+              @click="toggleCountdown(event)"
             >
               <ClockIcon class="w-3.5 h-3.5" />
               {{ event.is_countdown ? 'Remove Countdown' : 'Set as Countdown' }}
             </button>
             <button
-              @click="confirmDelete(event)"
               class="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+              @click="confirmDelete(event)"
             >
               Delete
             </button>

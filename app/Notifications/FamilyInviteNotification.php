@@ -39,12 +39,12 @@ class FamilyInviteNotification extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject("You're invited to join {$this->family->name} on Kinhold")
-            ->greeting("Hello!")
+            ->greeting('Hello!')
             ->line("{$this->inviterName} has invited you to join the **{$this->family->name}** family on Kinhold.")
-            ->line("Kinhold is a family hub for managing calendars, tasks, important documents, and more — all in one place.")
+            ->line('Kinhold is a family hub for managing calendars, tasks, important documents, and more — all in one place.')
             ->line("**Your invite code:** `{$this->inviteCode}`")
             ->action('Join the Family', $joinUrl)
-            ->line("You can also enter the invite code manually when you register.")
+            ->line('You can also enter the invite code manually when you register.')
             ->salutation('Welcome to the family!');
     }
 }

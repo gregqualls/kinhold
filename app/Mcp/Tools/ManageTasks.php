@@ -6,7 +6,6 @@ use App\Mcp\Tools\Concerns\ScopesToFamily;
 use App\Models\Task;
 use App\Models\User;
 use App\Notifications\TaskAssignedNotification;
-use Carbon\Carbon;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -87,7 +86,7 @@ class ManageTasks extends Tool
     private function createTask(Request $request): Response
     {
         $title = $request->get('title');
-        if (!$title) {
+        if (! $title) {
             return Response::error('title is required to create a task.');
         }
 
@@ -98,14 +97,14 @@ class ManageTasks extends Tool
         $assignedTo = $request->get('assigned_to');
         if ($assignedTo) {
             $family->members()->findOrFail($assignedTo);
-            if ($assignedTo !== $user->id && !$family->userCanAssignTasks($user)) {
+            if ($assignedTo !== $user->id && ! $family->userCanAssignTasks($user)) {
                 $assignedTo = $user->id;
             }
         }
 
         // Children cannot set custom points
         $points = $request->get('points');
-        if (!$user->isParent()) {
+        if (! $user->isParent()) {
             $points = null;
         }
 
@@ -149,7 +148,7 @@ class ManageTasks extends Tool
     private function updateTask(Request $request): Response
     {
         $taskId = $request->get('task_id');
-        if (!$taskId) {
+        if (! $taskId) {
             return Response::error('task_id is required for update.');
         }
 
@@ -198,7 +197,7 @@ class ManageTasks extends Tool
     private function deleteTask(Request $request): Response
     {
         $taskId = $request->get('task_id');
-        if (!$taskId) {
+        if (! $taskId) {
             return Response::error('task_id is required for delete.');
         }
 
