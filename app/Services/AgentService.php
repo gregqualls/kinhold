@@ -42,10 +42,26 @@ class AgentService
         for ($i = 0; $i < self::MAX_ITERATIONS; $i++) {
             $response = $provider->askWithTools($systemPrompt, $messages, $tools);
 
-            // If Claude is done (text response), extract and return
+            // If Claude is done (text response), validate before returning
             if ($response['stop_reason'] === 'end_turn') {
+                $text = $this->extractText($response['content']);
+
+                // Guard: if the response claims an action was taken but no tools were called,
+                // reject and force a retry. This prevents hallucinated "success" responses.
+                if (empty($toolsUsed) && $this->claimsAction($text) && $i < self::MAX_ITERATIONS - 1) {
+                    Log::warning('Agent hallucination detected — claims action without tool use', [
+                        'user' => $user->id,
+                        'response_preview' => substr($text, 0, 200),
+                    ]);
+
+                    $messages[] = ['role' => 'assistant', 'content' => $response['content']];
+                    $messages[] = ['role' => 'user', 'content' => 'SYSTEM: You claimed to perform an action but did not call any tools. You MUST use tools to create, update, or delete data. Please try again — actually call the appropriate tool this time.'];
+
+                    continue;
+                }
+
                 return [
-                    'text' => $this->extractText($response['content']),
+                    'text' => $text,
                     'tools_used' => $toolsUsed,
                 ];
             }
@@ -198,6 +214,39 @@ PROMPT;
         }
 
         return $calls;
+    }
+
+    /**
+     * Detect if a response claims to have performed a write action.
+     * Used to catch hallucinated success responses when no tools were called.
+     */
+    private function claimsAction(string $text): bool
+    {
+        $actionPatterns = [
+            '/\bcreated\b/i',
+            '/\bsaved\b/i',
+            '/\bupdated\b/i',
+            '/\bdeleted\b/i',
+            '/\bremoved\b/i',
+            '/\badded\b/i',
+            '/\bgranted\b/i',
+            '/\brevoked\b/i',
+            '/\bcompleted\b/i',
+            '/\bawarded\b/i',
+            '/\bdeducted\b/i',
+            '/entry created/i',
+            '/task completed/i',
+            '/points awarded/i',
+            '/permission granted/i',
+        ];
+
+        foreach ($actionPatterns as $pattern) {
+            if (preg_match($pattern, $text)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
