@@ -1,0 +1,41 @@
+# Kinhold — Simple Self-Hosted Setup
+#
+# Runs Kinhold with a single container using SQLite.
+# No PostgreSQL, Redis, or external services required.
+#
+# Quick start:
+#   cp .env.docker-simple .env
+#   docker compose -f docker-compose.simple.yml up -d --build
+#   docker compose -f docker-compose.simple.yml exec app php artisan db:seed
+#   Open http://localhost:8000
+#
+# Or use the setup script: ./setup-simple.sh
+
+name: kinhold
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - kinhold-data:/data
+      - kinhold-storage:/app/storage/app
+    command: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  kinhold-data:
+    driver: local
+  kinhold-storage:
+    driver: local

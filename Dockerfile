@@ -15,11 +15,12 @@ COPY . .
 RUN npm run build
 
 # Stage 2: PHP - Main application
-FROM php:8.3-fpm-alpine as php
+FROM php:8.4-fpm-alpine as php
 
 # Install system dependencies (autoconf needed for pecl)
 RUN apk add --no-cache \
     postgresql-dev \
+    sqlite-dev \
     libpng-dev \
     libjpeg-turbo-dev \
     libzip-dev \
@@ -38,6 +39,7 @@ RUN docker-php-ext-configure gd --with-jpeg \
     && docker-php-ext-install \
     pdo \
     pdo_pgsql \
+    pdo_sqlite \
     pgsql \
     gd \
     zip \

@@ -183,6 +183,11 @@ router.beforeEach(async (to, from, next) => {
     return next()
   }
 
+  // First boot: redirect login to register when no users exist
+  if (to.name === 'Login' && authStore.appConfig?.first_boot) {
+    return next({ name: 'Register' })
+  }
+
   // Guest-only routes
   if (to.meta.requiresGuest) {
     if (authStore.isAuthenticated) {
