@@ -5,10 +5,8 @@
          colors="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
-         beStrictAboutTodoTestedCode="true"
          failOnRisky="true"
-         failOnWarning="true"
-         verbose="true">
+         failOnWarning="true">
     <testsuites>
         <testsuite name="Unit">
             <directory suffix="Test.php">./tests/Unit</directory>
@@ -17,14 +15,14 @@
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
     </testsuites>
-    <coverage processUncoveredFiles="true">
+    <source>
         <include>
             <directory suffix=".php">./app</directory>
         </include>
         <exclude>
             <directory suffix="Middleware.php">./app</directory>
         </exclude>
-    </coverage>
+    </source>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
