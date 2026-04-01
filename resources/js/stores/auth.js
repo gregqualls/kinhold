@@ -11,6 +11,8 @@ export const useAuthStore = defineStore('auth', () => {
   const error = ref(null)
   const initialAuthChecked = ref(false)
   const pendingLink = ref(null) // { code, email } when Google OAuth needs password confirmation
+  const services = ref(null) // { google_oauth, google_calendar, ai_platform_key, ai_family_key, mail }
+  const appConfig = ref(null) // Public config from /api/v1/config (available pre-auth)
   // Computed properties
   const isParent = computed(() => user.value?.role === 'parent')
   const familyMembers = computed(() => family.value?.members || [])
@@ -178,6 +180,8 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = response.data.user
       family.value = response.data.family
       isAuthenticated.value = true
+      // Load service availability in the background
+      fetchServices()
     } catch (err) {
       isAuthenticated.value = false
       user.value = null
@@ -185,8 +189,20 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const fetchAppConfig = async () => {
+    try {
+      const { data } = await api.get('/config')
+      appConfig.value = data
+    } catch {
+      // Non-critical — buttons stay visible by default
+    }
+  }
+
   // Restore auth from saved token on app init
   const initAuth = async () => {
+    // Fetch public config (services availability) in background
+    fetchAppConfig()
+
     // Check for OAuth callback auth code in URL (exchanged for token securely via POST)
     const urlParams = new URLSearchParams(window.location.search)
     const oauthCode = urlParams.get('code')
@@ -250,6 +266,22 @@ export const useAuthStore = defineStore('auth', () => {
       isLoading.value = false
     }
   }
+
+  const fetchServices = async () => {
+    try {
+      const { data } = await api.get('/settings')
+      if (data.settings?.services) {
+        services.value = data.settings.services
+      }
+    } catch {
+      // Non-critical — services stay null, UI degrades gracefully
+    }
+  }
+
+  const isServiceAvailable = computed(() => (serviceName) => {
+    if (!services.value) return true // Assume available until loaded
+    return !!services.value[serviceName]
+  })
 
   const resendVerification = async () => {
     try {
@@ -379,5 +411,9 @@ export const useAuthStore = defineStore('auth', () => {
     confirmGoogleLink,
     resendVerification,
     pendingLink,
+    services,
+    isServiceAvailable,
+    fetchServices,
+    appConfig,
   }
 })
