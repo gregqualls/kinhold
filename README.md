@@ -103,7 +103,7 @@ Turn chores into a game your kids actually want to play.
 | Frontend | Vue 3 (Composition API, `<script setup>`) |
 | State | Pinia (8 stores) |
 | Styling | Tailwind CSS |
-| Database | PostgreSQL 16, UUIDs |
+| Database | PostgreSQL 16 (production) or SQLite (simple setup), UUIDs |
 | Cache/Queue | Redis 7 |
 | Auth | Laravel Sanctum + Google OAuth via Socialite |
 | AI | Anthropic Claude API (multi-provider ready) |
@@ -112,6 +112,18 @@ Turn chores into a game your kids actually want to play.
 | Hosting | [Upsun](https://upsun.com) |
 
 ## Quick Start
+
+### Easiest: Docker with SQLite (no dependencies)
+
+```bash
+git clone https://github.com/gregqualls/kinhold.git
+cd kinhold
+./setup-simple.sh
+```
+
+That's it. Open [http://localhost:8000](http://localhost:8000) and log in with `parent@demo.local` / `password`.
+
+This runs Kinhold with SQLite in a single container — no PostgreSQL or Redis needed. Great for trying it out or running for a small family. To upgrade to the full production stack (PostgreSQL + Redis), see Option 2 below.
 
 ### Option 1: Native (macOS — Recommended)
 
@@ -139,7 +151,7 @@ php artisan serve        # Terminal 1: API at localhost:8000
 npm run dev              # Terminal 2: Vite at localhost:5173
 ```
 
-### Option 2: Docker
+### Option 2: Docker (PostgreSQL + Redis — production)
 
 ```bash
 git clone https://github.com/gregqualls/kinhold.git
@@ -274,13 +286,20 @@ kinhold/
 
 ## Deploying Your Own Instance
 
-Kinhold is designed to be forked and self-hosted. Every family gets their own instance with their own data.
+Kinhold is designed to be self-hosted. See **[SELF-HOSTING.md](SELF-HOSTING.md)** for the full guide, including:
+
+- SQLite vs PostgreSQL setup options
+- Optional service configuration (Google, AI, email)
+- Reverse proxy examples (Caddy, Nginx)
+- Backup strategies
+- Upgrading and migration
+
+**Quick version:**
 
 1. Fork this repo on GitHub
-2. Connect your fork to [Upsun](https://upsun.com) (or any host that supports PHP + PostgreSQL + Redis)
-3. Set your environment variables (APP_KEY, DB creds, Google OAuth, Anthropic key)
-4. Deploy — the `.upsun/config.yaml` handles build and deploy hooks automatically
-5. To pull upstream updates: `git remote add upstream https://github.com/gregqualls/kinhold.git && git pull upstream main`
+2. Run `./setup-simple.sh` for a single-container SQLite setup, or use `docker compose up` for the full PostgreSQL + Redis stack
+3. Set your environment variables (Google OAuth, Anthropic key are optional)
+4. To pull upstream updates: `git remote add upstream https://github.com/gregqualls/kinhold.git && git pull upstream main`
 
 ## Contributing
 
@@ -292,6 +311,7 @@ Found a bug or have an idea? Open an issue on [GitHub Issues](https://github.com
 
 | Document | Purpose |
 |----------|---------|
+| [SELF-HOSTING.md](SELF-HOSTING.md) | Complete self-hosting guide |
 | [PRINCIPLES.md](PRINCIPLES.md) | Core product principles that guide every decision |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [CLAUDE.md](CLAUDE.md) | Project context for AI assistants |

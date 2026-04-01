@@ -65,6 +65,12 @@ class ChatController extends Controller
                     'created_at' => $aiMessage->created_at,
                 ],
             ], 200);
+        } catch (\RuntimeException $e) {
+            // Surface specific configuration errors (e.g., no API key)
+            return response()->json([
+                'message' => $e->getMessage(),
+                'error_type' => 'configuration',
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to process chat message. Please try again.',
