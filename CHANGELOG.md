@@ -598,7 +598,7 @@
 - MCP server in TypeScript (better SDK support)
 - Mobile-first card-based UI with bottom navigation
 - Cookie auth for SPA, token auth for MCP
-- Open source: MIT license, Docker + self-hosted deployment
+- Open source: Elastic License 2.0, Docker + self-hosted deployment
 
 ### Bug Fixes Applied (same session)
 - Fixed CSS import path in app.js (`@/css/app.css` → `../css/app.css`)
