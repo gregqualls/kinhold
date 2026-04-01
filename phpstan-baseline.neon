@@ -1,0 +1,846 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot call method lt\\(\\) on string\\.$#"
+			count: 1
+			path: app/Console/Commands/GenerateRecurringTasks.php
+
+		-
+			message: "#^Parameter \\#1 \\$familyId of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string, int given\\.$#"
+			count: 1
+			path: app/Console/Commands/SeedDefaultBadges.php
+
+		-
+			message: "#^Parameter \\#2 \\$createdBy of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string\\|null, int\\|null given\\.$#"
+			count: 1
+			path: app/Console/Commands/SeedDefaultBadges.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 1
+			path: app/Console/Commands/SendWeeklyDigest.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: "#^Offset 'children_can_change…' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: "#^Parameter \\#1 \\$familyId of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string, int given\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: "#^Parameter \\#2 \\$createdBy of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string\\|null, int given\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Badge\\:\\:\\$pivot\\.$#"
+			count: 2
+			path: app/Http/Controllers/Api/V1/BadgesController.php
+
+		-
+			message: "#^Argument of an invalid type string supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/BadgesController.php
+
+		-
+			message: "#^Parameter \\#2 \\$createdBy of method App\\\\Http\\\\Controllers\\\\Api\\\\V1\\\\BadgesController\\:\\:ensureEasterEggBadgesExist\\(\\) expects string, int given\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/BadgesController.php
+
+		-
+			message: "#^Parameter \\#2 \\$createdBy of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string\\|null, int given\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/BadgesController.php
+
+		-
+			message: "#^Parameter \\#2 \\$triggerType of method App\\\\Services\\\\BadgeService\\:\\:getCurrentValueForTrigger\\(\\) expects App\\\\Enums\\\\BadgeTriggerType, string given\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/BadgesController.php
+
+		-
+			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			count: 4
+			path: app/Http/Controllers/Api/V1/CalendarController.php
+
+		-
+			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
+			count: 2
+			path: app/Http/Controllers/Api/V1/CalendarController.php
+
+		-
+			message: "#^Parameter \\#2 \\$userId of static method App\\\\Services\\\\IcsCalendarService\\:\\:subscribe\\(\\) expects string, int given\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/CalendarController.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/CalendarController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\FeaturedEvent\\:\\:\\$computed_next_date\\.$#"
+			count: 4
+			path: app/Http/Controllers/Api/V1/FeaturedEventController.php
+
+		-
+			message: "#^Call to an undefined method Laravel\\\\Socialite\\\\Contracts\\\\Provider\\:\\:redirectUrl\\(\\)\\.$#"
+			count: 2
+			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
+
+		-
+			message: "#^Call to an undefined method Laravel\\\\Socialite\\\\Contracts\\\\Provider\\:\\:stateless\\(\\)\\.$#"
+			count: 4
+			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
+
+		-
+			message: "#^Parameter \\#1 \\$familyId of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string, int given\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
+
+		-
+			message: "#^Parameter \\#2 \\$createdBy of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string\\|null, int given\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/TaskController.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/TaskController.php
+
+		-
+			message: "#^Ternary operator condition is always false\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/TaskController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Document\\:\\:\\$vaultEntry\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/VaultController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\VaultEntry\\:\\:\\$decrypted_data\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/VaultController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\VaultEntry\\:\\:\\$vaultCategory\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/VaultController.php
+
+		-
+			message: "#^Class Illuminate\\\\Foundation\\\\Http\\\\Middleware\\\\HandlePreconditionFailures not found\\.$#"
+			count: 1
+			path: app/Http/Kernel.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/DocumentResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$id\\.$#"
+			count: 2
+			path: app/Http/Resources/DocumentResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$mime_type\\.$#"
+			count: 1
+			path: app/Http/Resources/DocumentResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$original_filename\\.$#"
+			count: 1
+			path: app/Http/Resources/DocumentResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$size\\.$#"
+			count: 1
+			path: app/Http/Resources/DocumentResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/FamilyResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyResource\\:\\:\\$name\\.$#"
+			count: 1
+			path: app/Http/Resources/FamilyResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyResource\\:\\:\\$settings\\.$#"
+			count: 1
+			path: app/Http/Resources/FamilyResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyResource\\:\\:\\$slug\\.$#"
+			count: 1
+			path: app/Http/Resources/FamilyResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$color\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$description\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$event_date\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$event_time\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$icon\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$is_active\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$is_countdown\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$next_occurrence\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$recurrence\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$recurrence_label\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$title\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$color\\.$#"
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$incomplete_tasks_count\\.$#"
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$name\\.$#"
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$sort_order\\.$#"
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$tasks_count\\.$#"
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$assigned_to\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$completed_at\\.$#"
+			count: 2
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$description\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$due_date\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$is_family_task\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$parent_task_id\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$points\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$priority\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$recurrence_end\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$recurrence_label\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$recurrence_rule\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$sort_order\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$title\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Call to an undefined method App\\\\Http\\\\Resources\\\\TaskResource\\:\\:getEffectivePoints\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Resources/TaskResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$avatar\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$avatar_color\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$date_of_birth\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$email\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$email_verified_at\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$family_role\\.$#"
+			count: 2
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$google_avatar\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$google_id\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$is_managed\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$managed_by\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$name\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$onboarding_completed_at\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$timezone\\.$#"
+			count: 1
+			path: app/Http/Resources/UserResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$description\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultCategoryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$icon\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultCategoryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultCategoryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$name\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultCategoryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$slug\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultCategoryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$metadata\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$notes\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$permissions\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$title\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultEntryResource.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/CompleteTask.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/CompleteTask.php
+
+		-
+			message: "#^Ternary operator condition is always false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/CompleteTask.php
+
+		-
+			message: "#^Offset 'ai_api_key' on array\\{\\}\\|string in empty\\(\\) does not exist\\.$#"
+			count: 1
+			path: app/Mcp/Tools/GetSettings.php
+
+		-
+			message: "#^Offset 'ai_provider' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Mcp/Tools/GetSettings.php
+
+		-
+			message: "#^Offset 'kudos_cost_enabled' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Mcp/Tools/GetSettings.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 1
+			path: app/Mcp/Tools/ManageBadges.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\FeaturedEvent\\:\\:\\$computed_next_date\\.$#"
+			count: 4
+			path: app/Mcp/Tools/ManageFeaturedEvents.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 4
+			path: app/Mcp/Tools/ManageFeaturedEvents.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 1
+			path: app/Mcp/Tools/ManagePointRequests.php
+
+		-
+			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
+			count: 1
+			path: app/Mcp/Tools/ManagePointRequests.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 3
+			path: app/Mcp/Tools/ManageTasks.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 3
+			path: app/Mcp/Tools/ManageTasks.php
+
+		-
+			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
+			count: 1
+			path: app/Mcp/Tools/PurchaseReward.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 1
+			path: app/Mcp/Tools/SearchFamily.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 1
+			path: app/Mcp/Tools/SearchFamily.php
+
+		-
+			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
+			count: 1
+			path: app/Mcp/Tools/ViewCalendar.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Badge\\:\\:\\$pivot\\.$#"
+			count: 1
+			path: app/Mcp/Tools/ViewEarnedBadges.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 1
+			path: app/Mcp/Tools/ViewPoints.php
+
+		-
+			message: "#^Cannot call method isPast\\(\\) on string\\.$#"
+			count: 1
+			path: app/Models/CalendarConnection.php
+
+		-
+			message: "#^Call to function in_array\\(\\) with arguments int, array\\<string\\> and true will always evaluate to false\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Offset 'enabled_modules' on string\\|null on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Offset 'leaderboard_period' on string\\|null on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Offset 'mode' on array\\{mode\\: string, roles\\?\\: array\\<string\\>, users\\?\\: array\\<string\\>\\} on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Offset 'module_access' on array\\{\\}\\|string in isset\\(\\) does not exist\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Offset 'modules' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Offset 'task_assignment' on string\\|null on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Offset non\\-falsy\\-string on string\\|null on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between true and false will always evaluate to false\\.$#"
+			count: 1
+			path: app/Models/Family.php
+
+		-
+			message: "#^Cannot call method copy\\(\\) on string\\.$#"
+			count: 1
+			path: app/Models/FeaturedEvent.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and App\\\\Enums\\\\PointRequestStatus\\:\\:Pending will always evaluate to false\\.$#"
+			count: 1
+			path: app/Models/PointRequest.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Support\\\\Carbon\\:\\:\\$date\\.$#"
+			count: 2
+			path: app/Models/Task.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\:\\:incomplete\\(\\)\\.$#"
+			count: 2
+			path: app/Models/Task.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 1
+			path: app/Models/Task.php
+
+		-
+			message: "#^Cannot call method isPast\\(\\) on string\\.$#"
+			count: 1
+			path: app/Models/Task.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and App\\\\Enums\\\\FamilyRole\\:\\:Child will always evaluate to false\\.$#"
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and App\\\\Enums\\\\FamilyRole\\:\\:Parent will always evaluate to false\\.$#"
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			count: 2
+			path: app/Models/User.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			count: 2
+			path: app/Models/VaultEntry.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and App\\\\Enums\\\\PermissionLevel\\:\\:Edit will always evaluate to false\\.$#"
+			count: 1
+			path: app/Models/VaultPermission.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 1
+			path: app/Notifications/TaskAssignedNotification.php
+
+		-
+			message: "#^Result of \\|\\| is always false\\.$#"
+			count: 1
+			path: app/Policies/TaskPolicy.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between int and string will always evaluate to false\\.$#"
+			count: 2
+			path: app/Policies/TaskPolicy.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between int and string\\|null will always evaluate to false\\.$#"
+			count: 2
+			path: app/Policies/TaskPolicy.php
+
+		-
+			message: "#^Parameter \\#2 \\$triggerType of method App\\\\Services\\\\BadgeService\\:\\:getCurrentValueForTrigger\\(\\) expects App\\\\Enums\\\\BadgeTriggerType, string given\\.$#"
+			count: 1
+			path: app/Services/BadgeService.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 2
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Offset 'ai_api_key' does not exist on array\\{\\}\\|string\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Offset 'ai_api_key' on array\\{\\}\\|string in empty\\(\\) does not exist\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Offset 'ai_mode' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Offset 'ai_model' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Offset 'ai_provider' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Offset 'anthropic' on array\\{anthropic\\: 'App\\\\\\\\Services\\\\\\\\AiProviders\\\\\\\\AnthropicProvider', openai\\: 'App\\\\\\\\Services\\\\\\\\AiProviders\\\\\\\\OpenAiProvider', google\\: 'App\\\\\\\\Services\\\\\\\\AiProviders\\\\\\\\GoogleGeminiProvider'\\} on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Relation 'taskList' is not found in App\\\\Models\\\\Task model\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Result of && is always true\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between 'kinhold' and 'byok' will always evaluate to false\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Variable \\$apiKey in empty\\(\\) always exists and is always falsy\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Variable \\$providerSlug on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: app/Services/ChatbotService.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 2
+			path: app/Services/GoogleCalendarService.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 2
+			path: app/Services/IcsCalendarService.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\PointTransaction\\:\\:\\$total_points\\.$#"
+			count: 1
+			path: app/Services/PointsService.php
+
+		-
+			message: "#^If condition is always false\\.$#"
+			count: 1
+			path: app/Services/PointsService.php
+
+		-
+			message: "#^Left side of && is always false\\.$#"
+			count: 1
+			path: app/Services/PointsService.php
+
+		-
+			message: "#^Offset 'kudos_cost_enabled' on string\\|null on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: app/Services/PointsService.php

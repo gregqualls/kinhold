@@ -37,7 +37,6 @@ Thumbs.db
 
 # Quality tools
 .eslintcache
-phpstan-baseline.neon
 
 # Claude Code (ignore all except slash commands)
 .claude/*
