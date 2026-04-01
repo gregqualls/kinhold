@@ -13,7 +13,7 @@ enum TaskPriority: string
      */
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Low => 'Low',
             self::Medium => 'Medium',
             self::High => 'High',
@@ -25,7 +25,7 @@ enum TaskPriority: string
      */
     public function value(): int
     {
-        return match($this) {
+        return match ($this) {
             self::Low => 1,
             self::Medium => 2,
             self::High => 3,

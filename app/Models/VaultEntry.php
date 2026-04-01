@@ -148,7 +148,7 @@ class VaultEntry extends Model
      */
     public function getDecryptedData(): array
     {
-        if (!$this->encrypted_data) {
+        if (! $this->encrypted_data) {
             return [];
         }
 

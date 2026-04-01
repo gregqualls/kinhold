@@ -19,9 +19,9 @@
     />
 
     <button
-      @click="submit"
       :disabled="!selectedUser || !reason.trim()"
       class="btn-primary btn-sm flex-shrink-0"
+      @click="submit"
     >
       Give Kudos
     </button>

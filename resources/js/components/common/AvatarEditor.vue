@@ -16,9 +16,9 @@
             <div class="px-6 py-4 border-b border-lavender-200 dark:border-prussian-700 flex items-center justify-between">
               <h2 class="text-xl font-semibold text-prussian-500 dark:text-lavender-200">Choose Avatar</h2>
               <button
-                @click="$emit('close')"
                 class="p-2 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-lg transition-colors text-lavender-500 dark:text-lavender-400"
                 aria-label="Close"
+                @click="$emit('close')"
               >
                 <XMarkIcon class="w-5 h-5" />
               </button>
@@ -39,7 +39,6 @@
                   <button
                     v-for="color in allColors"
                     :key="color.name"
-                    @click="selectColor(color.name)"
                     :disabled="loading || !canChange"
                     :title="color.name"
                     class="w-8 h-8 rounded-full transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -49,7 +48,8 @@
                         ? 'ring-2 ring-[#C4975A] ring-offset-2 dark:ring-offset-prussian-800 scale-110'
                         : 'hover:scale-110',
                     ]"
-                  />
+                    @click="selectColor(color.name)"
+                  ></button>
                 </div>
               </div>
 
@@ -58,17 +58,17 @@
                 <!-- Use Google Photo (only shown if available and not already using it) -->
                 <button
                   v-if="targetUser?.google_avatar && !isUsingGoogleAvatar"
-                  @click="useGoogleAvatar"
                   :disabled="loading || !canChange"
                   class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-xl text-sm font-medium text-prussian-500 dark:text-lavender-200 hover:border-[#C4975A] hover:text-[#C4975A] dark:hover:border-[#C4975A] dark:hover:text-[#C4975A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  @click="useGoogleAvatar"
                 >
                   <img :src="targetUser.google_avatar" class="w-5 h-5 rounded-full object-cover" alt="" />
                   Use Google Photo
                 </button>
                 <button
-                  @click="triggerUpload"
                   :disabled="loading || !canChange"
                   class="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-lavender-300 dark:border-prussian-600 rounded-xl text-sm font-medium text-prussian-400 dark:text-lavender-300 hover:border-[#C4975A] hover:text-[#C4975A] dark:hover:border-[#C4975A] dark:hover:text-[#C4975A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  @click="triggerUpload"
                 >
                   <CameraIcon class="w-5 h-5" />
                   {{ uploading ? 'Uploading...' : 'Upload Photo' }}
@@ -90,7 +90,6 @@
                   <button
                     v-for="preset in presets"
                     :key="preset.key"
-                    @click="selectPreset(preset.key)"
                     :disabled="loading || !canChange"
                     :title="preset.label"
                     class="relative aspect-square rounded-full flex items-center justify-center transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -100,6 +99,7 @@
                         : 'hover:ring-2 hover:ring-lavender-300 dark:hover:ring-prussian-500 hover:ring-offset-2 dark:hover:ring-offset-prussian-800',
                       colorClasses,
                     ]"
+                    @click="selectPreset(preset.key)"
                   >
                     <component :is="preset.component" weight="duotone" class="text-white w-1/2 h-1/2" />
                   </button>
@@ -109,9 +109,9 @@
               <!-- Remove Avatar -->
               <button
                 v-if="targetUser?.avatar"
-                @click="removeAvatar"
                 :disabled="loading || !canChange"
                 class="w-full text-center text-sm text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 py-2 transition-colors disabled:opacity-50"
+                @click="removeAvatar"
               >
                 {{ removing ? 'Removing...' : 'Remove Avatar' }}
               </button>

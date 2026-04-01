@@ -52,6 +52,7 @@ class ManageFeaturedEvents extends Tool
             ->get()
             ->map(function ($event) {
                 $event->computed_next_date = $event->next_occurrence;
+
                 return $event;
             })
             ->filter(fn ($event) => $event->computed_next_date->gte(Carbon::today()))
@@ -82,12 +83,12 @@ class ManageFeaturedEvents extends Tool
         }
 
         $title = $request->get('title');
-        if (!$title) {
+        if (! $title) {
             return Response::error('title is required to create a featured event.');
         }
 
         $eventDate = $request->get('event_date');
-        if (!$eventDate) {
+        if (! $eventDate) {
             return Response::error('event_date is required to create a featured event.');
         }
 
@@ -126,7 +127,7 @@ class ManageFeaturedEvents extends Tool
     private function updateEvent(Request $request): Response
     {
         $eventId = $request->get('event_id');
-        if (!$eventId) {
+        if (! $eventId) {
             return Response::error('event_id is required for update.');
         }
 
@@ -170,7 +171,7 @@ class ManageFeaturedEvents extends Tool
     private function deleteEvent(Request $request): Response
     {
         $eventId = $request->get('event_id');
-        if (!$eventId) {
+        if (! $eventId) {
             return Response::error('event_id is required for delete.');
         }
 

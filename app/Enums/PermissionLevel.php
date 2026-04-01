@@ -12,7 +12,7 @@ enum PermissionLevel: string
      */
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::View => 'View Only',
             self::Edit => 'Edit',
         };

@@ -46,8 +46,8 @@ class ViewCalendar extends Tool
         $end = $request->get('end') ? Carbon::parse($request->get('end')) : now()->addMonths(3);
 
         $connections = CalendarConnection::whereHas('user', function ($q) {
-                $q->where('family_id', $this->familyId());
-            })
+            $q->where('family_id', $this->familyId());
+        })
             ->where('is_active', true)
             ->with('user:id,name')
             ->get();
@@ -93,8 +93,8 @@ class ViewCalendar extends Tool
     private function getConnections(): Response
     {
         $connections = CalendarConnection::whereHas('user', function ($q) {
-                $q->where('family_id', $this->familyId());
-            })
+            $q->where('family_id', $this->familyId());
+        })
             ->with('user:id,name')
             ->orderByDesc('created_at')
             ->get();

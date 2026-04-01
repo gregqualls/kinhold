@@ -19,7 +19,7 @@
           rows="3"
           class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none resize-none transition-all"
           placeholder="Add details..."
-        />
+        ></textarea>
       </div>
 
       <!-- Tags -->
@@ -29,18 +29,18 @@
           <button
             v-for="tag in tags"
             :key="tag.id"
-            @click="toggleTag(tag.id)"
             class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-full transition-colors"
             :class="form.tag_ids.includes(tag.id)
               ? 'text-white'
               : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
             :style="form.tag_ids.includes(tag.id) ? { backgroundColor: getTagHex(tag.color) } : {}"
+            @click="toggleTag(tag.id)"
           >
             <span
               v-if="!form.tag_ids.includes(tag.id)"
               class="w-2 h-2 rounded-full"
               :style="{ backgroundColor: getTagHex(tag.color) }"
-            />
+            ></span>
             {{ tag.name }}
           </button>
         </div>
@@ -53,9 +53,9 @@
           <button
             v-for="p in ['low', 'medium', 'high']"
             :key="p"
-            @click="form.priority = p"
             class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium transition-all"
             :class="form.priority === p ? prioritySelectedClass(p) : 'bg-lavender-50 dark:bg-prussian-700 text-lavender-500 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-600'"
+            @click="form.priority = p"
           >
             <FlagIcon class="w-4 h-4" />
             {{ p.charAt(0).toUpperCase() + p.slice(1) }}
@@ -80,14 +80,14 @@
           <p class="text-xs text-lavender-500 dark:text-lavender-400 mt-0.5">Any family member can claim and complete this task</p>
         </div>
         <button
-          @click="form.is_family_task = !form.is_family_task"
           class="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-3"
           :class="form.is_family_task ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-500'"
+          @click="form.is_family_task = !form.is_family_task"
         >
           <span
             class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
             :class="form.is_family_task && 'translate-x-5'"
-          />
+          ></span>
         </button>
       </div>
 
@@ -170,14 +170,14 @@
       <div class="flex items-center justify-between py-3 px-4 bg-lavender-50 dark:bg-prussian-700 rounded-xl">
         <span class="text-sm text-prussian-500 dark:text-lavender-200 font-medium">Completed</span>
         <button
-          @click="form.completed = !form.completed"
           class="relative w-11 h-6 rounded-full transition-colors"
           :class="form.completed ? 'bg-emerald-500' : 'bg-lavender-300 dark:bg-prussian-500'"
+          @click="form.completed = !form.completed"
         >
           <span
             class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
             :class="form.completed && 'translate-x-5'"
-          />
+          ></span>
         </button>
       </div>
     </div>
@@ -185,12 +185,12 @@
     <template #footer>
       <div class="flex gap-3 items-center">
         <button
-          @click="$emit('delete', task.id)"
           class="px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+          @click="$emit('delete', task.id)"
         >
           Delete
         </button>
-        <div class="flex-1" />
+        <div class="flex-1"></div>
 
         <!-- Unsaved changes indicator -->
         <Transition name="fade-fast" mode="out-in">
@@ -204,13 +204,12 @@
         </Transition>
 
         <button
-          @click="$emit('close')"
           class="px-4 py-2.5 text-sm font-medium text-lavender-600 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-xl transition-colors"
+          @click="$emit('close')"
         >
           Cancel
         </button>
         <button
-          @click="save"
           :disabled="saving || !form.title?.trim()"
           :class="[
             'px-6 py-2.5 text-sm font-medium text-white rounded-xl transition-all',
@@ -219,6 +218,7 @@
               : 'bg-wisteria-600 hover:bg-wisteria-500',
             (saving || !form.title?.trim()) && 'opacity-40 !shadow-none !scale-100',
           ]"
+          @click="save"
         >
           {{ saving ? 'Saving...' : 'Save' }}
         </button>

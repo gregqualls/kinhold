@@ -1,6 +1,5 @@
 <template>
   <button
-    @click.stop="$emit('toggle')"
     class="checkbox-custom"
     :class="{
       'checked': checked,
@@ -14,6 +13,7 @@
     role="checkbox"
     :aria-checked="checked"
     :aria-label="checked ? 'Mark as incomplete' : 'Mark as complete'"
+    @click.stop="$emit('toggle')"
   >
     <span class="check-icon">
       <svg class="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

@@ -8,8 +8,8 @@
     >
       <div class="flex items-center gap-3 min-w-0">
         <component
-          v-if="icon"
           :is="icon"
+          v-if="icon"
           class="w-5 h-5 text-wisteria-500 dark:text-wisteria-400 flex-shrink-0"
         />
         <div class="min-w-0">
@@ -27,7 +27,7 @@
       </div>
 
       <div class="flex items-center gap-2 flex-shrink-0 ml-4">
-        <slot name="header-actions" />
+        <slot name="header-actions"></slot>
         <ChevronDownIcon
           :class="[
             'w-5 h-5 text-lavender-500 dark:text-lavender-400 transition-transform duration-200',
@@ -39,7 +39,7 @@
 
     <!-- Body (collapsible) -->
     <div v-show="isOpen" class="px-5 pb-5 md:px-6 md:pb-6">
-      <slot />
+      <slot></slot>
     </div>
   </div>
 </template>

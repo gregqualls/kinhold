@@ -14,9 +14,6 @@ class SettingsController extends Controller
 {
     /**
      * Get app settings for the current family.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -46,7 +43,7 @@ class SettingsController extends Controller
                 'ai_provider' => $settings['ai_provider'] ?? 'anthropic',
                 'ai_model' => $settings['ai_model'] ?? '',
                 'ai_api_key_masked' => $this->maskApiKey($settings),
-                'ai_has_key' => !empty($settings['ai_api_key']),
+                'ai_has_key' => ! empty($settings['ai_api_key']),
                 'ai_providers' => ChatbotService::availableProviders(),
                 'task_assignment' => $settings['task_assignment'] ?? [
                     'mode' => 'all',
@@ -54,11 +51,11 @@ class SettingsController extends Controller
                 ],
                 'children_can_change_avatar' => $settings['children_can_change_avatar'] ?? true,
                 'services' => [
-                    'google_oauth' => !empty(config('services.google.client_id')),
-                    'google_calendar' => !empty(config('kinhold.google.client_id')),
-                    'ai_platform_key' => !empty(config('kinhold.chatbot.api_key')),
-                    'ai_family_key' => !empty($settings['ai_api_key']),
-                    'mail' => !empty(config('mail.mailers.' . config('mail.default') . '.host'))
+                    'google_oauth' => ! empty(config('services.google.client_id')),
+                    'google_calendar' => ! empty(config('kinhold.google.client_id')),
+                    'ai_platform_key' => ! empty(config('kinhold.chatbot.api_key')),
+                    'ai_family_key' => ! empty($settings['ai_api_key']),
+                    'mail' => ! empty(config('mail.mailers.'.config('mail.default').'.host'))
                         || config('mail.default') === 'log',
                 ],
             ],
@@ -67,9 +64,6 @@ class SettingsController extends Controller
 
     /**
      * Update app settings (parent only).
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function update(Request $request): JsonResponse
     {
@@ -215,7 +209,7 @@ class SettingsController extends Controller
                 'ai_provider' => $settings['ai_provider'] ?? 'anthropic',
                 'ai_model' => $settings['ai_model'] ?? '',
                 'ai_api_key_masked' => $this->maskApiKey($settings),
-                'ai_has_key' => !empty($settings['ai_api_key']),
+                'ai_has_key' => ! empty($settings['ai_api_key']),
                 'ai_providers' => ChatbotService::availableProviders(),
                 'task_assignment' => $settings['task_assignment'] ?? [
                     'mode' => 'all',
@@ -245,7 +239,7 @@ class SettingsController extends Controller
             return Str::mask($key, '*', 4);
         }
 
-        return Str::substr($key, 0, 6) . '...' . Str::substr($key, -4);
+        return Str::substr($key, 0, 6).'...'.Str::substr($key, -4);
     }
 
     /**

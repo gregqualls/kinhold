@@ -8,6 +8,7 @@ use App\Enums\PointTransactionType;
 use App\Models\Badge;
 use App\Models\ChatMessage;
 use App\Models\Family;
+use App\Models\FamilyEvent;
 use App\Models\FeaturedEvent;
 use App\Models\PointTransaction;
 use App\Models\Reward;
@@ -16,7 +17,6 @@ use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\VaultCategory;
-use App\Models\FamilyEvent;
 use App\Models\VaultEntry;
 use App\Services\BadgeService;
 use App\Services\VaultEncryptionService;
@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $now = Carbon::now();
-        $vault = new VaultEncryptionService();
+        $vault = new VaultEncryptionService;
 
         // ─────────────────────────────────────────────
         //  FAMILY

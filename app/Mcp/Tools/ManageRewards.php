@@ -67,12 +67,12 @@ class ManageRewards extends Tool
         }
 
         $title = $request->get('title');
-        if (!$title) {
+        if (! $title) {
             return Response::error('title is required to create a reward.');
         }
 
         $pointCost = $request->get('point_cost');
-        if (!$pointCost || $pointCost < 1) {
+        if (! $pointCost || $pointCost < 1) {
             return Response::error('point_cost must be a positive integer.');
         }
 
@@ -100,7 +100,7 @@ class ManageRewards extends Tool
     private function updateReward(Request $request): Response
     {
         $rewardId = $request->get('reward_id');
-        if (!$rewardId) {
+        if (! $rewardId) {
             return Response::error('reward_id is required for update.');
         }
 
@@ -133,7 +133,7 @@ class ManageRewards extends Tool
     private function deleteReward(Request $request): Response
     {
         $rewardId = $request->get('reward_id');
-        if (!$rewardId) {
+        if (! $rewardId) {
             return Response::error('reward_id is required for delete.');
         }
 

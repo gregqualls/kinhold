@@ -78,9 +78,27 @@ Run the Kinhold session kickoff. Read all relevant context and present a concise
 **What do you want to focus on?**
 ```
 
+7. **Quality tool health check** — Verify the dev pipeline tools are in place:
+   - Does `pint.json` exist? (PHP formatting)
+   - Does `phpstan.neon` exist? (static analysis)
+   - Does `eslint.config.js` exist? (JS/Vue linting)
+   - If any are missing, flag: "Quality tool config missing — run `/check` may fail."
+
+8. **Stale worktree detection** — Run `git worktree list` and check `.claude/worktrees/` for any stale worktrees from previous sessions. If found, suggest: "Stale worktrees detected. Run `/prune-worktrees` to clean up."
+
+9. **Branch creation offer** — After presenting the briefing and priorities:
+   - Identify the next priority issue (from current batch or highest priority open issue)
+   - Offer: "Want to start on **#<number> — <title>**? I'll create `feature/<number>-<slug>` from latest main."
+   - If Greg says yes:
+     - `git checkout main && git pull origin main`
+     - `git checkout -b feature/<number>-<slug>`
+     - Confirm: "Branch created. Ready to code."
+   - If Greg wants a worktree instead, create one with `git worktree add .claude/worktrees/<slug> -b feature/<number>-<slug>`
+
 ## Rules
-- Do NOT start working on anything. This is a briefing, not an action.
+- Do NOT start working on anything. This is a briefing, not an action (except branch creation if Greg opts in).
 - If there's no handoff note, that's fine — fall back to CHANGELOG + ROADMAP + git state.
 - Keep the briefing to one screen. Don't dump entire files.
 - Always end by asking Greg what he wants to focus on.
 - If the repo is dirty (uncommitted changes, wrong branch), flag it prominently.
+- The branch creation offer is optional — Greg may want to pick a different issue or just explore.

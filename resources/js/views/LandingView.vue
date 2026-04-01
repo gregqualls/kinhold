@@ -26,7 +26,7 @@
 
       <div class="max-w-4xl mx-auto px-6 pt-24 pb-12 lg:pt-36 lg:pb-16 text-center relative">
         <h1 class="kin-heading text-5xl sm:text-6xl lg:text-7xl text-kin-black dark:text-kin-off-white leading-tight">
-          Your family's<br>private hub
+          Your family's<br />private hub
         </h1>
         <p class="mt-6 text-lg lg:text-xl kin-muted max-w-xl mx-auto leading-relaxed">
           Calendar, tasks, vault, and AI &mdash; all in one place, all under your control.
@@ -86,11 +86,11 @@
           <button
             v-for="tab in showcaseTabs"
             :key="tab.id"
-            @click="activeShowcaseTab = tab.id"
             class="kin-btn-ghost text-sm px-5 py-2.5 transition-all duration-200"
             :class="activeShowcaseTab === tab.id
               ? 'bg-kin-gold/10 text-kin-gold border-b-2 border-kin-gold font-semibold'
               : ''"
+            @click="activeShowcaseTab = tab.id"
           >
             {{ tab.label }}
           </button>
@@ -98,29 +98,29 @@
 
         <!-- Tab content -->
         <template v-for="tab in showcaseTabs" :key="tab.id">
-        <div v-show="activeShowcaseTab === tab.id">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
-            <!-- Screenshot -->
-            <div class="rounded-xl shadow-card-xl border border-kin-border dark:border-kin-border-dark overflow-hidden order-1 lg:order-1">
-              <img
-                :src="tab.image"
-                :alt="tab.label + ' preview'"
-                class="w-full h-auto"
-              />
-            </div>
-            <!-- Bullets -->
-            <div class="order-2 lg:order-2 space-y-5">
-              <div v-for="(bullet, i) in tab.bullets" :key="i" class="flex gap-3">
-                <div class="kin-icon-box shrink-0 w-8 h-8 mt-0.5">
-                  <component :is="tab.icon" class="w-4 h-4" />
+          <div v-show="activeShowcaseTab === tab.id">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center max-w-5xl mx-auto">
+              <!-- Screenshot -->
+              <div class="rounded-xl shadow-card-xl border border-kin-border dark:border-kin-border-dark overflow-hidden order-1 lg:order-1">
+                <img
+                  :src="tab.image"
+                  :alt="tab.label + ' preview'"
+                  class="w-full h-auto"
+                />
+              </div>
+              <!-- Bullets -->
+              <div class="order-2 lg:order-2 space-y-5">
+                <div v-for="(bullet, i) in tab.bullets" :key="i" class="flex gap-3">
+                  <div class="kin-icon-box shrink-0 w-8 h-8 mt-0.5">
+                    <component :is="tab.icon" class="w-4 h-4" />
+                  </div>
+                  <p class="text-sm lg:text-base text-kin-black dark:text-kin-off-white leading-relaxed">
+                    {{ bullet }}
+                  </p>
                 </div>
-                <p class="text-sm lg:text-base text-kin-black dark:text-kin-off-white leading-relaxed">
-                  {{ bullet }}
-                </p>
               </div>
             </div>
           </div>
-        </div>
         </template>
       </div>
     </section>

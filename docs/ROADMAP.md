@@ -29,7 +29,8 @@ These features are live and working:
 | Production deploy on Upsun (auto-deploy from GitHub) | COMPLETE |
 | Open source on GitHub (Elastic License 2.0) | COMPLETE |
 | Self-hosting infrastructure (SQLite, simple Docker, graceful degradation) | COMPLETE |
-| GitHub Actions CI (PHPUnit + Vite build on PR/push) | COMPLETE |
+| GitHub Actions CI (PHPUnit + Vite build + lint on PR/push) | COMPLETE |
+| SDLC pipeline (10 slash commands, 10 quality gates) | COMPLETE |
 | Community docs (CODE_OF_CONDUCT, SECURITY, PR template) | COMPLETE |
 
 ---

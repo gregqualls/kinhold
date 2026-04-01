@@ -56,9 +56,9 @@
               <input
                 type="checkbox"
                 :checked="isMemberSelected(feature.key, member.id)"
-                @change="toggleMember(feature.key, member.id)"
                 class="rounded"
                 :disabled="(member.family_role || member.role) === 'parent'"
+                @change="toggleMember(feature.key, member.id)"
               />
               <span class="text-kin-black dark:text-kin-off-white">{{ member.name }}</span>
               <span

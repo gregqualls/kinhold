@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\Badge;
 use App\Models\ChatMessage;
 use App\Models\Family;
 use App\Models\Task;
+use App\Models\User;
 use App\Models\VaultEntry;
 use App\Services\AiProviders\AiProviderInterface;
 use App\Services\AiProviders\AnthropicProvider;
-use App\Services\AiProviders\OpenAiProvider;
 use App\Services\AiProviders\GoogleGeminiProvider;
+use App\Services\AiProviders\OpenAiProvider;
 use Illuminate\Support\Facades\Log;
 
 class ChatbotService
@@ -27,10 +27,6 @@ class ChatbotService
 
     /**
      * Send a message and get an AI response.
-     *
-     * @param string $message
-     * @param User $user
-     * @return string
      */
     public function chat(string $message, User $user): string
     {
@@ -47,7 +43,7 @@ class ChatbotService
         try {
             return $provider->ask($systemPrompt, $userMessage, $history);
         } catch (\Exception $e) {
-            Log::error('Chatbot error: ' . $e->getMessage());
+            Log::error('Chatbot error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -67,7 +63,7 @@ class ChatbotService
         $aiMode = $settings['ai_mode'] ?? 'kinhold';
         $apiKey = null;
 
-        if ($aiMode === 'byok' && !empty($settings['ai_api_key'])) {
+        if ($aiMode === 'byok' && ! empty($settings['ai_api_key'])) {
             try {
                 $apiKey = decrypt($settings['ai_api_key']);
             } catch (\Exception $e) {
@@ -82,8 +78,8 @@ class ChatbotService
 
         if (empty($apiKey)) {
             throw new \RuntimeException(
-                'No API key configured for ' . ($providerSlug ?? 'anthropic') . '. '
-                . 'Add one in Settings > API Configuration.'
+                'No API key configured for '.($providerSlug ?? 'anthropic').'. '
+                .'Add one in Settings > API Configuration.'
             );
         }
 
@@ -98,8 +94,6 @@ class ChatbotService
 
     /**
      * Get available providers with their metadata.
-     *
-     * @return array
      */
     public static function availableProviders(): array
     {
@@ -191,20 +185,20 @@ PROMPT;
 
         // Pending tasks
         $pendingTasks = $this->getPendingTasks($family, $user);
-        if (!empty($pendingTasks)) {
-            $context[] = "Pending tasks:\n" . implode("\n", $pendingTasks);
+        if (! empty($pendingTasks)) {
+            $context[] = "Pending tasks:\n".implode("\n", $pendingTasks);
         }
 
         // Accessible vault summary
         $vaultSummary = $this->getAccessibleVaultSummary($user, $family);
-        if (!empty($vaultSummary)) {
-            $context[] = "Vault info: " . implode(', ', $vaultSummary);
+        if (! empty($vaultSummary)) {
+            $context[] = 'Vault info: '.implode(', ', $vaultSummary);
         }
 
         // Badges (exclude hidden unearned badges)
         $badgeSummary = $this->getBadgeSummary($user, $family);
-        if (!empty($badgeSummary)) {
-            $context[] = "Badges:\n" . implode("\n", $badgeSummary);
+        if (! empty($badgeSummary)) {
+            $context[] = "Badges:\n".implode("\n", $badgeSummary);
         }
 
         return implode("\n\n", $context);
@@ -224,10 +218,9 @@ PROMPT;
                 ->limit(10)
                 ->get();
 
-            return $tasks->map(fn ($task) =>
-                "- {$task->title}" .
-                ($task->assignee ? " (assigned to {$task->assignee->name})" : "") .
-                ($task->due_date ? " [due: {$task->due_date->format('M d')}]" : "")
+            return $tasks->map(fn ($task) => "- {$task->title}".
+                ($task->assignee ? " (assigned to {$task->assignee->name})" : '').
+                ($task->due_date ? " [due: {$task->due_date->format('M d')}]" : '')
             )->toArray();
         } catch (\Exception $e) {
             return [];
@@ -242,6 +235,7 @@ PROMPT;
         try {
             if ($user->isParent()) {
                 $count = VaultEntry::where('family_id', $family->id)->count();
+
                 return ["You have access to all {$count} vault entries as a parent"];
             }
 
@@ -272,7 +266,7 @@ PROMPT;
                 $earned = in_array($badge->id, $earnedBadgeIds);
 
                 // Never reveal hidden badge details unless earned
-                if ($badge->is_hidden && !$earned) {
+                if ($badge->is_hidden && ! $earned) {
                     continue;
                 }
 

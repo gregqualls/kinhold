@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\BadgeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class BadgesController extends Controller
 {
@@ -34,7 +35,7 @@ class BadgesController extends Controller
             $this->badgeService->checkAndAwardBadges($user);
             $this->awardMissingEasterEggBadges($user);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Badge catch-up failed: ' . $e->getMessage());
+            Log::error('Badge catch-up failed: '.$e->getMessage());
         }
 
         $badges = Badge::where('family_id', $family->id)
@@ -48,7 +49,7 @@ class BadgesController extends Controller
             $isEarned = in_array($badge->id, $earnedBadgeIds);
 
             $progress = null;
-            if (!$isEarned && $badge->trigger_threshold) {
+            if (! $isEarned && $badge->trigger_threshold) {
                 $progress = $this->badgeService->getCurrentValueForTrigger($user, $badge->trigger_type);
             }
 
@@ -230,7 +231,7 @@ class BadgesController extends Controller
             ->first();
 
         // Auto-create easter egg badges for existing families that don't have them yet
-        if (!$badge) {
+        if (! $badge) {
             $this->ensureEasterEggBadgesExist($user->family_id, $user->id);
             $badge = Badge::where('family_id', $user->family_id)
                 ->where('name', $badgeName)
@@ -239,7 +240,7 @@ class BadgesController extends Controller
 
         $newBadges = [];
 
-        if ($badge && !$user->badges()->where('badges.id', $badge->id)->exists()) {
+        if ($badge && ! $user->badges()->where('badges.id', $badge->id)->exists()) {
             $this->badgeService->manuallyAward($badge, $user, $user);
             $newBadges[] = $badge;
         }
@@ -251,7 +252,7 @@ class BadgesController extends Controller
         return response()->json([
             'already_found' => false,
             'total_found' => count($found),
-            'badges' => collect($newBadges)->map(fn($b) => [
+            'badges' => collect($newBadges)->map(fn ($b) => [
                 'id' => $b->id,
                 'name' => $b->name,
                 'description' => $b->description,
@@ -307,7 +308,7 @@ class BadgesController extends Controller
 
         foreach ($found as $eggKey) {
             $badgeName = $badgeNameMap[$eggKey] ?? null;
-            if (!$badgeName) {
+            if (! $badgeName) {
                 continue;
             }
 
@@ -315,7 +316,7 @@ class BadgesController extends Controller
                 ->where('name', $badgeName)
                 ->first();
 
-            if ($badge && !$user->badges()->where('badges.id', $badge->id)->exists()) {
+            if ($badge && ! $user->badges()->where('badges.id', $badge->id)->exists()) {
                 $this->badgeService->manuallyAward($badge, $user, $user);
             }
         }

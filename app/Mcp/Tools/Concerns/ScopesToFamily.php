@@ -30,7 +30,7 @@ trait ScopesToFamily
 
     protected function requireParent(): ?Response
     {
-        if (!$this->isParent()) {
+        if (! $this->isParent()) {
             return Response::error('Only parents can perform this action.');
         }
 
@@ -43,13 +43,13 @@ trait ScopesToFamily
      * Delegates to the same policies that API controllers use,
      * ensuring MCP tools and API share identical authorization rules.
      *
-     * @param string $ability The policy method name (e.g., 'create', 'delete')
-     * @param mixed $model Model instance or class string (e.g., Tag::class)
+     * @param  string  $ability  The policy method name (e.g., 'create', 'delete')
+     * @param  mixed  $model  Model instance or class string (e.g., Tag::class)
      * @return Response|null Error response if denied, null if authorized
      */
     protected function authorize(string $ability, mixed $model): ?Response
     {
-        if (!$this->user()->can($ability, $model)) {
+        if (! $this->user()->can($ability, $model)) {
             return Response::error('Only parents can perform this action.');
         }
 

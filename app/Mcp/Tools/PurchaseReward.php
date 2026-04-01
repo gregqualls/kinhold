@@ -40,7 +40,7 @@ class PurchaseReward extends Tool
     private function purchase(Request $request): Response
     {
         $rewardId = $request->get('reward_id');
-        if (!$rewardId) {
+        if (! $rewardId) {
             return Response::error('reward_id is required to purchase.');
         }
 
@@ -65,7 +65,7 @@ class PurchaseReward extends Tool
             'remaining_balance' => $user->pointBank(),
         ];
 
-        if (!empty($newBadges)) {
+        if (! empty($newBadges)) {
             $response['badges_earned'] = collect($newBadges)->map(fn ($b) => $b->name)->toArray();
         }
 

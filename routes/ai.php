@@ -1,7 +1,7 @@
 <?php
 
-use Laravel\Mcp\Facades\Mcp;
 use App\Mcp\Servers\KinholdServer;
+use Laravel\Mcp\Facades\Mcp;
 
 // OAuth discovery endpoints (.well-known) + dynamic client registration
 Mcp::oauthRoutes('oauth');

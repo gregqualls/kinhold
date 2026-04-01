@@ -40,7 +40,7 @@ class AuthController extends Controller
             $role = 'parent';
         }
 
-        $isNewFamily = !$request->filled('invite_code');
+        $isNewFamily = ! $request->filled('invite_code');
 
         $user = User::create([
             'name' => $request->validated('name'),
@@ -84,7 +84,7 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->validated('email'))->first();
 
-        if (!$user || !Hash::check($request->validated('password'), $user->password)) {
+        if (! $user || ! Hash::check($request->validated('password'), $user->password)) {
             return response()->json([
                 'message' => 'Invalid credentials',
             ], 401);
@@ -133,7 +133,7 @@ class AuthController extends Controller
     {
         $parent = $request->user();
 
-        if (!$parent->isParent()) {
+        if (! $parent->isParent()) {
             return response()->json(['message' => 'Only parents can switch profiles'], 403);
         }
 
@@ -146,7 +146,7 @@ class AuthController extends Controller
             ->where('is_managed', true)
             ->first();
 
-        if (!$child) {
+        if (! $child) {
             return response()->json(['message' => 'Can only switch to managed accounts in your family'], 403);
         }
 
@@ -192,7 +192,7 @@ class AuthController extends Controller
         $user = $this->resolveAvatarTarget($request);
         $this->authorizeAvatarChange($user, $request->user());
 
-        if (!$user->google_avatar) {
+        if (! $user->google_avatar) {
             return response()->json(['message' => 'No Google photo available.'], 422);
         }
 
@@ -224,7 +224,7 @@ class AuthController extends Controller
         $this->deleteUploadedAvatarFile($user);
 
         $file->storeAs('avatars', "{$user->id}.{$ext}", 'public');
-        $url = url("/api/v1/user/avatar/{$user->id}") . '?t=' . time();
+        $url = url("/api/v1/user/avatar/{$user->id}").'?t='.time();
 
         $user->update(['avatar' => $url]);
 
@@ -260,11 +260,11 @@ class AuthController extends Controller
         $this->authorizeAvatarChange($user, $request->user());
 
         $request->validate([
-            'preset' => 'required|string|in:' . implode(',', self::AVATAR_PRESETS),
+            'preset' => 'required|string|in:'.implode(',', self::AVATAR_PRESETS),
         ]);
 
         $this->deleteUploadedAvatarFile($user);
-        $user->update(['avatar' => 'phosphor:' . $request->input('preset')]);
+        $user->update(['avatar' => 'phosphor:'.$request->input('preset')]);
 
         return response()->json([
             'user' => UserResource::make($user->fresh()),
@@ -298,7 +298,7 @@ class AuthController extends Controller
 
         if ($targetId && $targetId !== $currentUser->id) {
             // Only parents can change another member's avatar
-            if (!$currentUser->isParent()) {
+            if (! $currentUser->isParent()) {
                 abort(403, 'Only parents can change another member\'s avatar.');
             }
 
@@ -324,7 +324,7 @@ class AuthController extends Controller
             $settings = $family->settings ?? [];
             $allowed = $settings['children_can_change_avatar'] ?? true;
 
-            if (!$allowed) {
+            if (! $allowed) {
                 abort(403, 'Avatar changes are disabled for children.');
             }
         }
@@ -335,7 +335,7 @@ class AuthController extends Controller
      */
     private function deleteUploadedAvatarFile(User $user): void
     {
-        if (!$user->avatar || !str_starts_with($user->avatar, 'http')) {
+        if (! $user->avatar || ! str_starts_with($user->avatar, 'http')) {
             return;
         }
 

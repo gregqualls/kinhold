@@ -9,6 +9,7 @@ use App\Models\PointTransaction;
 use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class BadgeService
@@ -70,9 +71,9 @@ class BadgeService
      * Create default badges for a family. Idempotent — uses firstOrCreate
      * so it's safe to call on new families AND existing ones with partial sets.
      *
-     * @return \Illuminate\Support\Collection<Badge> The badges, keyed by name.
+     * @return Collection<Badge> The badges, keyed by name.
      */
-    public static function createDefaultBadges(string $familyId, ?string $createdBy = null): \Illuminate\Support\Collection
+    public static function createDefaultBadges(string $familyId, ?string $createdBy = null): Collection
     {
         $badges = collect();
 
@@ -202,7 +203,7 @@ class BadgeService
                 ->whereDate('created_at', $date)
                 ->exists();
 
-            if (!$completed) {
+            if (! $completed) {
                 break;
             }
 
@@ -251,7 +252,7 @@ class BadgeService
                 ->whereDate('created_at', $date)
                 ->exists();
 
-            if (!$active) {
+            if (! $active) {
                 break;
             }
 

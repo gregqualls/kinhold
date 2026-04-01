@@ -1,23 +1,23 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\FamilyController;
-use App\Http\Controllers\Api\V1\TaskController;
-use App\Http\Controllers\Api\V1\VaultController;
+use App\Http\Controllers\Api\V1\BadgesController;
 use App\Http\Controllers\Api\V1\CalendarController;
 use App\Http\Controllers\Api\V1\ChatController;
+use App\Http\Controllers\Api\V1\FamilyController;
+use App\Http\Controllers\Api\V1\FeaturedEventController;
+use App\Http\Controllers\Api\V1\GoogleAuthController;
+use App\Http\Controllers\Api\V1\McpTokenController;
+use App\Http\Controllers\Api\V1\OnboardingController;
+use App\Http\Controllers\Api\V1\PointRequestController;
+use App\Http\Controllers\Api\V1\PointsController;
+use App\Http\Controllers\Api\V1\RewardsController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\TagController;
-use App\Http\Controllers\Api\V1\PointsController;
-use App\Http\Controllers\Api\V1\PointRequestController;
-use App\Http\Controllers\Api\V1\RewardsController;
-use App\Http\Controllers\Api\V1\BadgesController;
-use App\Http\Controllers\Api\V1\FeaturedEventController;
-use App\Http\Controllers\Api\V1\McpTokenController;
-use App\Http\Controllers\Api\V1\GoogleAuthController;
-use App\Http\Controllers\Api\V1\OnboardingController;
+use App\Http\Controllers\Api\V1\TaskController;
+use App\Http\Controllers\Api\V1\VaultController;
+use App\Models\User;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     // Auth routes (no authentication required)
@@ -31,14 +31,14 @@ Route::prefix('v1')->group(function () {
         return response()->json([
             'app_name' => config('app.name', 'Kinhold'),
             'services' => [
-                'google_oauth' => !empty(config('services.google.client_id')),
-                'google_calendar' => !empty(config('kinhold.google.client_id')),
-                'ai_platform_key' => !empty(config('kinhold.chatbot.api_key')),
-                'mail' => !empty(config('mail.mailers.' . config('mail.default') . '.host'))
+                'google_oauth' => ! empty(config('services.google.client_id')),
+                'google_calendar' => ! empty(config('kinhold.google.client_id')),
+                'ai_platform_key' => ! empty(config('kinhold.chatbot.api_key')),
+                'mail' => ! empty(config('mail.mailers.'.config('mail.default').'.host'))
                     || config('mail.default') === 'log',
             ],
             'registration' => true,
-            'first_boot' => \App\Models\User::count() === 0,
+            'first_boot' => User::count() === 0,
         ]);
     });
 

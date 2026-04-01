@@ -125,7 +125,7 @@ class RewardsController extends Controller
             'new_bank' => $user->pointBank(),
         ];
 
-        if (!empty($newBadges)) {
+        if (! empty($newBadges)) {
             $response['badges_earned'] = collect($newBadges)->map(fn ($b) => [
                 'id' => $b->id,
                 'name' => $b->name,

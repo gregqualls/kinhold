@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,7 +40,7 @@ class FeaturedEvent extends Model
      * Get the next occurrence date for a recurring event.
      * For non-recurring events, returns the original event_date.
      */
-    public function getNextOccurrenceAttribute(): \Carbon\Carbon
+    public function getNextOccurrenceAttribute(): Carbon
     {
         $date = $this->event_date->copy();
         $today = now()->startOfDay();

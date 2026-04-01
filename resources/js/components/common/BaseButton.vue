@@ -14,7 +14,7 @@
     <template v-if="loading">
       <LoadingSpinner size="sm" class="mr-2" />
     </template>
-    <slot />
+    <slot></slot>
   </button>
 </template>
 

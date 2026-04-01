@@ -50,7 +50,7 @@
           class="podium-bar bg-gradient-to-t from-sand-400 to-sand-300 dark:from-sand-700 dark:to-sand-600 rounded-t-[12px] mt-1 relative overflow-hidden"
           :style="{ height: '52px', width: '64px' }"
         >
-          <div class="podium-shimmer" />
+          <div class="podium-shimmer"></div>
           <span class="podium-points text-xs sm:text-sm font-bold font-mono text-prussian-600 dark:text-sand-100">
             {{ topThree[0].total_points }}
           </span>
@@ -116,7 +116,7 @@
               class="h-full rounded-full transition-all duration-700 ease-out"
               :class="progressBarColor(idx)"
               :style="{ width: progressWidth(entry) }"
-            />
+            ></div>
           </div>
         </div>
       </div>

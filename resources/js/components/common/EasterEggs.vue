@@ -11,8 +11,8 @@
           <div class="flex items-center justify-between px-4 py-3 bg-wisteria-500 text-white">
             <span class="text-sm font-bold tracking-wide">You found a secret!</span>
             <button
-              @click="showRickRoll = false"
               class="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+              @click="showRickRoll = false"
             >
               <span class="text-white text-lg leading-none">&times;</span>
             </button>
@@ -63,8 +63,8 @@
               Because 7 ate 9!
             </p>
             <button
-              @click="showSevenAteNine = false"
               class="mt-5 px-5 py-2 rounded-xl bg-wisteria-500 hover:bg-wisteria-600 text-white text-sm font-medium transition-colors"
+              @click="showSevenAteNine = false"
             >
               Ha ha, okay
             </button>

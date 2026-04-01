@@ -17,11 +17,11 @@
       </div>
 
       <div class="flex gap-3 mt-6">
-        <button @click="$emit('close')" class="btn-ghost flex-1">Cancel</button>
+        <button class="btn-ghost flex-1" @click="$emit('close')">Cancel</button>
         <button
-          @click="submit"
           :disabled="!points || !reason.trim()"
           class="btn-primary flex-1"
+          @click="submit"
         >
           Request
         </button>

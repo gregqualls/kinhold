@@ -35,6 +35,9 @@ Thumbs.db
 .phpunit.result.cache
 /coverage
 
+# Quality tools
+.eslintcache
+
 # Claude Code (ignore all except slash commands)
 .claude/*
 !.claude/commands/

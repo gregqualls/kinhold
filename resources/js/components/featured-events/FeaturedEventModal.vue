@@ -1,6 +1,6 @@
 <template>
   <BaseModal :show="show" :title="event ? 'Edit Event' : 'Add Featured Event'" size="md" @close="$emit('close')">
-    <form @submit.prevent="handleSubmit" class="space-y-4">
+    <form class="space-y-4" @submit.prevent="handleSubmit">
       <!-- Title -->
       <div>
         <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
@@ -66,7 +66,7 @@
           rows="2"
           placeholder="Add details..."
           class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 dark:placeholder-lavender-500 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent resize-none"
-        />
+        ></textarea>
       </div>
 
       <!-- Icon picker -->
@@ -87,12 +87,12 @@
             v-for="color in colorOptions"
             :key="color.value"
             type="button"
-            @click="form.color = color.value"
             class="w-8 h-8 rounded-full transition-all"
             :class="form.color === color.value ? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 scale-110' : 'hover:scale-105'"
             :style="{ backgroundColor: color.value, ringColor: color.value }"
             :title="color.label"
-          />
+            @click="form.color = color.value"
+          ></button>
         </div>
       </div>
 
@@ -102,15 +102,15 @@
 
     <template #footer>
       <button
-        @click="$emit('close')"
         class="px-4 py-2 text-sm font-medium text-lavender-600 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-[10px] transition-colors"
+        @click="$emit('close')"
       >
         Cancel
       </button>
       <button
-        @click="handleSubmit"
         :disabled="!form.title || !form.event_date || isSaving"
         class="px-4 py-2 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-700 rounded-[10px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        @click="handleSubmit"
       >
         {{ isSaving ? 'Saving...' : (event ? 'Update' : 'Create') }}
       </button>

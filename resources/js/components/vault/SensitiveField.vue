@@ -14,9 +14,9 @@
       <!-- Reveal toggle -->
       <button
         v-if="sensitive"
-        @click="toggleReveal"
         class="p-1.5 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-lg transition-colors"
         :title="revealed ? 'Hide' : 'Reveal'"
+        @click="toggleReveal"
       >
         <EyeIcon v-if="!revealed" class="w-4 h-4" />
         <EyeSlashIcon v-else class="w-4 h-4" />
@@ -24,10 +24,10 @@
 
       <!-- Copy -->
       <button
-        @click="copyValue"
         class="p-1.5 rounded-lg transition-all"
         :class="justCopied ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700'"
         :title="justCopied ? 'Copied!' : 'Copy'"
+        @click="copyValue"
       >
         <CheckIcon v-if="justCopied" class="w-4 h-4" />
         <ClipboardDocumentIcon v-else class="w-4 h-4" />

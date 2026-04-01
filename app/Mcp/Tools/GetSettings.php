@@ -39,7 +39,7 @@ class GetSettings extends Tool
                 'kudos_cost_enabled' => $settings['kudos_cost_enabled'] ?? false,
                 'task_assignment' => $family->getTaskAssignment(),
                 'ai_provider' => $settings['ai_provider'] ?? 'anthropic',
-                'ai_has_key' => !empty($settings['ai_api_key']),
+                'ai_has_key' => ! empty($settings['ai_api_key']),
             ],
         ]);
     }

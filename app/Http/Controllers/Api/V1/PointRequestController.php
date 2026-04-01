@@ -31,7 +31,7 @@ class PointRequestController extends Controller
             ->with(['user:id,name,avatar', 'reviewer:id,name,avatar']);
 
         // Children only see their own requests
-        if (!$user->isParent()) {
+        if (! $user->isParent()) {
             $query->where('user_id', $user->id);
         }
 
@@ -86,7 +86,7 @@ class PointRequestController extends Controller
     {
         $user = $request->user();
 
-        if (!$user->isParent()) {
+        if (! $user->isParent()) {
             return response()->json(['message' => 'Only parents can approve point requests'], 403);
         }
 
@@ -96,7 +96,7 @@ class PointRequestController extends Controller
             return response()->json(['message' => 'Request not found'], 404);
         }
 
-        if (!$pointRequest->isPending()) {
+        if (! $pointRequest->isPending()) {
             return response()->json(['message' => 'This request has already been reviewed'], 422);
         }
 
@@ -130,7 +130,7 @@ class PointRequestController extends Controller
             'message' => "Approved {$pointRequest->points} points for {$requestingUser->name}",
         ];
 
-        if (!empty($newBadges)) {
+        if (! empty($newBadges)) {
             $response['badges_earned'] = collect($newBadges)->map(fn ($b) => [
                 'id' => $b->id,
                 'name' => $b->name,
@@ -151,7 +151,7 @@ class PointRequestController extends Controller
     {
         $user = $request->user();
 
-        if (!$user->isParent()) {
+        if (! $user->isParent()) {
             return response()->json(['message' => 'Only parents can deny point requests'], 403);
         }
 
@@ -161,7 +161,7 @@ class PointRequestController extends Controller
             return response()->json(['message' => 'Request not found'], 404);
         }
 
-        if (!$pointRequest->isPending()) {
+        if (! $pointRequest->isPending()) {
             return response()->json(['message' => 'This request has already been reviewed'], 422);
         }
 

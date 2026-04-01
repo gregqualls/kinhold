@@ -78,13 +78,13 @@ class ViewFamily extends Tool
 
     private function member($family, ?string $memberId): Response
     {
-        if (!$memberId) {
+        if (! $memberId) {
             return Response::error('member_id is required for the member action.');
         }
 
         $member = $family->members()->find($memberId);
 
-        if (!$member) {
+        if (! $member) {
             return Response::error('Family member not found.');
         }
 

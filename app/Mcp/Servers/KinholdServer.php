@@ -2,6 +2,23 @@
 
 namespace App\Mcp\Servers;
 
+use App\Mcp\Tools\CompleteTask;
+use App\Mcp\Tools\GetSettings;
+use App\Mcp\Tools\ManageBadges;
+use App\Mcp\Tools\ManageFeaturedEvents;
+use App\Mcp\Tools\ManagePointRequests;
+use App\Mcp\Tools\ManagePoints;
+use App\Mcp\Tools\ManageRewards;
+use App\Mcp\Tools\ManageTags;
+use App\Mcp\Tools\ManageTasks;
+use App\Mcp\Tools\ManageVault;
+use App\Mcp\Tools\ManageVaultAccess;
+use App\Mcp\Tools\PurchaseReward;
+use App\Mcp\Tools\SearchFamily;
+use App\Mcp\Tools\ViewCalendar;
+use App\Mcp\Tools\ViewEarnedBadges;
+use App\Mcp\Tools\ViewFamily;
+use App\Mcp\Tools\ViewPoints;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -14,30 +31,30 @@ class KinholdServer extends Server
 {
     protected array $tools = [
         // Family & Settings (read-only)
-        \App\Mcp\Tools\ViewFamily::class,
-        \App\Mcp\Tools\GetSettings::class,
-        \App\Mcp\Tools\SearchFamily::class,
+        ViewFamily::class,
+        GetSettings::class,
+        SearchFamily::class,
 
         // Tasks
-        \App\Mcp\Tools\ManageTasks::class,
-        \App\Mcp\Tools\CompleteTask::class,
-        \App\Mcp\Tools\ManageTags::class,
+        ManageTasks::class,
+        CompleteTask::class,
+        ManageTags::class,
 
         // Points & Rewards
-        \App\Mcp\Tools\ViewPoints::class,
-        \App\Mcp\Tools\ManagePoints::class,
-        \App\Mcp\Tools\ManagePointRequests::class,
-        \App\Mcp\Tools\ManageRewards::class,
-        \App\Mcp\Tools\PurchaseReward::class,
+        ViewPoints::class,
+        ManagePoints::class,
+        ManagePointRequests::class,
+        ManageRewards::class,
+        PurchaseReward::class,
 
         // Badges & Featured Events
-        \App\Mcp\Tools\ManageBadges::class,
-        \App\Mcp\Tools\ViewEarnedBadges::class,
-        \App\Mcp\Tools\ManageFeaturedEvents::class,
+        ManageBadges::class,
+        ViewEarnedBadges::class,
+        ManageFeaturedEvents::class,
 
         // Calendar & Vault
-        \App\Mcp\Tools\ViewCalendar::class,
-        \App\Mcp\Tools\ManageVault::class,
-        \App\Mcp\Tools\ManageVaultAccess::class,
+        ViewCalendar::class,
+        ManageVault::class,
+        ManageVaultAccess::class,
     ];
 }

@@ -2,6 +2,37 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-01 — Session 17: SDLC Pipeline & Quality Gates (PR #118)
+
+### What Was Done
+- **7 new slash commands** — `/check` (10 quality gates), `/review` (7-category code review), `/pr` (automated PR creation), `/qa` (CI + Upsun preview checker), `/merge` (safe merge with deploy monitoring), `/fix` (auto-fix Pint + ESLint), `/playbook` (interactive pipeline guide)
+- **3 improved commands** — `/kickoff` (branch creation offer), `/handoff` (quality snapshot), `/ship` (comprehensive pre-merge audit)
+- **Quality tooling installed** — ESLint with Vue 3 plugin + browser globals, Pint config (Laravel preset), PHPStan level 5 with Larastan + baseline (203 pre-existing errors baselined)
+- **CI lint job added** — Third parallel job in GitHub Actions: Pint, Larastan, ESLint
+- **Codebase-wide formatting** — Pint auto-fixed 87 PHP files, ESLint auto-fixed 356 Vue/JS warnings
+- **Vulnerable deps patched** — `phpseclib` (CVE-2026-32935, HIGH) and `league/commonmark` (CVE-2026-33347, MEDIUM)
+- **Root cleanup** — Moved `plan.md` → `docs/plans/`, cleaned `.gitignore`, consolidated permissions
+
+### Files Created
+- `.claude/commands/{check,fix,merge,playbook,pr,qa,review}.md`
+- `eslint.config.js`, `pint.json`, `phpstan.neon`, `phpstan-baseline.neon`
+- `docs/plans/family-member-management.md`
+
+### Files Modified
+- `.claude/commands/{handoff,kickoff,ship}.md` (improved)
+- `.github/workflows/ci.yml` (lint job added)
+- `.gitignore`, `CLAUDE.md`, `CONTRIBUTING.md`, `docs/CONVENTIONS.md`
+- `package.json` (ESLint + globals devDeps)
+- 87 PHP files (Pint formatting), 53 Vue files (ESLint attribute ordering)
+- `composer.lock` (security patches)
+
+### Pipeline Flow
+```
+/kickoff → code → /review → /check → /pr → /qa → /handoff → /merge → /cleanup
+```
+
+---
+
 ## 2026-04-01 — Session 16: Self-Hosting Setup + Open-Source Hygiene (#113)
 
 ### What Was Done

@@ -47,7 +47,7 @@
             :key="event.id"
             class="flex items-start gap-3 pb-3 border-b border-lavender-200 dark:border-prussian-700 last:border-0 last:pb-0"
           >
-            <div class="w-2 h-full rounded-full mt-1" :style="{ backgroundColor: event.user?.color || '#8B5CF6' }" />
+            <div class="w-2 h-full rounded-full mt-1" :style="{ backgroundColor: event.user?.color || '#8B5CF6' }"></div>
             <div class="flex-1 min-w-0">
               <p class="font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ event.title }}</p>
               <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ formatTime(event.start) }}</p>
@@ -82,9 +82,9 @@
             class="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
           >
             <button
-              @click.stop="toggleTask(task)"
               class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
               :class="'border-lavender-300 dark:border-prussian-500 hover:border-wisteria-400 dark:hover:border-wisteria-400'"
+              @click.stop="toggleTask(task)"
             >
             </button>
             <div class="flex-1 min-w-0">
@@ -228,8 +228,8 @@
             class="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
           >
             <button
-              @click.stop="toggleTask(task)"
               class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all border-lavender-300 dark:border-prussian-500 hover:border-wisteria-400"
+              @click.stop="toggleTask(task)"
             >
             </button>
             <div class="flex-1 min-w-0">
