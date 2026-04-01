@@ -36,7 +36,7 @@ jobs:
           php artisan key:generate
 
       - name: Run tests
-        run: php artisan test
+        run: ./vendor/bin/phpunit
 
   frontend:
     name: Frontend build
