@@ -71,6 +71,11 @@ jobs:
           extensions: pdo_sqlite, mbstring, xml, ctype, json, bcmath
           tools: composer:v2
 
+      - name: Prepare Laravel environment
+        run: |
+          mkdir -p bootstrap/cache storage/framework/{sessions,views,cache}
+          cp .env.example .env
+
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
