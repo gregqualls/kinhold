@@ -3,7 +3,7 @@
 > **Canonical tracking:** [GitHub Milestones](https://github.com/gregqualls/kinhold/milestones)
 > This file provides an overview. Individual issues on GitHub have full specs and discussion.
 >
-> Last updated: 2026-03-29
+> Last updated: 2026-04-01
 
 ---
 
@@ -28,6 +28,9 @@ These features are live and working:
 | Mobile-first responsive UI | COMPLETE |
 | Production deploy on Upsun (auto-deploy from GitHub) | COMPLETE |
 | Open source on GitHub (Elastic License 2.0) | COMPLETE |
+| Self-hosting infrastructure (SQLite, simple Docker, graceful degradation) | COMPLETE |
+| GitHub Actions CI (PHPUnit + Vite build on PR/push) | COMPLETE |
+| Community docs (CODE_OF_CONDUCT, SECURITY, PR template) | COMPLETE |
 
 ---
 

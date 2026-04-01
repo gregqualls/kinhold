@@ -2,6 +2,37 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-01 — Session 16: Self-Hosting Setup + Open-Source Hygiene (#113)
+
+### What Was Done
+- **Zero-dependency Docker setup (PR #115)** — Single-container `docker-compose.simple.yml` with SQLite, file cache, sync queue. No PostgreSQL or Redis required. `./setup-simple.sh` one-command bootstrap. Auto APP_KEY generation with persistence across container restarts. Dockerfile bumped to PHP 8.4 with SQLite support.
+- **Graceful feature degradation (PR #115)** — Public `/api/v1/config` endpoint for pre-auth service detection. Google OAuth buttons hide when credentials not configured. Calendar, AI Chat, and Settings show "not configured" notices instead of breaking. Runtime service detection in auth store.
+- **First-boot experience (PR #115)** — Auto-redirect from login → register when no users exist. Welcome messaging for first family setup.
+- **Self-hosting documentation (PR #115)** — Comprehensive `SELF-HOSTING.md` with setup options, optional services, reverse proxy examples (Caddy/Nginx), backup strategies, SQLite→PostgreSQL migration path. Improved `.env.example` with clear sections and documented alternatives. Updated README with "Easiest" setup option.
+- **Open-source hygiene (PR #116)** — Fixed license references from MIT → Elastic License 2.0 across all project files (composer.json, CLAUDE.md, PRINCIPLES.md, ROADMAP.md, CHANGELOG.md, competitive analysis). Added CODE_OF_CONDUCT.md (Contributor Covenant 2.1), SECURITY.md (vulnerability disclosure policy), PR template, and GitHub Actions CI (PHPUnit + Vite build on every PR/push).
+- **CI fixes** — Created `bootstrap/cache` directory in CI, switched from `artisan test` to `./vendor/bin/phpunit`, added `tests/Unit/.gitkeep`, updated `phpunit.xml` for PHPUnit 11 compatibility (removed deprecated attributes, migrated coverage config to `<source>` element), fixed family factory slug uniqueness for SQLite.
+- **Versioning issue created (#117)** — Planned: semantic versioning, GitHub Releases workflow, self-hosted update notifications.
+
+### Files Created
+- `docker-compose.simple.yml`, `.env.docker-simple`, `setup-simple.sh`, `SELF-HOSTING.md`
+- `CODE_OF_CONDUCT.md`, `SECURITY.md`, `.github/pull_request_template.md`, `.github/workflows/ci.yml`
+- `tests/Unit/.gitkeep`
+
+### Files Modified
+- `Dockerfile`, `docker/entrypoint.sh`, `docker/php/php.ini`, `docker-compose.yml`
+- `routes/api.php`, `resources/js/stores/auth.js`, `resources/js/router/index.js`
+- `resources/js/views/auth/LoginView.vue`, `RegisterView.vue`, `settings/SettingsView.vue`
+- `app/Http/Controllers/Api/V1/ChatController.php`, `CalendarController.php`, `SettingsController.php`
+- `composer.json`, `phpunit.xml`, `database/factories/FamilyFactory.php`
+- `.env.example`, `README.md`, `CLAUDE.md`, `PRINCIPLES.md`, `CHANGELOG.md`
+- `docs/ROADMAP.md`, `docs/kinhold-competitive-analysis.md`
+
+### PRs
+- #115 — `feature/113-self-hosting-simple-setup` (merged)
+- #116 — `chore/open-source-hygiene` (merged)
+
+---
+
 ## 2026-03-31 — Session 15: Unified Policy-Based Auth for MCP + API (#98)
 
 ### What Was Done
