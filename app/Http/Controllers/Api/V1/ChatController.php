@@ -4,21 +4,21 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\ChatMessage;
-use App\Services\ChatbotService;
+use App\Services\AgentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
-    private ChatbotService $chatbotService;
+    private AgentService $agentService;
 
-    public function __construct(ChatbotService $chatbotService)
+    public function __construct(AgentService $agentService)
     {
-        $this->chatbotService = $chatbotService;
+        $this->agentService = $agentService;
     }
 
     /**
-     * Send a message and get AI response.
+     * Send a message and get AI agent response.
      */
     public function send(Request $request): JsonResponse
     {
@@ -29,23 +29,28 @@ class ChatController extends Controller
         $user = $request->user();
 
         try {
+            $familyId = $user->currentFamily()->first()->id;
+
             // Store user message
             $userMessage = ChatMessage::create([
                 'user_id' => $user->id,
-                'family_id' => $user->currentFamily()->first()->id,
+                'family_id' => $familyId,
                 'message' => $validated['message'],
                 'role' => 'user',
             ]);
 
-            // Get AI response
-            $response = $this->chatbotService->chat($validated['message'], $user);
+            // Get agent response (may execute multiple tool calls)
+            $result = $this->agentService->chat($validated['message'], $user);
 
-            // Store AI response
+            // Store AI response with tool metadata
             $aiMessage = ChatMessage::create([
                 'user_id' => $user->id,
-                'family_id' => $user->currentFamily()->first()->id,
-                'message' => $response,
+                'family_id' => $familyId,
+                'message' => $result['text'],
                 'role' => 'assistant',
+                'metadata' => ! empty($result['tools_used']) ? [
+                    'tools_used' => $result['tools_used'],
+                ] : null,
             ]);
 
             return response()->json([

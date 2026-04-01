@@ -2,6 +2,39 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-01 — Session 18: Chat → Agent (PR #119)
+
+### What Was Done
+- **Replaced chatbot with MCP-powered agent** — Natural language input → Claude tool_use API → executes MCP tools → returns structured results. All 18 existing MCP tools available to the agent with zero duplication.
+- **AgentService + ToolRegistry** — New service layer: `AgentService` orchestrates the tool execution loop (max 10 iterations), `ToolRegistry` maps MCP tool schemas to Claude's tool_use format and executes them.
+- **Markdown rendering** — Assistant responses render as formatted HTML (headings, bold, bullets, horizontal rules) using `marked` + `DOMPurify` for XSS safety.
+- **Renamed Chat → Assistant** — CpuChipIcon replaces chat bubble across Sidebar, BottomNav, Dashboard quick action. Action-oriented suggested prompts. Accuracy disclaimer.
+- **Safety guardrails** — System prompt constrains agent to tool-only scope. No off-topic, no physical tasks, no prompt injection. Asks clarifying questions for incomplete requests (assignee, due date, points).
+- **Removed ChatbotService** — Dead code. `availableProviders()` moved to `AgentService`. Static context dumping replaced by on-demand tool calls.
+- **Fixed task tag sync bug** — Pre-existing bug: `task_tag` UUID pivot table lacked a model to generate IDs. Added `TaskTag` pivot model with `HasUuids`.
+- **Closed 4 issues** — #113 (self-hosting, already done), #108 (hidden badges, already done), #107 (child safety, superseded by MCP policies), #109 (stateless messages, superseded by agent architecture).
+
+### Files Created
+- `app/Services/Agent/ToolRegistry.php`, `app/Services/AgentService.php`
+- `app/Models/TaskTag.php` (pivot model)
+- `database/migrations/2026_04_01_154707_add_metadata_to_chat_messages_table.php`
+
+### Files Modified
+- `app/Http/Controllers/Api/V1/ChatController.php` (uses AgentService)
+- `app/Http/Controllers/Api/V1/SettingsController.php` (uses AgentService::availableProviders)
+- `app/Models/ChatMessage.php` (metadata column + cast)
+- `app/Models/Task.php` (TaskTag pivot model on tags relationship)
+- `app/Services/AiProviders/AnthropicProvider.php` (askWithTools method)
+- `resources/js/views/chat/ChatView.vue` (markdown, robot icon, disclaimer, suggested actions)
+- `resources/js/views/dashboard/DashboardView.vue` (Assistant quick action)
+- `resources/js/components/layout/Sidebar.vue`, `BottomNav.vue` (Chat → Assistant)
+- `package.json` (added marked, dompurify)
+
+### Files Removed
+- `app/Services/ChatbotService.php`
+
+---
+
 ## 2026-04-01 — Session 17: SDLC Pipeline & Quality Gates (PR #118)
 
 ### What Was Done

@@ -32,7 +32,7 @@ import {
   CalendarIcon,
   CheckCircleIcon,
   LockClosedIcon,
-  ChatBubbleLeftIcon,
+  CpuChipIcon,
   TrophyIcon,
 } from '@heroicons/vue/24/outline'
 import {
@@ -40,7 +40,7 @@ import {
   CalendarIcon as CalendarIconSolid,
   CheckCircleIcon as CheckCircleIconSolid,
   LockClosedIcon as LockClosedIconSolid,
-  ChatBubbleLeftIcon as ChatBubbleLeftIconSolid,
+  CpuChipIcon as CpuChipIconSolid,
   TrophyIcon as TrophyIconSolid,
 } from '@heroicons/vue/24/solid'
 
@@ -53,7 +53,7 @@ const navItems = [
   { label: 'Calendar', path: '/calendar', icon: CalendarIcon, iconSolid: CalendarIconSolid, name: 'Calendar', module: 'calendar' },
   { label: 'Tasks', path: '/tasks', icon: CheckCircleIcon, iconSolid: CheckCircleIconSolid, name: 'Tasks', module: 'tasks' },
   { label: 'Points', path: '/points', icon: TrophyIcon, iconSolid: TrophyIconSolid, name: 'Points', module: 'points' },
-  { label: 'Chat', path: '/chat', icon: ChatBubbleLeftIcon, iconSolid: ChatBubbleLeftIconSolid, name: 'Chat', module: 'chat' },
+  { label: 'Assistant', path: '/chat', icon: CpuChipIcon, iconSolid: CpuChipIconSolid, name: 'Chat', module: 'chat' },
 ]
 
 const filteredNavItems = computed(() => {
