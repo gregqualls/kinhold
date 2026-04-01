@@ -59,7 +59,7 @@ class SearchFamily extends Tool
                     ->orWhere('notes', 'ilike', "%{$query}%");
             });
 
-        if (!$user->isParent()) {
+        if (! $user->isParent()) {
             $vaultQuery->whereHas('permissions', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             });

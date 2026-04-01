@@ -154,7 +154,7 @@ class Task extends Model
      */
     public function isOverdue(): bool
     {
-        return !$this->isComplete() && $this->due_date && $this->due_date->isPast();
+        return ! $this->isComplete() && $this->due_date && $this->due_date->isPast();
     }
 
     /**
@@ -210,7 +210,7 @@ class Task extends Model
         }
 
         // If a child created this task and no parent has set explicit points, it's worth 0
-        if ($this->created_by && $this->creator && !$this->creator->isParent()) {
+        if ($this->created_by && $this->creator && ! $this->creator->isParent()) {
             return 0;
         }
 
@@ -247,7 +247,7 @@ class Task extends Model
         // Use the task's own rule, or inherit from parent template
         $rule = $this->recurrence_rule ?? $this->parentTask?->recurrence_rule;
 
-        if (!$rule) {
+        if (! $rule) {
             return null;
         }
 
@@ -262,7 +262,7 @@ class Task extends Model
 
         $freq = $parts['FREQ'] ?? null;
 
-        if (!$freq) {
+        if (! $freq) {
             return null;
         }
 
@@ -284,11 +284,13 @@ class Task extends Model
                 if (isset($parts['BYDAY'])) {
                     $days = explode(',', $parts['BYDAY']);
                     if (count($days) === 1) {
-                        return 'Every ' . ($fullDayNames[$days[0]] ?? $days[0]);
+                        return 'Every '.($fullDayNames[$days[0]] ?? $days[0]);
                     }
-                    $labels = array_map(fn($d) => $dayNames[$d] ?? $d, $days);
-                    return 'Every ' . implode(', ', $labels);
+                    $labels = array_map(fn ($d) => $dayNames[$d] ?? $d, $days);
+
+                    return 'Every '.implode(', ', $labels);
                 }
+
                 return 'Weekly';
 
             case 'MONTHLY':
@@ -300,8 +302,10 @@ class Task extends Model
                         $day === 3, $day === 23 => 'rd',
                         default => 'th',
                     };
+
                     return "Monthly on the {$day}{$suffix}";
                 }
+
                 return 'Monthly';
 
             case 'YEARLY':

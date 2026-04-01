@@ -95,13 +95,13 @@ class TaskController extends Controller
         // Enforce task assignment permissions — if user can't assign to others,
         // silently force assigned_to to be their own ID or null
         $assignedTo = $validated['assigned_to'] ?? null;
-        if ($assignedTo && $assignedTo !== $request->user()->id && !$family->userCanAssignTasks($request->user())) {
+        if ($assignedTo && $assignedTo !== $request->user()->id && ! $family->userCanAssignTasks($request->user())) {
             $assignedTo = $request->user()->id;
         }
 
         // Children cannot set custom points on tasks — only parents can
         $points = $validated['points'] ?? null;
-        if (!$request->user()->isParent()) {
+        if (! $request->user()->isParent()) {
             $points = null;
         }
 
@@ -176,14 +176,14 @@ class TaskController extends Controller
             $newAssignedTo = $validated['assigned_to'] ?? null;
             if ($newAssignedTo && $newAssignedTo !== $request->user()->id) {
                 $family = $family ?? $request->user()->currentFamily()->firstOrFail();
-                if (!$family->userCanAssignTasks($request->user())) {
+                if (! $family->userCanAssignTasks($request->user())) {
                     $validated['assigned_to'] = $request->user()->id;
                 }
             }
         }
 
         // Children cannot set custom points on tasks — only parents can
-        if (!$request->user()->isParent() && array_key_exists('points', $validated)) {
+        if (! $request->user()->isParent() && array_key_exists('points', $validated)) {
             unset($validated['points']);
         }
 
@@ -239,7 +239,7 @@ class TaskController extends Controller
 
         // Children cannot earn points from tasks they created themselves
         // (prevents gaming: create task → set points → complete for free points)
-        $skipPoints = !$user->isParent()
+        $skipPoints = ! $user->isParent()
             && $task->created_by === $user->id;
 
         // Award points (0 if self-created by a child)
@@ -264,7 +264,7 @@ class TaskController extends Controller
             'points_earned' => $transaction->points,
         ];
 
-        if (!empty($newBadges)) {
+        if (! empty($newBadges)) {
             $response['badges_earned'] = collect($newBadges)->map(fn ($b) => [
                 'id' => $b->id,
                 'name' => $b->name,

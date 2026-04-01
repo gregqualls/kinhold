@@ -33,6 +33,7 @@ class SeedDefaultBadges extends Command
         foreach ($families as $family) {
             if ($family->badges_count >= 20) {
                 $this->line("Skipping {$family->name} — already has {$family->badges_count} badges.");
+
                 continue;
             }
 
@@ -47,7 +48,7 @@ class SeedDefaultBadges extends Command
         }
 
         $this->newLine();
-        $this->info("Done. Seeded default badges for {$seeded} " . ($seeded === 1 ? 'family' : 'families') . '.');
+        $this->info("Done. Seeded default badges for {$seeded} ".($seeded === 1 ? 'family' : 'families').'.');
 
         return Command::SUCCESS;
     }

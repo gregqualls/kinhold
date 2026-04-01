@@ -4,8 +4,8 @@
     <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
       <div class="flex items-center gap-3">
         <button
-          @click="$router.back()"
           class="p-2 -ml-2 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-xl transition-colors"
+          @click="$router.back()"
         >
           <ChevronLeftIcon class="w-5 h-5" />
         </button>
@@ -92,8 +92,8 @@
               <p class="text-xs text-lavender-400 capitalize">{{ perm.level }} access</p>
             </div>
             <button
-              @click="handleRemovePermission(perm.user_id)"
               class="p-1.5 text-lavender-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              @click="handleRemovePermission(perm.user_id)"
             >
               <XMarkIcon class="w-4 h-4" />
             </button>
@@ -117,7 +117,7 @@
       :show="showDeleteConfirm"
       title="Delete Entry?"
       :message="`&quot;${currentEntry?.title}&quot; and all its data will be permanently deleted.`"
-      confirmText="Delete"
+      confirm-text="Delete"
       @confirm="handleDeleteEntry"
       @cancel="showDeleteConfirm = false"
     />

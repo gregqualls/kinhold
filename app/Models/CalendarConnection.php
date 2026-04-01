@@ -66,7 +66,7 @@ class CalendarConnection extends Model
      */
     public function isTokenExpired(): bool
     {
-        if (!$this->token_expires_at) {
+        if (! $this->token_expires_at) {
             return false;
         }
 
@@ -78,7 +78,7 @@ class CalendarConnection extends Model
      */
     public function isValid(): bool
     {
-        return $this->is_active && !$this->isTokenExpired();
+        return $this->is_active && ! $this->isTokenExpired();
     }
 
     /**

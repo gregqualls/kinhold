@@ -26,7 +26,7 @@ class WelcomeNotification extends Notification implements ShouldQueue
     public function via(object $notifiable): array
     {
         // Always send welcome emails (no preference check)
-        if (!$notifiable->email) {
+        if (! $notifiable->email) {
             return [];
         }
 
@@ -59,7 +59,7 @@ class WelcomeNotification extends Notification implements ShouldQueue
             ->action('Get Started', $appUrl);
 
         if ($this->isNewFamily) {
-            $message->line("Invite your family members from Settings to get everyone on board!");
+            $message->line('Invite your family members from Settings to get everyone on board!');
         }
 
         return $message;

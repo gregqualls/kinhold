@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Family;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;

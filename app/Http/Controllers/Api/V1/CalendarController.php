@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CalendarEventResource;
 use App\Models\CalendarConnection;
 use App\Models\FamilyEvent;
 use App\Models\Task;
 use App\Services\GoogleCalendarService;
 use App\Services\IcsCalendarService;
 use Carbon\Carbon;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -35,8 +35,8 @@ class CalendarController extends Controller
 
         // ── External calendar connections (Google, ICS) ──
         $connections = CalendarConnection::whereHas('user', function ($q) use ($familyId) {
-                $q->where('family_id', $familyId);
-            })
+            $q->where('family_id', $familyId);
+        })
             ->where('is_active', true)
             ->with('user:id,name')
             ->get();
@@ -68,15 +68,15 @@ class CalendarController extends Controller
         $localEvents = FamilyEvent::where('family_id', $familyId)
             ->where(function ($q) use ($start, $end) {
                 $q->whereBetween('start_time', [$start, $end])
-                  ->orWhere(function ($q2) use ($start, $end) {
-                      // Include all-day events that span the range
-                      $q2->where('all_day', true)
-                          ->where('start_time', '<=', $end)
-                          ->where(function ($q3) use ($start) {
-                              $q3->where('end_time', '>=', $start)
-                                  ->orWhereNull('end_time');
-                          });
-                  });
+                    ->orWhere(function ($q2) use ($start, $end) {
+                        // Include all-day events that span the range
+                        $q2->where('all_day', true)
+                            ->where('start_time', '<=', $end)
+                            ->where(function ($q3) use ($start) {
+                                $q3->where('end_time', '>=', $start)
+                                    ->orWhereNull('end_time');
+                            });
+                    });
             })
             ->with('creator:id,name')
             ->get();
@@ -112,8 +112,8 @@ class CalendarController extends Controller
 
         foreach ($tasks as $task) {
             $allEvents[] = [
-                'id' => 'task-' . $task->id,
-                'title' => ($task->completed_at ? "\u{2705} " : '') . $task->title,
+                'id' => 'task-'.$task->id,
+                'title' => ($task->completed_at ? "\u{2705} " : '').$task->title,
                 'description' => $task->description,
                 'start' => $task->due_date->toDateString(),
                 'end' => $task->due_date->toDateString(),
@@ -225,22 +225,22 @@ class CalendarController extends Controller
 
         $familyId = $user->family_id;
         $connections = CalendarConnection::whereHas('user', function ($q) use ($familyId) {
-                $q->where('family_id', $familyId);
-            })
+            $q->where('family_id', $familyId);
+        })
             ->with('user:id,name')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn ($conn) => [
-                'id' => $conn->id,
-                'user_id' => $conn->user_id,
-                'user' => $conn->user ? ['id' => $conn->user->id, 'name' => $conn->user->name] : null,
-                'provider' => $conn->provider,
-                'calendar_name' => $conn->calendar_name,
-                'is_active' => $conn->is_active,
-                'color' => $conn->color,
-                'last_synced_at' => $conn->last_synced_at,
-                'created_at' => $conn->created_at,
-            ]);
+            'id' => $conn->id,
+            'user_id' => $conn->user_id,
+            'user' => $conn->user ? ['id' => $conn->user->id, 'name' => $conn->user->name] : null,
+            'provider' => $conn->provider,
+            'calendar_name' => $conn->calendar_name,
+            'is_active' => $conn->is_active,
+            'color' => $conn->color,
+            'last_synced_at' => $conn->last_synced_at,
+            'created_at' => $conn->created_at,
+        ]);
 
         return response()->json([
             'connections' => $connections,
@@ -262,7 +262,7 @@ class CalendarController extends Controller
         try {
             $origin = $request->input('origin', 'settings');
             // SECURITY: Encrypt the state parameter to prevent CSRF on callback
-            $state = encrypt($request->user()->id . ':' . $origin);
+            $state = encrypt($request->user()->id.':'.$origin);
             $authUrl = GoogleCalendarService::getAuthUrl($state);
 
             return response()->json([
@@ -285,15 +285,15 @@ class CalendarController extends Controller
         $code = $request->query('code');
         $rawState = $request->query('state');
 
-        if (!$code || !$rawState) {
-            return redirect('/settings?calendar_error=' . urlencode('Missing authorization code or user ID.'));
+        if (! $code || ! $rawState) {
+            return redirect('/settings?calendar_error='.urlencode('Missing authorization code or user ID.'));
         }
 
         // SECURITY: Decrypt the state parameter to verify it was generated by our app
         try {
             $decrypted = decrypt($rawState);
-        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
-            return redirect('/settings?calendar_error=' . urlencode('Invalid state parameter.'));
+        } catch (DecryptException $e) {
+            return redirect('/settings?calendar_error='.urlencode('Invalid state parameter.'));
         }
 
         $parts = explode(':', $decrypted, 2);
@@ -305,16 +305,16 @@ class CalendarController extends Controller
             $count = count($connections);
 
             if ($origin === 'onboarding') {
-                return redirect('/onboarding?step=2&calendar_connected=' . $count);
+                return redirect('/onboarding?step=2&calendar_connected='.$count);
             }
 
-            return redirect('/settings?calendar_connected=' . $count);
+            return redirect('/settings?calendar_connected='.$count);
         } catch (\Exception $e) {
-            \Log::error('Calendar OAuth callback failed: ' . $e->getMessage());
+            \Log::error('Calendar OAuth callback failed: '.$e->getMessage());
 
             $errorRedirect = $origin === 'onboarding'
-                ? '/onboarding?step=2&calendar_error=' . urlencode('Failed to connect calendar. Please try again.')
-                : '/settings?calendar_error=' . urlencode('Failed to connect calendar. Please try again.');
+                ? '/onboarding?step=2&calendar_error='.urlencode('Failed to connect calendar. Please try again.')
+                : '/settings?calendar_error='.urlencode('Failed to connect calendar. Please try again.');
 
             return redirect($errorRedirect);
         }

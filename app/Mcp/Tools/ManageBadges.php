@@ -71,7 +71,7 @@ class ManageBadges extends Tool
                 ];
 
                 // Parents see full details for management; children get masked hidden badges
-                if (!$this->isParent()) {
+                if (! $this->isParent()) {
                     $badgeData = Badge::maskHidden($badgeData, in_array($b->id, $earnedBadgeIds));
                 }
 
@@ -87,17 +87,17 @@ class ManageBadges extends Tool
         }
 
         $name = $request->get('name');
-        if (!$name) {
+        if (! $name) {
             return Response::error('name is required to create a badge.');
         }
 
         $description = $request->get('description');
-        if (!$description) {
+        if (! $description) {
             return Response::error('description is required to create a badge.');
         }
 
         $triggerType = $request->get('trigger_type');
-        if (!$triggerType) {
+        if (! $triggerType) {
             return Response::error('trigger_type is required to create a badge.');
         }
 
@@ -122,7 +122,7 @@ class ManageBadges extends Tool
     private function updateBadge(Request $request): Response
     {
         $badgeId = $request->get('badge_id');
-        if (!$badgeId) {
+        if (! $badgeId) {
             return Response::error('badge_id is required for update.');
         }
 
@@ -150,7 +150,7 @@ class ManageBadges extends Tool
     private function deleteBadge(Request $request): Response
     {
         $badgeId = $request->get('badge_id');
-        if (!$badgeId) {
+        if (! $badgeId) {
             return Response::error('badge_id is required for delete.');
         }
 
@@ -173,7 +173,7 @@ class ManageBadges extends Tool
 
         $badgeId = $request->get('badge_id');
         $userId = $request->get('user_id');
-        if (!$badgeId || !$userId) {
+        if (! $badgeId || ! $userId) {
             return Response::error('badge_id and user_id are required for award.');
         }
 
@@ -194,7 +194,7 @@ class ManageBadges extends Tool
 
         $badgeId = $request->get('badge_id');
         $userId = $request->get('user_id');
-        if (!$badgeId || !$userId) {
+        if (! $badgeId || ! $userId) {
             return Response::error('badge_id and user_id are required for revoke.');
         }
 

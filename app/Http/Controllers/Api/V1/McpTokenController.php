@@ -19,7 +19,7 @@ class McpTokenController extends Controller
             'has_token' => (bool) $token,
             'created_at' => $token?->created_at,
             'last_used_at' => $token?->last_used_at,
-            'mcp_url' => rtrim(config('app.url'), '/') . '/mcp',
+            'mcp_url' => rtrim(config('app.url'), '/').'/mcp',
         ]);
     }
 
@@ -36,14 +36,14 @@ class McpTokenController extends Controller
 
         $token = $user->createToken('mcp');
         $plainToken = $token->plainTextToken;
-        $mcpUrl = rtrim(config('app.url'), '/') . '/mcp';
+        $mcpUrl = rtrim(config('app.url'), '/').'/mcp';
 
         $serverConfig = [
             'kinhold' => [
                 'type' => 'streamable-http',
                 'url' => $mcpUrl,
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $plainToken,
+                    'Authorization' => 'Bearer '.$plainToken,
                 ],
             ],
         ];
@@ -67,8 +67,8 @@ class McpTokenController extends Controller
                     'steps' => [
                         'Open ChatGPT Settings > Connectors > Advanced > Developer Mode',
                         'Click "Add connector"',
-                        'Set the URL to: ' . $mcpUrl,
-                        'Add authorization header: Bearer ' . $plainToken,
+                        'Set the URL to: '.$mcpUrl,
+                        'Add authorization header: Bearer '.$plainToken,
                         'Save and start a new chat with the connector enabled',
                     ],
                 ],
@@ -76,7 +76,7 @@ class McpTokenController extends Controller
                     'id' => 'claude_code',
                     'name' => 'Claude Code',
                     'instructions' => 'Run in your terminal:',
-                    'command' => 'claude mcp add kinhold --transport streamable-http --url ' . escapeshellarg($mcpUrl) . ' --header ' . escapeshellarg('Authorization: Bearer ' . $plainToken),
+                    'command' => 'claude mcp add kinhold --transport streamable-http --url '.escapeshellarg($mcpUrl).' --header '.escapeshellarg('Authorization: Bearer '.$plainToken),
                 ],
                 [
                     'id' => 'other',
@@ -85,7 +85,7 @@ class McpTokenController extends Controller
                     'details' => [
                         'url' => $mcpUrl,
                         'transport' => 'streamable-http',
-                        'auth_header' => 'Authorization: Bearer ' . $plainToken,
+                        'auth_header' => 'Authorization: Bearer '.$plainToken,
                     ],
                 ],
             ],

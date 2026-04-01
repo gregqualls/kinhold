@@ -13,13 +13,14 @@ use Illuminate\Console\Command;
 class SendWeeklyDigest extends Command
 {
     protected $signature = 'app:send-weekly-digest';
+
     protected $description = 'Send weekly activity digest emails to all family members who have opted in';
 
     public function handle(): int
     {
         $weekStart = Carbon::now()->subWeek()->startOfWeek();
         $weekEnd = Carbon::now()->subWeek()->endOfWeek();
-        $weekRange = $weekStart->format('M j') . ' - ' . $weekEnd->format('M j, Y');
+        $weekRange = $weekStart->format('M j').' - '.$weekEnd->format('M j, Y');
 
         $nextWeekStart = Carbon::now()->startOfWeek();
         $nextWeekEnd = Carbon::now()->endOfWeek();
@@ -30,12 +31,12 @@ class SendWeeklyDigest extends Command
         foreach ($families as $family) {
             foreach ($family->members as $member) {
                 // Skip managed accounts without email
-                if (!$member->email) {
+                if (! $member->email) {
                     continue;
                 }
 
                 // Skip users who opted out
-                if (!$member->wantsEmail('email_weekly_digest')) {
+                if (! $member->wantsEmail('email_weekly_digest')) {
                     continue;
                 }
 

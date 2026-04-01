@@ -25,15 +25,16 @@ class IcsCalendarService
         try {
             $response = Http::timeout(15)->get($this->connection->calendar_id);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::error("Failed to fetch ICS calendar: HTTP {$response->status()} for {$this->connection->calendar_id}");
+
                 return [];
             }
 
             $icsData = $response->body();
             $vcalendar = Reader::read($icsData);
 
-            if (!$vcalendar || !isset($vcalendar->VEVENT)) {
+            if (! $vcalendar || ! isset($vcalendar->VEVENT)) {
                 return [];
             }
 
@@ -42,7 +43,7 @@ class IcsCalendarService
             foreach ($vcalendar->VEVENT as $vevent) {
                 $event = $this->parseEvent($vevent);
 
-                if (!$event) {
+                if (! $event) {
                     continue;
                 }
 
@@ -61,6 +62,7 @@ class IcsCalendarService
             return $events;
         } catch (\Exception $e) {
             Log::error("Failed to parse ICS calendar {$this->connection->id}: {$e->getMessage()}");
+
             return [];
         }
     }
@@ -72,12 +74,12 @@ class IcsCalendarService
     {
         try {
             $dtstart = $vevent->DTSTART;
-            if (!$dtstart) {
+            if (! $dtstart) {
                 return null;
             }
 
             $startDt = $dtstart->getDateTime();
-            $allDay = !$dtstart->hasTime();
+            $allDay = ! $dtstart->hasTime();
 
             $endDt = null;
             if (isset($vevent->DTEND)) {
@@ -99,6 +101,7 @@ class IcsCalendarService
             ];
         } catch (\Exception $e) {
             Log::warning("Failed to parse ICS event: {$e->getMessage()}");
+
             return null;
         }
     }
@@ -111,13 +114,13 @@ class IcsCalendarService
         // SECURITY: Validate URL scheme and block internal/private IP ranges (SSRF protection)
         $parsed = parse_url($url);
         $scheme = strtolower($parsed['scheme'] ?? '');
-        if (!in_array($scheme, ['http', 'https'])) {
+        if (! in_array($scheme, ['http', 'https'])) {
             throw new \Exception('Only HTTP and HTTPS URLs are supported.');
         }
 
         $host = $parsed['host'] ?? '';
         $ip = gethostbyname($host);
-        if ($ip === $host && !filter_var($host, FILTER_VALIDATE_IP)) {
+        if ($ip === $host && ! filter_var($host, FILTER_VALIDATE_IP)) {
             throw new \Exception('Could not resolve hostname.');
         }
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
@@ -126,23 +129,23 @@ class IcsCalendarService
 
         $response = Http::timeout(15)->get($url);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \Exception("Could not fetch calendar URL. HTTP status: {$response->status()}");
         }
 
         $icsData = $response->body();
         $vcalendar = Reader::read($icsData);
 
-        if (!$vcalendar) {
+        if (! $vcalendar) {
             throw new \Exception('Invalid calendar data. The URL must point to a valid .ics file.');
         }
 
         // Try to get the calendar name from the ICS data
         $calendarName = $name;
-        if (!$calendarName && isset($vcalendar->{'X-WR-CALNAME'})) {
+        if (! $calendarName && isset($vcalendar->{'X-WR-CALNAME'})) {
             $calendarName = (string) $vcalendar->{'X-WR-CALNAME'};
         }
-        if (!$calendarName) {
+        if (! $calendarName) {
             $calendarName = 'Subscribed Calendar';
         }
 
@@ -157,6 +160,7 @@ class IcsCalendarService
                 'is_active' => true,
                 'last_synced_at' => now(),
             ]);
+
             return $existing;
         }
 

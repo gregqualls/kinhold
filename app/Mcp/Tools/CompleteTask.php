@@ -49,7 +49,7 @@ class CompleteTask extends Tool
             $task->update(['completed_at' => now()]);
 
             // Children can't earn points from tasks they created themselves
-            $skipPoints = !$user->isParent() && $task->created_by === $user->id;
+            $skipPoints = ! $user->isParent() && $task->created_by === $user->id;
             $transaction = $skipPoints
                 ? $pointsService->awardTaskPoints($task, $user, forceZero: true)
                 : $pointsService->awardTaskPoints($task, $user);
@@ -66,7 +66,7 @@ class CompleteTask extends Tool
                 'points_earned' => $transaction->points,
             ];
 
-            if (!empty($newBadges)) {
+            if (! empty($newBadges)) {
                 $result['badges_earned'] = collect($newBadges)->map(fn ($b) => $b->name)->toArray();
             }
 
@@ -74,7 +74,7 @@ class CompleteTask extends Tool
         }
 
         // Uncomplete
-        if (!$task->isComplete()) {
+        if (! $task->isComplete()) {
             return Response::error("Task \"{$task->title}\" is not completed.");
         }
 

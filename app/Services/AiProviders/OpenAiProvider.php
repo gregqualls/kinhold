@@ -38,7 +38,7 @@ class OpenAiProvider implements AiProviderInterface
         ];
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->apiKey,
+            'Authorization' => 'Bearer '.$this->apiKey,
             'Content-Type' => 'application/json',
         ])->timeout(60)->post('https://api.openai.com/v1/chat/completions', [
             'model' => $this->model,

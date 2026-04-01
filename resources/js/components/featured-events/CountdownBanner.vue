@@ -14,7 +14,7 @@
     >
       <!-- Background shimmer effect -->
       <div class="absolute inset-0 opacity-20 pointer-events-none">
-        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
       </div>
 
       <div class="relative flex items-center gap-3 md:gap-4">
@@ -51,9 +51,9 @@
 
         <!-- Dismiss button -->
         <button
-          @click="dismiss"
           class="flex-shrink-0 p-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors text-white/80 hover:text-white"
           aria-label="Dismiss countdown"
+          @click="dismiss"
         >
           <XMarkIcon class="w-4 h-4" />
         </button>

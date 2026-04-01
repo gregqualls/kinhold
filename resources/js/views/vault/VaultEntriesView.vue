@@ -4,8 +4,8 @@
     <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
       <div class="flex items-center gap-3">
         <button
-          @click="$router.push('/vault')"
           class="p-2 -ml-2 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-xl transition-colors"
+          @click="$router.push('/vault')"
         >
           <ChevronLeftIcon class="w-5 h-5" />
         </button>
@@ -15,8 +15,8 @@
         </div>
         <button
           v-if="isParent"
-          @click="showCreateEntry = true"
           class="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-xl transition-colors"
+          @click="showCreateEntry = true"
         >
           <PlusIcon class="w-4 h-4" />
           Add
@@ -48,8 +48,8 @@
         <div
           v-for="entry in filteredEntries"
           :key="entry.id"
-          @click="$router.push(`/vault/entry/${entry.id}`)"
           class="group flex items-center gap-4 p-4 bg-white dark:bg-prussian-800 rounded-xl shadow-card hover:shadow-card-lg border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-300 dark:hover:border-wisteria-700 cursor-pointer transition-all"
+          @click="$router.push(`/vault/entry/${entry.id}`)"
         >
           <!-- Lock icon -->
           <div class="w-10 h-10 rounded-xl bg-lavender-50 dark:bg-prussian-700 flex items-center justify-center flex-shrink-0">
@@ -80,7 +80,7 @@
         :icon="LockClosedIcon"
         title="No entries yet"
         description="Add your first entry to this category."
-        actionText="Add Entry"
+        action-text="Add Entry"
         @action="showCreateEntry = true"
       />
     </div>
@@ -93,7 +93,7 @@
       :show="!!deletingEntry"
       title="Delete Entry?"
       :message="`&quot;${deletingEntry?.title}&quot; will be permanently deleted.`"
-      confirmText="Delete"
+      confirm-text="Delete"
       @confirm="handleDeleteEntry"
       @cancel="deletingEntry = null"
     />

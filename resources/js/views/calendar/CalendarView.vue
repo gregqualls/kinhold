@@ -9,13 +9,13 @@
         <button
           v-for="mode in ['month', 'week', 'day']"
           :key="mode"
-          @click="setViewMode(mode)"
           :class="[
             'px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-150',
             viewMode === mode
               ? 'bg-wisteria-600 text-white shadow-sm'
               : 'text-prussian-500 dark:text-lavender-300 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-200 dark:hover:bg-prussian-600',
           ]"
+          @click="setViewMode(mode)"
         >
           {{ mode.charAt(0).toUpperCase() + mode.slice(1) }}
         </button>
@@ -24,7 +24,7 @@
 
     <!-- Navigation -->
     <div class="flex items-center justify-between mb-6 card">
-      <button @click="navigatePrev" class="btn-ghost btn-sm rounded-lg">
+      <button class="btn-ghost btn-sm rounded-lg" @click="navigatePrev">
         <ChevronLeftIcon class="w-5 h-5" />
       </button>
 
@@ -33,14 +33,14 @@
           {{ navigationTitle }}
         </h2>
         <button
-          @click="navigateToToday"
           class="btn-secondary btn-sm"
+          @click="navigateToToday"
         >
           Today
         </button>
       </div>
 
-      <button @click="navigateNext" class="btn-ghost btn-sm rounded-lg">
+      <button class="btn-ghost btn-sm rounded-lg" @click="navigateNext">
         <ChevronRightIcon class="w-5 h-5" />
       </button>
     </div>

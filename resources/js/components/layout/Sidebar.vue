@@ -46,10 +46,10 @@
     <!-- Collapse Toggle -->
     <div class="px-2 py-2" :class="isCollapsed ? 'flex justify-center' : 'px-3'">
       <button
-        @click="toggleCollapsed"
         class="flex items-center justify-center w-full py-2 rounded-[10px] text-lavender-400 hover:bg-prussian-400/40 hover:text-white transition-colors"
         :class="isCollapsed ? 'px-0' : 'gap-2 px-3'"
         :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        @click="toggleCollapsed"
       >
         <ChevronDoubleLeftIcon v-if="!isCollapsed" class="w-4 h-4" />
         <ChevronDoubleRightIcon v-else class="w-4 h-4" />
@@ -72,10 +72,10 @@
         </div>
       </RouterLink>
       <button
-        @click="handleLogout"
         class="flex items-center mt-1 w-full rounded-[12px] text-sm text-lavender-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
         :class="isCollapsed ? 'justify-center py-2 px-0' : 'gap-3 px-3 py-2'"
         :title="isCollapsed ? 'Sign Out' : undefined"
+        @click="handleLogout"
       >
         <ArrowRightOnRectangleIcon class="w-5 h-5 flex-shrink-0" />
         <span v-if="!isCollapsed">Sign Out</span>

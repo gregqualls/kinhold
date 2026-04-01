@@ -54,10 +54,10 @@
       <div class="p-3 border-t border-lavender-200 dark:border-prussian-700 bg-lavender-50 dark:bg-prussian-900">
         <KudosInput :members="familyMembers" @kudos="handleKudos" />
         <div class="mt-2 flex justify-end gap-3">
-          <button v-if="!isParent" @click="showRequestModal = true" class="text-xs text-wisteria-600 hover:text-wisteria-700 dark:text-wisteria-400 dark:hover:text-wisteria-300 font-medium">
+          <button v-if="!isParent" class="text-xs text-wisteria-600 hover:text-wisteria-700 dark:text-wisteria-400 dark:hover:text-wisteria-300 font-medium" @click="showRequestModal = true">
             Request Points
           </button>
-          <button v-if="isParent" @click="showDeductModal = true" class="text-xs text-red-500 hover:text-red-600 font-medium">
+          <button v-if="isParent" class="text-xs text-red-500 hover:text-red-600 font-medium" @click="showDeductModal = true">
             Deduct Points
           </button>
         </div>

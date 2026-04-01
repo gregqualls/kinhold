@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Badges</h1>
-      <button v-if="isParent" @click="showCreateForm = !showCreateForm" class="btn-primary btn-sm">
+      <button v-if="isParent" class="btn-primary btn-sm" @click="showCreateForm = !showCreateForm">
         {{ showCreateForm ? 'Cancel' : '+ Create Badge' }}
       </button>
     </div>
@@ -40,11 +40,11 @@
             <button
               v-for="iconName in iconNames"
               :key="iconName"
-              @click="newBadge.icon = iconName"
               class="p-1.5 rounded-lg border transition-colors"
               :class="newBadge.icon === iconName
                 ? 'border-wisteria-400 bg-wisteria-50 dark:bg-wisteria-900/30'
                 : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-300'"
+              @click="newBadge.icon = iconName"
             >
               <BadgeIcon :icon="iconName" :color="newBadge.color" size="sm" />
             </button>
@@ -58,7 +58,6 @@
               v-for="c in badgeColorPalette"
               :key="c.value"
               type="button"
-              @click="newBadge.color = c.value"
               :title="c.label"
               class="w-8 h-8 rounded-full border-2 transition-all duration-150 flex-shrink-0"
               :class="newBadge.color === c.value
@@ -69,18 +68,19 @@
                 borderColor: newBadge.color === c.value ? c.value : 'transparent',
                 '--tw-ring-color': c.value,
               }"
+              @click="newBadge.color = c.value"
             ></button>
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <input v-model="newBadge.is_hidden" type="checkbox" id="is_hidden" class="rounded" />
+          <input id="is_hidden" v-model="newBadge.is_hidden" type="checkbox" class="rounded" />
           <label for="is_hidden" class="text-sm text-prussian-500 dark:text-lavender-300">Hidden badge (surprise!)</label>
         </div>
       </div>
 
       <div class="flex justify-end mt-4">
-        <button @click="createBadge" :disabled="!newBadge.name || !newBadge.description" class="btn-primary btn-sm">
+        <button :disabled="!newBadge.name || !newBadge.description" class="btn-primary btn-sm" @click="createBadge">
           Create Badge
         </button>
       </div>
@@ -91,13 +91,13 @@
       <button
         v-for="tab in ['All', 'Earned', 'Locked']"
         :key="tab"
-        @click="activeTab = tab"
         :class="[
           'px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-150',
           activeTab === tab
             ? 'bg-wisteria-600 text-white shadow-sm'
             : 'text-prussian-500 dark:text-lavender-300 hover:bg-lavender-200 dark:hover:bg-prussian-600',
         ]"
+        @click="activeTab = tab"
       >
         {{ tab }}
       </button>
@@ -140,7 +140,7 @@
             </option>
           </select>
         </div>
-        <button @click="handleAward" :disabled="!awardBadgeId || !awardUserId" class="btn-primary btn-sm">
+        <button :disabled="!awardBadgeId || !awardUserId" class="btn-primary btn-sm" @click="handleAward">
           Award
         </button>
       </div>

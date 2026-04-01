@@ -26,7 +26,7 @@ class TaskCompletedNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        if (!$notifiable->wantsEmail('email_task_completed')) {
+        if (! $notifiable->wantsEmail('email_task_completed')) {
             return [];
         }
 

@@ -7,7 +7,7 @@
     <div v-if="!isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">My Profile</h2>
       <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-        <button @click="openAvatarEditor(currentUser)" class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-prussian-700 transition-all" title="Change avatar">
+        <button class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-prussian-700 transition-all" title="Change avatar" @click="openAvatarEditor(currentUser)">
           <UserAvatar :user="currentUser" size="lg" />
         </button>
         <div>
@@ -22,7 +22,6 @@
     <!-- PARENT VIEW — Collapsible Sections           -->
     <!-- ============================================ -->
     <template v-if="isParent">
-
       <!-- Section 1: Family -->
       <SettingsSection
         id="family"
@@ -33,7 +32,7 @@
         @update:model-value="val => toggleSection('family', val)"
       >
         <!-- Family Name -->
-        <form @submit.prevent="updateFamily" class="space-y-4 mb-6">
+        <form class="space-y-4 mb-6" @submit.prevent="updateFamily">
           <BaseInput
             v-model="familyForm.name"
             label="Family Name"
@@ -57,7 +56,7 @@
             <div class="flex-1 px-4 py-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg font-mono text-lg tracking-widest text-prussian-500 dark:text-lavender-200 text-center">
               {{ inviteCode || '...' }}
             </div>
-            <BaseButton variant="secondary" size="sm" @click="copyInviteCode" :disabled="!inviteCode">
+            <BaseButton variant="secondary" size="sm" :disabled="!inviteCode" @click="copyInviteCode">
               <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
               {{ copied ? 'Copied!' : 'Copy' }}
             </BaseButton>
@@ -66,7 +65,7 @@
           <!-- Send invite by email -->
           <div class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
             <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">Send Invite by Email</p>
-            <form @submit.prevent="handleSendInviteEmail" class="flex items-end gap-3">
+            <form class="flex items-end gap-3" @submit.prevent="handleSendInviteEmail">
               <div class="flex-1">
                 <input
                   v-model="inviteEmail"
@@ -105,9 +104,9 @@
             >
               <div class="flex items-center gap-3">
                 <button
-                  @click="openAvatarEditor(member)"
                   class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-prussian-700 transition-all"
                   title="Change avatar"
+                  @click="openAvatarEditor(member)"
                 >
                   <UserAvatar :user="member" size="md" />
                 </button>
@@ -116,12 +115,14 @@
                   <p v-if="member.email" class="text-xs text-lavender-700 dark:text-lavender-400">{{ member.email }}</p>
                   <p v-else class="text-xs text-lavender-600 dark:text-lavender-500 italic">Managed account</p>
                   <div class="flex items-center gap-2 mt-1">
-                    <span :class="[
-                      'text-xs px-2 py-0.5 rounded-full font-medium',
-                      member.family_role === 'parent' || member.role === 'parent'
-                        ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/30 dark:text-wisteria-300'
-                        : 'bg-lavender-200 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-300'
-                    ]">
+                    <span
+                      :class="[
+                        'text-xs px-2 py-0.5 rounded-full font-medium',
+                        member.family_role === 'parent' || member.role === 'parent'
+                          ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/30 dark:text-wisteria-300'
+                          : 'bg-lavender-200 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-300'
+                      ]"
+                    >
                       {{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}
                     </span>
                     <span v-if="member.is_managed" class="text-xs px-2 py-0.5 rounded-full bg-sand-100 text-sand-700 dark:bg-sand-900/30 dark:text-sand-300 font-medium">
@@ -134,23 +135,23 @@
               <div v-if="member.id !== currentUser?.id" class="flex items-center gap-1">
                 <button
                   v-if="member.is_managed"
-                  @click="openSwitchToModal(member)"
                   class="p-2 hover:bg-wisteria-100 dark:hover:bg-wisteria-900/20 rounded-lg transition-colors"
                   title="Switch to this profile"
+                  @click="openSwitchToModal(member)"
                 >
                   <ArrowsRightLeftIcon class="w-4 h-4 text-wisteria-600 dark:text-wisteria-400" />
                 </button>
                 <button
-                  @click="openEditMemberModal(member)"
                   class="p-2 hover:bg-lavender-100 dark:hover:bg-prussian-600 rounded-lg transition-colors"
                   title="Edit member"
+                  @click="openEditMemberModal(member)"
                 >
                   <PencilIcon class="w-4 h-4 text-prussian-400 dark:text-lavender-400" />
                 </button>
                 <button
-                  @click="confirmRemoveMember(member)"
                   class="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                   title="Remove member"
+                  @click="confirmRemoveMember(member)"
                 >
                   <TrashIcon class="w-4 h-4 text-red-600" />
                 </button>
@@ -195,21 +196,29 @@
               </div>
               <div class="flex gap-1.5 shrink-0">
                 <button
-                  @click="setModuleMode(module.id, 'all')"
                   :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
-                >Everyone</button>
+                  @click="setModuleMode(module.id, 'all')"
+                >
+                  Everyone
+                </button>
                 <button
-                  @click="setModuleMode(module.id, 'roles', ['parent'])"
                   :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
-                >Parents Only</button>
+                  @click="setModuleMode(module.id, 'roles', ['parent'])"
+                >
+                  Parents Only
+                </button>
                 <button
-                  @click="setModuleMode(module.id, 'off')"
                   :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-red-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
-                >Off</button>
+                  @click="setModuleMode(module.id, 'off')"
+                >
+                  Off
+                </button>
                 <button
-                  @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
                   :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
-                >Custom</button>
+                  @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
+                >
+                  Custom
+                </button>
               </div>
             </div>
 
@@ -222,7 +231,7 @@
                   :key="member.id"
                   class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-prussian-800 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
                 >
-                  <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" @change="toggleMemberAccess(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" />
+                  <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
                   <UserAvatar :user="member" size="xs" />
                   <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ member.name }}</span>
                   <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-lavender-500 dark:text-lavender-400 italic">(always)</span>
@@ -257,9 +266,9 @@
           <div class="mt-4">
             <ToggleSwitch
               :model-value="kudosCostEnabled"
-              @update:model-value="kudosCostEnabled = $event"
               label="Kudos cost points"
               description="Giving kudos deducts 1 point from the giver's bank. Prevents trading kudos back and forth."
+              @update:model-value="kudosCostEnabled = $event"
             />
           </div>
         </div>
@@ -325,7 +334,7 @@
                 :key="child.id"
                 class="flex items-center gap-3 p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
               >
-                <input type="checkbox" :value="child.id" v-model="taskAssignment.users" class="rounded" />
+                <input v-model="taskAssignment.users" type="checkbox" :value="child.id" class="rounded" />
                 <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">{{ child.name }}</span>
               </label>
               <p v-if="childMembers.length === 0" class="text-sm text-lavender-600 dark:text-lavender-400 italic">
@@ -362,13 +371,13 @@
           <div class="grid grid-cols-2 gap-3 mb-5">
             <!-- Kinhold AI tab -->
             <button
-              @click="aiMode = 'kinhold'"
               :class="[
                 'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
                 aiMode === 'kinhold'
                   ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 bg-lavender-50 dark:bg-prussian-800'
                   : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 bg-white dark:bg-prussian-800/50',
               ]"
+              @click="aiMode = 'kinhold'"
             >
               <div v-if="aiMode === 'kinhold'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 flex items-center justify-center">
                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,13 +395,13 @@
 
             <!-- BYOK tab -->
             <button
-              @click="aiMode = 'byok'"
               :class="[
                 'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
                 aiMode === 'byok'
                   ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 bg-lavender-50 dark:bg-prussian-800'
                   : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 bg-white dark:bg-prussian-800/50',
               ]"
+              @click="aiMode = 'byok'"
             >
               <div v-if="aiMode === 'byok'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 flex items-center justify-center">
                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -432,13 +441,13 @@
               <button
                 v-for="provider in aiProviders"
                 :key="provider.slug"
-                @click="selectAiProvider(provider.slug)"
                 :class="[
                   'relative flex flex-col items-center p-3 rounded-xl border-2 transition-all duration-200 text-center',
                   aiConfig.provider === provider.slug
                     ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 bg-lavender-50 dark:bg-prussian-800'
                     : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 bg-white dark:bg-prussian-800/50',
                 ]"
+                @click="selectAiProvider(provider.slug)"
               >
                 <div class="w-8 h-8 mb-1.5 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
                   <span class="text-base font-bold">{{ providerIcon(provider.slug) }}</span>
@@ -459,8 +468,10 @@
                   :placeholder="selectedProviderPlaceholder"
                   class="input-base pr-20"
                 />
-                <button type="button" @click="showAiKey = !showAiKey"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs font-medium text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 transition-colors">
+                <button
+                  type="button" class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs font-medium text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 transition-colors"
+                  @click="showAiKey = !showAiKey"
+                >
                   {{ showAiKey ? 'Hide' : 'Show' }}
                 </button>
               </div>
@@ -471,8 +482,10 @@
                   </template>
                   <template v-else>Keep this secret — stored encrypted.</template>
                 </p>
-                <a :href="selectedProviderHelpUrl" target="_blank" rel="noopener noreferrer"
-                  class="text-xs text-wisteria-600 dark:text-wisteria-400 hover:underline whitespace-nowrap ml-2">
+                <a
+                  :href="selectedProviderHelpUrl" target="_blank" rel="noopener noreferrer"
+                  class="text-xs text-wisteria-600 dark:text-wisteria-400 hover:underline whitespace-nowrap ml-2"
+                >
                   Get API key →
                 </a>
               </div>
@@ -542,10 +555,10 @@
               </p>
             </div>
             <div class="flex items-center gap-2">
-              <BaseButton v-if="mcpToken.hasToken" variant="ghost" size="sm" @click="handleRevokeMcpToken" :loading="mcpRevoking">
+              <BaseButton v-if="mcpToken.hasToken" variant="ghost" size="sm" :loading="mcpRevoking" @click="handleRevokeMcpToken">
                 Revoke
               </BaseButton>
-              <BaseButton variant="secondary" size="sm" @click="handleGenerateMcpToken" :loading="mcpGenerating">
+              <BaseButton variant="secondary" size="sm" :loading="mcpGenerating" @click="handleGenerateMcpToken">
                 {{ mcpToken.hasToken ? 'Regenerate Token' : 'Generate Token' }}
               </BaseButton>
             </div>
@@ -577,19 +590,19 @@
                 <button
                   v-for="client in mcpGenerated.clients"
                   :key="client.id"
-                  @click="mcpActiveClient = client.id"
                   :class="[
                     'px-3 py-1.5 text-sm font-medium rounded-t-lg transition-colors -mb-px',
                     mcpActiveClient === client.id
                       ? 'border border-b-white dark:border-b-prussian-800 border-lavender-200 dark:border-prussian-700 text-prussian-500 dark:text-lavender-200 bg-white dark:bg-prussian-800'
                       : 'text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200',
                   ]"
+                  @click="mcpActiveClient = client.id"
                 >
                   {{ client.name }}
                 </button>
               </div>
 
-              <div v-for="client in mcpGenerated.clients" :key="client.id" v-show="mcpActiveClient === client.id">
+              <div v-for="client in mcpGenerated.clients" v-show="mcpActiveClient === client.id" :key="client.id">
                 <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-2">{{ client.instructions }}</p>
 
                 <template v-if="client.steps">
@@ -637,7 +650,7 @@
               <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
               <span class="text-sm font-medium text-green-800 dark:text-green-300">Google account linked</span>
             </div>
-            <BaseButton variant="ghost" size="sm" @click="handleUnlinkGoogle" :loading="unlinkingGoogle">Unlink</BaseButton>
+            <BaseButton variant="ghost" size="sm" :loading="unlinkingGoogle" @click="handleUnlinkGoogle">Unlink</BaseButton>
           </div>
 
           <div v-else class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
@@ -725,7 +738,7 @@
             Add a calendar by pasting its ICS feed URL (works with any .ics calendar link).
           </p>
 
-          <form @submit.prevent="handleSubscribeUrl" class="space-y-3">
+          <form class="space-y-3" @submit.prevent="handleSubscribeUrl">
             <div>
               <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1">Calendar URL</label>
               <input v-model="icsForm.url" type="url" placeholder="https://example.com/calendar.ics" class="input-base" required />
@@ -784,21 +797,29 @@
               </div>
               <div class="flex gap-1.5 shrink-0">
                 <button
-                  @click="setModuleMode(module.id, 'all')"
                   :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
-                >Everyone</button>
+                  @click="setModuleMode(module.id, 'all')"
+                >
+                  Everyone
+                </button>
                 <button
-                  @click="setModuleMode(module.id, 'roles', ['parent'])"
                   :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
-                >Parents Only</button>
+                  @click="setModuleMode(module.id, 'roles', ['parent'])"
+                >
+                  Parents Only
+                </button>
                 <button
-                  @click="setModuleMode(module.id, 'off')"
                   :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-red-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
-                >Off</button>
+                  @click="setModuleMode(module.id, 'off')"
+                >
+                  Off
+                </button>
                 <button
-                  @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
                   :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
-                >Custom</button>
+                  @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
+                >
+                  Custom
+                </button>
               </div>
             </div>
 
@@ -810,7 +831,7 @@
                   :key="member.id"
                   class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-prussian-800 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
                 >
-                  <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" @change="toggleMemberAccess(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" />
+                  <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
                   <UserAvatar :user="member" size="xs" />
                   <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ member.name }}</span>
                   <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-lavender-500 dark:text-lavender-400 italic">(always)</span>
@@ -866,13 +887,13 @@
             <button
               v-for="theme in availableThemes"
               :key="theme.id"
-              @click="selectTheme(theme.id)"
               :class="[
                 'relative flex flex-col p-3 rounded-xl border-2 transition-all duration-200 text-left',
                 currentTheme === theme.id
                   ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 dark:ring-wisteria-400/20 bg-lavender-50 dark:bg-prussian-800'
                   : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 dark:hover:border-prussian-500 bg-white dark:bg-prussian-800/50',
               ]"
+              @click="selectTheme(theme.id)"
             >
               <div
                 v-if="currentTheme === theme.id"
@@ -883,10 +904,10 @@
                 </svg>
               </div>
               <div class="flex gap-1.5 mb-2">
-                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.primary }" />
-                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.accent }" />
-                <span class="w-8 h-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600" :style="{ backgroundColor: theme.colors.surface }" />
-                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.highlight }" />
+                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.primary }"></span>
+                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.accent }"></span>
+                <span class="w-8 h-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600" :style="{ backgroundColor: theme.colors.surface }"></span>
+                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.highlight }"></span>
               </div>
               <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ theme.name }}</p>
               <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ theme.description }}</p>
@@ -910,9 +931,9 @@
             v-for="pref in emailPreferenceOptions"
             :key="pref.key"
             :model-value="emailPrefs[pref.key]"
-            @update:model-value="emailPrefs[pref.key] = $event"
             :label="pref.label"
             :description="pref.description"
+            @update:model-value="emailPrefs[pref.key] = $event"
           />
         </div>
 
@@ -922,8 +943,6 @@
           </BaseButton>
         </div>
       </SettingsSection>
-
-
     </template>
 
     <!-- ============================================ -->
@@ -958,9 +977,9 @@
             v-for="pref in emailPreferenceOptions"
             :key="pref.key"
             :model-value="emailPrefs[pref.key]"
-            @update:model-value="emailPrefs[pref.key] = $event"
             :label="pref.label"
             :description="pref.description"
+            @update:model-value="emailPrefs[pref.key] = $event"
           />
         </div>
         <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
@@ -981,7 +1000,7 @@
       :title="editingMember ? 'Edit Family Member' : 'Add Family Member'"
       @close="closeMemberModal"
     >
-      <form @submit.prevent="handleSaveMember" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="handleSaveMember">
         <BaseInput
           v-model="memberForm.name"
           label="Name"

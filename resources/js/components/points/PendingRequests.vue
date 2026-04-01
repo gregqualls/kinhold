@@ -23,14 +23,14 @@
         </div>
         <div class="flex gap-2 shrink-0">
           <button
-            @click="$emit('approve', req.id)"
             class="btn-sm bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-xs font-medium"
+            @click="$emit('approve', req.id)"
           >
             Approve
           </button>
           <button
-            @click="$emit('deny', req.id)"
             class="btn-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs font-medium"
+            @click="$emit('deny', req.id)"
           >
             Deny
           </button>

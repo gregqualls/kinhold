@@ -30,7 +30,7 @@
           <span
             class="w-2.5 h-2.5 rounded-full flex-shrink-0"
             :style="{ backgroundColor: preset.color }"
-          />
+          ></span>
           <p class="text-sm font-semibold text-kin-black dark:text-kin-off-white">{{ preset.name }}</p>
         </div>
         <p class="text-xs text-kin-gray-500 dark:text-kin-gray-400">{{ preset.description }}</p>

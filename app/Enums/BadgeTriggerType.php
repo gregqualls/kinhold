@@ -16,7 +16,7 @@ enum BadgeTriggerType: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PointsEarned => 'Points Earned',
             self::TasksCompleted => 'Tasks Completed',
             self::TaskStreak => 'Task Streak',

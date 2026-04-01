@@ -30,11 +30,11 @@
         v-else
         ref="titleInput"
         v-model="editTitle"
+        class="w-full text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-transparent border-b-2 border-wisteria-400 outline-none py-0"
         @keydown.enter="saveTitle"
         @keydown.escape="cancelEditTitle"
         @blur="saveTitle"
         @click.stop
-        class="w-full text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-transparent border-b-2 border-wisteria-400 outline-none py-0"
       />
 
       <!-- Meta row -->
@@ -46,7 +46,7 @@
           class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full"
           :style="{ backgroundColor: getTagHex(tag.color) + '20', color: getTagHex(tag.color) }"
         >
-          <span class="w-1.5 h-1.5 rounded-full" :style="{ backgroundColor: getTagHex(tag.color) }" />
+          <span class="w-1.5 h-1.5 rounded-full" :style="{ backgroundColor: getTagHex(tag.color) }"></span>
           {{ tag.name }}
         </span>
 
@@ -93,10 +93,10 @@
 
     <!-- Priority indicator (click to cycle) -->
     <button
-      @click.stop="cyclePriority"
       class="flex-shrink-0 p-1 rounded transition-colors"
       :class="priorityIndicatorClass"
       title="Click to change priority"
+      @click.stop="cyclePriority"
     >
       <FlagIcon class="w-3.5 h-3.5" />
     </button>

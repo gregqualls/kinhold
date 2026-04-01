@@ -194,11 +194,13 @@ class Family extends Model
 
         if ($mode === 'roles') {
             $allowedRoles = $access['roles'] ?? [];
+
             return in_array($user->family_role->value, $allowedRoles, true);
         }
 
         if ($mode === 'users') {
             $allowedUsers = $access['users'] ?? [];
+
             return in_array($user->id, $allowedUsers, true);
         }
 
@@ -214,6 +216,7 @@ class Family extends Model
         foreach (self::MODULES as $mod) {
             $result[$mod] = $this->getModuleAccess($mod);
         }
+
         return $result;
     }
 
@@ -230,7 +233,7 @@ class Family extends Model
             'high' => 20,
         ];
 
-        $key = 'default_points_' . $priority;
+        $key = 'default_points_'.$priority;
 
         return (int) ($this->settings[$key] ?? $defaults[$priority] ?? 10);
     }

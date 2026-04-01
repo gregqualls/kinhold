@@ -9,8 +9,8 @@
         </div>
         <button
           v-if="isParent"
-          @click="showCreateEntry = true"
           class="hidden md:flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-xl transition-colors"
+          @click="showCreateEntry = true"
         >
           <PlusIcon class="w-4 h-4" />
           Add Entry
@@ -42,8 +42,8 @@
         <div
           v-for="category in filteredCategories"
           :key="category.id"
-          @click="$router.push(`/vault/${category.slug}`)"
           class="group flex items-center gap-4 p-4 bg-white dark:bg-prussian-800 rounded-xl shadow-card hover:shadow-card-lg border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-300 dark:hover:border-wisteria-700 cursor-pointer transition-all"
+          @click="$router.push(`/vault/${category.slug}`)"
         >
           <!-- Icon -->
           <div
@@ -81,7 +81,7 @@
         :icon="ShieldCheckIcon"
         title="Vault is empty"
         description="Add categories to organize your family's important information."
-        actionText="Add Category"
+        action-text="Add Category"
         @action="showCreateEntry = true"
       />
     </div>
@@ -95,7 +95,7 @@
       title="New Vault Entry"
       @close="showCreateEntry = false"
     >
-      <form @submit.prevent="handleCreateEntry" class="space-y-5">
+      <form class="space-y-5" @submit.prevent="handleCreateEntry">
         <div>
           <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Category</label>
           <select v-model="entryForm.category_id" class="input-base">
@@ -126,7 +126,7 @@
             rows="2"
             placeholder="Any additional notes..."
             class="input-base resize-none"
-          />
+          ></textarea>
         </div>
 
         <!-- Dynamic fields based on category -->
@@ -146,16 +146,16 @@
               />
               <button
                 type="button"
-                @click="entryForm.fields.splice(i, 1)"
                 class="p-2 text-lavender-400 hover:text-red-500 transition-colors"
+                @click="entryForm.fields.splice(i, 1)"
               >
                 <XMarkIcon class="w-4 h-4" />
               </button>
             </div>
             <button
               type="button"
-              @click="entryForm.fields.push({ key: '', value: '' })"
               class="flex items-center gap-1.5 text-xs font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500"
+              @click="entryForm.fields.push({ key: '', value: '' })"
             >
               <PlusIcon class="w-3.5 h-3.5" />
               Add Field
@@ -164,7 +164,7 @@
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button type="button" @click="showCreateEntry = false" class="flex-1 btn-secondary btn-md rounded-xl">
+          <button type="button" class="flex-1 btn-secondary btn-md rounded-xl" @click="showCreateEntry = false">
             Cancel
           </button>
           <button type="submit" :disabled="!entryForm.title?.trim() || !entryForm.category_id || savingEntry" class="flex-1 btn-primary btn-md rounded-xl disabled:opacity-40">

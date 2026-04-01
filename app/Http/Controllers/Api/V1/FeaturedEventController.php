@@ -26,6 +26,7 @@ class FeaturedEventController extends Controller
             ->map(function ($event) {
                 // Compute next occurrence for recurring events
                 $event->computed_next_date = $event->next_occurrence;
+
                 return $event;
             })
             ->filter(function ($event) {
@@ -123,7 +124,7 @@ class FeaturedEventController extends Controller
             ->with('creator:id,name,avatar')
             ->first();
 
-        if (!$event) {
+        if (! $event) {
             return response()->json(['countdown_event' => null]);
         }
 
@@ -155,6 +156,7 @@ class FeaturedEventController extends Controller
         // Toggle: if this event was already the countdown, just unset it
         if ($featuredEvent->is_countdown) {
             $featuredEvent->refresh();
+
             return response()->json([
                 'featured_event' => new FeaturedEventResource($featuredEvent),
             ]);

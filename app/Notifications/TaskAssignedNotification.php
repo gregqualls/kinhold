@@ -26,7 +26,7 @@ class TaskAssignedNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        if (!$notifiable->wantsEmail('email_task_assigned')) {
+        if (! $notifiable->wantsEmail('email_task_assigned')) {
             return [];
         }
 

@@ -72,7 +72,7 @@ class FamilyController extends Controller
         ]);
 
         // Generate invite code if not exists
-        if (!$family->invite_code) {
+        if (! $family->invite_code) {
             $family->update([
                 'invite_code' => Str::random(16),
             ]);
@@ -119,7 +119,7 @@ class FamilyController extends Controller
         $member = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'] ?? null,
-            'password' => !empty($validated['password']) ? Hash::make($validated['password']) : null,
+            'password' => ! empty($validated['password']) ? Hash::make($validated['password']) : null,
             'family_id' => $family->id,
             'family_role' => $validated['role'],
             'date_of_birth' => $validated['date_of_birth'] ?? null,
@@ -129,7 +129,7 @@ class FamilyController extends Controller
         ]);
 
         // Send welcome email if the member has an email and send_email was requested
-        if ($member->email && ($request->boolean('send_email') || !$isManaged)) {
+        if ($member->email && ($request->boolean('send_email') || ! $isManaged)) {
             $member->notify(new WelcomeNotification($family, false));
         }
 

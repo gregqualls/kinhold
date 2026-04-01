@@ -10,7 +10,7 @@ enum PointRequestStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Pending => 'Pending',
             self::Approved => 'Approved',
             self::Denied => 'Denied',

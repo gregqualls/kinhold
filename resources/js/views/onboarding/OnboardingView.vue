@@ -14,7 +14,7 @@
         :class="dotClass(i)"
         :aria-label="`Step ${i + 1}`"
         @click="store.goToStep(i)"
-      />
+      ></button>
     </div>
 
     <!-- Step Content -->
@@ -33,7 +33,7 @@
           Back
         </button>
 
-        <div class="flex-1" />
+        <div class="flex-1"></div>
 
         <button
           v-if="!isLastStep"

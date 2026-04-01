@@ -13,8 +13,10 @@ use App\Models\User;
 use App\Models\VaultCategory;
 use App\Models\VaultEntry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -23,9 +25,13 @@ class SecurityTest extends TestCase
     use RefreshDatabase;
 
     private Family $familyA;
+
     private Family $familyB;
+
     private User $parentA;
+
     private User $childA;
+
     private User $parentB;
 
     protected function setUp(): void
@@ -375,7 +381,7 @@ class SecurityTest extends TestCase
     public function test_auth_code_exchange_works_with_valid_code(): void
     {
         $user = User::factory()->create();
-        $code = \Illuminate\Support\Str::random(64);
+        $code = Str::random(64);
         Cache::put("auth_code:{$code}", $user->id, now()->addMinutes(2));
 
         $response = $this->postJson('/api/v1/auth/exchange', ['code' => $code]);
@@ -396,7 +402,7 @@ class SecurityTest extends TestCase
     public function test_auth_code_is_single_use(): void
     {
         $user = User::factory()->create();
-        $code = \Illuminate\Support\Str::random(64);
+        $code = Str::random(64);
         Cache::put("auth_code:{$code}", $user->id, now()->addMinutes(2));
 
         // First use — should succeed
@@ -559,7 +565,7 @@ class SecurityTest extends TestCase
 
         Sanctum::actingAs($this->parentA);
 
-        $phpFile = \Illuminate\Http\UploadedFile::fake()->create('malicious.php', 100, 'application/x-php');
+        $phpFile = UploadedFile::fake()->create('malicious.php', 100, 'application/x-php');
 
         $response = $this->postJson("/api/v1/vault/entries/{$entry->id}/documents", [
             'file' => $phpFile,
@@ -589,7 +595,7 @@ class SecurityTest extends TestCase
 
         Sanctum::actingAs($this->parentA);
 
-        $pdf = \Illuminate\Http\UploadedFile::fake()->create('document.pdf', 500, 'application/pdf');
+        $pdf = UploadedFile::fake()->create('document.pdf', 500, 'application/pdf');
 
         $response = $this->postJson("/api/v1/vault/entries/{$entry->id}/documents", [
             'file' => $pdf,
