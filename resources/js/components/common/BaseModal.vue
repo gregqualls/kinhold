@@ -9,7 +9,7 @@
         <Transition name="slide">
           <div
             v-if="show"
-            class="bg-white dark:bg-prussian-800 rounded-t-[12px] md:rounded-[12px] w-full max-h-screen md:max-h-96 flex flex-col"
+            class="bg-white dark:bg-prussian-800 rounded-t-[12px] md:rounded-[12px] w-full max-h-screen md:max-h-[80vh] flex flex-col"
             :class="sizeClasses"
             @click.stop
           >
@@ -51,7 +51,7 @@ const props = defineProps({
   size: {
     type: String,
     default: 'md',
-    validator: (v) => ['sm', 'md', 'lg'].includes(v),
+    validator: (v) => ['sm', 'md', 'lg', 'xl'].includes(v),
   },
 })
 
@@ -62,6 +62,7 @@ const sizeClasses = computed(() => {
     sm: 'md:w-96',
     md: 'md:w-full md:max-w-md',
     lg: 'md:w-full md:max-w-lg',
+    xl: 'md:w-full md:max-w-2xl',
   }
   return sizes[props.size]
 })

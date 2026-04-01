@@ -129,14 +129,17 @@
 
     <!-- Input Area -->
     <div v-if="!checkingKey && hasApiKey" class="border-t border-lavender-200 dark:border-prussian-700 bg-white dark:bg-prussian-800 px-4 md:px-6 py-3 pb-safe-bottom">
-      <form class="max-w-2xl mx-auto flex gap-2" @submit.prevent="handleSend">
-        <input
+      <form class="max-w-2xl mx-auto flex gap-2 items-end" @submit.prevent="handleSend">
+        <textarea
+          ref="chatInput"
           v-model="messageInput"
-          type="text"
+          rows="1"
           placeholder="Tell Kinhold what to do..."
-          class="flex-1 px-4 py-2.5 bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-xl text-sm placeholder-lavender-400 dark:placeholder-lavender-500 text-prussian-500 dark:text-lavender-200 focus:bg-white dark:focus:bg-prussian-800 focus:ring-2 focus:ring-wisteria-400 transition-all outline-none"
+          class="flex-1 px-4 py-2.5 bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-xl text-sm placeholder-lavender-400 dark:placeholder-lavender-500 text-prussian-500 dark:text-lavender-200 focus:bg-white dark:focus:bg-prussian-800 focus:ring-2 focus:ring-wisteria-400 transition-all outline-none resize-none max-h-32 overflow-y-auto"
           :disabled="loading"
-        />
+          @keydown.enter.exact.prevent="handleSend"
+          @input="autoResize"
+        ></textarea>
         <button
           type="submit"
           :disabled="!messageInput.trim() || loading"
@@ -182,6 +185,7 @@ const isParent = computed(() => authStore.isParent)
 
 const messageInput = ref('')
 const messagesContainer = ref(null)
+const chatInput = ref(null)
 const hasApiKey = ref(true) // assume true until checked to avoid flash
 const checkingKey = ref(true)
 
@@ -213,10 +217,17 @@ const scrollToBottom = async () => {
   }
 }
 
+const autoResize = () => {
+  if (!chatInput.value) return
+  chatInput.value.style.height = 'auto'
+  chatInput.value.style.height = chatInput.value.scrollHeight + 'px'
+}
+
 const handleSend = async () => {
   if (!messageInput.value.trim()) return
   const text = messageInput.value
   messageInput.value = ''
+  if (chatInput.value) chatInput.value.style.height = 'auto'
   await chatStore.sendMessage(text)
   scrollToBottom()
 }

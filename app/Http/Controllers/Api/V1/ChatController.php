@@ -29,6 +29,9 @@ class ChatController extends Controller
         $user = $request->user();
 
         try {
+            // Agent loop may call multiple tools — extend timeout
+            set_time_limit(120);
+
             $familyId = $user->currentFamily()->first()->id;
 
             // Store user message

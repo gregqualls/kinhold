@@ -29,15 +29,26 @@ class VaultEntryPolicy
             return true;
         }
 
+        // Children can view their own personal entries
+        if ($entry->is_personal && $entry->created_by === $user->id) {
+            return true;
+        }
+
         return $entry->permissions()->where('user_id', $user->id)->exists();
     }
 
     /**
      * Determine whether the user can create vault entries.
+     * Children can create personal entries only.
      */
-    public function create(User $user): bool
+    public function create(User $user, ?bool $isPersonal = null): bool
     {
-        return $user->isParent();
+        if ($user->isParent()) {
+            return true;
+        }
+
+        // Children can only create personal entries
+        return $isPersonal === true;
     }
 
     /**
@@ -53,6 +64,11 @@ class VaultEntryPolicy
             return true;
         }
 
+        // Children can edit their own personal entries
+        if ($entry->is_personal && $entry->created_by === $user->id) {
+            return true;
+        }
+
         $permission = $entry->permissions()->where('user_id', $user->id)->first();
 
         return $permission && $permission->permission_level === 'edit';
@@ -63,7 +79,16 @@ class VaultEntryPolicy
      */
     public function delete(User $user, VaultEntry $entry): bool
     {
-        return $user->family_id === $entry->family_id && $user->isParent();
+        if ($user->family_id !== $entry->family_id) {
+            return false;
+        }
+
+        if ($user->isParent()) {
+            return true;
+        }
+
+        // Children can delete their own personal entries
+        return $entry->is_personal && $entry->created_by === $user->id;
     }
 
     /**

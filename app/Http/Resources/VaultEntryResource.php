@@ -16,16 +16,24 @@ class VaultEntryResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'vault_category_id' => $this->vault_category_id,
             'title' => $this->title,
             'category' => VaultCategoryResource::make($this->whenLoaded('category')),
             'data' => $this->decrypted_data ?? null,
             'notes' => $this->notes,
+            'is_personal' => $this->is_personal,
             'metadata' => $this->metadata,
             'creator' => UserResource::make($this->whenLoaded('creator')),
             'permissions' => $this->whenLoaded('permissions', function () {
                 return $this->permissions->map(fn ($perm) => [
                     'user_id' => $perm->user_id,
                     'permission_level' => $perm->permission_level,
+                    'user' => $perm->relationLoaded('user') && $perm->user ? [
+                        'id' => $perm->user->id,
+                        'name' => $perm->user->name,
+                        'avatar' => $perm->user->avatar,
+                        'avatar_color' => $perm->user->avatar_color,
+                    ] : null,
                 ]);
             }),
             'documents' => DocumentResource::collection($this->whenLoaded('documents')),
