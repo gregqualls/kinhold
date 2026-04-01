@@ -231,16 +231,16 @@ class CalendarController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(fn ($conn) => [
-            'id' => $conn->id,
-            'user_id' => $conn->user_id,
-            'user' => $conn->user ? ['id' => $conn->user->id, 'name' => $conn->user->name] : null,
-            'provider' => $conn->provider,
-            'calendar_name' => $conn->calendar_name,
-            'is_active' => $conn->is_active,
-            'color' => $conn->color,
-            'last_synced_at' => $conn->last_synced_at,
-            'created_at' => $conn->created_at,
-        ]);
+                'id' => $conn->id,
+                'user_id' => $conn->user_id,
+                'user' => $conn->user ? ['id' => $conn->user->id, 'name' => $conn->user->name] : null,
+                'provider' => $conn->provider,
+                'calendar_name' => $conn->calendar_name,
+                'is_active' => $conn->is_active,
+                'color' => $conn->color,
+                'last_synced_at' => $conn->last_synced_at,
+                'created_at' => $conn->created_at,
+            ]);
 
         return response()->json([
             'connections' => $connections,
