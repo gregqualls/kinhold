@@ -25,7 +25,6 @@
 
     <!-- Entry Content -->
     <div v-else-if="currentEntry" class="flex-1 overflow-y-auto px-4 md:px-6 pb-32 md:pb-6">
-
       <!-- Markdown Body -->
       <div
         v-if="entryBody"
