@@ -7,14 +7,22 @@
           <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Vault</h1>
           <p class="text-sm text-lavender-500 dark:text-lavender-400 mt-0.5">Secure family information</p>
         </div>
-        <button
-          v-if="isParent"
-          class="hidden md:flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-xl transition-colors"
-          @click="showCreateEntry = true"
-        >
-          <PlusIcon class="w-4 h-4" />
-          Add Entry
-        </button>
+        <div v-if="isParent" class="hidden md:flex items-center gap-2">
+          <button
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-lavender-100 dark:bg-prussian-700 hover:bg-lavender-200 dark:hover:bg-prussian-600 rounded-xl transition-colors"
+            @click="openCategoryModal()"
+          >
+            <FolderPlusIcon class="w-4 h-4" />
+            New Category
+          </button>
+          <button
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-xl transition-colors"
+            @click="showCreateEntry = true"
+          >
+            <PlusIcon class="w-4 h-4" />
+            Add Entry
+          </button>
+        </div>
       </div>
     </div>
 
@@ -71,6 +79,11 @@
             {{ getEntryCount(category.id) }}
           </span>
 
+          <!-- Context menu (parent only) -->
+          <div v-if="isParent" class="opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
+            <ContextMenu :items="getCategoryMenuItems(category)" />
+          </div>
+
           <ChevronRightIcon class="w-4 h-4 text-lavender-300 dark:text-lavender-500 flex-shrink-0" />
         </div>
       </div>
@@ -80,14 +93,78 @@
         v-if="!isLoading && categories.length === 0"
         :icon="ShieldCheckIcon"
         title="Vault is empty"
-        description="Add categories to organize your family's important information."
-        action-text="Add Category"
-        @action="showCreateEntry = true"
+        description="Create a category to start organizing your family's information."
+        action-text="New Category"
+        @action="openCategoryModal()"
       />
     </div>
 
     <!-- Mobile FAB -->
     <FloatingActionButton v-if="isParent" @click="showCreateEntry = true" />
+
+    <!-- Create/Edit Category Modal -->
+    <BaseModal
+      :show="showCategoryModal"
+      :title="editingCategory ? 'Edit Category' : 'New Category'"
+      @close="closeCategoryModal"
+    >
+      <form class="space-y-5" @submit.prevent="handleSaveCategory">
+        <div>
+          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Name</label>
+          <input
+            v-model="categoryForm.name"
+            placeholder="e.g., House, Vehicle, School"
+            class="input-base"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Description (optional)</label>
+          <input
+            v-model="categoryForm.description"
+            placeholder="What goes in this category?"
+            class="input-base"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-2">Icon</label>
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="icon in availableIcons"
+              :key="icon.key"
+              type="button"
+              class="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+              :class="categoryForm.icon === icon.key
+                ? 'bg-wisteria-100 dark:bg-wisteria-900/30 ring-2 ring-wisteria-500'
+                : 'bg-lavender-50 dark:bg-prussian-700 hover:bg-lavender-100 dark:hover:bg-prussian-600'"
+              @click="categoryForm.icon = icon.key"
+            >
+              <component :is="icon.component" class="w-5 h-5 text-prussian-500 dark:text-lavender-300" />
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" class="flex-1 btn-secondary btn-md rounded-xl" @click="closeCategoryModal">
+            Cancel
+          </button>
+          <button type="submit" :disabled="!categoryForm.name?.trim() || savingCategory" class="flex-1 btn-primary btn-md rounded-xl disabled:opacity-40">
+            {{ savingCategory ? 'Saving...' : (editingCategory ? 'Save Changes' : 'Create Category') }}
+          </button>
+        </div>
+      </form>
+    </BaseModal>
+
+    <!-- Delete Category Confirmation -->
+    <ConfirmDialog
+      :show="!!deletingCategory"
+      title="Delete Category?"
+      :message="`&quot;${deletingCategory?.name}&quot; will be permanently deleted. It must be empty first.`"
+      confirm-text="Delete"
+      @confirm="handleDeleteCategory"
+      @cancel="deletingCategory = null"
+    />
 
     <!-- Create Entry Modal -->
     <BaseModal
@@ -125,7 +202,7 @@
           <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Content</label>
           <MarkdownEditor
             v-model="entryForm.body"
-            placeholder="Start typing... Use **bold**, *italic*, lists, tables, and more."
+            placeholder="Start typing... Use **bold**, *italic*, lists, and more."
           />
         </div>
 
@@ -195,6 +272,8 @@ import { useNotification } from '@/composables/useNotification'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import ContextMenu from '@/components/common/ContextMenu.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
 import MarkdownEditor from '@/components/vault/MarkdownEditor.vue'
 import {
@@ -209,6 +288,12 @@ import {
   LockClosedIcon,
   ShieldCheckIcon,
   IdentificationIcon,
+  HomeIcon,
+  TruckIcon,
+  WrenchScrewdriverIcon,
+  PencilIcon,
+  TrashIcon,
+  FolderPlusIcon,
 } from '@heroicons/vue/24/outline'
 
 const vaultStore = useVaultStore()
@@ -222,14 +307,35 @@ const showCreateEntry = ref(false)
 const showSensitiveFields = ref(false)
 const savingEntry = ref(false)
 
-const defaultForm = () => ({
+// Category modal state
+const showCategoryModal = ref(false)
+const editingCategory = ref(null)
+const deletingCategory = ref(null)
+const savingCategory = ref(false)
+
+const categoryForm = ref({ name: '', icon: 'lock', description: '' })
+
+const availableIcons = [
+  { key: 'heart', label: 'Medical', component: HeartIcon },
+  { key: 'dollar-sign', label: 'Financial', component: CreditCardIcon },
+  { key: 'shield', label: 'Insurance', component: ShieldCheckIcon },
+  { key: 'briefcase', label: 'Legal', component: DocumentTextIcon },
+  { key: 'book', label: 'Education', component: AcademicCapIcon },
+  { key: 'lock', label: 'Personal', component: LockClosedIcon },
+  { key: 'home', label: 'House', component: HomeIcon },
+  { key: 'truck', label: 'Vehicle', component: TruckIcon },
+  { key: 'wrench', label: 'Tools', component: WrenchScrewdriverIcon },
+  { key: 'id', label: 'Identity', component: IdentificationIcon },
+]
+
+const defaultEntryForm = () => ({
   category_id: null,
   title: '',
   body: '',
   sensitiveFields: [{ key: '', value: '' }],
 })
 
-const entryForm = ref(defaultForm())
+const entryForm = ref(defaultEntryForm())
 
 const filteredCategories = computed(() =>
   (categories.value || []).filter((cat) =>
@@ -248,6 +354,16 @@ const getCategoryIcon = (iconType) => {
     education: AcademicCapIcon,
     insurance: ShieldCheckIcon,
     personal: IdentificationIcon,
+    heart: HeartIcon,
+    'dollar-sign': CreditCardIcon,
+    shield: ShieldCheckIcon,
+    briefcase: DocumentTextIcon,
+    book: AcademicCapIcon,
+    lock: LockClosedIcon,
+    home: HomeIcon,
+    truck: TruckIcon,
+    wrench: WrenchScrewdriverIcon,
+    id: IdentificationIcon,
   }
   return icons[iconType] || LockClosedIcon
 }
@@ -260,6 +376,16 @@ const getCategoryBgClass = (iconType) => {
     education: 'bg-wisteria-50 dark:bg-wisteria-900/20',
     insurance: 'bg-sand-50 dark:bg-sand-900/20',
     personal: 'bg-pink-50 dark:bg-pink-900/20',
+    heart: 'bg-red-50 dark:bg-red-900/20',
+    'dollar-sign': 'bg-emerald-50 dark:bg-emerald-900/20',
+    shield: 'bg-sand-50 dark:bg-sand-900/20',
+    briefcase: 'bg-blue-50 dark:bg-blue-900/20',
+    book: 'bg-wisteria-50 dark:bg-wisteria-900/20',
+    lock: 'bg-lavender-50 dark:bg-prussian-700',
+    home: 'bg-amber-50 dark:bg-amber-900/20',
+    truck: 'bg-cyan-50 dark:bg-cyan-900/20',
+    wrench: 'bg-orange-50 dark:bg-orange-900/20',
+    id: 'bg-pink-50 dark:bg-pink-900/20',
   }
   return classes[iconType] || 'bg-lavender-50 dark:bg-prussian-700'
 }
@@ -272,14 +398,78 @@ const getCategoryTextClass = (iconType) => {
     education: 'text-wisteria-500',
     insurance: 'text-sand-500',
     personal: 'text-pink-500',
+    heart: 'text-red-500',
+    'dollar-sign': 'text-emerald-500',
+    shield: 'text-sand-500',
+    briefcase: 'text-blue-500',
+    book: 'text-wisteria-500',
+    lock: 'text-lavender-500',
+    home: 'text-amber-500',
+    truck: 'text-cyan-500',
+    wrench: 'text-orange-500',
+    id: 'text-pink-500',
   }
   return classes[iconType] || 'text-lavender-500'
+}
+
+const getCategoryMenuItems = (category) => [
+  { label: 'Edit', icon: PencilIcon, action: () => openCategoryModal(category) },
+  { divider: true },
+  { label: 'Delete', icon: TrashIcon, variant: 'danger', action: () => { deletingCategory.value = category } },
+]
+
+const openCategoryModal = (category = null) => {
+  editingCategory.value = category
+  categoryForm.value = category
+    ? { name: category.name, icon: category.icon || 'lock', description: category.description || '' }
+    : { name: '', icon: 'lock', description: '' }
+  showCategoryModal.value = true
+}
+
+const closeCategoryModal = () => {
+  showCategoryModal.value = false
+  editingCategory.value = null
+  categoryForm.value = { name: '', icon: 'lock', description: '' }
+}
+
+const handleSaveCategory = async () => {
+  if (!categoryForm.value.name?.trim()) return
+  savingCategory.value = true
+
+  const payload = {
+    name: categoryForm.value.name,
+    icon: categoryForm.value.icon,
+    description: categoryForm.value.description || null,
+  }
+
+  const result = editingCategory.value
+    ? await vaultStore.updateCategory(editingCategory.value.id, payload)
+    : await vaultStore.createCategory(payload)
+
+  if (result.success) {
+    success(editingCategory.value ? 'Category updated!' : 'Category created!')
+    closeCategoryModal()
+  } else {
+    notifyError(result.error || 'Failed to save category')
+  }
+  savingCategory.value = false
+}
+
+const handleDeleteCategory = async () => {
+  if (!deletingCategory.value) return
+  const result = await vaultStore.deleteCategory(deletingCategory.value.id)
+  if (result.success) {
+    success('Category deleted!')
+  } else {
+    notifyError(result.error || 'Failed to delete category')
+  }
+  deletingCategory.value = null
 }
 
 const closeCreateModal = () => {
   showCreateEntry.value = false
   showSensitiveFields.value = false
-  entryForm.value = defaultForm()
+  entryForm.value = defaultEntryForm()
 }
 
 const handleCreateEntry = async () => {

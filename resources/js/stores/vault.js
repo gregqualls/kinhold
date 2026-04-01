@@ -79,6 +79,39 @@ export const useVaultStore = defineStore('vault', () => {
     }
   }
 
+  const createCategory = async (data) => {
+    try {
+      const response = await api.post('/vault/categories', data)
+      categories.value.push(response.data.category)
+      return { success: true, category: response.data.category }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message }
+    }
+  }
+
+  const updateCategory = async (id, data) => {
+    try {
+      const response = await api.put(`/vault/categories/${id}`, data)
+      const index = categories.value.findIndex((c) => c.id === id)
+      if (index !== -1) {
+        categories.value[index] = response.data.category
+      }
+      return { success: true, category: response.data.category }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message }
+    }
+  }
+
+  const deleteCategory = async (id) => {
+    try {
+      await api.delete(`/vault/categories/${id}`)
+      categories.value = categories.value.filter((c) => c.id !== id)
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message }
+    }
+  }
+
   const createEntry = async (data) => {
     try {
       const response = await api.post('/vault/entries', data)
@@ -186,6 +219,9 @@ export const useVaultStore = defineStore('vault', () => {
 
     // Actions
     fetchCategories,
+    createCategory,
+    updateCategory,
+    deleteCategory,
     fetchEntries,
     fetchEntry,
     createEntry,

@@ -13,7 +13,7 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
 #[Name('manage-vault')]
-#[Description('Manage the family vault — categories and encrypted entries. Actions: list_categories, list (entries), get (single entry with decrypted data), create, update, delete. Write actions are parent-only. Children only see entries shared with them.')]
+#[Description('Manage the family vault — categories and encrypted entries. Actions: list_categories, create_category, update_category, delete_category, list (entries), get (single entry with decrypted data), create, update, delete. Write actions are parent-only. Children only see entries shared with them.')]
 class ManageVault extends Tool
 {
     use ScopesToFamily;
@@ -21,12 +21,15 @@ class ManageVault extends Tool
     public function schema($schema): array
     {
         return [
-            'action' => $schema->string()->required()->enum(['list_categories', 'list', 'get', 'create', 'update', 'delete'])->description('Action to perform'),
+            'action' => $schema->string()->required()->enum(['list_categories', 'create_category', 'update_category', 'delete_category', 'list', 'get', 'create', 'update', 'delete'])->description('Action to perform'),
             'entry_id' => $schema->string()->description('Vault entry UUID (required for get/update/delete)'),
-            'category_id' => $schema->string()->description('Category UUID (filter for list, required for create)'),
-            'title' => $schema->string()->description('Entry title (required for create)'),
-            'data' => $schema->object()->description('Key-value pairs to store (required for create, encrypted at rest)'),
+            'category_id' => $schema->string()->description('Category UUID (filter for list, required for create/update_category/delete_category)'),
+            'title' => $schema->string()->description('Entry title (required for create) or category name (for create_category)'),
+            'data' => $schema->object()->description('Data to store — use { body: "markdown text", sensitive_fields: { key: value } } format. Encrypted at rest.'),
             'notes' => $schema->string()->description('Optional notes'),
+            'icon' => $schema->string()->description('Icon name for category (e.g., heart, lock, briefcase, book, shield, dollar-sign)'),
+            'description' => $schema->string()->description('Category description'),
+            'is_personal' => $schema->boolean()->description('Mark as personal entry (children can create/edit/delete their own personal entries)'),
         ];
     }
 
@@ -34,6 +37,9 @@ class ManageVault extends Tool
     {
         return match ($request->get('action')) {
             'list_categories' => $this->listCategories(),
+            'create_category' => $this->createCategory($request),
+            'update_category' => $this->updateCategory($request),
+            'delete_category' => $this->deleteCategory($request),
             'list' => $this->listEntries($request),
             'get' => $this->getEntry($request),
             'create' => $this->createEntry($request),
@@ -61,6 +67,103 @@ class ManageVault extends Tool
         ]);
     }
 
+    private function createCategory(Request $request): Response
+    {
+        if ($denied = $this->requireParent()) {
+            return $denied;
+        }
+
+        $name = $request->get('title');
+        if (! $name) {
+            return Response::error('title is required to create a category.');
+        }
+
+        $slug = \Str::slug($name);
+        $baseSlug = $slug;
+        $counter = 1;
+        while (VaultCategory::where('family_id', $this->familyId())->where('slug', $slug)->exists()) {
+            $slug = $baseSlug.'-'.$counter++;
+        }
+
+        $category = VaultCategory::create([
+            'family_id' => $this->familyId(),
+            'name' => $name,
+            'slug' => $slug,
+            'icon' => $request->get('icon', 'lock'),
+            'description' => $request->get('description'),
+        ]);
+
+        return Response::json([
+            'message' => "Category \"{$category->name}\" created.",
+            'category' => ['id' => $category->id, 'name' => $category->name, 'slug' => $category->slug],
+        ]);
+    }
+
+    private function updateCategory(Request $request): Response
+    {
+        if ($denied = $this->requireParent()) {
+            return $denied;
+        }
+
+        $categoryId = $request->get('category_id');
+        if (! $categoryId) {
+            return Response::error('category_id is required for update_category.');
+        }
+
+        $category = VaultCategory::where('family_id', $this->familyId())->findOrFail($categoryId);
+
+        $updates = [];
+        if ($request->get('title') !== null) {
+            $updates['name'] = $request->get('title');
+            $slug = \Str::slug($updates['name']);
+            $baseSlug = $slug;
+            $counter = 1;
+            while (VaultCategory::where('family_id', $this->familyId())
+                ->where('slug', $slug)
+                ->where('id', '!=', $category->id)
+                ->exists()) {
+                $slug = $baseSlug.'-'.$counter++;
+            }
+            $updates['slug'] = $slug;
+        }
+        if ($request->get('icon') !== null) {
+            $updates['icon'] = $request->get('icon');
+        }
+        if ($request->get('description') !== null) {
+            $updates['description'] = $request->get('description');
+        }
+
+        $category->update($updates);
+
+        return Response::json([
+            'message' => "Category \"{$category->name}\" updated.",
+            'category' => ['id' => $category->id, 'name' => $category->name, 'slug' => $category->slug],
+        ]);
+    }
+
+    private function deleteCategory(Request $request): Response
+    {
+        if ($denied = $this->requireParent()) {
+            return $denied;
+        }
+
+        $categoryId = $request->get('category_id');
+        if (! $categoryId) {
+            return Response::error('category_id is required for delete_category.');
+        }
+
+        $category = VaultCategory::where('family_id', $this->familyId())->findOrFail($categoryId);
+
+        if ($category->entries()->count() > 0) {
+            return Response::error("Cannot delete \"{$category->name}\" — it still has entries. Move or delete them first.");
+        }
+
+        $name = $category->name;
+        $category->delete();
+
+        return Response::text("Category \"{$name}\" deleted.");
+    }
+
     private function listEntries(Request $request): Response
     {
         $user = $this->user();
@@ -73,10 +176,11 @@ class ManageVault extends Tool
 
         $entries = $query->orderByDesc('created_at')->get();
 
-        // Children only see entries shared with them
+        // Children see personal + shared entries
         if (! $user->isParent()) {
             $entries = $entries->filter(
-                fn ($e) => $e->permissions()->where('user_id', $user->id)->exists()
+                fn ($e) => ($e->is_personal && $e->created_by === $user->id)
+                    || $e->permissions()->where('user_id', $user->id)->exists()
             );
         }
 
@@ -123,7 +227,8 @@ class ManageVault extends Tool
 
     private function createEntry(Request $request): Response
     {
-        if ($denied = $this->authorize('create', VaultEntry::class)) {
+        $isPersonal = (bool) $request->get('is_personal', false);
+        if ($denied = $this->authorize('create', [VaultEntry::class, $isPersonal])) {
             return $denied;
         }
 
@@ -154,10 +259,11 @@ class ManageVault extends Tool
             'title' => $title,
             'encrypted_data' => $encryptedData,
             'notes' => $request->get('notes'),
+            'is_personal' => $isPersonal,
         ]);
 
         return Response::json([
-            'message' => "Vault entry \"{$entry->title}\" created.",
+            'message' => "Vault entry \"{$entry->title}\" created.".($isPersonal ? ' (personal)' : ''),
             'entry' => ['id' => $entry->id, 'title' => $entry->title],
         ]);
     }

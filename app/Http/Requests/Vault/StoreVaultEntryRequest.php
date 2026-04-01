@@ -31,6 +31,7 @@ class StoreVaultEntryRequest extends FormRequest
             'notes' => 'nullable|string',
             'permissions' => 'nullable|array',
             'permissions.*' => "exists:users,id,family_id,{$familyId}",
+            'is_personal' => 'nullable|boolean',
         ];
     }
 }

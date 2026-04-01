@@ -84,11 +84,22 @@
       </div>
 
       <!-- Documents -->
-      <div v-if="currentEntry.documents?.length > 0" class="bg-white dark:bg-prussian-800 rounded-xl border border-lavender-200 dark:border-prussian-700 shadow-card overflow-hidden mt-4">
-        <div class="px-4 py-3 border-b border-lavender-100 dark:border-prussian-700">
+      <div v-if="isParent || currentEntry.documents?.length > 0" class="bg-white dark:bg-prussian-800 rounded-xl border border-lavender-200 dark:border-prussian-700 shadow-card overflow-hidden mt-4">
+        <div class="px-4 py-3 border-b border-lavender-100 dark:border-prussian-700 flex items-center justify-between">
           <h2 class="text-xs font-semibold text-lavender-500 dark:text-lavender-400 uppercase tracking-wider">Documents</h2>
+          <label v-if="isParent" class="flex items-center gap-1.5 text-xs font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500 cursor-pointer transition-colors">
+            <ArrowUpTrayIcon class="w-3.5 h-3.5" />
+            Upload
+            <input
+              ref="fileInput"
+              type="file"
+              class="hidden"
+              accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.doc,.docx,.xls,.xlsx,.txt,.csv"
+              @change="handleFileUpload"
+            />
+          </label>
         </div>
-        <div class="divide-y divide-lavender-50 dark:divide-prussian-700">
+        <div v-if="currentEntry.documents?.length > 0" class="divide-y divide-lavender-50 dark:divide-prussian-700">
           <a
             v-for="doc in currentEntry.documents"
             :key="doc.id"
@@ -104,14 +115,27 @@
             <ArrowDownTrayIcon class="w-4 h-4 text-lavender-400" />
           </a>
         </div>
+        <div v-else class="px-4 py-3">
+          <p class="text-xs text-lavender-400">No documents attached yet.</p>
+        </div>
+        <div v-if="uploading" class="px-4 py-2 border-t border-lavender-100 dark:border-prussian-700">
+          <p class="text-xs text-wisteria-500">Uploading...</p>
+        </div>
       </div>
 
       <!-- Shared With (Parent Only) -->
-      <div v-if="isParent && currentEntry.permissions?.length > 0" class="bg-white dark:bg-prussian-800 rounded-xl border border-lavender-200 dark:border-prussian-700 shadow-card overflow-hidden mt-4">
-        <div class="px-4 py-3 border-b border-lavender-100 dark:border-prussian-700">
+      <div v-if="isParent" class="bg-white dark:bg-prussian-800 rounded-xl border border-lavender-200 dark:border-prussian-700 shadow-card overflow-hidden mt-4">
+        <div class="px-4 py-3 border-b border-lavender-100 dark:border-prussian-700 flex items-center justify-between">
           <h2 class="text-xs font-semibold text-lavender-500 dark:text-lavender-400 uppercase tracking-wider">Shared With</h2>
+          <button
+            class="flex items-center gap-1.5 text-xs font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500 transition-colors"
+            @click="showShareModal = true"
+          >
+            <ShareIcon class="w-3.5 h-3.5" />
+            Share
+          </button>
         </div>
-        <div class="divide-y divide-lavender-50 dark:divide-prussian-700">
+        <div v-if="currentEntry.permissions?.length > 0" class="divide-y divide-lavender-50 dark:divide-prussian-700">
           <div
             v-for="perm in currentEntry.permissions"
             :key="perm.user_id"
@@ -129,6 +153,9 @@
               <XMarkIcon class="w-4 h-4" />
             </button>
           </div>
+        </div>
+        <div v-else class="px-4 py-3">
+          <p class="text-xs text-lavender-400">Not shared with anyone yet.</p>
         </div>
       </div>
 
@@ -152,6 +179,50 @@
       @confirm="handleDeleteEntry"
       @cancel="showDeleteConfirm = false"
     />
+
+    <!-- Share Modal -->
+    <BaseModal
+      :show="showShareModal"
+      title="Share Entry"
+      @close="showShareModal = false"
+    >
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Family Member</label>
+          <select v-model="shareForm.userId" class="input-base">
+            <option :value="null">Select member...</option>
+            <option
+              v-for="member in shareableMembers"
+              :key="member.id"
+              :value="member.id"
+            >
+              {{ member.name }} ({{ member.family_role }})
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Permission Level</label>
+          <select v-model="shareForm.level" class="input-base">
+            <option value="view">View only</option>
+            <option value="edit">Can edit</option>
+          </select>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" class="flex-1 btn-secondary btn-md rounded-xl" @click="showShareModal = false">
+            Cancel
+          </button>
+          <button
+            :disabled="!shareForm.userId || sharingEntry"
+            class="flex-1 btn-primary btn-md rounded-xl disabled:opacity-40"
+            @click="handleShareEntry"
+          >
+            {{ sharingEntry ? 'Sharing...' : 'Share' }}
+          </button>
+        </div>
+      </div>
+    </BaseModal>
 
     <!-- Edit Entry Modal -->
     <BaseModal
@@ -271,9 +342,11 @@ import {
   ChevronRightIcon,
   DocumentTextIcon,
   ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
   LockClosedIcon,
   PencilIcon,
   PlusIcon,
+  ShareIcon,
   TrashIcon,
   XMarkIcon,
 } from '@heroicons/vue/24/outline'
@@ -285,13 +358,19 @@ const authStore = useAuthStore()
 const { success, error: notifyError } = useNotification()
 
 const { currentEntry, isLoading, categories } = storeToRefs(vaultStore)
-const { isParent } = storeToRefs(authStore)
+const { isParent, familyMembers } = storeToRefs(authStore)
 
 const entryId = route.params.id
 const showDeleteConfirm = ref(false)
 const showEditModal = ref(false)
 const showEditSensitiveFields = ref(false)
 const savingEntry = ref(false)
+const showShareModal = ref(false)
+const sharingEntry = ref(false)
+const uploading = ref(false)
+const fileInput = ref(null)
+
+const shareForm = ref({ userId: null, level: 'view' })
 
 const editForm = ref({
   vault_category_id: null,
@@ -407,6 +486,40 @@ const formatFileSize = (bytes) => {
   const sizes = ['B', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+}
+
+// Members who don't already have permission on this entry
+const shareableMembers = computed(() => {
+  const existingUserIds = (currentEntry.value?.permissions || []).map((p) => p.user_id)
+  return (familyMembers.value || []).filter((m) => !existingUserIds.includes(m.id))
+})
+
+const handleShareEntry = async () => {
+  if (!shareForm.value.userId) return
+  sharingEntry.value = true
+  const result = await vaultStore.grantPermission(entryId, shareForm.value.userId, shareForm.value.level)
+  if (result.success) {
+    success('Entry shared!')
+    showShareModal.value = false
+    shareForm.value = { userId: null, level: 'view' }
+  } else {
+    notifyError(result.error || 'Failed to share')
+  }
+  sharingEntry.value = false
+}
+
+const handleFileUpload = async (event) => {
+  const file = event.target.files?.[0]
+  if (!file) return
+  uploading.value = true
+  const result = await vaultStore.uploadDocument(entryId, file)
+  if (result.success) {
+    success('Document uploaded!')
+  } else {
+    notifyError(result.error || 'Failed to upload')
+  }
+  uploading.value = false
+  if (fileInput.value) fileInput.value.value = ''
 }
 
 const handleDeleteEntry = async () => {

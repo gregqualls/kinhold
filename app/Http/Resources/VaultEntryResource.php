@@ -21,6 +21,7 @@ class VaultEntryResource extends JsonResource
             'category' => VaultCategoryResource::make($this->whenLoaded('category')),
             'data' => $this->decrypted_data ?? null,
             'notes' => $this->notes,
+            'is_personal' => $this->is_personal,
             'metadata' => $this->metadata,
             'creator' => UserResource::make($this->whenLoaded('creator')),
             'permissions' => $this->whenLoaded('permissions', function () {
