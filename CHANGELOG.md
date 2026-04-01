@@ -2,6 +2,38 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-01 — Session 19: Vault Overhaul
+
+### What Was Done
+- **Fixed 9 vault CRUD bugs** — Entry creation (data format mismatch), edit entry (was TODO stub), permissions display (missing user relation), document delete (polymorphic relation bug), document links, update validation, grant permission field name, category filtering, PHPStan baseline cleanup.
+- **Markdown editor** — Replaced key/value field design with Milkdown WYSIWYG editor. Bold, italic, headings, lists, code, blockquote, HR toolbar. Entries store markdown body + optional sensitive fields. Legacy entries still display via fallback.
+- **Category CRUD** — Create, edit, delete custom categories with 10 icon options. Backend, frontend, and MCP tool all updated.
+- **Permissions UI** — Share button + modal to grant/revoke access per family member with view/edit levels.
+- **Document upload** — Upload button on entry detail with progress indicator.
+- **Kids personal vault** — `is_personal` flag on entries. Children can create/edit/delete their own personal entries. Parents see everything. Policy + MCP enforced.
+- **Vault playbooks** — 5 community-contributable `.md` playbook files (house manual, medical, vehicle, school, emergency contacts). Two new MCP tools (`list-playbooks`, `get-playbook`). Agent system prompt updated to use playbooks for guided data entry.
+
+### Files Created
+- `resources/js/components/vault/MarkdownEditor.vue`, `MilkdownEditorCore.vue`
+- `app/Policies/VaultCategoryPolicy.php`
+- `app/Mcp/Tools/ListPlaybooks.php`, `GetPlaybook.php`
+- `database/migrations/2026_04_01_192652_add_is_personal_to_vault_entries.php`
+- `playbooks/vault/` — 5 playbook files
+
+### Files Modified
+- `app/Http/Controllers/Api/V1/VaultController.php` (bug fixes + category CRUD + personal entries)
+- `app/Http/Resources/VaultEntryResource.php` (vault_category_id + is_personal + user data in permissions)
+- `app/Mcp/Tools/ManageVault.php` (category CRUD + personal entries + N+1 fix)
+- `app/Models/VaultEntry.php` (is_personal)
+- `app/Policies/VaultEntryPolicy.php` (personal entry access for children)
+- `resources/js/views/vault/` (all 3 views rewritten)
+- `resources/js/stores/vault.js` (category CRUD actions)
+- `resources/js/components/common/BaseModal.vue` (xl size)
+- `routes/api.php` (category routes)
+- `package.json` (milkdown deps)
+
+---
+
 ## 2026-04-01 — Session 18: Chat → Agent (PR #119)
 
 ### What Was Done

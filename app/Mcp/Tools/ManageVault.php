@@ -168,7 +168,7 @@ class ManageVault extends Tool
     {
         $user = $this->user();
         $query = VaultEntry::where('family_id', $this->familyId())
-            ->with(['category', 'creator:id,name']);
+            ->with(['category', 'creator:id,name', 'permissions']);
 
         if ($categoryId = $request->get('category_id')) {
             $query->where('vault_category_id', $categoryId);
@@ -180,7 +180,7 @@ class ManageVault extends Tool
         if (! $user->isParent()) {
             $entries = $entries->filter(
                 fn ($e) => ($e->is_personal && $e->created_by === $user->id)
-                    || $e->permissions()->where('user_id', $user->id)->exists()
+                    || $e->permissions->contains('user_id', $user->id)
             );
         }
 

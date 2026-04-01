@@ -83,8 +83,10 @@ class VaultController extends Controller
     /**
      * Update a vault category (parent only).
      */
-    public function updateCategory(Request $request, VaultCategory $category): JsonResponse
+    public function updateCategory(Request $request, string $category): JsonResponse
     {
+        $family = $request->user()->currentFamily()->firstOrFail();
+        $category = VaultCategory::where('family_id', $family->id)->findOrFail($category);
         $this->authorize('update', $category);
 
         $validated = $request->validate([
@@ -116,8 +118,10 @@ class VaultController extends Controller
     /**
      * Delete a vault category (parent only). Must be empty.
      */
-    public function destroyCategory(Request $request, VaultCategory $category): JsonResponse
+    public function destroyCategory(Request $request, string $category): JsonResponse
     {
+        $family = $request->user()->currentFamily()->firstOrFail();
+        $category = VaultCategory::where('family_id', $family->id)->findOrFail($category);
         $this->authorize('delete', $category);
 
         if ($category->entries()->count() > 0) {
@@ -161,7 +165,7 @@ class VaultController extends Controller
                 return true;
             }
 
-            return $entry->permissions()->where('user_id', $user->id)->exists();
+            return $entry->permissions->contains('user_id', $user->id);
         });
 
         return response()->json([
