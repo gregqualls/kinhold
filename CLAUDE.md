@@ -187,6 +187,9 @@ All routes are prefixed with `/api/v1/`. Auth routes are public, everything else
 8. **Keep the API-first principle.** Never bypass the API from the frontend.
 9. **Mobile-first.** Always design for phone screens first.
 10. **Security matters.** This app stores SSNs, medical records, financial info. Treat every feature with that in mind.
+11. **Follow the pipeline.** Use `/playbook` if unsure what's next. The full flow is:
+    `/kickoff` → code → `/review` → `/check` → `/pr` → `/qa` → `/handoff` → `/merge` → `/cleanup`
+12. **Quality gates are mandatory.** `/check` must pass before `/pr`. No exceptions.
 
 ## Local Development Setup
 

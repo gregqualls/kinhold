@@ -57,11 +57,33 @@ chmod +x setup.sh && ./setup.sh
 - **API routes:** All under `/api/v1/`. Every feature must be accessible through the API.
 - **Database:** UUIDs for primary keys. Migrations are timestamped.
 
+## Development pipeline
+
+We use a structured pipeline to guarantee quality and safe output. If you're using Claude Code, these are available as slash commands:
+
+```
+/kickoff → code → /review → /check → /pr → /qa → /handoff → /merge → /cleanup
+```
+
+| Step | Command | Purpose |
+|------|---------|---------|
+| Start session | `/kickoff` | Read context, check state, offer to branch from next issue |
+| Write code | — | Implement the feature or fix |
+| Review changes | `/review` | Catch security, architecture, and convention issues |
+| Quality checks | `/check` | Run all automated gates (Pint, Larastan, PHPUnit, ESLint, Vite) |
+| Create PR | `/pr` | Push branch, link issues, run checks as gate |
+| QA | `/qa` | Verify CI status + Upsun preview environment |
+| Handoff | `/handoff` | Capture session context before merge |
+| Merge | `/merge` | Squash merge, confirm production deploy |
+| Cleanup | `/cleanup` | Prune branches and worktrees |
+
+**Utility commands:** `/fix` (auto-fix lint/format), `/ship` (comprehensive audit), `/playbook` (interactive pipeline guide), `/issue-planner` (sprint planning)
+
 ## Submitting changes
 
 1. Fork the repo and create a branch from `main`.
 2. Make your changes. Keep commits focused.
-3. Ensure the frontend builds cleanly: `npx vite build`
+3. Run quality checks: `./vendor/bin/pint --test && ./vendor/bin/phpstan analyse && ./vendor/bin/phpunit && npx vite build && npx eslint resources/js/`
 4. Run the **ship checklist** below before opening your PR.
 5. Open a pull request against `main` with a clear description of what and why.
 

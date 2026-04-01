@@ -175,6 +175,30 @@ When adding a new feature/module, create files in ALL of these locations:
 10. `resources/js/views/newModel/` — Vue view components
 11. `resources/js/components/newModel/` — Vue reusable components
 12. `resources/js/router/index.js` — add routes
-13. `mcp-server/src/tools/newModel.ts` — MCP tools
+13. `app/Mcp/Tools/NewModelTools.php` — MCP tools (Laravel-native)
 14. Update `CLAUDE.md` module list
 15. Update `docs/ROADMAP.md` feature status
+
+## Development Pipeline
+
+Every feature follows this pipeline. Claude Code skills automate each step:
+
+```
+/kickoff → code → /review → /check → /pr → /qa → /handoff → /merge → /cleanup
+```
+
+### Quality gates (enforced by `/check`)
+
+**Hard gates (block PR creation):**
+1. **PHP Syntax** — `php -l` on changed files
+2. **PHP Formatting** — `./vendor/bin/pint --test`
+3. **Static Analysis** — `./vendor/bin/phpstan analyse`
+4. **Tests** — `./vendor/bin/phpunit`
+5. **Frontend Build** — `npx vite build`
+6. **Frontend Lint** — `npx eslint resources/js/`
+
+**Soft gates (warn, don't block):**
+7. **Dependency Audit** — `composer audit` + `npm audit` (high/critical vulns DO block)
+8. **Test Coverage** — Target 40% line coverage (raises over time)
+9. **Bundle Size** — Warn if any JS chunk > 500KB or total > 1MB
+10. **Accessibility** — Basic scan for missing alt text, ARIA labels, form labels
