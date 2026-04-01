@@ -21,7 +21,18 @@ class ChatMessage extends Model
         'family_id',
         'message',
         'role',
+        'metadata',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'array',
+        ];
+    }
 
     /**
      * Get the user who sent/received this message.

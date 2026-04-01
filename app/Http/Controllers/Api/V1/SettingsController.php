@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Family;
 use App\Models\User;
-use App\Services\ChatbotService;
+use App\Services\AgentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -44,7 +44,7 @@ class SettingsController extends Controller
                 'ai_model' => $settings['ai_model'] ?? '',
                 'ai_api_key_masked' => $this->maskApiKey($settings),
                 'ai_has_key' => ! empty($settings['ai_api_key']),
-                'ai_providers' => ChatbotService::availableProviders(),
+                'ai_providers' => AgentService::availableProviders(),
                 'task_assignment' => $settings['task_assignment'] ?? [
                     'mode' => 'all',
                     'users' => [],
@@ -210,7 +210,7 @@ class SettingsController extends Controller
                 'ai_model' => $settings['ai_model'] ?? '',
                 'ai_api_key_masked' => $this->maskApiKey($settings),
                 'ai_has_key' => ! empty($settings['ai_api_key']),
-                'ai_providers' => ChatbotService::availableProviders(),
+                'ai_providers' => AgentService::availableProviders(),
                 'task_assignment' => $settings['task_assignment'] ?? [
                     'mode' => 'all',
                     'users' => [],
