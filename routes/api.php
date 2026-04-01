@@ -97,6 +97,9 @@ Route::prefix('v1')->group(function () {
         // Vault (module: vault)
         Route::prefix('/vault')->middleware('module:vault')->group(function () {
             Route::get('/categories', [VaultController::class, 'categories']);
+            Route::post('/categories', [VaultController::class, 'storeCategory']);
+            Route::put('/categories/{category}', [VaultController::class, 'updateCategory']);
+            Route::delete('/categories/{category}', [VaultController::class, 'destroyCategory']);
             Route::get('/entries', [VaultController::class, 'index']);
             Route::post('/entries', [VaultController::class, 'store']);
             Route::get('/entries/{entry}', [VaultController::class, 'show']);

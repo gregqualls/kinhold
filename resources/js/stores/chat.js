@@ -24,9 +24,11 @@ export const useChatStore = defineStore('chat', () => {
         created_at: new Date().toISOString(),
       })
 
-      // Send to API
+      // Send to API (longer timeout — agent may call multiple tools)
       const response = await api.post('/chat', {
         message: text,
+      }, {
+        timeout: 120000,
       })
 
       // Remove optimistic message and add real one with AI response
@@ -50,8 +52,14 @@ export const useChatStore = defineStore('chat', () => {
       return { success: true }
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to send message'
-      // Remove optimistic message on error
-      messages.value = messages.value.filter((m) => m.id !== optimisticId)
+      // Keep the user's message but add an error response so they can see what happened
+      messages.value.push({
+        id: Date.now() + 1,
+        text: `Something went wrong: ${error.value}. Please try again.`,
+        sender: 'assistant',
+        created_at: new Date().toISOString(),
+        isError: true,
+      })
       return { success: false, error: error.value }
     } finally {
       loading.value = false

@@ -18,9 +18,11 @@ These features are live and working:
 | Managed child accounts (no email required) | COMPLETE |
 | Task management (CRUD, tags, priority, recurring via RRULE) | COMPLETE |
 | Family calendar (read-only Google Calendar + ICS aggregation) | COMPLETE |
-| Encrypted family vault (categories, per-item permissions, document uploads) | COMPLETE |
+| Encrypted family vault (WYSIWYG markdown editor, per-item permissions, document uploads) | COMPLETE |
+| Vault CRUD (custom categories, kids personal section, share UI, playbooks) | COMPLETE |
 | AI chatbot (Claude-powered, queries calendar/tasks/vault) | COMPLETE |
-| MCP server (18 Laravel-native tools, full content coverage via Claude Desktop/Code) | COMPLETE |
+| MCP server (20 Laravel-native tools, full content coverage via Claude Desktop/Code) | COMPLETE |
+| Vault playbooks (5 guided workflows for house, medical, vehicle, school, emergency) | COMPLETE |
 | Gamification (points ledger, kudos, leaderboard, rewards store) | COMPLETE |
 | Badges (auto-triggered + custom, hidden badges) | COMPLETE |
 | Email notifications (weekly digest, task assigned/completed, invites) | COMPLETE |

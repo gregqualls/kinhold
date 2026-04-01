@@ -25,6 +25,7 @@ class VaultEntry extends Model
         'title',
         'encrypted_data',
         'notes',
+        'is_personal',
         'metadata',
     ];
 
@@ -46,6 +47,7 @@ class VaultEntry extends Model
     {
         return [
             'metadata' => 'json',
+            'is_personal' => 'boolean',
         ];
     }
 

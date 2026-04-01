@@ -131,17 +131,22 @@ parameters:
 			path: app/Http/Controllers/Api/V1/TaskController.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Document\\:\\:\\$vaultEntry\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/VaultController.php
-
-		-
 			message: "#^Access to an undefined property App\\\\Models\\\\VaultEntry\\:\\:\\$decrypted_data\\.$#"
 			count: 1
 			path: app/Http/Controllers/Api/V1/VaultController.php
 
 		-
 			message: "#^Access to an undefined property App\\\\Models\\\\VaultEntry\\:\\:\\$vaultCategory\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/VaultController.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/VaultController.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
 			count: 1
 			path: app/Http/Controllers/Api/V1/VaultController.php
 
@@ -491,6 +496,11 @@ parameters:
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$is_personal\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultEntryResource.php
+
+		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$metadata\\.$#"
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
@@ -512,6 +522,11 @@ parameters:
 
 		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/VaultEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$vault_category_id\\.$#"
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
@@ -579,6 +594,16 @@ parameters:
 			message: "#^Cannot call method format\\(\\) on string\\.$#"
 			count: 3
 			path: app/Mcp/Tools/ManageTasks.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/ManageVault.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/ManageVault.php
 
 		-
 			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
@@ -739,6 +764,16 @@ parameters:
 			message: "#^Strict comparison using \\=\\=\\= between int and string\\|null will always evaluate to false\\.$#"
 			count: 2
 			path: app/Policies/TaskPolicy.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 3
+			path: app/Policies/VaultEntryPolicy.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			count: 3
+			path: app/Policies/VaultEntryPolicy.php
 
 		-
 			message: "#^Call to an undefined method Laravel\\\\Mcp\\\\Server\\\\Tool\\:\\:handle\\(\\)\\.$#"

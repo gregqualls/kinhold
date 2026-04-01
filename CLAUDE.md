@@ -26,7 +26,7 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 | Cache/Queue | Redis 7 | Sessions, cache, queue driver |
 | Auth | Laravel Sanctum + Socialite | Cookie SPA, token MCP, Google OAuth via Socialite |
 | Encryption | Laravel app-level | Vault sensitive fields encrypted at rest |
-| MCP Server | Laravel-native (`laravel/mcp`) | 18 tools at `/mcp`, Sanctum bearer token auth |
+| MCP Server | Laravel-native (`laravel/mcp`) | 20 tools at `/mcp`, Sanctum bearer token auth |
 | Local Dev | Homebrew (preferred) or Docker | `brew install php composer postgresql redis` then `php artisan serve` |
 | Production | Upsun.com | Config in `.upsun/config.yaml` |
 | Domain | kinhold.app | Configured via Cloudflare |
@@ -65,17 +65,21 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 - Points awarded on completion, reversed on uncomplete
 - **Future:** Categories, kanban boards, subtasks, dependencies
 
-### 4. Family Vault (MVP — SCAFFOLDED)
-- Categories: Medical, Financial, Insurance, Legal, Education, Personal
-- Structured data entries (key-value pairs, encrypted at rest)
-- Document uploads (PDFs, images)
-- **Permissions model:** Parent/child base roles + per-item overrides. Parents see everything. Children see only entries explicitly shared with them.
-- Sensitive fields masked by default, tap to reveal, copy with auto-clear
-- **Future:** Version history, audit log, shared-with-external (doctor, lawyer)
+### 4. Family Vault (IMPLEMENTED — Markdown + Sensitive Fields)
+- **WYSIWYG markdown editor** (Milkdown) for entry content — headings, bold, italic, lists, code, blockquotes
+- Optional **sensitive fields** section for passwords, SSNs, account numbers (masked, tap to reveal, auto-clear clipboard)
+- Custom categories (CRUD) with 10 icon options. Default: Medical, Financial, Insurance, Legal, Education, Personal
+- **Kids personal vault:** `is_personal` flag — children can create/edit/delete their own entries. Parents see everything.
+- Document uploads (PDFs, images) with download
+- **Permissions model:** Parent/child base roles + per-item overrides (view/edit). Share UI with family member dropdown.
+- **Vault playbooks:** 5 `.md` skill files in `playbooks/vault/` for AI-guided data entry (house manual, medical, vehicle, school, emergency). Community-contributable via PR.
+- Data format: `encrypted_data` stores `{ body: "markdown", sensitive_fields: { key: value } }`. Legacy flat key/value format has fallback rendering.
+- **Future:** RAG search tool, version history, audit log
 
 ### 5. AI Assistant (IMPLEMENTED — Agent Architecture)
-- Natural language interface to all 18 MCP tools via Claude's tool_use API
+- Natural language interface to all 20 MCP tools via Claude's tool_use API
 - `AgentService` orchestrates: user message → Claude decides tool calls → `ToolRegistry` executes → results fed back → loop until text response (max 10 iterations)
+- **Hallucination guard:** Server-side `claimsAction()` check rejects responses that claim actions were taken without tool calls. Logs warning and forces retry.
 - Safety guardrails: tool-only scope (no freeform Q&A), no off-topic, no prompt injection, no physical tasks. Asks clarifying questions for incomplete requests.
 - Markdown rendering in assistant responses (marked + DOMPurify for XSS safety)
 - Accuracy disclaimer shown in UI
@@ -84,7 +88,7 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 
 ### 6. MCP Server (IMPLEMENTED — Laravel-Native)
 - Laravel-native via `laravel/mcp` package — runs at `/mcp` endpoint, no separate process
-- 18 consolidated tools (action-based) covering all modules: tasks, points, rewards, badges, calendar, vault, featured events, family, settings, search
+- 20 consolidated tools (action-based) covering all modules: tasks, points, rewards, badges, calendar, vault, featured events, family, settings, search, playbooks
 - Authenticates with Sanctum bearer token
 - Direct model/service access (no HTTP round-trips)
 - `ScopesToFamily` trait scopes all queries to authenticated user's family
@@ -243,7 +247,7 @@ chmod +x setup.sh && ./setup.sh
 - **Feature toggles:** Parents can enable/disable modules (calendar, tasks, vault, chat, points, badges)
 - **Onboarding wizard:** 5-step setup for parents (welcome, add family, calendar, tags, granular feature access). Simplified flow for joining members with feature explainer. Re-triggerable from Settings.
 - **Profile pictures:** Photo upload, 26 Phosphor icon presets (duotone), 12 brand color picker, Google photo restore. `avatar` stores URL/preset key/null. `avatar_color` stores chosen color name. `google_avatar` persists Google OAuth photo. Uploaded files served via `GET /api/v1/user/avatar/{userId}` (not symlink).
-- **Laravel-native MCP server:** 18 tools at `/mcp`, Sanctum bearer token auth, direct model access
+- **Laravel-native MCP server:** 20 tools at `/mcp`, Sanctum bearer token auth, direct model access
 - **Security hardened:** Full audit completed (Session 13). Cross-family isolation on all policies/controllers, OAuth auth code exchange (not token-in-URL), rate limiting on auth endpoints, CSRF-protected calendar OAuth, SSRF protection on ICS, file type restrictions on vault uploads.
 - **Unified policy-based auth (Session 15):** 8 Laravel Policies (Task, TaskList, VaultEntry, Family, Badge, Tag, Reward, FeaturedEvent) serve as single source of truth for both API and MCP layers. `ScopesToFamily::authorize()` delegates to Gate from MCP tools. `Badge::maskHidden()` shared between API and MCP. Foundation for Issue #107 (child access controls) is in place.
 - **Google account linking:** Email/password users can link Google from Settings or when attempting Google sign-in (password confirmation flow).

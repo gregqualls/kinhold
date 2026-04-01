@@ -3,7 +3,9 @@
 namespace App\Mcp\Servers;
 
 use App\Mcp\Tools\CompleteTask;
+use App\Mcp\Tools\GetPlaybook;
 use App\Mcp\Tools\GetSettings;
+use App\Mcp\Tools\ListPlaybooks;
 use App\Mcp\Tools\ManageBadges;
 use App\Mcp\Tools\ManageFeaturedEvents;
 use App\Mcp\Tools\ManagePointRequests;
@@ -56,5 +58,9 @@ class KinholdServer extends Server
         ViewCalendar::class,
         ManageVault::class,
         ManageVaultAccess::class,
+
+        // Playbooks
+        ListPlaybooks::class,
+        GetPlaybook::class,
     ];
 }

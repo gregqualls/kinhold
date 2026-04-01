@@ -44,6 +44,98 @@ class VaultController extends Controller
     }
 
     /**
+     * Create a new vault category (parent only).
+     */
+    public function storeCategory(Request $request): JsonResponse
+    {
+        $this->authorize('create', VaultCategory::class);
+
+        $family = $request->user()->currentFamily()->firstOrFail();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'icon' => 'nullable|string|max:50',
+            'description' => 'nullable|string|max:500',
+        ]);
+
+        $slug = \Str::slug($validated['name']);
+
+        // Ensure unique slug within family
+        $baseSlug = $slug;
+        $counter = 1;
+        while (VaultCategory::where('family_id', $family->id)->where('slug', $slug)->exists()) {
+            $slug = $baseSlug.'-'.$counter++;
+        }
+
+        $category = VaultCategory::create([
+            'family_id' => $family->id,
+            'name' => $validated['name'],
+            'slug' => $slug,
+            'icon' => $validated['icon'] ?? 'lock',
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        return response()->json([
+            'category' => VaultCategoryResource::make($category->loadCount('entries')),
+        ], 201);
+    }
+
+    /**
+     * Update a vault category (parent only).
+     */
+    public function updateCategory(Request $request, string $category): JsonResponse
+    {
+        $family = $request->user()->currentFamily()->firstOrFail();
+        $category = VaultCategory::where('family_id', $family->id)->findOrFail($category);
+        $this->authorize('update', $category);
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'icon' => 'sometimes|string|max:50',
+            'description' => 'nullable|string|max:500',
+        ]);
+
+        if (isset($validated['name'])) {
+            $slug = \Str::slug($validated['name']);
+            $baseSlug = $slug;
+            $counter = 1;
+            while (VaultCategory::where('family_id', $category->family_id)
+                ->where('slug', $slug)
+                ->where('id', '!=', $category->id)
+                ->exists()) {
+                $slug = $baseSlug.'-'.$counter++;
+            }
+            $validated['slug'] = $slug;
+        }
+
+        $category->update($validated);
+
+        return response()->json([
+            'category' => VaultCategoryResource::make($category->loadCount('entries')),
+        ], 200);
+    }
+
+    /**
+     * Delete a vault category (parent only). Must be empty.
+     */
+    public function destroyCategory(Request $request, string $category): JsonResponse
+    {
+        $family = $request->user()->currentFamily()->firstOrFail();
+        $category = VaultCategory::where('family_id', $family->id)->findOrFail($category);
+        $this->authorize('delete', $category);
+
+        if ($category->entries()->count() > 0) {
+            return response()->json([
+                'message' => 'Cannot delete a category that still has entries. Move or delete the entries first.',
+            ], 422);
+        }
+
+        $category->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
      * List vault entries accessible to the current user.
      */
     public function index(Request $request): JsonResponse
@@ -62,13 +154,18 @@ class VaultController extends Controller
 
         $entries = $query->orderBy('created_at', 'desc')->get();
 
-        // Filter by permissions: parents see all, children only see entries with explicit access
+        // Filter by permissions: parents see all, children see personal + shared entries
         $entries = $entries->filter(function ($entry) use ($user) {
             if ($user->isParent()) {
                 return true;
             }
 
-            return $entry->permissions()->where('user_id', $user->id)->exists();
+            // Children can see their own personal entries
+            if ($entry->is_personal && $entry->created_by === $user->id) {
+                return true;
+            }
+
+            return $entry->permissions->contains('user_id', $user->id);
         });
 
         return response()->json([
@@ -77,11 +174,12 @@ class VaultController extends Controller
     }
 
     /**
-     * Create a new vault entry (parent only).
+     * Create a new vault entry. Parents can create any entry. Children can create personal entries only.
      */
     public function store(StoreVaultEntryRequest $request): JsonResponse
     {
-        $this->authorize('create', VaultEntry::class);
+        $isPersonal = (bool) $request->input('is_personal', false);
+        $this->authorize('create', [VaultEntry::class, $isPersonal]);
 
         $family = $request->user()->currentFamily()->firstOrFail();
         $validated = $request->validated();
@@ -100,6 +198,7 @@ class VaultController extends Controller
             'title' => $validated['title'],
             'encrypted_data' => $encryptedData,
             'notes' => $validated['notes'] ?? null,
+            'is_personal' => $isPersonal,
         ]);
 
         // Grant permissions to specified users if provided
@@ -125,7 +224,7 @@ class VaultController extends Controller
     {
         $this->authorize('view', $entry);
 
-        $entry->load(['category', 'creator', 'permissions', 'documents']);
+        $entry->load(['category', 'creator', 'permissions.user', 'documents']);
 
         // Decrypt the data for display
         $entry->decrypted_data = $this->encryptionService->decrypt($entry->encrypted_data);
@@ -284,7 +383,13 @@ class VaultController extends Controller
 
     public function deleteDocument(Request $request, Document $document): JsonResponse
     {
-        $this->authorize('view', $document->vaultEntry);
+        $entry = $document->documentable;
+
+        if (! $entry || ! ($entry instanceof VaultEntry)) {
+            return response()->json(['message' => 'Document not found.'], 404);
+        }
+
+        $this->authorize('view', $entry);
 
         // Delete file from storage
         \Storage::disk($document->disk ?? 'private')->delete($document->path);
