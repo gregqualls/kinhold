@@ -73,12 +73,14 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 - Sensitive fields masked by default, tap to reveal, copy with auto-clear
 - **Future:** Version history, audit log, shared-with-external (doctor, lawyer)
 
-### 5. AI Chatbot (MVP — SCAFFOLDED)
-- Drop in an Anthropic API key in Settings to enable
-- Natural language queries against family data: "What's for dinner Tuesday?", "What's my SSN?", "What tasks are due this week?"
-- Claude API on the backend queries calendar, tasks, and vault
-- Suggested quick questions, chat history
-- **Future:** Proactive reminders, family digest emails
+### 5. AI Assistant (IMPLEMENTED — Agent Architecture)
+- Natural language interface to all 18 MCP tools via Claude's tool_use API
+- `AgentService` orchestrates: user message → Claude decides tool calls → `ToolRegistry` executes → results fed back → loop until text response (max 10 iterations)
+- Safety guardrails: tool-only scope (no freeform Q&A), no off-topic, no prompt injection, no physical tasks. Asks clarifying questions for incomplete requests.
+- Markdown rendering in assistant responses (marked + DOMPurify for XSS safety)
+- Accuracy disclaimer shown in UI
+- Only Anthropic supported for agent mode (tool_use is provider-specific). BYOK + platform key modes both work.
+- **Future:** RAG for vault data, proactive reminders, multi-step workflows
 
 ### 6. MCP Server (IMPLEMENTED — Laravel-Native)
 - Laravel-native via `laravel/mcp` package — runs at `/mcp` endpoint, no separate process
@@ -119,7 +121,7 @@ kinhold/
 │   ├── Http/Requests/             # Form request validation (Auth/, Task/, Vault/)
 │   ├── Http/Resources/            # API response transformers
 │   ├── Models/                    # 14 Eloquent models (incl. PointTransaction, Reward, RewardPurchase, Badge)
-│   ├── Services/                  # Business logic (GoogleCalendar, VaultEncryption, Chatbot, Points, Badge)
+│   ├── Services/                  # Business logic (GoogleCalendar, VaultEncryption, Agent, Points, Badge)
 │   ├── Policies/                  # Authorization (Task, TaskList, VaultEntry, Family, Badge, Tag, Reward, FeaturedEvent)
 │   ├── Console/Commands/          # Artisan commands (GenerateRecurringTasks)
 │   ├── Enums/                     # FamilyRole, TaskPriority, PermissionLevel, PointTransactionType, BadgeTriggerType
@@ -262,7 +264,7 @@ chmod +x setup.sh && ./setup.sh
 - `CalendarEventResource` receives raw arrays (from Google API), not Eloquent models — may need adjustment
 - Vault route conflict possible: `/vault/entry/:id` vs `/vault/:categorySlug`
 - Google Calendar OAuth flow needs real credentials from Google Cloud Console
-- Chatbot needs `ANTHROPIC_API_KEY` in `.env`
+- AI Assistant needs `ANTHROPIC_API_KEY` in `.env`
 - VaultEncryptionService uses a simple encrypt/decrypt — verify round-trip works on first real entry
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 

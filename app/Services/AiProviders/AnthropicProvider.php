@@ -56,6 +56,43 @@ class AnthropicProvider implements AiProviderInterface
         return $data['content'][0]['text'] ?? 'Sorry, I could not generate a response.';
     }
 
+    /**
+     * Send a message with tool definitions and return the full response.
+     *
+     * @param  array<int, array{role: string, content: mixed}>  $messages
+     * @param  array<int, array{name: string, description: string, input_schema: array<string, mixed>}>  $tools
+     * @return array{content: array<int, mixed>, stop_reason: string}
+     */
+    public function askWithTools(string $systemPrompt, array $messages, array $tools): array
+    {
+        $response = Http::withHeaders([
+            'x-api-key' => $this->apiKey,
+            'anthropic-version' => '2023-06-01',
+            'Content-Type' => 'application/json',
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
+            'model' => $this->model,
+            'max_tokens' => 4096,
+            'system' => $systemPrompt,
+            'messages' => $messages,
+            'tools' => $tools,
+        ]);
+
+        if ($response->failed()) {
+            Log::error('Anthropic API error (tool_use)', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+            throw new \RuntimeException('Failed to get response from Anthropic.');
+        }
+
+        $data = $response->json();
+
+        return [
+            'content' => $data['content'] ?? [],
+            'stop_reason' => $data['stop_reason'] ?? 'end_turn',
+        ];
+    }
+
     public static function displayName(): string
     {
         return 'Anthropic Claude';

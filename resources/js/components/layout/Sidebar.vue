@@ -95,7 +95,7 @@ import {
   CalendarIcon,
   CheckCircleIcon,
   LockClosedIcon,
-  ChatBubbleLeftIcon,
+  CpuChipIcon,
   TrophyIcon,
   ShieldCheckIcon,
   ArrowRightOnRectangleIcon,
@@ -133,7 +133,7 @@ const navItems = [
   { label: 'Calendar', path: '/calendar', icon: CalendarIcon, name: 'Calendar', module: 'calendar' },
   { label: 'Tasks', path: '/tasks', icon: CheckCircleIcon, name: 'Tasks', module: 'tasks' },
   { label: 'Vault', path: '/vault', icon: LockClosedIcon, name: 'Vault', module: 'vault' },
-  { label: 'Chat', path: '/chat', icon: ChatBubbleLeftIcon, name: 'Chat', module: 'chat' },
+  { label: 'Assistant', path: '/chat', icon: CpuChipIcon, name: 'Chat', module: 'chat' },
   { label: 'Points', path: '/points', icon: TrophyIcon, name: 'Points', module: 'points' },
   { label: 'Badges', path: '/badges', icon: ShieldCheckIcon, name: 'Badges', module: 'badges' },
 ]

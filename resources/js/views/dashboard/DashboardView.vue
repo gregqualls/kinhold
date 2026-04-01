@@ -201,8 +201,8 @@
             to="/chat"
             class="flex items-center gap-3 p-3 rounded-lg hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
           >
-            <ChatBubbleLeftIcon class="w-5 h-5 text-wisteria-600" />
-            <span class="font-medium text-prussian-500 dark:text-lavender-200">Ask Kinhold</span>
+            <CpuChipIcon class="w-5 h-5 text-wisteria-600" />
+            <span class="font-medium text-prussian-500 dark:text-lavender-200">Assistant</span>
           </RouterLink>
         </div>
       </BaseCard>
@@ -285,7 +285,7 @@ import {
   SparklesIcon,
   PlusIcon,
   LockClosedIcon,
-  ChatBubbleLeftIcon,
+  CpuChipIcon,
   UserGroupIcon,
   TrophyIcon,
   ShieldCheckIcon,

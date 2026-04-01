@@ -1,34 +1,35 @@
 # Session Handoff
 
 **Date:** 2026-04-01
-**Branch:** chore/sdlc-pipeline-overhaul
-**Last commit:** ae5ba65 fix: restore .environment filename for Upsun deploy
+**Branch:** feature/106-chat-to-agent
+**Last commit:** ea99f82 fix: task tag sync fails due to UUID pivot table
 
 ## What Was Done This Session
-- Built complete SDLC pipeline: 7 new commands + 3 improved (`/check`, `/review`, `/pr`, `/qa`, `/merge`, `/fix`, `/playbook`, improved `/kickoff`, `/handoff`, `/ship`)
-- Installed and configured ESLint (flat config, Vue 3, browser globals), Pint (Laravel preset), PHPStan (level 5 + Larastan + baseline)
-- Auto-fixed entire codebase: 87 PHP files (Pint), 53 Vue files (ESLint attribute ordering)
-- Patched 2 security vulnerabilities: phpseclib (HIGH), league/commonmark (MEDIUM)
-- Added CI lint job (parallel with tests + frontend build), all 4 CI checks passing
+- Replaced freeform chatbot with MCP-powered agent — natural language → Claude tool_use → executes 18 MCP tools → returns formatted results
+- Built AgentService (orchestration loop) + ToolRegistry (schema mapping + execution) + AnthropicProvider.askWithTools()
+- Renamed Chat → Assistant across all navigation with CpuChipIcon, markdown rendering, accuracy disclaimer, clarifying questions
+- Fixed pre-existing task tag sync bug (UUID pivot table missing model)
+- Closed 4 stale issues (#113, #108, #107, #109), repurposed #106 with agent vision
+- Removed dead ChatbotService
 
 ## Quality State
 - Tests: 45 tests, 90 assertions (pass, 2 deprecations)
 - Pint: pass
-- Larastan: pass (0 new errors, 203 baselined)
-- ESLint: pass (0 errors, 49 warnings — all `no-unused-vars`)
-- Build: pass (2341 modules)
+- Larastan: pass (0 new errors, 198 baselined — down from 213 after removing ChatbotService)
+- ESLint: pass (0 errors, 49 warnings — all pre-existing no-unused-vars)
+- Build: pass (2344 modules)
+- CI: all 4 checks green on PR #119
 
 ## What's Next
 1. **Versioning + GitHub Releases** (Issue #117) — semantic versioning, release workflow, self-hosted update notifications
-2. **Audit all controllers for family_id scoping** — before Corey's family signs up
-3. **Address the 49 ESLint warnings** — mostly unused vars/imports that should be cleaned up
-4. **Address the 203 PHPStan baseline errors** — chip away over time, raise coverage threshold from 40%
+2. **Vault rethink** — Greg is considering RAG for vault data so the agent can reason over it, possibly integrating an OSS project. Undecided.
+3. **Address ESLint warnings** — 49 unused vars/imports to clean up
+4. **Address PHPStan baseline** — chip away at 198 baselined errors over time
 
 ## Blockers or Gotchas
-- `.environment` must NOT be renamed — Upsun auto-sources it during deploy (learned the hard way this session)
-- PHPStan baseline must be committed (not gitignored) so CI uses the same baseline
-- Pint formats differently on PHP 8.4 (CI) vs PHP 8.5 (local) — watch for `array_indentation` issues in chained closures
-- `composer` is at `/usr/local/bin/composer` on Greg's machine, not in homebrew PATH
+- Agent only supports Anthropic (tool_use is provider-specific). Families using OpenAI/Google BYOK keys won't get the agent — they'll get a RuntimeException. May need a graceful fallback or message.
+- `.environment` must NOT be renamed — Upsun auto-sources it during deploy
+- Pint formats differently on PHP 8.4 (CI) vs PHP 8.5 (local) — watch for `array_indentation` issues
 
 ## Open Questions
-- None — pipeline is complete and all checks are green.
+- Greg is rethinking the vault — should the agent eventually access vault data via RAG? Separate issue needed when ready.

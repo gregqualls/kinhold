@@ -741,79 +741,59 @@ parameters:
 			path: app/Policies/TaskPolicy.php
 
 		-
-			message: "#^Parameter \\#2 \\$triggerType of method App\\\\Services\\\\BadgeService\\:\\:getCurrentValueForTrigger\\(\\) expects App\\\\Enums\\\\BadgeTriggerType, string given\\.$#"
+			message: "#^Call to an undefined method Laravel\\\\Mcp\\\\Server\\\\Tool\\:\\:handle\\(\\)\\.$#"
 			count: 1
-			path: app/Services/BadgeService.php
+			path: app/Services/Agent/ToolRegistry.php
 
 		-
 			message: "#^Cannot access property \\$value on string\\.$#"
-			count: 2
-			path: app/Services/ChatbotService.php
-
-		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/AgentService.php
 
 		-
 			message: "#^Offset 'ai_api_key' does not exist on array\\{\\}\\|string\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/AgentService.php
 
 		-
 			message: "#^Offset 'ai_api_key' on array\\{\\}\\|string in empty\\(\\) does not exist\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/AgentService.php
 
 		-
 			message: "#^Offset 'ai_mode' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/AgentService.php
 
 		-
 			message: "#^Offset 'ai_model' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/AgentService.php
 
 		-
 			message: "#^Offset 'ai_provider' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
-
-		-
-			message: "#^Offset 'anthropic' on array\\{anthropic\\: 'App\\\\\\\\Services\\\\\\\\AiProviders\\\\\\\\AnthropicProvider', openai\\: 'App\\\\\\\\Services\\\\\\\\AiProviders\\\\\\\\OpenAiProvider', google\\: 'App\\\\\\\\Services\\\\\\\\AiProviders\\\\\\\\GoogleGeminiProvider'\\} on left side of \\?\\? always exists and is not nullable\\.$#"
-			count: 1
-			path: app/Services/ChatbotService.php
-
-		-
-			message: "#^Relation 'taskList' is not found in App\\\\Models\\\\Task model\\.$#"
-			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/AgentService.php
 
 		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
-
-		-
-			message: "#^Result of && is always true\\.$#"
-			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/AgentService.php
 
 		-
 			message: "#^Strict comparison using \\=\\=\\= between 'kinhold' and 'byok' will always evaluate to false\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/AgentService.php
 
 		-
 			message: "#^Variable \\$apiKey in empty\\(\\) always exists and is always falsy\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/AgentService.php
 
 		-
-			message: "#^Variable \\$providerSlug on left side of \\?\\? always exists and is not nullable\\.$#"
+			message: "#^Parameter \\#2 \\$triggerType of method App\\\\Services\\\\BadgeService\\:\\:getCurrentValueForTrigger\\(\\) expects App\\\\Enums\\\\BadgeTriggerType, string given\\.$#"
 			count: 1
-			path: app/Services/ChatbotService.php
+			path: app/Services/BadgeService.php
 
 		-
 			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"

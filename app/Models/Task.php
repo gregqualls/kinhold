@@ -94,7 +94,7 @@ class Task extends Model
      */
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'task_tag')->withTimestamps();
+        return $this->belongsToMany(Tag::class, 'task_tag')->using(TaskTag::class)->withTimestamps();
     }
 
     /**
