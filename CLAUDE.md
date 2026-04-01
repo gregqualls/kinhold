@@ -214,9 +214,9 @@ php artisan db:seed
 chmod +x setup.sh && ./setup.sh
 ```
 
-## Current Status (Updated: 2026-03-31)
+## Current Status (Updated: 2026-04-01)
 
-**Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, MCP server, and profile pictures all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.** Security audit complete (PR #110).
+**Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, MCP server, and profile pictures all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.** Security audit complete (PR #110). Self-hosting infrastructure shipped (PR #115). CI pipeline + open-source community docs in place (PR #116).
 
 **Production:** Deployed on Upsun at `kinhold.app` (project ID: `2rozcvqjtjdta`, Terra Nova org). GitHub integration auto-deploys on push to `main`. PRs auto-create preview environments. Never use `upsun push` — just push to GitHub.
 
@@ -243,7 +243,10 @@ chmod +x setup.sh && ./setup.sh
 - **Unified policy-based auth (Session 15):** 8 Laravel Policies (Task, TaskList, VaultEntry, Family, Badge, Tag, Reward, FeaturedEvent) serve as single source of truth for both API and MCP layers. `ScopesToFamily::authorize()` delegates to Gate from MCP tools. `Badge::maskHidden()` shared between API and MCP. Foundation for Issue #107 (child access controls) is in place.
 - **Google account linking:** Email/password users can link Google from Settings or when attempting Google sign-in (password confirmation flow).
 - **Email verification:** Sent on registration, dismissable banner for unverified users. Existing users grandfathered.
-- **45 automated tests:** Security (35), Google link (5), email verification (5). Run with `./vendor/bin/phpunit`.
+- **Self-hosting infrastructure:** Zero-dependency Docker setup with SQLite (`docker-compose.simple.yml` + `setup-simple.sh`). Graceful feature degradation — Google OAuth, Calendar, AI Chat hide/show based on config. Public `/api/v1/config` endpoint for pre-auth service detection. First-boot auto-redirect to register. Comprehensive `SELF-HOSTING.md` guide.
+- **GitHub Actions CI:** PHPUnit tests + Vite build run on every PR and push to main. Workflow at `.github/workflows/ci.yml`.
+- **Community docs:** CODE_OF_CONDUCT.md, SECURITY.md, PR template, Elastic License 2.0 consistently applied everywhere.
+- **45 automated tests:** Security (35), Google link (5), email verification (5). Run with `./vendor/bin/phpunit`. CI runs on SQLite in-memory.
 
 **Dark mode architecture (important for future work):**
 - `darkMode: 'class'` in Tailwind config — `<html class="dark">` toggles it
@@ -261,7 +264,7 @@ chmod +x setup.sh && ./setup.sh
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 
 **What's next:**
-- Add Google OAuth redirect URI in Google Cloud Console (`https://kinhold.app/auth/google/callback`)
+- Versioning, GitHub Releases, and self-hosted update notifications (Issue #117) — close to needing this
 - Audit all controllers for family_id scoping before Corey's family signs up
 - Add dark mode toggle to TopBar (desktop) and mobile header for quick access
 - End-to-end testing of gamification flow (complete task → points → badge earned → toast)
