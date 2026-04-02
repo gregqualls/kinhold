@@ -7,8 +7,9 @@
         <div
           v-for="event in allDayEvents"
           :key="event.id"
-          class="text-xs px-2 py-1 rounded font-medium truncate max-w-48"
+          class="text-xs px-2 py-1 rounded font-medium truncate max-w-48 cursor-pointer hover:opacity-80 transition-opacity"
           :style="eventPillStyle(event)"
+          @click.stop="$emit('event-click', event)"
         >
           {{ event.title }}
         </div>
@@ -85,6 +86,7 @@
                   ...eventBlockStyle(positioned.event),
                 }"
                 :title="positioned.event.title + ' — ' + getCalendarSourceName(positioned.event)"
+                @click.stop="$emit('event-click', positioned.event)"
               >
                 <p class="text-xs font-semibold truncate leading-tight" :style="{ color: getEventColor(positioned.event) }">
                   {{ positioned.event.title }}
@@ -119,6 +121,8 @@ const props = defineProps({
   getEventColor: { type: Function, required: true },
   getCalendarSourceName: { type: Function, required: true },
 })
+
+defineEmits(['event-click'])
 
 const scrollContainer = ref(null)
 

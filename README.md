@@ -37,10 +37,10 @@ Live at [kinhold.app](https://kinhold.app)
 ### Core Modules
 
 - **Task Management** — Multiple task lists, priorities, due dates, assignees. Family tasks anyone can claim. Recurring tasks via RRULE (daily, weekly, monthly). Points awarded on completion.
-- **Family Calendar** — Aggregate Google Calendars from every family member, color-coded per person, with month/week/day views. Manual calendar events let families add events without needing a Google Calendar connection.
-- **Secure Vault** — Encrypted storage for sensitive family info (SSNs, medical records, insurance, financial data). Role-based permissions, tap-to-reveal fields, auto-clear clipboard.
-- **AI Chat** — Ask questions about your family data: "What tasks are due this week?", "What's the wifi password?", "When is the next dentist appointment?" Powered by Claude.
-- **MCP Server** — 18 tools for managing Kinhold through Claude Desktop or Claude Code. Full CRUD on tasks, vault, calendar, and family data. Laravel-native, no separate process.
+- **Family Calendar** — Aggregate Google Calendars + ICS feeds from every family member, plus manual events anyone can create. Recurrence (weekly/monthly/yearly), visibility controls (visible/busy/private), and "feature on dashboard" with countdown banners. Tasks with due dates show on the calendar automatically. Month/week/day views, mobile-optimized.
+- **Secure Vault** — Encrypted storage for sensitive family info (SSNs, medical records, insurance, financial data). WYSIWYG markdown editor, role-based permissions, tap-to-reveal sensitive fields, auto-clear clipboard, document uploads. AI-guided playbooks for common data entry.
+- **AI Assistant** — Natural language interface to all family data via MCP tools: "What tasks are due this week?", "Create a dentist appointment for Friday", "What's the wifi password?" Powered by Claude's tool_use API.
+- **MCP Server** — 20 tools for managing Kinhold through Claude Desktop or Claude Code. Full CRUD on tasks, vault, calendar, points, rewards, badges, and family data. Laravel-native, no separate process.
 
 ### Gamification
 
@@ -107,7 +107,7 @@ Turn chores into a game your kids actually want to play.
 | Cache/Queue | Redis 7 |
 | Auth | Laravel Sanctum + Google OAuth via Socialite |
 | AI | Anthropic Claude API (multi-provider ready) |
-| MCP Server | Laravel-native (PHP, 18 tools) |
+| MCP Server | Laravel-native (PHP, 20 tools) |
 | Build | Vite 5 |
 | Hosting | [Upsun](https://upsun.com) |
 
@@ -201,7 +201,7 @@ All routes prefixed with `/api/v1/`. Auth routes are public, everything else req
 Auth:      POST /register, /login, /logout, GET /user
 Tasks:     CRUD /tasks, /task-lists, POST /tasks/{id}/complete, /uncomplete
 Vault:     CRUD /vault/entries, /vault/categories, permissions, documents
-Calendar:  GET /calendar/events, /connections, POST /connect, /sync
+Calendar:  GET /calendar/events, /connections, POST /events, PUT /events/{id}, DELETE /events/{id}, POST /connect, /sync
 Points:    GET /points/bank, /leaderboard, /feed, POST /kudos, /deduct
 Rewards:   CRUD /rewards, POST /rewards/{id}/purchase
 Badges:    CRUD /badges, POST /badges/{id}/award, DELETE /badges/{id}/revoke/{user}
@@ -234,7 +234,7 @@ Authentication uses Sanctum bearer tokens. Generate a token in **Settings > MCP 
 
 For local development, use `http://localhost:8000/mcp` as the URL.
 
-### Available Tools (18)
+### Available Tools (20)
 
 | Tool | Description |
 |------|-------------|
@@ -249,15 +249,17 @@ For local development, use `http://localhost:8000/mcp` as the URL.
 | PurchaseReward | Purchase a reward with points |
 | ManageBadges | Create, update, delete, and list badges |
 | ViewEarnedBadges | View earned badges for family members |
-| ManageFeaturedEvents | Set and manage featured events on the dashboard |
-| ViewCalendar | View aggregated family calendar events |
+| ManageFeaturedEvents | Set and manage featured/countdown events on the dashboard |
+| ViewCalendar | View, create, update, and delete calendar events from all sources |
 | ManageVault | Create, update, delete, and list vault entries |
 | ManageVaultAccess | Set per-user permissions on vault entries |
+| ListPlaybooks | List available vault playbooks for guided data entry |
+| GetPlaybook | Get a specific playbook's content |
 | ViewFamily | View family members and family info |
 | GetSettings | Retrieve app and family settings |
 | SearchFamily | Search across tasks, vault, and calendar |
 
-All tools are scoped to the authenticated user's family. Write operations require the `parent` role.
+All tools are scoped to the authenticated user's family. Featured event and countdown management require the `parent` role. Calendar event CRUD is available to all family members (creator or parent can edit/delete).
 
 ## Project Structure
 
@@ -269,7 +271,7 @@ kinhold/
 │   ├── Http/Controllers/Api/   # 16 REST controllers
 │   ├── Mcp/                    # Laravel-native MCP server
 │   │   ├── Servers/            # MCP server registration
-│   │   └── Tools/              # 18 MCP tool classes
+│   │   └── Tools/              # 20 MCP tool classes
 │   ├── Models/                 # 17 Eloquent models
 │   ├── Policies/               # Authorization policies
 │   └── Services/               # Business logic (Points, Badges, Calendar, Vault, Chat)
@@ -322,13 +324,18 @@ Found a bug or have an idea? Open an issue on [GitHub Issues](https://github.com
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan. Coming up:
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan. Recently shipped and coming up:
 
-- ~~Manual calendar mode (create events without Google)~~ Done
-- Profile pictures and avatars
-- Granular access control per module
-- Meal planning and grocery lists
-- Mobile app (PWA)
+**Recently shipped:**
+- ~~Manual calendar mode~~ — Create events without Google, recurrence, visibility, featured on dashboard
+- ~~Profile pictures and avatars~~ — Photo upload, 26 icon presets, color picker
+- ~~MCP-powered AI assistant~~ — Natural language interface to all 20 tools
+- ~~Vault overhaul~~ — WYSIWYG markdown editor, playbooks, kids personal vault
+
+**Coming up (Phase A):**
+- Shopping and grocery lists
+- Meal planning
+- PWA support (installable, offline-capable)
 
 ## License
 

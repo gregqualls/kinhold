@@ -166,14 +166,14 @@ Route::prefix('v1')->group(function () {
             Route::post('/easter-egg', [BadgesController::class, 'easterEgg']);
         });
 
-        // Featured Events
+        // Featured Events (unified — reads from family_events table)
         Route::prefix('/featured-events')->group(function () {
             Route::get('/', [FeaturedEventController::class, 'index']);
             Route::get('/countdown', [FeaturedEventController::class, 'countdown']);
             Route::post('/', [FeaturedEventController::class, 'store']);
-            Route::put('/{featuredEvent}', [FeaturedEventController::class, 'update']);
-            Route::put('/{featuredEvent}/countdown', [FeaturedEventController::class, 'setCountdown']);
-            Route::delete('/{featuredEvent}', [FeaturedEventController::class, 'destroy']);
+            Route::put('/{familyEvent}', [FeaturedEventController::class, 'update']);
+            Route::put('/{familyEvent}/countdown', [FeaturedEventController::class, 'setCountdown']);
+            Route::delete('/{familyEvent}', [FeaturedEventController::class, 'destroy']);
         });
 
         // Settings

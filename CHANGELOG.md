@@ -2,6 +2,45 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-02 — Session 20: Unified Calendar
+
+### What Was Done
+- **Unified event model** — Merged `FeaturedEvent` and `FamilyEvent` into a single `family_events` table. Migration copies existing featured events data. Any calendar event can now optionally be "featured" on the dashboard with personal or family scope.
+- **Manual calendar events** — Full CRUD from the calendar UI. "Add Event" button in header, click-a-day to pre-fill date, click-a-manual-event to edit. Supports title, date/time, all-day, end time, location, recurrence, visibility, and feature-on-dashboard toggle.
+- **Visibility controls** — Events can be visible (full details), busy (others see "Busy" block), or private (only creator sees it). Enforced at API and MCP layers.
+- **Recurrence expansion** — Weekly/monthly/yearly events now show all occurrences within the calendar view's date range via `occurrencesInRange()` method.
+- **Countdown banner fixes** — Dismiss persists in localStorage (fixed async prop race condition), auto-hides past events (backend + frontend), parent management actions (edit, remove countdown, delete from banner).
+- **Unified EventModal** — Shared by dashboard (featured mode) and calendar (calendar mode). DRY — replaced `FeaturedEventModal`.
+- **Visual source distinction** — Tasks show with dashed amber borders, manual events with solid colored borders, Google/ICS events keep their calendar colors. Legend updated.
+- **Calendar view mode persistence** — Week/month/day selection saved in localStorage.
+- **MCP parity** — `view-calendar` fixed empty listing bug, added `create_event`/`update_event`/`delete_event`. `manage-featured-events` repointed to unified model.
+- **Security hardening** — Policy-based auth on CRUD (creator OR parent), parent-only guards on featured_scope/is_countdown/icon, ownership checks on MCP update/delete.
+- **Countdown toggle race condition fixed** — `setCountdown` now captures `wasCountdown` before blanket unset.
+
+### Files Created
+- `database/migrations/2026_04_02_095108_add_featured_columns_to_family_events_table.php`
+- `app/Policies/FamilyEventPolicy.php`
+- `resources/js/components/common/EventModal.vue`
+- `tests/Feature/CalendarEventTest.php` (15 new tests)
+
+### Files Modified
+- `app/Models/FamilyEvent.php` (new fields, accessors, scopes, `occurrencesInRange()`)
+- `app/Http/Controllers/Api/V1/CalendarController.php` (visibility, recurrence, CRUD with policy)
+- `app/Http/Controllers/Api/V1/FeaturedEventController.php` (repointed to FamilyEvent)
+- `app/Http/Resources/FeaturedEventResource.php` (adapted for unified model)
+- `app/Policies/FeaturedEventPolicy.php` (adapted for FamilyEvent)
+- `app/Mcp/Tools/ViewCalendar.php` (fixed listing, added CRUD)
+- `app/Mcp/Tools/ManageFeaturedEvents.php` (repointed to FamilyEvent)
+- `resources/js/views/calendar/CalendarView.vue` (event creation, source styling, click handlers)
+- `resources/js/components/calendar/TimeGrid.vue` (event-click emit)
+- `resources/js/components/featured-events/CountdownBanner.vue` (dismiss persistence, parent actions)
+- `resources/js/components/featured-events/FeaturedEventsSection.vue` (EventModal import)
+- `resources/js/stores/calendar.js` (CRUD actions, view mode persistence)
+- `database/seeders/DatabaseSeeder.php` (FamilyEvent for featured events)
+- `routes/api.php` (FamilyEvent route binding)
+
+---
+
 ## 2026-04-01 — Session 19: Vault Overhaul
 
 ### What Was Done

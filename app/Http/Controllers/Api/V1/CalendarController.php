@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 class CalendarController extends Controller
 {
     /**
-     * Get aggregated events from all sources (Google, ICS, manual).
+     * Get aggregated events from all sources (Google, ICS, manual, tasks).
      */
     public function events(Request $request): JsonResponse
     {
@@ -66,41 +66,70 @@ class CalendarController extends Controller
 
         // ── Manual family events ──
         $localEvents = FamilyEvent::where('family_id', $familyId)
+            ->where('is_active', true)
             ->where(function ($q) use ($start, $end) {
-                $q->whereBetween('start_time', [$start, $end])
-                    ->orWhere(function ($q2) use ($start, $end) {
-                        // Include all-day events that span the range
-                        $q2->where('all_day', true)
-                            ->where('start_time', '<=', $end)
-                            ->where(function ($q3) use ($start) {
-                                $q3->where('end_time', '>=', $start)
-                                    ->orWhereNull('end_time');
-                            });
-                    });
+                // Non-recurring events in the date range
+                $q->where(function ($q2) use ($start, $end) {
+                    $q2->where('recurrence', 'none')
+                        ->where(function ($q3) use ($start, $end) {
+                            $q3->whereBetween('start_time', [$start, $end])
+                                ->orWhere(function ($q4) use ($start, $end) {
+                                    $q4->where('all_day', true)
+                                        ->where('start_time', '<=', $end)
+                                        ->where(function ($q5) use ($start) {
+                                            $q5->where('end_time', '>=', $start)
+                                                ->orWhereNull('end_time');
+                                        });
+                                });
+                        });
+                })
+                // Recurring events — fetch all, filter by next_occurrence later
+                    ->orWhere('recurrence', '!=', 'none');
             })
             ->with('creator:id,name')
             ->get();
 
         foreach ($localEvents as $event) {
-            $allEvents[] = [
-                'id' => $event->id,
-                'title' => $event->title,
-                'description' => $event->description,
-                'start' => $event->all_day
-                    ? $event->start_time->toDateString()
-                    : $event->start_time->toIso8601String(),
-                'end' => $event->end_time
-                    ? ($event->all_day ? $event->end_time->toDateString() : $event->end_time->toIso8601String())
-                    : null,
-                'all_day' => $event->all_day,
-                'location' => $event->location,
-                'calendar_id' => null,
-                'user' => [
-                    'name' => $event->creator->name ?? 'Unknown',
-                    'color' => $event->color ?? '#6366f1',
-                ],
-                'source' => 'manual',
-            ];
+            // Apply visibility filtering
+            $vis = $event->visibilityFor($user);
+            if ($vis === 'hidden') {
+                continue;
+            }
+
+            $title = $vis === 'busy' ? 'Busy' : $event->title;
+
+            // Expand recurring events into all occurrences within the range
+            $occurrences = $event->occurrencesInRange($start, $end);
+
+            foreach ($occurrences as $occurrenceDate) {
+                $eventStart = $event->all_day
+                    ? $occurrenceDate->toDateString()
+                    : $occurrenceDate->copy()->setTimeFrom($event->start_time)->toIso8601String();
+                $eventEnd = $event->end_time
+                    ? ($event->all_day ? $occurrenceDate->toDateString() : $occurrenceDate->copy()->setTimeFrom($event->end_time)->toIso8601String())
+                    : null;
+
+                $allEvents[] = [
+                    'id' => $event->id,
+                    'title' => $title,
+                    'description' => $vis === 'busy' ? null : $event->description,
+                    'start' => $eventStart,
+                    'end' => $eventEnd,
+                    'all_day' => $event->all_day,
+                    'location' => $vis === 'busy' ? null : $event->location,
+                    'calendar_id' => null,
+                    'user' => [
+                        'name' => $event->creator->name ?? 'Unknown',
+                        'color' => $event->color ?? '#6366f1',
+                    ],
+                    'source' => 'manual',
+                    'visibility' => $event->visibility,
+                    'featured_scope' => $event->featured_scope,
+                    'is_countdown' => $event->is_countdown,
+                    'icon' => $event->icon,
+                    'recurrence' => $event->recurrence,
+                ];
+            }
         }
 
         // ── Tasks with due dates ──
@@ -145,6 +174,11 @@ class CalendarController extends Controller
                 'calendar_id' => $e['calendar_id'] ?? null,
                 'user' => $e['user'] ?? null,
                 'source' => $e['source'] ?? 'google',
+                'visibility' => $e['visibility'] ?? null,
+                'featured_scope' => $e['featured_scope'] ?? null,
+                'is_countdown' => $e['is_countdown'] ?? false,
+                'icon' => $e['icon'] ?? null,
+                'recurrence' => $e['recurrence'] ?? null,
             ])->values(),
             'count' => count($allEvents),
         ], 200);
@@ -165,11 +199,30 @@ class CalendarController extends Controller
             'all_day' => 'boolean',
             'location' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:7',
+            'recurrence' => 'nullable|string|in:none,yearly,monthly,weekly',
+            'visibility' => 'nullable|string|in:visible,busy,private',
+            'featured_scope' => 'nullable|string|in:personal,family',
+            'is_countdown' => 'boolean',
+            'icon' => 'nullable|string|max:50',
         ]);
 
+        $user = $request->user();
+
+        // Featured scope and countdown are parent-only
+        if (! $user->isParent()) {
+            unset($validated['featured_scope'], $validated['is_countdown'], $validated['icon']);
+        }
+
+        // Only one countdown per family
+        if (! empty($validated['is_countdown'])) {
+            FamilyEvent::where('family_id', $user->family_id)
+                ->where('is_countdown', true)
+                ->update(['is_countdown' => false]);
+        }
+
         $event = FamilyEvent::create([
-            'family_id' => $request->user()->family_id,
-            'created_by' => $request->user()->id,
+            'family_id' => $user->family_id,
+            'created_by' => $user->id,
             ...$validated,
         ]);
 
@@ -185,6 +238,8 @@ class CalendarController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        $this->authorize('update', $familyEvent);
+
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
@@ -193,7 +248,25 @@ class CalendarController extends Controller
             'all_day' => 'boolean',
             'location' => 'nullable|string|max:255',
             'color' => 'nullable|string|max:7',
+            'recurrence' => 'nullable|string|in:none,yearly,monthly,weekly',
+            'visibility' => 'nullable|string|in:visible,busy,private',
+            'featured_scope' => 'nullable|string|in:personal,family',
+            'is_countdown' => 'boolean',
+            'icon' => 'nullable|string|max:50',
         ]);
+
+        // Featured scope and countdown are parent-only
+        if (! $request->user()->isParent()) {
+            unset($validated['featured_scope'], $validated['is_countdown'], $validated['icon']);
+        }
+
+        // Only one countdown per family
+        if (! empty($validated['is_countdown'])) {
+            FamilyEvent::where('family_id', $request->user()->family_id)
+                ->where('is_countdown', true)
+                ->where('id', '!=', $familyEvent->id)
+                ->update(['is_countdown' => false]);
+        }
 
         $familyEvent->update($validated);
 
@@ -208,6 +281,8 @@ class CalendarController extends Controller
         if ($familyEvent->family_id !== $request->user()->family_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+
+        $this->authorize('delete', $familyEvent);
 
         $familyEvent->delete();
 
@@ -277,8 +352,6 @@ class CalendarController extends Controller
 
     /**
      * Handle OAuth callback from Google.
-     * Google redirects here with ?code=...&state=userId
-     * We connect the calendar and redirect back to the settings page.
      */
     public function handleCallback(Request $request)
     {
@@ -289,7 +362,6 @@ class CalendarController extends Controller
             return redirect('/settings?calendar_error='.urlencode('Missing authorization code or user ID.'));
         }
 
-        // SECURITY: Decrypt the state parameter to verify it was generated by our app
         try {
             $decrypted = decrypt($rawState);
         } catch (DecryptException $e) {

@@ -3,7 +3,7 @@
 namespace App\Mcp\Tools;
 
 use App\Mcp\Tools\Concerns\ScopesToFamily;
-use App\Models\FeaturedEvent;
+use App\Models\FamilyEvent;
 use Carbon\Carbon;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
@@ -31,6 +31,7 @@ class ManageFeaturedEvents extends Tool
             'recurrence' => $schema->string()->enum(['none', 'yearly', 'monthly', 'weekly'])->description('Recurrence pattern'),
             'is_countdown' => $schema->boolean()->description('Whether this is the countdown event on the dashboard'),
             'is_active' => $schema->boolean()->description('Whether the event is active'),
+            'featured_scope' => $schema->string()->enum(['personal', 'family'])->description('Feature scope: personal (just you) or family (everyone)'),
         ];
     }
 
@@ -47,8 +48,9 @@ class ManageFeaturedEvents extends Tool
 
     private function listEvents(): Response
     {
-        $events = FeaturedEvent::where('family_id', $this->familyId())
+        $events = FamilyEvent::where('family_id', $this->familyId())
             ->where('is_active', true)
+            ->whereNotNull('featured_scope')
             ->get()
             ->map(function ($event) {
                 $event->computed_next_date = $event->next_occurrence;
@@ -64,22 +66,23 @@ class ManageFeaturedEvents extends Tool
                 'id' => $e->id,
                 'title' => $e->title,
                 'description' => $e->description,
-                'event_date' => $e->event_date->format('Y-m-d'),
+                'event_date' => $e->start_time->format('Y-m-d'),
                 'next_occurrence' => $e->computed_next_date->format('Y-m-d'),
                 'days_until' => (int) Carbon::today()->diffInDays($e->computed_next_date, false),
-                'event_time' => $e->event_time?->format('H:i'),
+                'event_time' => $e->start_time->format('H:i') !== '00:00' ? $e->start_time->format('H:i') : null,
                 'icon' => $e->icon,
                 'color' => $e->color,
                 'recurrence' => $e->recurrence,
                 'is_countdown' => $e->is_countdown,
+                'featured_scope' => $e->featured_scope,
             ])->toArray(),
         ]);
     }
 
     private function createEvent(Request $request): Response
     {
-        if ($denied = $this->authorize('create', FeaturedEvent::class)) {
-            return $denied;
+        if (! $this->user()->isParent()) {
+            return Response::error('Only parents can create featured events.');
         }
 
         $title = $request->get('title');
@@ -94,23 +97,33 @@ class ManageFeaturedEvents extends Tool
 
         $isCountdown = $request->get('is_countdown', false);
 
-        // If setting as countdown, unset any existing countdown
         if ($isCountdown) {
-            FeaturedEvent::where('family_id', $this->familyId())
+            FamilyEvent::where('family_id', $this->familyId())
                 ->where('is_countdown', true)
                 ->update(['is_countdown' => false]);
         }
 
-        $event = FeaturedEvent::create([
+        // Convert event_date + event_time to start_time
+        $startTime = Carbon::parse($eventDate);
+        $eventTime = $request->get('event_time');
+        if ($eventTime) {
+            $parts = explode(':', $eventTime);
+            $startTime->setTime((int) $parts[0], (int) $parts[1]);
+        }
+
+        $event = FamilyEvent::create([
             'family_id' => $this->familyId(),
             'created_by' => $this->user()->id,
             'title' => $title,
             'description' => $request->get('description'),
-            'event_date' => $eventDate,
-            'event_time' => $request->get('event_time'),
+            'start_time' => $startTime,
+            'end_time' => null,
+            'all_day' => true,
             'icon' => $request->get('icon', "\u{1F389}"),
             'color' => $request->get('color', '#8B5CF6'),
             'recurrence' => $request->get('recurrence', 'none'),
+            'featured_scope' => $request->get('featured_scope', 'family'),
+            'visibility' => 'visible',
             'is_countdown' => $isCountdown,
         ]);
 
@@ -119,35 +132,51 @@ class ManageFeaturedEvents extends Tool
             'event' => [
                 'id' => $event->id,
                 'title' => $event->title,
-                'event_date' => $event->event_date->format('Y-m-d'),
+                'event_date' => $event->start_time->format('Y-m-d'),
             ],
         ]);
     }
 
     private function updateEvent(Request $request): Response
     {
+        if (! $this->user()->isParent()) {
+            return Response::error('Only parents can update featured events.');
+        }
+
         $eventId = $request->get('event_id');
         if (! $eventId) {
             return Response::error('event_id is required for update.');
         }
 
-        $event = FeaturedEvent::where('family_id', $this->familyId())->findOrFail($eventId);
+        $event = FamilyEvent::where('family_id', $this->familyId())
+            ->whereNotNull('featured_scope')
+            ->find($eventId);
 
-        if ($denied = $this->authorize('update', $event)) {
-            return $denied;
+        if (! $event) {
+            return Response::error("Featured event not found: {$eventId}");
         }
 
         $updates = [];
-        foreach (['title', 'description', 'event_date', 'event_time', 'icon', 'color', 'recurrence', 'is_active'] as $field) {
+        foreach (['title', 'description', 'icon', 'color', 'recurrence', 'is_active', 'featured_scope'] as $field) {
             if ($request->get($field) !== null) {
                 $updates[$field] = $request->get($field);
             }
         }
 
+        // Convert event_date + event_time to start_time if provided
+        if ($request->get('event_date') !== null) {
+            $startTime = Carbon::parse($request->get('event_date'));
+            if ($request->get('event_time')) {
+                $parts = explode(':', $request->get('event_time'));
+                $startTime->setTime((int) $parts[0], (int) $parts[1]);
+            }
+            $updates['start_time'] = $startTime;
+        }
+
         // Handle countdown toggle
         if ($request->get('is_countdown') !== null) {
             if ($request->get('is_countdown')) {
-                FeaturedEvent::where('family_id', $this->familyId())
+                FamilyEvent::where('family_id', $this->familyId())
                     ->where('id', '!=', $event->id)
                     ->where('is_countdown', true)
                     ->update(['is_countdown' => false]);
@@ -162,7 +191,7 @@ class ManageFeaturedEvents extends Tool
             'event' => [
                 'id' => $event->id,
                 'title' => $event->title,
-                'event_date' => $event->event_date->format('Y-m-d'),
+                'event_date' => $event->start_time->format('Y-m-d'),
                 'is_countdown' => $event->is_countdown,
             ],
         ]);
@@ -170,16 +199,23 @@ class ManageFeaturedEvents extends Tool
 
     private function deleteEvent(Request $request): Response
     {
+        if (! $this->user()->isParent()) {
+            return Response::error('Only parents can delete featured events.');
+        }
+
         $eventId = $request->get('event_id');
         if (! $eventId) {
             return Response::error('event_id is required for delete.');
         }
 
-        $event = FeaturedEvent::where('family_id', $this->familyId())->findOrFail($eventId);
+        $event = FamilyEvent::where('family_id', $this->familyId())
+            ->whereNotNull('featured_scope')
+            ->find($eventId);
 
-        if ($denied = $this->authorize('delete', $event)) {
-            return $denied;
+        if (! $event) {
+            return Response::error("Featured event not found: {$eventId}");
         }
+
         $title = $event->title;
         $event->delete();
 

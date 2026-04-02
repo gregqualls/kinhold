@@ -72,11 +72,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
-			count: 4
-			path: app/Http/Controllers/Api/V1/CalendarController.php
-
-		-
-			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
 			count: 2
 			path: app/Http/Controllers/Api/V1/CalendarController.php
 
@@ -91,8 +86,13 @@ parameters:
 			path: app/Http/Controllers/Api/V1/CalendarController.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\FeaturedEvent\\:\\:\\$computed_next_date\\.$#"
+			message: "#^Access to an undefined property App\\\\Models\\\\FamilyEvent\\:\\:\\$computed_next_date\\.$#"
 			count: 4
+			path: app/Http/Controllers/Api/V1/FeaturedEventController.php
+
+		-
+			message: "#^Cannot call method startOfDay\\(\\) on string\\.$#"
+			count: 1
 			path: app/Http/Controllers/Api/V1/FeaturedEventController.php
 
 		-
@@ -216,12 +216,7 @@ parameters:
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$event_date\\.$#"
-			count: 1
-			path: app/Http/Resources/FeaturedEventResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$event_time\\.$#"
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$featured_scope\\.$#"
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
@@ -258,6 +253,11 @@ parameters:
 		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$recurrence_label\\.$#"
 			count: 1
+			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$start_time\\.$#"
+			count: 3
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
@@ -566,13 +566,13 @@ parameters:
 			path: app/Mcp/Tools/ManageBadges.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\FeaturedEvent\\:\\:\\$computed_next_date\\.$#"
+			message: "#^Access to an undefined property App\\\\Models\\\\FamilyEvent\\:\\:\\$computed_next_date\\.$#"
 			count: 4
 			path: app/Mcp/Tools/ManageFeaturedEvents.php
 
 		-
 			message: "#^Cannot call method format\\(\\) on string\\.$#"
-			count: 4
+			count: 5
 			path: app/Mcp/Tools/ManageFeaturedEvents.php
 
 		-
@@ -619,6 +619,11 @@ parameters:
 			message: "#^Cannot call method format\\(\\) on string\\.$#"
 			count: 1
 			path: app/Mcp/Tools/SearchFamily.php
+
+		-
+			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			count: 3
+			path: app/Mcp/Tools/ViewCalendar.php
 
 		-
 			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
@@ -692,6 +697,16 @@ parameters:
 
 		-
 			message: "#^Cannot call method copy\\(\\) on string\\.$#"
+			count: 3
+			path: app/Models/FamilyEvent.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			count: 1
+			path: app/Models/FamilyEvent.php
+
+		-
+			message: "#^Cannot call method copy\\(\\) on string\\.$#"
 			count: 1
 			path: app/Models/FeaturedEvent.php
 
@@ -749,6 +764,11 @@ parameters:
 			message: "#^Cannot call method format\\(\\) on string\\.$#"
 			count: 1
 			path: app/Notifications/TaskAssignedNotification.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between int and string will always evaluate to false\\.$#"
+			count: 2
+			path: app/Policies/FamilyEventPolicy.php
 
 		-
 			message: "#^Result of \\|\\| is always false\\.$#"
