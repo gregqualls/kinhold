@@ -126,9 +126,10 @@
     />
 
     <!-- Create/Edit Modal -->
-    <FeaturedEventModal
+    <EventModal
       :show="showCreateModal || showEditModal"
       :event="editingEvent"
+      mode="featured"
       @close="closeModals"
       @save="handleSave"
     />
@@ -155,7 +156,7 @@ import BaseCard from '@/components/common/BaseCard.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import FeaturedEventModal from './FeaturedEventModal.vue'
+import EventModal from '@/components/common/EventModal.vue'
 import { StarIcon, PlusIcon, EllipsisVerticalIcon, ArrowPathIcon, ClockIcon } from '@heroicons/vue/24/outline'
 import IconRenderer from '@/components/common/IconRenderer.vue'
 

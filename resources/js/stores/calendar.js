@@ -7,7 +7,7 @@ export const useCalendarStore = defineStore('calendar', () => {
   const events = ref([])
   const connections = ref([])
   const currentMonth = ref(DateTime.now())
-  const viewMode = ref('month') // month, week, day
+  const viewMode = ref(localStorage.getItem('calendar-view-mode') || 'month') // month, week, day
   const isLoading = ref(false)
   const error = ref(null)
 
@@ -128,8 +128,61 @@ export const useCalendarStore = defineStore('calendar', () => {
     }
   }
 
+  // Helper to re-fetch events for the current view period
+  const refetchCurrentPeriod = async () => {
+    let start, end
+    if (viewMode.value === 'month') {
+      start = currentMonth.value.startOf('month').startOf('week')
+      end = currentMonth.value.endOf('month').endOf('week')
+    } else if (viewMode.value === 'week') {
+      start = currentMonth.value.startOf('week')
+      end = start.plus({ days: 6 })
+    } else {
+      start = currentMonth.value.startOf('day')
+      end = currentMonth.value.plus({ days: 1 }).startOf('day')
+    }
+    await fetchEvents(start, end)
+  }
+
+  const createEvent = async (data) => {
+    error.value = null
+    try {
+      const response = await api.post('/calendar/events', data)
+      await refetchCurrentPeriod()
+      return { success: true, event: response.data.event }
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to create event'
+      return { success: false, error: error.value }
+    }
+  }
+
+  const updateEvent = async (id, data) => {
+    error.value = null
+    try {
+      const response = await api.put(`/calendar/events/${id}`, data)
+      await refetchCurrentPeriod()
+      return { success: true, event: response.data.event }
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to update event'
+      return { success: false, error: error.value }
+    }
+  }
+
+  const deleteEvent = async (id) => {
+    error.value = null
+    try {
+      await api.delete(`/calendar/events/${id}`)
+      await refetchCurrentPeriod()
+      return { success: true }
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to delete event'
+      return { success: false, error: error.value }
+    }
+  }
+
   const setViewMode = (mode) => {
     viewMode.value = mode
+    localStorage.setItem('calendar-view-mode', mode)
   }
 
   const navigateMonth = (direction) => {
@@ -182,6 +235,10 @@ export const useCalendarStore = defineStore('calendar', () => {
     disconnect,
     subscribeUrl,
     sync,
+    createEvent,
+    updateEvent,
+    deleteEvent,
+    refetchCurrentPeriod,
     setViewMode,
     navigateMonth,
     navigateWeek,

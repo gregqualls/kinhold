@@ -8,7 +8,7 @@
     leave-to-class="opacity-0 -translate-y-2"
   >
     <div
-      v-if="countdownEvent && !isDismissed"
+      v-if="countdownEvent && !isDismissed && !isPast"
       class="relative overflow-hidden rounded-[12px] p-4 md:p-5 mb-4 md:mb-6"
       :style="bannerStyle"
     >
@@ -35,9 +35,6 @@
             <template v-if="isToday">
               {{ countdownEvent.title }} is TODAY!
             </template>
-            <template v-else-if="isPast">
-              {{ countdownEvent.title }} has passed
-            </template>
             <template v-else>
               {{ countdownText }}
             </template>
@@ -47,6 +44,40 @@
         <!-- Celebration icon for today -->
         <div v-if="isToday" class="flex-shrink-0 animate-bounce-gentle text-white">
           <IconRenderer icon="confetti" :size="32" />
+        </div>
+
+        <!-- Parent actions menu -->
+        <div v-if="isParent" class="flex-shrink-0 relative">
+          <button
+            class="p-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors text-white/80 hover:text-white"
+            aria-label="Manage countdown"
+            @click.stop="showMenu = !showMenu"
+          >
+            <EllipsisVerticalIcon class="w-4 h-4" />
+          </button>
+          <div
+            v-if="showMenu"
+            class="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-prussian-800 rounded-lg shadow-lg border border-lavender-200 dark:border-prussian-700 z-10 py-1"
+          >
+            <button
+              class="w-full text-left px-3 py-1.5 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700"
+              @click="handleEdit"
+            >
+              Edit Event
+            </button>
+            <button
+              class="w-full text-left px-3 py-1.5 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700"
+              @click="handleRemoveCountdown"
+            >
+              Remove Countdown
+            </button>
+            <button
+              class="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+              @click="handleDelete"
+            >
+              Delete Event
+            </button>
+          </div>
         </div>
 
         <!-- Dismiss button -->
@@ -68,13 +99,37 @@
       </div>
     </div>
   </transition>
+
+  <!-- Edit Modal -->
+  <EventModal
+    :show="showEditModal"
+    :event="countdownEvent"
+    mode="featured"
+    @close="showEditModal = false"
+    @save="handleSave"
+  />
+
+  <!-- Delete Confirmation -->
+  <ConfirmDialog
+    :show="showDeleteConfirm"
+    title="Delete Event"
+    :message="`Are you sure you want to delete '${countdownEvent?.title}'?`"
+    confirm-text="Delete"
+    variant="danger"
+    @confirm="confirmDelete"
+    @cancel="showDeleteConfirm = false"
+  />
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { DateTime } from 'luxon'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
+import { XMarkIcon, EllipsisVerticalIcon } from '@heroicons/vue/24/outline'
 import IconRenderer from '@/components/common/IconRenderer.vue'
+import EventModal from '@/components/common/EventModal.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import { useFeaturedEventsStore } from '@/stores/featuredEvents'
+import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps({
   countdownEvent: {
@@ -83,12 +138,29 @@ const props = defineProps({
   },
 })
 
+const featuredEventsStore = useFeaturedEventsStore()
+const authStore = useAuthStore()
+
+const isParent = computed(() => authStore.currentUser?.family_role === 'parent')
+
 const isDismissed = ref(false)
+const showMenu = ref(false)
+const showEditModal = ref(false)
+const showDeleteConfirm = ref(false)
 const now = ref(DateTime.now())
 let intervalId = null
 
+// Persist dismiss state in localStorage keyed by event ID
+const dismissKey = computed(() =>
+  props.countdownEvent ? `countdown-dismissed-${props.countdownEvent.id}` : null
+)
+
 onMounted(() => {
-  // Update every 60 seconds for the live countdown
+  // Restore dismiss state
+  if (dismissKey.value && localStorage.getItem(dismissKey.value) === 'true') {
+    isDismissed.value = true
+  }
+
   intervalId = setInterval(() => {
     now.value = DateTime.now()
   }, 60_000)
@@ -100,6 +172,20 @@ onUnmounted(() => {
   }
 })
 
+// When countdown event changes (new one set), reset dismiss
+watch(
+  () => props.countdownEvent?.id,
+  (newId, oldId) => {
+    if (newId !== oldId) {
+      // Clear old dismiss
+      if (oldId) {
+        localStorage.removeItem(`countdown-dismissed-${oldId}`)
+      }
+      isDismissed.value = false
+    }
+  }
+)
+
 const targetDateTime = computed(() => {
   if (!props.countdownEvent) return null
   const date = DateTime.fromISO(props.countdownEvent.event_date)
@@ -107,7 +193,6 @@ const targetDateTime = computed(() => {
     const [h, m] = props.countdownEvent.event_time.split(':')
     return date.set({ hour: parseInt(h), minute: parseInt(m), second: 0 })
   }
-  // No time set — count down to midnight (start of the day)
   return date.startOf('day')
 })
 
@@ -132,7 +217,6 @@ const countdownText = computed(() => {
   if (days > 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`)
   if (hours > 0) parts.push(`${hours} hr${hours !== 1 ? 's' : ''}`)
   if (days === 0 && minutes > 0) parts.push(`${minutes} min${minutes !== 1 ? 's' : ''}`)
-  // If only days remain, still show hours for more detail
   if (parts.length === 0) parts.push('less than a minute')
 
   return parts.join(', ') + ' to go!'
@@ -147,6 +231,40 @@ const bannerStyle = computed(() => {
 
 const dismiss = () => {
   isDismissed.value = true
+  if (dismissKey.value) {
+    localStorage.setItem(dismissKey.value, 'true')
+  }
+}
+
+const handleEdit = () => {
+  showMenu.value = false
+  showEditModal.value = true
+}
+
+const handleRemoveCountdown = async () => {
+  showMenu.value = false
+  if (props.countdownEvent) {
+    await featuredEventsStore.setCountdown(props.countdownEvent.id)
+  }
+}
+
+const handleDelete = () => {
+  showMenu.value = false
+  showDeleteConfirm.value = true
+}
+
+const handleSave = async (eventData) => {
+  if (props.countdownEvent?.id) {
+    await featuredEventsStore.updateEvent(props.countdownEvent.id, eventData)
+  }
+  showEditModal.value = false
+}
+
+const confirmDelete = async () => {
+  if (props.countdownEvent) {
+    await featuredEventsStore.deleteEvent(props.countdownEvent.id)
+  }
+  showDeleteConfirm.value = false
 }
 
 const formatEventDate = (dateStr) => {
@@ -158,9 +276,6 @@ const formatTime = (timeStr) => {
   return DateTime.fromObject({ hour: parseInt(h), minute: parseInt(m) }).toFormat('h:mm a')
 }
 
-/**
- * Darken or lighten a hex color by an amount.
- */
 function adjustColor(hex, amount) {
   let r = parseInt(hex.slice(1, 3), 16)
   let g = parseInt(hex.slice(3, 5), 16)
@@ -169,6 +284,13 @@ function adjustColor(hex, amount) {
   g = Math.max(0, Math.min(255, g + amount))
   b = Math.max(0, Math.min(255, b + amount))
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+}
+
+// Close menu on click outside
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', () => {
+    showMenu.value = false
+  })
 }
 </script>
 
