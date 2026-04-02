@@ -24,8 +24,8 @@ export const useBadgesStore = defineStore('badges', () => {
     try {
       const response = await api.get('/badges/earned')
       earnedBadges.value = response.data.badges
-    } catch (err) {
-      console.error('Failed to fetch earned badges:', err)
+    } catch {
+      // Silently ignore — badges are non-critical
     }
   }
 

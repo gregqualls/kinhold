@@ -102,7 +102,7 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { PlusIcon, CalendarIcon, FlagIcon, UserGroupIcon } from '@heroicons/vue/24/outline'
 
-const props = defineProps({
+defineProps({
   tags: { type: Array, default: () => [] },
 })
 

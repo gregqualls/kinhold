@@ -167,8 +167,8 @@ export const useAuthStore = defineStore('auth', () => {
       family.value = null
       isAuthenticated.value = false
       error.value = null
-    } catch (err) {
-      console.error('Logout error:', err)
+    } catch {
+      // Logout failed — clear local state anyway
     } finally {
       isLoading.value = false
     }
@@ -182,7 +182,7 @@ export const useAuthStore = defineStore('auth', () => {
       isAuthenticated.value = true
       // Load service availability in the background
       fetchServices()
-    } catch (err) {
+    } catch {
       isAuthenticated.value = false
       user.value = null
       family.value = null
@@ -216,7 +216,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('auth_token', oauthToken)
         api.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`
         await fetchUser()
-      } catch (err) {
+      } catch {
         error.value = 'Google sign-in failed. Please try again.'
       }
       initialAuthChecked.value = true
