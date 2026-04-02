@@ -31,6 +31,8 @@ use Laravel\Mcp\Server\Attributes\Version;
 #[Instructions('Kinhold is a family hub app. Use these tools to manage tasks, points, rewards, badges, calendar, vault, and more for the authenticated family. All data is scoped to the user\'s family. Some write actions are restricted to parent users.')]
 class KinholdServer extends Server
 {
+    public int $defaultPaginationLength = 50;
+
     protected array $tools = [
         // Family & Settings (read-only)
         ViewFamily::class,

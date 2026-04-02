@@ -2,6 +2,16 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-02 — Session 22: MCP Tool Pagination Fix
+
+### What Was Done
+- **MCP tool pagination bug** — Discovered that `laravel/mcp` defaults to 15 tools per page. With 19 registered tools, vault (`manage-vault`, `manage-vault-access`) and playbook (`list-playbooks`, `get-playbook`) tools were stranded on a never-fetched page 2. Override `defaultPaginationLength` to 50 in `KinholdServer`.
+
+### Files Modified
+- `app/Mcp/Servers/KinholdServer.php` (added `defaultPaginationLength = 50`)
+
+---
+
 ## 2026-04-02 — Session 21: Fresh Demo Family + Try the Demo
 
 ### What Was Done
