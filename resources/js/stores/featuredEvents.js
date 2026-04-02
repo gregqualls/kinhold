@@ -49,7 +49,6 @@ export const useFeaturedEventsStore = defineStore('featuredEvents', () => {
       const response = await api.get('/featured-events')
       events.value = response.data.featured_events
     } catch (err) {
-      console.error('Failed to fetch featured events:', err)
       error.value = err.response?.data?.message || 'Failed to load events'
     } finally {
       isLoading.value = false
@@ -102,8 +101,8 @@ export const useFeaturedEventsStore = defineStore('featuredEvents', () => {
     try {
       const response = await api.get('/featured-events/countdown')
       countdownEvent.value = response.data.countdown_event
-    } catch (err) {
-      console.error('Failed to fetch countdown event:', err)
+    } catch {
+      // Countdown fetch failed — non-critical
     }
   }
 

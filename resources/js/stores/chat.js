@@ -66,7 +66,7 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  const fetchHistory = async (conversationId) => {
+  const fetchHistory = async (_conversationId) => {
     loading.value = true
     error.value = null
 

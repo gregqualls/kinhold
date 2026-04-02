@@ -106,6 +106,8 @@ class DatabaseSeeder extends Seeder
             'date_of_birth' => '1984-06-15',
             'timezone' => 'America/Chicago',
             'email_preferences' => User::defaultEmailPreferences(),
+            'email_verified_at' => $now,
+            'onboarding_completed_at' => $now,
         ]);
 
         $sarah = User::create([
@@ -117,6 +119,8 @@ class DatabaseSeeder extends Seeder
             'date_of_birth' => '1986-03-22',
             'timezone' => 'America/Chicago',
             'email_preferences' => User::defaultEmailPreferences(),
+            'email_verified_at' => $now,
+            'onboarding_completed_at' => $now,
         ]);
 
         $emma = User::create([
@@ -128,6 +132,8 @@ class DatabaseSeeder extends Seeder
             'date_of_birth' => $now->copy()->subYears(16)->subMonths(3)->toDateString(),
             'timezone' => 'America/Chicago',
             'email_preferences' => User::defaultEmailPreferences(),
+            'email_verified_at' => $now,
+            'onboarding_completed_at' => $now,
         ]);
 
         $jake = User::create([
@@ -138,6 +144,7 @@ class DatabaseSeeder extends Seeder
             'managed_by' => $mike->id,
             'date_of_birth' => $now->copy()->subYears(13)->subMonths(7)->toDateString(),
             'timezone' => 'America/Chicago',
+            'onboarding_completed_at' => $now,
         ]);
 
         $lily = User::create([
@@ -148,6 +155,7 @@ class DatabaseSeeder extends Seeder
             'managed_by' => $sarah->id,
             'date_of_birth' => $now->copy()->subYears(9)->subMonths(1)->toDateString(),
             'timezone' => 'America/Chicago',
+            'onboarding_completed_at' => $now,
         ]);
 
         $kids = [$emma, $jake, $lily];

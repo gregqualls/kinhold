@@ -18,8 +18,8 @@ export const usePointsStore = defineStore('points', () => {
     try {
       const response = await api.get('/points/bank')
       bank.value = response.data.bank
-    } catch (err) {
-      console.error('Failed to fetch bank:', err)
+    } catch {
+      // Bank fetch failed
     }
   }
 
@@ -28,8 +28,8 @@ export const usePointsStore = defineStore('points', () => {
       const response = await api.get('/points/leaderboard')
       leaderboard.value = response.data.leaderboard
       leaderboardPeriod.value = response.data.period
-    } catch (err) {
-      console.error('Failed to fetch leaderboard:', err)
+    } catch {
+      // Leaderboard fetch failed
     }
   }
 
@@ -75,8 +75,8 @@ export const usePointsStore = defineStore('points', () => {
     try {
       const response = await api.get('/rewards')
       rewards.value = response.data.rewards
-    } catch (err) {
-      console.error('Failed to fetch rewards:', err)
+    } catch {
+      // Rewards fetch failed
     }
   }
 
@@ -126,8 +126,8 @@ export const usePointsStore = defineStore('points', () => {
     try {
       const response = await api.get('/rewards/purchases')
       purchases.value = response.data.purchases
-    } catch (err) {
-      console.error('Failed to fetch purchases:', err)
+    } catch {
+      // Purchases fetch failed
     }
   }
 
@@ -136,8 +136,8 @@ export const usePointsStore = defineStore('points', () => {
       const params = status ? { status } : {}
       const response = await api.get('/points/requests', { params })
       pointRequests.value = response.data.requests
-    } catch (err) {
-      console.error('Failed to fetch point requests:', err)
+    } catch {
+      // Point requests fetch failed
     }
   }
 

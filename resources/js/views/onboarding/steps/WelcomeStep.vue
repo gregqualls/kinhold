@@ -88,8 +88,7 @@ registerContinue(async () => {
       await api.patch('/user', { timezone: timezone.value })
     }
     return true
-  } catch (err) {
-    console.error('Failed to save welcome step:', err)
+  } catch {
     return false
   } finally {
     setStepLoading(false)

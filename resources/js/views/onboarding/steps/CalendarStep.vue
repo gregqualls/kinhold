@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted } from 'vue'
+import { ref, inject, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useOnboardingStore } from '@/stores/onboarding'
 import api from '@/services/api'

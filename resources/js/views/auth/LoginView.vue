@@ -227,7 +227,7 @@ const handleGoogleLogin = async () => {
       errors.general = 'Failed to get Google login URL.'
       googleLoading.value = false
     }
-  } catch (err) {
+  } catch {
     errors.general = 'Failed to connect to Google. Please try again.'
     googleLoading.value = false
   }

@@ -148,7 +148,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
 import { useFeaturedEventsStore } from '@/stores/featuredEvents'
@@ -160,7 +160,7 @@ import EventModal from '@/components/common/EventModal.vue'
 import { StarIcon, PlusIcon, EllipsisVerticalIcon, ArrowPathIcon, ClockIcon } from '@heroicons/vue/24/outline'
 import IconRenderer from '@/components/common/IconRenderer.vue'
 
-const props = defineProps({
+defineProps({
   isParent: Boolean,
 })
 

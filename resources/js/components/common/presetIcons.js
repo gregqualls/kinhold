@@ -19,7 +19,6 @@ import {
   PhMedal,
   PhCrown,
   PhStar,
-  PhHeart,
   PhHeartStraight,
   PhMoon,
   PhSun,

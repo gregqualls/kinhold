@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({

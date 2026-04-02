@@ -213,8 +213,7 @@ registerContinue(async () => {
     }
     await api.put('/settings', { module_access })
     return true
-  } catch (err) {
-    console.error('Failed to save feature access:', err)
+  } catch {
     return false
   } finally {
     setStepLoading(false)

@@ -250,8 +250,7 @@ const selectPreset = async (presetKey) => {
     if (props.targetUser?.id) payload.user_id = props.targetUser.id
     const { data } = await api.put('/user/avatar/preset', payload)
     emit('updated', data.user.avatar)
-  } catch (err) {
-    console.error('Preset avatar failed:', err)
+  } catch {
     localAvatar.value = null
   }
 }
@@ -260,11 +259,11 @@ const removeAvatar = async () => {
   removing.value = true
   try {
     const params = props.targetUser?.id ? { data: { user_id: props.targetUser.id } } : {}
-    const { data } = await api.delete('/user/avatar', params)
+    await api.delete('/user/avatar', params)
     localAvatar.value = null
     emit('updated', null)
-  } catch (err) {
-    console.error('Avatar removal failed:', err)
+  } catch {
+    // Avatar removal failed — silently ignore
   } finally {
     removing.value = false
   }
@@ -279,8 +278,7 @@ const useGoogleAvatar = async () => {
     const payload = props.targetUser?.id ? { user_id: props.targetUser.id } : {}
     const { data } = await api.post('/user/avatar/google', payload)
     emit('updated', data.user.avatar)
-  } catch (err) {
-    console.error('Google avatar restore failed:', err)
+  } catch {
     localAvatar.value = null
   }
 }
@@ -292,8 +290,7 @@ const selectColor = async (colorName) => {
     if (props.targetUser?.id) payload.user_id = props.targetUser.id
     await api.patch('/user', payload)
     emit('color-changed')
-  } catch (err) {
-    console.error('Color change failed:', err)
+  } catch {
     localColor.value = null
   }
 }
