@@ -64,6 +64,7 @@ class DatabaseSeeder extends Seeder
 
         $now = Carbon::now();
         $vault = new VaultEncryptionService;
+        $demoPassword = bcrypt(Str::random(32));
 
         // ─────────────────────────────────────────────
         //  FAMILY
@@ -100,7 +101,7 @@ class DatabaseSeeder extends Seeder
         $mike = User::create([
             'name' => 'Mike',
             'email' => 'parent@demo.local',
-            'password' => bcrypt('password'),
+            'password' => $demoPassword,
             'family_id' => $family->id,
             'family_role' => FamilyRole::Parent,
             'date_of_birth' => '1984-06-15',
@@ -113,7 +114,7 @@ class DatabaseSeeder extends Seeder
         $sarah = User::create([
             'name' => 'Sarah',
             'email' => 'sarah@demo.local',
-            'password' => bcrypt('password'),
+            'password' => $demoPassword,
             'family_id' => $family->id,
             'family_role' => FamilyRole::Parent,
             'date_of_birth' => '1986-03-22',
@@ -126,7 +127,7 @@ class DatabaseSeeder extends Seeder
         $emma = User::create([
             'name' => 'Emma',
             'email' => 'emma@demo.local',
-            'password' => bcrypt('password'),
+            'password' => $demoPassword,
             'family_id' => $family->id,
             'family_role' => FamilyRole::Child,
             'date_of_birth' => $now->copy()->subYears(16)->subMonths(3)->toDateString(),
