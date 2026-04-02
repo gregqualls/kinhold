@@ -121,6 +121,13 @@
         <!-- Divider -->
         <div class="border-t border-kin-border dark:border-kin-border-dark my-6"></div>
 
+        <!-- Demo link -->
+        <p v-if="demoAvailable" class="text-center mb-4">
+          <button class="kin-link font-medium text-sm" @click="showDemoModal = true">
+            Or try the demo instead
+          </button>
+        </p>
+
         <!-- Register link -->
         <p class="text-center kin-muted">
           Don't have an account?
@@ -131,21 +138,27 @@
       </div>
     </div>
   </div>
+
+  <DemoModal :show="showDemoModal" @close="showDemoModal = false" />
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { useNotification } from '@/composables/useNotification'
 import BaseInput from '@/components/common/BaseInput.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
+import DemoModal from '@/components/common/DemoModal.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const { isLoading } = storeToRefs(authStore)
 const { error: notificationError } = useNotification()
+
+const demoAvailable = computed(() => authStore.appConfig?.demo_available)
+const showDemoModal = ref(false)
 
 const form = reactive({
   email: '',

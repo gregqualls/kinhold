@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\TagController;
 use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\VaultController;
+use App\Models\Family;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,7 @@ Route::prefix('v1')->group(function () {
     // Auth routes (no authentication required)
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::post('/demo-login', [AuthController::class, 'demoLogin'])->middleware('throttle:10,1');
     Route::post('/auth/exchange', [GoogleAuthController::class, 'exchange'])->middleware('throttle:10,1');
     Route::post('/auth/google/confirm-link', [GoogleAuthController::class, 'confirmLink'])->middleware('throttle:5,1');
 
@@ -39,6 +41,7 @@ Route::prefix('v1')->group(function () {
             ],
             'registration' => true,
             'first_boot' => User::count() === 0,
+            'demo_available' => Family::where('slug', 'q32-demo-family')->exists(),
         ]);
     });
 

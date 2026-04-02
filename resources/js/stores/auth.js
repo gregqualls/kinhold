@@ -130,6 +130,32 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const demoLogin = async (member) => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await axios.get('/sanctum/csrf-cookie')
+      const response = await api.post('/demo-login', { member })
+
+      if (response.data.token) {
+        localStorage.setItem('auth_token', response.data.token)
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+      }
+
+      user.value = response.data.user
+      isAuthenticated.value = true
+      await fetchUser()
+
+      return { success: true }
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Demo login failed'
+      return { success: false, error: error.value }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   const register = async (data) => {
     isLoading.value = true
     error.value = null
@@ -397,6 +423,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Actions
     login,
+    demoLogin,
     register,
     logout,
     fetchUser,

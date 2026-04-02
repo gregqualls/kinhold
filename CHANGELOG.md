@@ -2,18 +2,28 @@
 
 > Updated at the end of every working session. Newest entries first.
 
-## 2026-04-02 — Session 21: Fresh Demo Family
+## 2026-04-02 — Session 21: Fresh Demo Family + Try the Demo
 
 ### What Was Done
 - **Demo UX fixes** — Demo users now skip onboarding and don't see the email verification banner. Added `email_verified_at` and `onboarding_completed_at` to all 5 seeded demo users.
 - **Daily demo refresh** — New `app:refresh-demo` artisan command re-seeds the demo family so data always feels fresh. Scheduled daily at 03:05 via Laravel scheduler (Upsun's `schedule:work` worker picks it up automatically).
+- **Hardened demo passwords** — Demo users now get `Str::random(32)` passwords per seed run instead of `bcrypt('password')`. Passwords are never stored or displayed, change daily with re-seed.
+- **"Try the Demo" feature** — One-click demo access from landing page and login page. Interactive modal lets visitors choose a family member (Mike, Sarah, Emma, Jake, Lily) to log in as. Dedicated `POST /api/v1/demo-login` endpoint creates Sanctum tokens directly — no password needed. Works for managed accounts (Jake, Lily) too.
+- **Conditional visibility** — Demo buttons only appear when the demo family exists (`demo_available` flag in `/api/v1/config`). Self-hosted instances without demo data won't show them.
+- **ESLint cleanup** — Eliminated all 43 pre-existing warnings across 23 files (unused imports, dead code, console.error statements).
 
 ### Files Created
 - `app/Console/Commands/RefreshDemo.php`
+- `resources/js/components/common/DemoModal.vue`
 
 ### Files Modified
-- `database/seeders/DatabaseSeeder.php` (added verification + onboarding fields to demo users)
-- `routes/console.php` (added daily refresh schedule)
+- `database/seeders/DatabaseSeeder.php` (random passwords, verification + onboarding fields)
+- `routes/console.php` (daily refresh schedule)
+- `app/Http/Controllers/Api/V1/AuthController.php` (added `demoLogin()`)
+- `routes/api.php` (demo-login route, `demo_available` config flag)
+- `resources/js/stores/auth.js` (added `demoLogin()` action)
+- `resources/js/views/LandingView.vue` (demo button + modal)
+- `resources/js/views/auth/LoginView.vue` (demo link + modal)
 
 ---
 
