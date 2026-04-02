@@ -156,7 +156,7 @@ const dismissKey = computed(() =>
 )
 
 onMounted(() => {
-  // Restore dismiss state
+  // Restore dismiss state (if event is already available at mount time)
   if (dismissKey.value && localStorage.getItem(dismissKey.value) === 'true') {
     isDismissed.value = true
   }
@@ -172,15 +172,24 @@ onUnmounted(() => {
   }
 })
 
-// When countdown event changes (new one set), reset dismiss
+// Restore dismiss state when countdownEvent arrives async (prop may be null at mount)
+watch(
+  dismissKey,
+  (newKey) => {
+    if (newKey && localStorage.getItem(newKey) === 'true') {
+      isDismissed.value = true
+    }
+  },
+  { immediate: true }
+)
+
+// When countdown event changes to a DIFFERENT event (not initial load), reset dismiss
 watch(
   () => props.countdownEvent?.id,
   (newId, oldId) => {
-    if (newId !== oldId) {
-      // Clear old dismiss
-      if (oldId) {
-        localStorage.removeItem(`countdown-dismissed-${oldId}`)
-      }
+    if (oldId && newId && newId !== oldId) {
+      // Clear old dismiss — a genuinely new countdown was set
+      localStorage.removeItem(`countdown-dismissed-${oldId}`)
       isDismissed.value = false
     }
   }
