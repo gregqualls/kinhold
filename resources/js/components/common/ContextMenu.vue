@@ -62,7 +62,7 @@
 import { ref, nextTick, onUnmounted } from 'vue'
 import { EllipsisVerticalIcon } from '@heroicons/vue/24/outline'
 
-const props = defineProps({
+defineProps({
   items: {
     type: Array,
     required: true,

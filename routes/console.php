@@ -7,3 +7,6 @@ Schedule::command('app:send-weekly-digest')->weeklyOn(1, '8:00');
 
 // Generate recurring task instances daily at 00:05
 Schedule::command('app:generate-recurring-tasks')->dailyAt('00:05');
+
+// Re-seed demo family daily so data stays fresh
+Schedule::command('app:refresh-demo')->dailyAt('03:05');

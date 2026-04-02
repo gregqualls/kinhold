@@ -199,7 +199,6 @@ import { computed, ref, onMounted, watch } from 'vue'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
 import { useCalendarStore } from '@/stores/calendar'
-import { useAuthStore } from '@/stores/auth'
 import TimeGrid from '@/components/calendar/TimeGrid.vue'
 import EventModal from '@/components/common/EventModal.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
@@ -210,7 +209,6 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const calendarStore = useCalendarStore()
-const authStore = useAuthStore()
 
 const { currentMonth, viewMode, events, connections } = storeToRefs(calendarStore)
 

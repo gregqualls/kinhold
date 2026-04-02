@@ -31,7 +31,6 @@ import {
   HomeIcon,
   CalendarIcon,
   CheckCircleIcon,
-  LockClosedIcon,
   CpuChipIcon,
   TrophyIcon,
 } from '@heroicons/vue/24/outline'
@@ -39,7 +38,6 @@ import {
   HomeIcon as HomeIconSolid,
   CalendarIcon as CalendarIconSolid,
   CheckCircleIcon as CheckCircleIconSolid,
-  LockClosedIcon as LockClosedIconSolid,
   CpuChipIcon as CpuChipIconSolid,
   TrophyIcon as TrophyIconSolid,
 } from '@heroicons/vue/24/solid'

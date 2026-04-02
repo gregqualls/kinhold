@@ -20,8 +20,8 @@ export const useOnboardingStore = defineStore('onboarding', () => {
     try {
       const response = await api.get('/onboarding/status')
       status.value = response.data
-    } catch (err) {
-      console.error('Failed to fetch onboarding status:', err)
+    } catch {
+      // Status fetch failed — defaults are fine
     } finally {
       isLoading.value = false
     }
@@ -54,8 +54,7 @@ export const useOnboardingStore = defineStore('onboarding', () => {
         authStore.user.onboarding_completed_at = response.data.onboarding_completed_at
       }
       return { success: true }
-    } catch (err) {
-      console.error('Failed to complete onboarding:', err)
+    } catch {
       return { success: false }
     } finally {
       isCompleting.value = false

@@ -139,7 +139,6 @@
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { TrophyIcon } from '@heroicons/vue/24/solid'
-import { StarIcon } from '@heroicons/vue/24/outline'
 import UserAvatar from '@/components/common/UserAvatar.vue'
 
 const props = defineProps({

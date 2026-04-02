@@ -2,6 +2,21 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-02 — Session 21: Fresh Demo Family
+
+### What Was Done
+- **Demo UX fixes** — Demo users now skip onboarding and don't see the email verification banner. Added `email_verified_at` and `onboarding_completed_at` to all 5 seeded demo users.
+- **Daily demo refresh** — New `app:refresh-demo` artisan command re-seeds the demo family so data always feels fresh. Scheduled daily at 03:05 via Laravel scheduler (Upsun's `schedule:work` worker picks it up automatically).
+
+### Files Created
+- `app/Console/Commands/RefreshDemo.php`
+
+### Files Modified
+- `database/seeders/DatabaseSeeder.php` (added verification + onboarding fields to demo users)
+- `routes/console.php` (added daily refresh schedule)
+
+---
+
 ## 2026-04-02 — Session 20: Unified Calendar
 
 ### What Was Done

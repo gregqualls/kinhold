@@ -1123,7 +1123,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted, watch, nextTick } from 'vue'
+import { reactive, ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
@@ -1265,7 +1265,6 @@ const leaderboardPeriod = ref('weekly')
 const kudosCostEnabled = ref(false)
 
 // Default task points
-const savingDefaultPoints = ref(false)
 const defaultPoints = reactive({
   low: 5,
   medium: 10,
@@ -1273,7 +1272,6 @@ const defaultPoints = reactive({
 })
 
 // Task assignment
-const savingTaskAssignment = ref(false)
 const taskAssignment = reactive({
   mode: 'all',
   users: [],
@@ -1386,10 +1384,6 @@ const emailPreferenceOptions = [
   },
 ]
 
-const toggleEmailPref = (key) => {
-  emailPrefs[key] = !emailPrefs[key]
-}
-
 const loadEmailPreferences = async () => {
   try {
     const { data } = await api.get('/settings/email-preferences')
@@ -1398,7 +1392,7 @@ const loadEmailPreferences = async () => {
     emailPrefs.email_task_assigned = prefs.email_task_assigned !== false
     emailPrefs.email_weekly_digest = prefs.email_weekly_digest !== false
     emailPrefs.email_family_invite = prefs.email_family_invite !== false
-  } catch (err) {
+  } catch {
     // Use defaults on error
   }
 }
@@ -1660,7 +1654,7 @@ const handleLinkGoogle = async () => {
     if (response.data.url) {
       window.location.href = response.data.url
     }
-  } catch (err) {
+  } catch {
     googleLinkError.value = 'Failed to start Google linking. Please try again.'
   }
   linkingGoogle.value = false
@@ -1805,41 +1799,6 @@ const saveModuleSettings = async () => {
     notificationError(err.response?.data?.message || 'Failed to save preferences')
   }
   savingModules.value = false
-}
-
-// ---- Default task points ----
-const saveDefaultPoints = async () => {
-  savingDefaultPoints.value = true
-  try {
-    await api.put('/settings', {
-      default_points_low: defaultPoints.low,
-      default_points_medium: defaultPoints.medium,
-      default_points_high: defaultPoints.high,
-    })
-    await authStore.fetchUser()
-    success('Default task points saved!')
-  } catch (err) {
-    notificationError(err.response?.data?.message || 'Failed to save default points')
-  }
-  savingDefaultPoints.value = false
-}
-
-// ---- Task assignment ----
-const saveTaskAssignment = async () => {
-  savingTaskAssignment.value = true
-  try {
-    await api.put('/settings', {
-      task_assignment: {
-        mode: taskAssignment.mode,
-        users: taskAssignment.users,
-      },
-    })
-    await authStore.fetchUser()
-    success('Task assignment settings saved!')
-  } catch (err) {
-    notificationError(err.response?.data?.message || 'Failed to save task assignment settings')
-  }
-  savingTaskAssignment.value = false
 }
 
 // ---- Combined Tasks & Points save ----
@@ -1999,7 +1958,7 @@ onMounted(async () => {
       aiConfig.hasSavedKey = s.ai_has_key || false
       aiProviders.value = s.ai_providers || []
       aiMode.value = s.ai_mode || (s.ai_has_key ? 'byok' : 'kinhold')
-    } catch (err) {
+    } catch {
       // Defaults are fine
     }
   }
