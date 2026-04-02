@@ -50,12 +50,19 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 - Google OAuth login via Laravel Socialite (redirect → callback → Sanctum token → SPA pickup)
 - **Future:** passkeys, 2FA
 
-### 2. Family Calendar (MVP — SCAFFOLDED)
-- **Current:** Read-only aggregation of Google Calendars for all 5 family members
-- Each member connects their own Google Calendar in Settings
-- Color-coded events per family member
-- Month/week/day views, mobile-optimized day list
-- **Future:** Two-way sync (create/edit events from hub), more providers (Outlook, iCloud)
+### 2. Family Calendar (IMPLEMENTED — Unified Events)
+- **Unified event model:** `FeaturedEvent` and `FamilyEvent` merged into single `family_events` table. Any calendar event can optionally be "featured" on the dashboard (personal or family scope).
+- **Manual events:** Full CRUD from calendar UI. "Add Event" button, click-a-day to pre-fill, click-to-edit. Supports title, date/time, all-day, end time, location, color.
+- **Recurrence:** Weekly/monthly/yearly events expand into all occurrences within the view's date range via `occurrencesInRange()`.
+- **Visibility:** Events can be `visible` (full details), `busy` (others see "Busy"), or `private` (creator only). Enforced at API + MCP.
+- **Featured scope:** `personal` (just creator's dashboard) or `family` (everyone's dashboard). Parent-only to set.
+- **Countdown banner:** Dismiss persists in localStorage, auto-hides past events, parent management actions (edit, remove countdown, delete).
+- **Source styling:** Tasks = dashed amber borders, manual = solid colored, Google/ICS = calendar connection colors.
+- **View mode persistence:** Month/week/day selection saved in localStorage.
+- Google Calendar + ICS aggregation still works alongside manual events.
+- Tasks with due dates appear as all-day events on the calendar.
+- **Note:** `FeaturedEvent` model/table still exists but is deprecated — all new code uses `FamilyEvent`.
+- **Future:** Two-way Google sync (create/edit events), more providers (Outlook, iCloud), drop `featured_events` table
 
 ### 3. Tasks & To-Dos (MVP — SCAFFOLDED + GAMIFICATION)
 - Task lists (e.g., "Grocery", "House Projects", "School")

@@ -9,7 +9,6 @@ use App\Models\Badge;
 use App\Models\ChatMessage;
 use App\Models\Family;
 use App\Models\FamilyEvent;
-use App\Models\FeaturedEvent;
 use App\Models\PointTransaction;
 use App\Models\Reward;
 use App\Models\RewardPurchase;
@@ -54,7 +53,6 @@ class DatabaseSeeder extends Seeder
             Tag::where('family_id', $existing->id)->delete();
             Reward::where('family_id', $existing->id)->delete();
             Badge::where('family_id', $existing->id)->delete();
-            FeaturedEvent::where('family_id', $existing->id)->delete();
             FamilyEvent::where('family_id', $existing->id)->delete();
             VaultEntry::where('family_id', $existing->id)->delete();
             VaultCategory::where('family_id', $existing->id)->delete();
@@ -993,105 +991,99 @@ class DatabaseSeeder extends Seeder
         }
 
         // ─────────────────────────────────────────────
-        //  FEATURED EVENTS
+        //  FEATURED EVENTS (unified in family_events)
         // ─────────────────────────────────────────────
 
-        FeaturedEvent::create([
+        FamilyEvent::create([
             'family_id' => $family->id,
             'created_by' => $mike->id,
             'title' => "Sarah's Birthday",
             'description' => 'Happy Birthday Sarah!',
-            'event_date' => $now->copy()->addDays(18)->toDateString(),
-            'event_time' => null,
+            'start_time' => $now->copy()->addDays(18)->startOfDay(),
+            'all_day' => true,
             'icon' => 'cake',
             'color' => '#EC4899',
             'recurrence' => 'yearly',
-            'is_active' => true,
+            'featured_scope' => 'family',
             'is_countdown' => true,
         ]);
 
-        FeaturedEvent::create([
+        FamilyEvent::create([
             'family_id' => $family->id,
             'created_by' => $sarah->id,
             'title' => 'Mom & Dad Anniversary',
             'description' => 'Celebrating another wonderful year together',
-            'event_date' => $now->copy()->addDays(79)->toDateString(),
-            'event_time' => null,
+            'start_time' => $now->copy()->addDays(79)->startOfDay(),
+            'all_day' => true,
             'icon' => 'heart',
             'color' => '#EF4444',
             'recurrence' => 'yearly',
-            'is_active' => true,
-            'is_countdown' => false,
+            'featured_scope' => 'family',
         ]);
 
-        FeaturedEvent::create([
+        FamilyEvent::create([
             'family_id' => $family->id,
             'created_by' => $mike->id,
             'title' => 'Family Game Night',
             'description' => 'Board games and fun for everyone!',
-            'event_date' => $now->copy()->next('Friday')->toDateString(),
-            'event_time' => '19:00',
+            'start_time' => $now->copy()->next('Friday')->setHour(19)->setMinute(0),
+            'all_day' => true,
             'icon' => 'game',
             'color' => '#8B5CF6',
             'recurrence' => 'weekly',
-            'is_active' => true,
-            'is_countdown' => false,
+            'featured_scope' => 'family',
         ]);
 
-        FeaturedEvent::create([
+        FamilyEvent::create([
             'family_id' => $family->id,
             'created_by' => $sarah->id,
             'title' => 'Spring Break',
             'description' => 'No school — family trip to the lake!',
-            'event_date' => $now->copy()->addDays(14)->toDateString(),
-            'event_time' => null,
+            'start_time' => $now->copy()->addDays(14)->startOfDay(),
+            'all_day' => true,
             'icon' => 'palm',
             'color' => '#F59E0B',
             'recurrence' => 'none',
-            'is_active' => true,
-            'is_countdown' => true,
+            'featured_scope' => 'family',
         ]);
 
-        FeaturedEvent::create([
+        FamilyEvent::create([
             'family_id' => $family->id,
             'created_by' => $mike->id,
             'title' => "Emma's Birthday",
             'description' => 'Happy 17th Birthday Emma!',
-            'event_date' => $now->copy()->addDays(32)->toDateString(),
-            'event_time' => null,
+            'start_time' => $now->copy()->addDays(32)->startOfDay(),
+            'all_day' => true,
             'icon' => 'cake',
             'color' => '#F472B6',
             'recurrence' => 'yearly',
-            'is_active' => true,
-            'is_countdown' => false,
+            'featured_scope' => 'family',
         ]);
 
-        FeaturedEvent::create([
+        FamilyEvent::create([
             'family_id' => $family->id,
             'created_by' => $sarah->id,
             'title' => 'Soccer Tournament',
             'description' => "Jake's regional soccer tournament — go Wildcats!",
-            'event_date' => $now->copy()->addDays(10)->toDateString(),
-            'event_time' => '09:00',
+            'start_time' => $now->copy()->addDays(10)->setHour(9)->setMinute(0),
+            'all_day' => true,
             'icon' => 'soccer',
             'color' => '#10B981',
             'recurrence' => 'none',
-            'is_active' => true,
-            'is_countdown' => true,
+            'featured_scope' => 'family',
         ]);
 
-        FeaturedEvent::create([
+        FamilyEvent::create([
             'family_id' => $family->id,
             'created_by' => $sarah->id,
             'title' => 'Science Fair',
             'description' => "Jake's volcano project — judging at 2pm",
-            'event_date' => $now->copy()->addDays(21)->toDateString(),
-            'event_time' => '14:00',
+            'start_time' => $now->copy()->addDays(21)->setHour(14)->setMinute(0),
+            'all_day' => true,
             'icon' => 'star',
             'color' => '#6366F1',
             'recurrence' => 'none',
-            'is_active' => true,
-            'is_countdown' => false,
+            'featured_scope' => 'family',
         ]);
 
         // ─────────────────────────────────────────────

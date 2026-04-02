@@ -4,21 +4,32 @@
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Calendar</h1>
 
-      <!-- View Mode Selector -->
-      <div class="flex gap-1 bg-lavender-100 dark:bg-prussian-700 rounded-lg p-1">
+      <div class="flex items-center gap-2">
+        <!-- Add Event Button -->
         <button
-          v-for="mode in ['month', 'week', 'day']"
-          :key="mode"
-          :class="[
-            'px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-150',
-            viewMode === mode
-              ? 'bg-wisteria-600 text-white shadow-sm'
-              : 'text-prussian-500 dark:text-lavender-300 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-200 dark:hover:bg-prussian-600',
-          ]"
-          @click="setViewMode(mode)"
+          class="btn-primary btn-sm flex items-center gap-1.5"
+          @click="openCreateModal()"
         >
-          {{ mode.charAt(0).toUpperCase() + mode.slice(1) }}
+          <PlusIcon class="w-4 h-4" />
+          <span class="hidden sm:inline">Add Event</span>
         </button>
+
+        <!-- View Mode Selector -->
+        <div class="flex gap-1 bg-lavender-100 dark:bg-prussian-700 rounded-lg p-1">
+          <button
+            v-for="mode in ['month', 'week', 'day']"
+            :key="mode"
+            :class="[
+              'px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-150',
+              viewMode === mode
+                ? 'bg-wisteria-600 text-white shadow-sm'
+                : 'text-prussian-500 dark:text-lavender-300 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-200 dark:hover:bg-prussian-600',
+            ]"
+            @click="setViewMode(mode)"
+          >
+            {{ mode.charAt(0).toUpperCase() + mode.slice(1) }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -64,10 +75,11 @@
           v-for="day in calendarDays"
           :key="`${day.year}-${day.month}-${day.day}`"
           :class="[
-            'min-h-24 p-2 bg-white dark:bg-prussian-800',
+            'min-h-24 p-2 bg-white dark:bg-prussian-800 cursor-pointer hover:bg-lavender-50 dark:hover:bg-prussian-750 transition-colors',
             !day.isCurrentMonth && 'bg-lavender-50 dark:bg-prussian-900',
             day.isToday && 'ring-2 ring-wisteria-400 ring-inset',
           ]"
+          @click="openCreateModal(day.date.toISODate())"
         >
           <p
             :class="[
@@ -90,6 +102,7 @@
               class="text-xs p-1 rounded font-medium truncate cursor-pointer transition-colors"
               :style="eventStyle(event)"
               :title="getCalendarSourceName(event)"
+              @click.stop="handleEventClick(event)"
             >
               {{ event.title }}
             </div>
@@ -114,6 +127,7 @@
       :max-height="640"
       :get-event-color="getEventColor"
       :get-calendar-source-name="getCalendarSourceName"
+      @event-click="handleEventClick"
     />
 
     <!-- Day View (Time Grid) -->
@@ -126,11 +140,12 @@
       :max-height="700"
       :get-event-color="getEventColor"
       :get-calendar-source-name="getCalendarSourceName"
+      @event-click="handleEventClick"
     />
 
     <!-- Calendar Legend -->
-    <div v-if="(connections || []).length > 0" class="mt-6 card p-4">
-      <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 mb-3">Calendars</p>
+    <div class="mt-6 card p-4">
+      <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 mb-3">Sources</p>
       <div class="flex flex-wrap gap-3">
         <div
           v-for="(conn, idx) in connections"
@@ -143,30 +158,67 @@
           ></span>
           <span class="text-sm text-prussian-400 dark:text-lavender-400">{{ conn.calendar_name || 'Calendar' }}</span>
         </div>
+        <!-- Manual events -->
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full flex-shrink-0 bg-indigo-500"></span>
+          <span class="text-sm text-prussian-400 dark:text-lavender-400">Family Events</span>
+        </div>
+        <!-- Tasks -->
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full flex-shrink-0 border-2 border-dashed" style="border-color: #B38A50"></span>
+          <span class="text-sm text-prussian-400 dark:text-lavender-400">Tasks</span>
+        </div>
       </div>
     </div>
+
+    <!-- Create/Edit Event Modal -->
+    <EventModal
+      :show="showEventModal"
+      :event="editingEvent"
+      :mode="'calendar'"
+      :prefill-date="prefillDate"
+      @close="closeModal"
+      @save="handleSave"
+    />
+
+    <!-- Delete Confirmation -->
+    <ConfirmDialog
+      :show="showDeleteConfirm"
+      title="Delete Event"
+      :message="`Are you sure you want to delete '${editingEvent?.title}'?`"
+      confirm-text="Delete"
+      variant="danger"
+      @confirm="handleDelete"
+      @cancel="showDeleteConfirm = false"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { DateTime } from 'luxon'
 import { storeToRefs } from 'pinia'
 import { useCalendarStore } from '@/stores/calendar'
 import { useAuthStore } from '@/stores/auth'
-import EmptyState from '@/components/common/EmptyState.vue'
 import TimeGrid from '@/components/calendar/TimeGrid.vue'
+import EventModal from '@/components/common/EventModal.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  CalendarIcon,
+  PlusIcon,
 } from '@heroicons/vue/24/outline'
 
 const calendarStore = useCalendarStore()
 const authStore = useAuthStore()
 
 const { currentMonth, viewMode, events, connections } = storeToRefs(calendarStore)
-const { familyMembers } = storeToRefs(authStore)
+
+// Event modal state
+const showEventModal = ref(false)
+const editingEvent = ref(null)
+const prefillDate = ref(null)
+const showDeleteConfirm = ref(false)
 
 // Default calendar colors to cycle through
 const defaultColors = [
@@ -185,7 +237,6 @@ const calendarColorMap = computed(() => {
   return map
 })
 
-// Build a name map so events can show their calendar source
 const calendarNameMap = computed(() => {
   const map = {}
   ;(connections.value || []).forEach((conn) => {
@@ -196,6 +247,8 @@ const calendarNameMap = computed(() => {
 })
 
 const getCalendarSourceName = (event) => {
+  if (event.source === 'task') return 'Task'
+  if (event.source === 'manual') return 'Family Event'
   if (event.calendar_id && calendarNameMap.value[event.calendar_id]) {
     return calendarNameMap.value[event.calendar_id]
   }
@@ -206,6 +259,8 @@ const getCalendarSourceName = (event) => {
 }
 
 const getEventColor = (event) => {
+  if (event.source === 'task') return event.user?.color || '#B38A50'
+  if (event.source === 'manual') return event.user?.color || '#6366f1'
   if (event.calendar_id && calendarColorMap.value[event.calendar_id]) {
     return calendarColorMap.value[event.calendar_id]
   }
@@ -217,23 +272,57 @@ const getEventColor = (event) => {
 
 const eventStyle = (event) => {
   const color = getEventColor(event)
+  const isTask = event.source === 'task'
   return {
     backgroundColor: color + '18',
     color: color,
-    borderLeft: `3px solid ${color}`,
+    borderLeft: isTask ? `3px dashed ${color}` : `3px solid ${color}`,
   }
 }
 
-const eventCardStyle = (event) => {
-  const color = getEventColor(event)
-  return {
-    backgroundColor: color + '0a',
-    borderLeftColor: color,
+const openCreateModal = (dateStr = null) => {
+  editingEvent.value = null
+  prefillDate.value = dateStr
+  showEventModal.value = true
+}
+
+const handleEventClick = (event) => {
+  // Only manual events are editable
+  if (event.source !== 'manual') return
+
+  editingEvent.value = event
+  prefillDate.value = null
+  showEventModal.value = true
+}
+
+const closeModal = () => {
+  showEventModal.value = false
+  editingEvent.value = null
+  prefillDate.value = null
+}
+
+const handleSave = async (eventData) => {
+  try {
+    if (editingEvent.value?.id) {
+      await calendarStore.updateEvent(editingEvent.value.id, eventData)
+    } else {
+      await calendarStore.createEvent(eventData)
+    }
+    closeModal()
+  } catch {
+    // error handled by store
   }
 }
 
-const isDayToday = (day) => {
-  return day.hasSame(DateTime.now(), 'day')
+const handleDelete = async () => {
+  if (!editingEvent.value?.id) return
+  try {
+    await calendarStore.deleteEvent(editingEvent.value.id)
+    closeModal()
+  } catch {
+    // error handled by store
+  }
+  showDeleteConfirm.value = false
 }
 
 const navigationTitle = computed(() => {
@@ -282,11 +371,9 @@ const calendarDays = computed(() => {
 const weekDays = computed(() => {
   const start = currentMonth.value.startOf('week')
   const days = []
-
   for (let i = 0; i < 7; i++) {
     days.push(start.plus({ days: i }))
   }
-
   return days
 })
 
@@ -318,11 +405,6 @@ const getEventsForDay = (day) => {
   })
 }
 
-const formatTime = (dateStr) => {
-  if (!dateStr) return ''
-  return DateTime.fromISO(dateStr).toFormat('h:mm a')
-}
-
 const setViewMode = (mode) => {
   calendarStore.setViewMode(mode)
 }
@@ -351,7 +433,6 @@ const navigateToToday = () => {
   calendarStore.navigateToToday()
 }
 
-// Re-fetch events when the view period changes
 const fetchCurrentPeriodEvents = async () => {
   let start, end
   if (viewMode.value === 'month') {
