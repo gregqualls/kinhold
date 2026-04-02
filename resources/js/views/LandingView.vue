@@ -36,6 +36,9 @@
           <router-link to="/register" class="kin-btn-primary text-base px-8 py-3.5">
             Create Your Family Hub
           </router-link>
+          <button v-if="demoAvailable" class="kin-btn-secondary text-base px-8 py-3.5" @click="showDemoModal = true">
+            Try the Demo
+          </button>
           <a href="#features" class="kin-btn-secondary text-base px-8 py-3.5">
             See Features
           </a>
@@ -322,11 +325,15 @@
         </nav>
       </div>
     </footer>
+
+    <DemoModal :show="showDemoModal" @close="showDemoModal = false" />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import DemoModal from '@/components/common/DemoModal.vue'
 import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
@@ -342,6 +349,10 @@ import {
   RocketLaunchIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/vue/24/outline'
+
+const authStore = useAuthStore()
+const demoAvailable = computed(() => authStore.appConfig?.demo_available)
+const showDemoModal = ref(false)
 
 const activeShowcaseTab = ref('tasks')
 

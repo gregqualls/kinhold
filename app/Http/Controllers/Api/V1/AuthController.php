@@ -99,6 +99,42 @@ class AuthController extends Controller
     }
 
     /**
+     * Log in as a demo family member (no password required).
+     * Only works for the reserved demo family (slug: q32-demo-family).
+     */
+    public function demoLogin(Request $request): JsonResponse
+    {
+        $request->validate([
+            'member' => 'required|string|in:mike,sarah,emma,jake,lily',
+        ]);
+
+        $family = Family::where('slug', 'q32-demo-family')->first();
+
+        if (! $family) {
+            return response()->json([
+                'message' => 'Demo family not available.',
+            ], 404);
+        }
+
+        $user = User::where('family_id', $family->id)
+            ->where('name', ucfirst($request->member))
+            ->first();
+
+        if (! $user) {
+            return response()->json([
+                'message' => 'Demo member not found.',
+            ], 404);
+        }
+
+        $token = $user->createToken('demo_token')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user' => UserResource::make($user->load('family')),
+        ]);
+    }
+
+    /**
      * Resend email verification notification.
      */
     public function resendVerification(Request $request): JsonResponse
