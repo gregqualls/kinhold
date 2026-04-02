@@ -84,7 +84,6 @@ jobs:
 
       - name: Run static analysis (Larastan)
         run: ./vendor/bin/phpstan analyse --memory-limit=512M
-        continue-on-error: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -97,4 +96,3 @@ jobs:
 
       - name: Run ESLint
         run: npx eslint resources/js/
-        continue-on-error: true

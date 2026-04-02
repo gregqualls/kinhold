@@ -1,0 +1,66 @@
+#!/bin/bash
+# Git pre-commit hook — auto-fix formatting + block on real errors
+# Auto-fixes Pint/ESLint formatting, re-stages fixed files, blocks on syntax errors.
+# Install: git config core.hooksPath hooks
+
+set -euo pipefail
+
+# Ensure Homebrew tools are on PATH
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
+# Get staged files (only added/modified, not deleted)
+STAGED_PHP=$(git diff --cached --name-only --diff-filter=d -- '*.php' || true)
+STAGED_JS=$(git diff --cached --name-only --diff-filter=d -- '*.js' '*.vue' || true)
+
+ERRORS=0
+
+# --- PHP: syntax check + auto-format ---
+if [ -n "$STAGED_PHP" ]; then
+  # Syntax check first
+  for file in $STAGED_PHP; do
+    if [ -f "$file" ]; then
+      if ! php -l "$file" 2>&1 | grep -q "No syntax errors"; then
+        echo "  PHP syntax error: $file"
+        php -l "$file" 2>&1
+        ERRORS=1
+      fi
+    fi
+  done
+
+  # Auto-format with Pint (only staged files)
+  if [ -f "./vendor/bin/pint" ]; then
+    for file in $STAGED_PHP; do
+      if [ -f "$file" ]; then
+        ./vendor/bin/pint "$file" --quiet 2>/dev/null || true
+        git add "$file"
+      fi
+    done
+  fi
+fi
+
+# --- JS/Vue: auto-fix + check for remaining errors ---
+if [ -n "$STAGED_JS" ]; then
+  if command -v npx &>/dev/null; then
+    for file in $STAGED_JS; do
+      if [ -f "$file" ]; then
+        # Auto-fix what we can
+        npx eslint --fix "$file" 2>/dev/null || true
+        git add "$file"
+
+        # Check if unfixable errors remain
+        if ! npx eslint "$file" 2>/dev/null; then
+          echo "  ESLint error (unfixable): $file"
+          ERRORS=1
+        fi
+      fi
+    done
+  fi
+fi
+
+if [ "$ERRORS" -ne 0 ]; then
+  echo ""
+  echo "Pre-commit hook blocked the commit. Fix the errors above and try again."
+  exit 1
+fi
+
+exit 0
