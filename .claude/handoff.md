@@ -1,35 +1,33 @@
 # Session Handoff
 
 **Date:** 2026-04-02
-**Branch:** chore/fresh-demo-and-lint-cleanup (PR #128, pending merge)
-**Last commit:** 6e7aec4 chore: fresh demo family + eliminate all ESLint warnings
+**Branch:** feature/try-the-demo (PR #129, pending merge)
+**Last commit:** 8b50090 feat: one-click "Try the Demo" with family member picker
 
 ## What Was Done This Session
-- Demo users now skip onboarding and don't see the email verification banner (`email_verified_at` + `onboarding_completed_at` set on all 5 seeded users)
-- New `app:refresh-demo` artisan command re-seeds demo family daily at 03:05 via Laravel scheduler
-- Eliminated all 43 ESLint warnings across 23 files (unused imports, console.error calls, dead code, unused variables)
-- CHANGELOG updated for Session 21
+- **Fresh demo family** — Demo users skip onboarding and email verification. Daily `app:refresh-demo` command re-seeds at 03:05. (PR #128, merged)
+- **Hardened demo passwords** — `Str::random(32)` per seed run instead of `bcrypt('password')`. Changes daily.
+- **"Try the Demo" feature** — Interactive modal on landing page + login page lets visitors pick a family member and instantly log in. `POST /api/v1/demo-login` creates Sanctum tokens directly.
+- **Self-hosted compatible** — `demo_available` flag in `/api/v1/config` hides demo buttons when no demo family exists.
+- **ESLint cleanup** — Eliminated all 43 pre-existing warnings across 23 files (PR #128, merged).
 
 ## Quality State
 - Tests: 60 tests, 118 assertions (pass, 2 deprecations)
 - Pint: pass
-- Larastan: pass (0 errors)
 - ESLint: pass (0 errors, 0 warnings)
-- Build: pass (3175 modules)
-- CI: all checks green on PR #128
-- Upsun preview: deployed and active
+- Build: pass (Vite build clean, chunk size warning only)
+- CI: running on PR #129
 
 ## What's Next
-1. **Merge PR #128** — CI green, preview deployed, ready for `/merge`
+1. **Merge PR #129** — CI should be green, ready for `/merge`
 2. **Audit all controllers for family_id scoping** — Critical before Corey's family signs up
-3. **Shopping & grocery lists (issue #65)** — Phase A priority, the #1 daily-driver feature
+3. **Shopping & grocery lists (issue #65)** — Phase A priority, #1 daily-driver feature
 4. **PWA support (issue #68)** — Get the app installable on phones
 
 ## Blockers or Gotchas
-- NPM audit shows 1 high severity vuln in `lodash-es` (pre-existing, `npm audit fix` available)
-- PHPStan 2.x is available — consider upgrading for 50-70% less memory usage
-- Composer on this machine is at `/usr/local/bin/composer` (not in default PATH), PHP is at `/opt/homebrew/bin/php`
-- **Upsun preview auth still broken** (from last session) — Preview domains not in `SANCTUM_STATEFUL_DOMAINS`. Pre-existing, blocks QA on previews.
+- Composer on this machine is at `/usr/local/bin/composer` (not in default PATH), PHP at `/opt/homebrew/bin/php`
+- **Upsun preview auth still broken** — Preview domains not in `SANCTUM_STATEFUL_DOMAINS`. Pre-existing, blocks QA on previews.
+- NPM audit shows 1 high severity vuln in `lodash-es` (pre-existing)
 
 ## Open Questions
 - None from this session
