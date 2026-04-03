@@ -2,6 +2,42 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-03 — Session 23: Rewards Marketplace Overhaul
+
+### What Was Done
+- **Quantity & expiration** — Rewards can have limited stock (decrement on purchase with DB locking) and optional expiration dates. Stock badges ("3 left", "Sold Out") and countdown labels on cards.
+- **Visibility controls** — Rewards can be scoped to everyone, parents only, children only, specific family members (UUID array), or by age range (min/max). All enforced at API, MCP, and Policy layers.
+- **Search, filter, sort** — Client-side search bar, filter chips (All/Affordable/Available), sort dropdown (price/name/newest) with localStorage persistence.
+- **Edit UI** — Reusable `RewardForm.vue` component for create and edit. PencilIcon/TrashIcon replace text links. Form scrolls into view when editing from auction cards.
+- **Bidding/auction system** — Two modes: timed (auto-resolve via scheduled command) and parent-called (manual close). Points held on bid, released when outbid/cancelled, converted to purchase on win. `AuctionService` with full DB transaction locking. `RewardBid` model, `reward_bids` table, `ResolveAuctions` artisan command.
+- **Auction card redesign** — Full-width distinct layout with colored header bar, two-column body (info + bid stats), clear action bar. Shows leading bidder (parent view), "Winning!" state, countdown.
+- **MCP parity** — All new fields and actions (bid, close_auction, cancel_auction) added to `manage-rewards` and `purchase-reward` MCP tools with Policy authorization.
+- **Sidebar nav** — Rewards added as top-level sidebar item with GiftIcon. Active state fix for nested routes.
+- **Security** — Family-scoped `visible_to` validation, Policy authorization on all auction endpoints (API + MCP), batch-loaded names (no N+1), aria-labels throughout.
+- **Toast notifications** — Success/error feedback for purchase, bid, close, cancel actions.
+
+### Files Created
+- `app/Enums/RewardVisibility.php`, `app/Enums/RewardType.php`
+- `app/Models/RewardBid.php`, `app/Services/AuctionService.php`
+- `app/Console/Commands/ResolveAuctions.php`
+- `resources/js/components/points/RewardForm.vue`, `BidModal.vue`
+- 3 database migrations
+
+### Files Modified
+- `app/Models/Reward.php`, `app/Models/User.php`
+- `app/Http/Controllers/Api/V1/RewardsController.php`
+- `app/Policies/RewardPolicy.php`
+- `app/Services/PointsService.php`
+- `app/Mcp/Tools/ManageRewards.php`, `PurchaseReward.php`
+- `resources/js/components/points/RewardCard.vue`, `FeaturedRewards.vue`
+- `resources/js/views/points/RewardsView.vue`
+- `resources/js/stores/points.js`
+- `resources/js/components/layout/Sidebar.vue`
+- `routes/api.php`, `routes/console.php`
+- `database/seeders/DatabaseSeeder.php`
+
+---
+
 ## 2026-04-02 — Session 22: MCP Tool Pagination Fix
 
 ### What Was Done

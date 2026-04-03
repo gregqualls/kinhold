@@ -110,7 +110,8 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 - Kudos: any family member can give +1 pt kudos with a reason
 - Deductions: parents only, negative points with reason
 - **Leaderboard:** Ranked by positive points within configurable period (daily/weekly/monthly). Resets each period. Does NOT affect the bank.
-- **Rewards store:** Parent-created prizes (Sweets=10pts, TV Time=20pts, etc.). Instant purchase — no approval flow.
+- **Rewards store:** Parent-created prizes with full marketplace features: limited stock (quantity tracking), expiration dates, visibility controls (everyone/parent-only/child-only/specific people/age range), search/filter/sort. Edit via reusable RewardForm component.
+- **Auction system:** Two modes — timed (auto-resolve via `rewards:resolve-auctions` command) and parent-called (manual close). Points held on bid (not deducted), released when outbid/cancelled, converted to purchase on win. One bid per user per auction. `AuctionService` handles all logic with DB transaction locking. `RewardBid` model + `reward_bids` table.
 - **Activity feed:** Family-wide scrollable feed showing all point events
 - **Feature toggles:** Parents can enable/disable points and badges modules in Settings
 
@@ -178,8 +179,9 @@ All routes are prefixed with `/api/v1/`. Auth routes are public, everything else
 - `calendar_connections` — id, user_id, provider, access_token (encrypted), refresh_token (encrypted), calendar_id, color, is_active
 - `chat_messages` — id, user_id, family_id, message, role (user/assistant)
 - `point_transactions` — id, family_id, user_id, type (enum), points (int), description, source_type/id (polymorphic), awarded_by
-- `rewards` — id, family_id, created_by, title, description, point_cost, icon, is_active, sort_order
+- `rewards` — id, family_id, created_by, title, description, point_cost, icon, quantity, quantity_purchased, expires_at, visibility (enum), visible_to (JSON), min_age, max_age, reward_type (enum: standard/auction), min_bid, bid_start_at, bid_end_at, is_active, sort_order
 - `reward_purchases` — id, family_id, reward_id, user_id, points_spent, purchased_at
+- `reward_bids` — id (UUID), family_id, reward_id, user_id, bid_amount, held_points, is_winning, resolved_at (unique: reward_id+user_id)
 - `badges` — id, family_id, created_by, name, description, icon, color, trigger_type, trigger_threshold, is_hidden, is_active
 - `user_badges` — id, user_id, badge_id, earned_at, awarded_by (unique: user_id+badge_id)
 

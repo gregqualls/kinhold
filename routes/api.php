@@ -154,6 +154,10 @@ Route::prefix('v1')->group(function () {
             Route::put('/{reward}', [RewardsController::class, 'update']);
             Route::delete('/{reward}', [RewardsController::class, 'destroy']);
             Route::post('/{reward}/purchase', [RewardsController::class, 'purchase']);
+            Route::post('/{reward}/bid', [RewardsController::class, 'bid']);
+            Route::get('/{reward}/bids', [RewardsController::class, 'bids']);
+            Route::post('/{reward}/close-auction', [RewardsController::class, 'closeAuction']);
+            Route::post('/{reward}/cancel-auction', [RewardsController::class, 'cancelAuction']);
             Route::get('/purchases', [RewardsController::class, 'purchases']);
         });
 
