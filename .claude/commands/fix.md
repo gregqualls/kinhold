@@ -1,5 +1,6 @@
 ---
 description: Auto-fix formatting and lint issues — runs Pint + ESLint fix, then re-checks
+model: haiku
 ---
 
 Automatically fix common code quality issues (formatting, lint errors) and verify the fixes resolved them.

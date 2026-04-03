@@ -1,5 +1,6 @@
 ---
 description: End-of-session handoff — captures context for the next session before cleanup
+model: sonnet
 ---
 
 Write a session handoff note so the next Claude session can pick up without a cold start. Runs BEFORE merge — capture context while you still have it.

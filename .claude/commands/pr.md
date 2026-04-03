@@ -1,5 +1,6 @@
 ---
 description: Automated PR creation — runs quality gates, links issues, fills template
+model: sonnet
 ---
 
 Create a pull request for the current branch with all the right metadata. Refuses to create a PR if quality checks fail.
