@@ -232,6 +232,7 @@ const save = () => {
 
   // Auction fields
   if (data.reward_type === 'auction') {
+    if (!data.point_cost) data.point_cost = 0 // Auctions don't require a price
     data.quantity = 1 // Auctions are always quantity 1
     if (!data.min_bid) data.min_bid = null
     if (auctionCloseMode.value === 'parent_called') {
