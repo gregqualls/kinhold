@@ -61,6 +61,9 @@ class KinholdServer extends Server
         ManageVault::class,
         ManageVaultAccess::class,
 
+        // Dashboard
+        ManageDashboard::class,
+
         // Playbooks
         ListPlaybooks::class,
         GetPlaybook::class,

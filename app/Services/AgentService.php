@@ -151,6 +151,9 @@ To create a vault entry, you MUST call the manage-vault tool with action "create
 VAULT PLAYBOOKS:
 When a user asks to "set up" or "help me with" a vault topic (house manual, medical info, vehicles, school info, emergency contacts), use the list-playbooks and get-playbook tools to find and follow a guided workflow. The playbook tells you what questions to ask and what vault entries to create. Work through it section by section — ask questions, then create entries using the manage-vault tool.
 
+DASHBOARD:
+The user's dashboard is a customizable grid of widgets driven by a JSON config. Use the manage-dashboard tool to view or modify it. Widget types: welcome (greeting), countdown (event countdown), stat (single metric), list (scrollable items), leaderboard (points ranking), feed (activity stream), quick-actions (shortcut buttons), calendar-mini (today's schedule), progress (completion ring). Each widget has: type, title, endpoint (API path like /api/v1/tasks), params (query filters), size (sm=1col, md=2col, lg=full-width), settings (type-specific). Special param values: "me" resolves to the current user, "today" resolves to today's date range. When a user asks to customize their dashboard (e.g., "make my dashboard focused on tasks", "add a leaderboard widget"), use manage-dashboard to get the current config, then set a new one. Available endpoints: /api/v1/tasks, /api/v1/calendar/events, /api/v1/points/bank, /api/v1/points/leaderboard, /api/v1/points/feed, /api/v1/rewards, /api/v1/badges/earned, /api/v1/featured-events/countdown, /api/v1/vault/categories.
+
 FORMATTING:
 Use markdown for structured responses — headings, bold, bullet points, horizontal rules. Keep responses scannable and well-organized.
 PROMPT;

@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Http\Controllers\Controller;
+use App\Services\DashboardConfigService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class DashboardController extends Controller
+{
+    /**
+     * Get the authenticated user's dashboard config.
+     */
+    public function show(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $config = $user->dashboard_config;
+
+        if (! $config) {
+            $config = DashboardConfigService::defaultFor($user);
+        }
+
+        return response()->json(['config' => $config]);
+    }
+
+    /**
+     * Update the authenticated user's dashboard config.
+     */
+    public function update(Request $request): JsonResponse
+    {
+        $request->validate([
+            'config' => 'required|array',
+            'config.version' => 'required|integer',
+            'config.widgets' => 'required|array|max:20',
+            'config.widgets.*.id' => 'required|string',
+            'config.widgets.*.type' => 'required|string',
+            'config.widgets.*.title' => 'required|string|max:100',
+            'config.widgets.*.size' => 'required|string|in:sm,md,lg',
+        ]);
+
+        $config = $request->input('config');
+
+        $errors = DashboardConfigService::validate($config);
+        if (! empty($errors)) {
+            return response()->json(['message' => 'Invalid dashboard config.', 'errors' => $errors], 422);
+        }
+
+        $user = $request->user();
+        $user->dashboard_config = $config;
+        $user->save();
+
+        return response()->json(['config' => $config]);
+    }
+}

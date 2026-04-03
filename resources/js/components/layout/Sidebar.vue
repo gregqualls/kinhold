@@ -131,13 +131,13 @@ const onLogoClick = () => {
 
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', icon: HomeIcon, name: 'Dashboard', module: null },
+  { label: 'Assistant', path: '/chat', icon: CpuChipIcon, name: 'Chat', module: 'chat' },
   { label: 'Calendar', path: '/calendar', icon: CalendarIcon, name: 'Calendar', module: 'calendar' },
   { label: 'Tasks', path: '/tasks', icon: CheckCircleIcon, name: 'Tasks', module: 'tasks' },
-  { label: 'Vault', path: '/vault', icon: LockClosedIcon, name: 'Vault', module: 'vault' },
-  { label: 'Assistant', path: '/chat', icon: CpuChipIcon, name: 'Chat', module: 'chat' },
   { label: 'Points', path: '/points', icon: TrophyIcon, name: 'Points', module: 'points' },
   { label: 'Rewards', path: '/points/rewards', icon: GiftIcon, name: 'Rewards', module: 'points' },
   { label: 'Badges', path: '/badges', icon: ShieldCheckIcon, name: 'Badges', module: 'badges' },
+  { label: 'Vault', path: '/vault', icon: LockClosedIcon, name: 'Vault', module: 'vault' },
 ]
 
 const filteredNavItems = computed(() => {

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BadgesController;
 use App\Http\Controllers\Api\V1\CalendarController;
 use App\Http\Controllers\Api\V1\ChatController;
+use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\FamilyController;
 use App\Http\Controllers\Api\V1\FeaturedEventController;
 use App\Http\Controllers\Api\V1\GoogleAuthController;
@@ -56,6 +57,10 @@ Route::prefix('v1')->group(function () {
         Route::delete('/user/avatar', [AuthController::class, 'deleteAvatar']);
         Route::put('/user/avatar/preset', [AuthController::class, 'setPresetAvatar']);
         Route::post('/user/avatar/google', [AuthController::class, 'restoreGoogleAvatar']);
+
+        // Dashboard config
+        Route::get('/user/dashboard', [DashboardController::class, 'show']);
+        Route::put('/user/dashboard', [DashboardController::class, 'update']);
 
         // Google account linking
         Route::get('/auth/google/link', [GoogleAuthController::class, 'linkRedirect']);
