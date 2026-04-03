@@ -73,8 +73,20 @@
         @purchase="handlePurchase"
         @edit="openEditForm"
         @delete="handleDelete"
+        @bid="openBidModal"
+        @close-auction="handleCloseAuction"
+        @cancel-auction="handleCancelAuction"
       />
     </div>
+
+    <!-- Bid Modal -->
+    <BidModal
+      v-if="biddingReward"
+      :reward="biddingReward"
+      :bank="pointsStore.bank"
+      @close="biddingReward = null"
+      @bid-placed="handleBidPlaced"
+    />
 
     <!-- Empty state -->
     <div v-if="filteredRewards.length === 0 && pointsStore.rewards.length > 0" class="card p-8 text-center">
@@ -95,6 +107,7 @@ import { usePointsStore } from '@/stores/points'
 import { useAuthStore } from '@/stores/auth'
 import RewardCard from '@/components/points/RewardCard.vue'
 import RewardForm from '@/components/points/RewardForm.vue'
+import BidModal from '@/components/points/BidModal.vue'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 
 const pointsStore = usePointsStore()
@@ -143,6 +156,32 @@ const handlePurchase = async (rewardId) => {
 
 const handleDelete = async (rewardId) => {
   await pointsStore.deleteReward(rewardId)
+}
+
+// Auction handlers
+const biddingReward = ref(null)
+
+const openBidModal = (reward) => {
+  biddingReward.value = reward
+}
+
+const handleBidPlaced = async () => {
+  biddingReward.value = null
+  await Promise.all([pointsStore.fetchRewards(), pointsStore.fetchBank()])
+}
+
+const handleCloseAuction = async (rewardId) => {
+  const result = await pointsStore.closeAuction(rewardId)
+  if (result.success) {
+    await pointsStore.fetchRewards()
+  }
+}
+
+const handleCancelAuction = async (rewardId) => {
+  const result = await pointsStore.cancelAuction(rewardId)
+  if (result.success) {
+    await Promise.all([pointsStore.fetchRewards(), pointsStore.fetchBank()])
+  }
 }
 
 // Search, filter, sort state

@@ -20,8 +20,17 @@
         <IconPicker v-model="form.icon" />
       </div>
 
-      <!-- Quantity -->
+      <!-- Reward Type -->
       <div>
+        <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">Type</label>
+        <select v-model="form.reward_type" class="input-base">
+          <option value="standard">Standard</option>
+          <option value="auction">Auction</option>
+        </select>
+      </div>
+
+      <!-- Quantity (standard only) -->
+      <div v-if="form.reward_type !== 'auction'">
         <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">
           Quantity
           <span class="text-lavender-400 font-normal">(blank = unlimited)</span>
@@ -37,6 +46,36 @@
         </label>
         <input v-model="form.expires_at" type="datetime-local" class="input-base" />
       </div>
+
+      <!-- Auction fields -->
+      <template v-if="form.reward_type === 'auction'">
+        <div>
+          <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">
+            Minimum Bid
+            <span class="text-lavender-400 font-normal">(optional)</span>
+          </label>
+          <input v-model.number="form.min_bid" type="number" min="1" class="input-base" placeholder="No minimum" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">Auction Close Mode</label>
+          <select v-model="auctionCloseMode" class="input-base">
+            <option value="timed">Timed (auto-close)</option>
+            <option value="parent_called">Parent-Called (manual)</option>
+          </select>
+        </div>
+
+        <template v-if="auctionCloseMode === 'timed'">
+          <div>
+            <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">Bidding Opens</label>
+            <input v-model="form.bid_start_at" type="datetime-local" class="input-base" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">Bidding Ends</label>
+            <input v-model="form.bid_end_at" type="datetime-local" class="input-base" />
+          </div>
+        </template>
+      </template>
 
       <!-- Visibility -->
       <div>
@@ -128,9 +167,14 @@ const defaultForm = () => ({
   visible_to: [],
   min_age: null,
   max_age: null,
+  reward_type: 'standard',
+  min_bid: null,
+  bid_start_at: '',
+  bid_end_at: '',
 })
 
 const form = ref(defaultForm())
+const auctionCloseMode = ref('timed')
 
 // Populate form when editing
 watch(() => props.reward, (reward) => {
@@ -146,9 +190,15 @@ watch(() => props.reward, (reward) => {
       visible_to: reward.visible_to || [],
       min_age: reward.min_age,
       max_age: reward.max_age,
+      reward_type: reward.reward_type || 'standard',
+      min_bid: reward.min_bid,
+      bid_start_at: reward.bid_start_at ? new Date(reward.bid_start_at).toISOString().slice(0, 16) : '',
+      bid_end_at: reward.bid_end_at ? new Date(reward.bid_end_at).toISOString().slice(0, 16) : '',
     }
+    auctionCloseMode.value = reward.bid_end_at ? 'timed' : 'parent_called'
   } else {
     form.value = defaultForm()
+    auctionCloseMode.value = 'timed'
   }
 }, { immediate: true })
 
@@ -174,6 +224,23 @@ const save = () => {
   if (!data.min_age && data.min_age !== 0) data.min_age = null
   if (!data.max_age && data.max_age !== 0) data.max_age = null
   if (data.visibility !== 'specific') data.visible_to = null
+
+  // Auction fields
+  if (data.reward_type === 'auction') {
+    data.quantity = 1 // Auctions are always quantity 1
+    if (!data.min_bid) data.min_bid = null
+    if (auctionCloseMode.value === 'parent_called') {
+      data.bid_start_at = null
+      data.bid_end_at = null
+    } else {
+      if (!data.bid_start_at) data.bid_start_at = null
+      if (!data.bid_end_at) data.bid_end_at = null
+    }
+  } else {
+    data.min_bid = null
+    data.bid_start_at = null
+    data.bid_end_at = null
+  }
 
   emit('save', data)
 }

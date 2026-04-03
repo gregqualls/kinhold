@@ -35,6 +35,10 @@ class ManageRewards extends Tool
             'visible_to' => $schema->string()->description('Comma-separated user UUIDs when visibility is "specific"'),
             'min_age' => $schema->integer()->description('Minimum age to see this reward (null = no minimum)'),
             'max_age' => $schema->integer()->description('Maximum age to see this reward (null = no maximum)'),
+            'reward_type' => $schema->string()->enum(['standard', 'auction'])->description('Reward type (default: standard)'),
+            'min_bid' => $schema->integer()->description('Minimum bid amount for auctions'),
+            'bid_start_at' => $schema->string()->description('Auction start time (ISO 8601). Null = open immediately.'),
+            'bid_end_at' => $schema->string()->description('Auction end time (ISO 8601). Null = parent-called (manual close).'),
         ];
     }
 
@@ -80,6 +84,13 @@ class ManageRewards extends Tool
                     'visible_to' => $r->visible_to,
                     'min_age' => $r->min_age,
                     'max_age' => $r->max_age,
+                    'reward_type' => $r->reward_type->value,
+                    'min_bid' => $r->min_bid,
+                    'bid_start_at' => $r->bid_start_at?->toIso8601String(),
+                    'bid_end_at' => $r->bid_end_at?->toIso8601String(),
+                    'bidding_open' => $r->isAuction() ? $r->isBiddingOpen() : null,
+                    'highest_bid' => $r->isAuction() ? $r->highestBid()?->bid_amount : null,
+                    'total_bids' => $r->isAuction() ? $r->activeBids()->count() : null,
                 ];
             })->toArray(),
         ]);
@@ -118,6 +129,10 @@ class ManageRewards extends Tool
             'visible_to' => $visibleTo,
             'min_age' => $request->get('min_age'),
             'max_age' => $request->get('max_age'),
+            'reward_type' => $request->get('reward_type', 'standard'),
+            'min_bid' => $request->get('min_bid'),
+            'bid_start_at' => $request->get('bid_start_at'),
+            'bid_end_at' => $request->get('bid_end_at'),
         ]);
 
         /** @var Carbon|null $expiresAt */
@@ -152,7 +167,7 @@ class ManageRewards extends Tool
         }
 
         $updates = [];
-        foreach (['title', 'description', 'point_cost', 'icon', 'is_active', 'quantity', 'expires_at', 'visibility', 'min_age', 'max_age'] as $field) {
+        foreach (['title', 'description', 'point_cost', 'icon', 'is_active', 'quantity', 'expires_at', 'visibility', 'min_age', 'max_age', 'reward_type', 'min_bid', 'bid_start_at', 'bid_end_at'] as $field) {
             if ($request->get($field) !== null) {
                 $updates[$field] = $request->get($field);
             }

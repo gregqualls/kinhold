@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RewardType;
 use App\Enums\RewardVisibility;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,6 +23,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int|null $max_age
  * @property bool $is_active
  * @property int $sort_order
+ * @property RewardType $reward_type
+ * @property int|null $min_bid
+ * @property Carbon|null $bid_start_at
+ * @property Carbon|null $bid_end_at
  */
 class Reward extends Model
 {
@@ -41,6 +46,10 @@ class Reward extends Model
         'visible_to',
         'min_age',
         'max_age',
+        'reward_type',
+        'min_bid',
+        'bid_start_at',
+        'bid_end_at',
         'is_active',
         'sort_order',
     ];
@@ -56,6 +65,10 @@ class Reward extends Model
             'visible_to' => 'array',
             'min_age' => 'integer',
             'max_age' => 'integer',
+            'reward_type' => RewardType::class,
+            'min_bid' => 'integer',
+            'bid_start_at' => 'datetime',
+            'bid_end_at' => 'datetime',
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];
@@ -74,6 +87,61 @@ class Reward extends Model
     public function purchases(): HasMany
     {
         return $this->hasMany(RewardPurchase::class);
+    }
+
+    public function bids(): HasMany
+    {
+        return $this->hasMany(RewardBid::class);
+    }
+
+    public function activeBids(): HasMany
+    {
+        return $this->bids()->whereNull('resolved_at');
+    }
+
+    public function isAuction(): bool
+    {
+        return $this->reward_type === RewardType::Auction;
+    }
+
+    public function isBiddingOpen(): bool
+    {
+        if (! $this->isAuction() || ! $this->is_active) {
+            return false;
+        }
+
+        // Timed auction: check window
+        if ($this->bid_end_at !== null) {
+            $started = $this->bid_start_at === null || $this->bid_start_at->isPast();
+            $notEnded = $this->bid_end_at->isFuture();
+
+            return $started && $notEnded;
+        }
+
+        // Parent-called: open until manually closed (bid_start_at optional)
+        $started = $this->bid_start_at === null || $this->bid_start_at->isPast();
+
+        return $started && ! $this->isResolved();
+    }
+
+    public function isResolved(): bool
+    {
+        return $this->bids()->where('is_winning', true)->exists();
+    }
+
+    public function highestBid(): ?RewardBid
+    {
+        /** @var RewardBid|null */
+        return $this->activeBids()
+            ->orderByDesc('bid_amount')
+            ->orderBy('created_at')
+            ->first();
+    }
+
+    public function currentUserBid(User $user): ?RewardBid
+    {
+        /** @var RewardBid|null */
+        return $this->activeBids()->where('user_id', $user->id)->first();
     }
 
     /**

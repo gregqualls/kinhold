@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Reward;
 use App\Models\RewardPurchase;
 use App\Models\User;
+use App\Services\AuctionService;
 use App\Services\BadgeService;
 use App\Services\PointsService;
 use Illuminate\Http\JsonResponse;
@@ -16,6 +17,7 @@ class RewardsController extends Controller
     public function __construct(
         private PointsService $pointsService,
         private BadgeService $badgeService,
+        private AuctionService $auctionService,
     ) {}
 
     /**
@@ -59,6 +61,15 @@ class RewardsController extends Controller
             $data['remaining_stock'] = $reward->remainingStock();
             $data['is_expired'] = $reward->isExpired();
             $data['is_purchasable'] = $reward->isPurchasable();
+
+            // Auction metadata
+            if ($reward->isAuction()) {
+                $data['bidding_open'] = $reward->isBiddingOpen();
+                $data['highest_bid'] = $reward->highestBid()?->bid_amount;
+                $data['total_bids'] = $reward->activeBids()->count();
+                $data['my_bid'] = $reward->currentUserBid($user)?->bid_amount;
+                $data['is_resolved'] = $reward->isResolved();
+            }
 
             // Resolve visible_to names for parents
             /** @var array<string>|null $visibleTo */
@@ -104,6 +115,10 @@ class RewardsController extends Controller
             }],
             'min_age' => 'nullable|integer|min:0|max:99',
             'max_age' => 'nullable|integer|min:0|max:99',
+            'reward_type' => 'sometimes|string|in:standard,auction',
+            'min_bid' => 'nullable|integer|min:1',
+            'bid_start_at' => 'nullable|date',
+            'bid_end_at' => 'nullable|date',
         ]);
 
         // Validate max_age >= min_age when both are set
@@ -124,6 +139,10 @@ class RewardsController extends Controller
             'visible_to' => $validated['visible_to'] ?? null,
             'min_age' => $validated['min_age'] ?? null,
             'max_age' => $validated['max_age'] ?? null,
+            'reward_type' => $validated['reward_type'] ?? 'standard',
+            'min_bid' => $validated['min_bid'] ?? null,
+            'bid_start_at' => $validated['bid_start_at'] ?? null,
+            'bid_end_at' => $validated['bid_end_at'] ?? null,
         ]);
 
         return response()->json([
@@ -159,6 +178,10 @@ class RewardsController extends Controller
             }],
             'min_age' => 'nullable|integer|min:0|max:99',
             'max_age' => 'nullable|integer|min:0|max:99',
+            'reward_type' => 'sometimes|string|in:standard,auction',
+            'min_bid' => 'nullable|integer|min:1',
+            'bid_start_at' => 'nullable|date',
+            'bid_end_at' => 'nullable|date',
         ]);
 
         $reward->update($validated);
@@ -237,6 +260,132 @@ class RewardsController extends Controller
                 'last_page' => $purchases->lastPage(),
                 'total' => $purchases->total(),
             ],
+        ]);
+    }
+
+    /**
+     * Place or update a bid on an auction reward.
+     */
+    public function bid(Request $request, Reward $reward): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($reward->family_id === $user->family_id, 404);
+
+        $validated = $request->validate([
+            'bid_amount' => 'required|integer|min:1',
+        ]);
+
+        try {
+            $bid = $this->auctionService->placeBid($reward, $user, $validated['bid_amount']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => "Bid of {$bid->bid_amount} points placed on {$reward->title}",
+            'bid' => [
+                'id' => $bid->id,
+                'bid_amount' => $bid->bid_amount,
+                'held_points' => $bid->held_points,
+            ],
+            'available_points' => $user->availablePoints(),
+        ], 201);
+    }
+
+    /**
+     * List bids for an auction reward.
+     */
+    public function bids(Request $request, Reward $reward): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($reward->family_id === $user->family_id, 404);
+
+        $bids = $reward->bids()
+            ->with('user:id,name,avatar')
+            ->orderByDesc('bid_amount')
+            ->orderBy('created_at')
+            ->get();
+
+        // Children see own bid + anonymous highest; parents see all
+        if ($user->isParent()) {
+            $data = $bids->map(fn ($b) => [
+                'id' => $b->id,
+                'user' => $b->user ? ['id' => $b->user->id, 'name' => $b->user->name] : null,
+                'bid_amount' => $b->bid_amount,
+                'is_winning' => $b->is_winning,
+                'created_at' => $b->created_at->toIso8601String(),
+            ]);
+        } else {
+            $highestBid = $bids->first();
+            $myBid = $bids->firstWhere('user_id', $user->id);
+
+            $data = collect();
+            if ($highestBid) {
+                $data->push([
+                    'bid_amount' => $highestBid->bid_amount,
+                    'is_highest' => true,
+                    'is_mine' => (string) $highestBid->user_id === (string) $user->id,
+                ]);
+            }
+            if ($myBid && $myBid->id !== $highestBid?->id) {
+                $data->push([
+                    'bid_amount' => $myBid->bid_amount,
+                    'is_highest' => false,
+                    'is_mine' => true,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'bids' => $data,
+            'total_bids' => $bids->count(),
+            'bidding_open' => $reward->isBiddingOpen(),
+        ]);
+    }
+
+    /**
+     * Close a parent-called auction (parent only).
+     */
+    public function closeAuction(Request $request, Reward $reward): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($reward->family_id === $user->family_id, 404);
+        abort_unless($user->isParent(), 403);
+
+        try {
+            $winner = $this->auctionService->closeAuction($reward);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => $winner
+                ? "Auction closed! {$winner->user->name} won with {$winner->bid_amount} points."
+                : 'Auction closed with no bids.',
+            'winner' => $winner ? [
+                'user_name' => $winner->user->name,
+                'bid_amount' => $winner->bid_amount,
+            ] : null,
+        ]);
+    }
+
+    /**
+     * Cancel an auction (parent only) — releases all holds.
+     */
+    public function cancelAuction(Request $request, Reward $reward): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($reward->family_id === $user->family_id, 404);
+        abort_unless($user->isParent(), 403);
+
+        try {
+            $this->auctionService->cancelAuction($reward);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => "Auction for {$reward->title} cancelled. All held points released.",
         ]);
     }
 }

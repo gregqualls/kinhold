@@ -570,6 +570,35 @@ class DatabaseSeeder extends Seeder
             'visible_to' => [$emma->id, $jake->id],
         ]);
 
+        // Auction rewards
+        Reward::create([
+            'family_id' => $family->id,
+            'created_by' => $mike->id,
+            'title' => 'Weekend Trip Pick',
+            'description' => 'Choose where the family goes this weekend! Highest bid wins.',
+            'point_cost' => 0,
+            'icon' => 'car',
+            'sort_order' => 7,
+            'reward_type' => 'auction',
+            'quantity' => 1,
+            'min_bid' => 20,
+            'bid_end_at' => now()->addDays(5),
+        ]);
+
+        Reward::create([
+            'family_id' => $family->id,
+            'created_by' => $sarah->id,
+            'title' => 'Extra Allowance ($5)',
+            'description' => 'Bid for a $5 bonus allowance. Parent calls the winner!',
+            'point_cost' => 0,
+            'icon' => 'dollar-sign',
+            'sort_order' => 8,
+            'reward_type' => 'auction',
+            'quantity' => 1,
+            'min_bid' => 10,
+            'visibility' => 'child_only',
+        ]);
+
         // ─────────────────────────────────────────────
         //  REWARD PURCHASES (with matching point transactions)
         // ─────────────────────────────────────────────
