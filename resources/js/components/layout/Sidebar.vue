@@ -149,6 +149,10 @@ const filteredNavItems = computed(() => {
 
 const isActive = (path) => {
   if (path === '/') return route.path === '/'
+  // Exact match takes priority over startsWith to avoid parent routes
+  // highlighting when a child route is active (e.g. /points vs /points/rewards)
+  const exactMatch = filteredNavItems.value.find(item => item.path === route.path)
+  if (exactMatch) return path === route.path
   return route.path.startsWith(path)
 }
 </script>
