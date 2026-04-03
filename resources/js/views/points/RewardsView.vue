@@ -110,10 +110,12 @@ import RewardCard from '@/components/points/RewardCard.vue'
 import RewardForm from '@/components/points/RewardForm.vue'
 import BidModal from '@/components/points/BidModal.vue'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
+import { useNotification } from '@/composables/useNotification'
 
 const pointsStore = usePointsStore()
 const authStore = useAuthStore()
 const { isParent } = storeToRefs(authStore)
+const notify = useNotification()
 
 // Form state
 const showForm = ref(false)
@@ -143,10 +145,16 @@ const handleSave = async (data) => {
     if (result.success) {
       closeForm()
       await pointsStore.fetchRewards()
+    } else {
+      notify.error(result.error || 'Failed to update reward')
     }
   } else {
     const result = await pointsStore.createReward(data)
-    if (result.success) closeForm()
+    if (result.success) {
+      closeForm()
+    } else {
+      notify.error(result.error || 'Failed to create reward')
+    }
   }
 }
 

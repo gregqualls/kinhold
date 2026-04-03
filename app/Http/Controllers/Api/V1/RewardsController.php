@@ -173,7 +173,7 @@ class RewardsController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
-            'point_cost' => 'sometimes|integer|min:1',
+            'point_cost' => 'sometimes|integer|min:0',
             'icon' => 'nullable|string|max:50',
             'is_active' => 'sometimes|boolean',
             'sort_order' => 'sometimes|integer',
