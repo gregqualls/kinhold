@@ -27,8 +27,8 @@ class RewardPolicy
         return $user->isParent();
     }
 
-    public function purchase(User $user): bool
+    public function purchase(User $user, Reward $reward): bool
     {
-        return true;
+        return $reward->isVisibleTo($user) && $reward->isPurchasable();
     }
 }

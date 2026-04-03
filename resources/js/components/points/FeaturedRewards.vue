@@ -91,9 +91,10 @@ const props = defineProps({
 
 defineEmits(['navigate'])
 
-// Show the cheapest active rewards — most attainable and motivating
+// Show the cheapest purchasable rewards — most attainable and motivating
 const featuredRewards = computed(() => {
   return [...props.rewards]
+    .filter((r) => r.is_purchasable !== false)
     .sort((a, b) => a.point_cost - b.point_cost)
     .slice(0, props.limit)
 })

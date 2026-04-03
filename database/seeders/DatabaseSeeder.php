@@ -510,6 +510,7 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 20,
             'icon' => 'tv',
             'sort_order' => 1,
+            'visibility' => 'child_only',
         ]);
 
         $pickDinner = Reward::create([
@@ -530,6 +531,7 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 40,
             'icon' => 'film',
             'sort_order' => 3,
+            'quantity' => 2,
         ]);
 
         $stayUpLate = Reward::create([
@@ -540,6 +542,8 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 75,
             'icon' => 'moon',
             'sort_order' => 4,
+            'min_age' => 10,
+            'visibility' => 'child_only',
         ]);
 
         $friendSleepover = Reward::create([
@@ -550,6 +554,8 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 100,
             'icon' => 'house',
             'sort_order' => 5,
+            'quantity' => 1,
+            'expires_at' => now()->addDays(30),
         ]);
 
         $skipChoreDay = Reward::create([
@@ -560,6 +566,8 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 50,
             'icon' => 'confetti',
             'sort_order' => 6,
+            'visibility' => 'specific',
+            'visible_to' => [$emma->id, $jake->id],
         ]);
 
         // ─────────────────────────────────────────────

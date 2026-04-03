@@ -12,45 +12,76 @@
         <span class="text-sm font-bold font-mono text-wisteria-600 dark:text-wisteria-400">
           {{ pointsStore.bank }} pts
         </span>
-        <button v-if="isParent" class="btn-primary btn-sm" @click="showCreateForm = !showCreateForm">
-          {{ showCreateForm ? 'Cancel' : '+ Add Reward' }}
+        <button v-if="isParent && !showForm" class="btn-primary btn-sm" @click="openCreateForm">
+          + Add Reward
         </button>
       </div>
     </div>
 
-    <!-- Create Form (parent only) -->
-    <div v-if="showCreateForm" class="card p-4 mb-6">
-      <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 mb-3">New Reward</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input v-model="newReward.title" class="input-base" placeholder="Reward name" />
-        <input v-model.number="newReward.point_cost" type="number" min="1" class="input-base" placeholder="Point cost" />
-        <input v-model="newReward.description" class="input-base sm:col-span-2" placeholder="Description (optional)" />
-        <div class="sm:col-span-2">
-          <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">Icon</label>
-          <IconPicker v-model="newReward.icon" />
-        </div>
-      </div>
-      <div class="flex justify-end mt-3">
-        <button :disabled="!newReward.title || !newReward.point_cost" class="btn-primary btn-sm" @click="createReward">
-          Create Reward
+    <!-- Create/Edit Form -->
+    <RewardForm
+      v-if="showForm"
+      :reward="editingReward"
+      :is-editing="!!editingReward"
+      @save="handleSave"
+      @cancel="closeForm"
+    />
+
+    <!-- Search & Filter Toolbar -->
+    <div v-if="pointsStore.rewards.length > 0" class="mb-4 space-y-3">
+      <!-- Search -->
+      <input
+        v-model="searchQuery"
+        type="text"
+        class="input-base w-full"
+        placeholder="Search rewards..."
+        aria-label="Search rewards"
+      />
+
+      <!-- Filter chips + Sort -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          v-for="f in filterOptions"
+          :key="f.value"
+          class="px-3 py-1 rounded-full text-xs font-medium transition-colors"
+          :class="activeFilter === f.value
+            ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/40 dark:text-wisteria-300 ring-1 ring-wisteria-300 dark:ring-wisteria-600'
+            : 'bg-lavender-100 text-lavender-600 dark:bg-prussian-700 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+          @click="activeFilter = f.value"
+        >
+          {{ f.label }}
         </button>
+
+        <select v-model="sortBy" class="input-base ml-auto text-xs py-1 w-auto">
+          <option value="sort_order">Default</option>
+          <option value="price_asc">Price: Low → High</option>
+          <option value="price_desc">Price: High → Low</option>
+          <option value="name">Name A-Z</option>
+          <option value="newest">Newest</option>
+        </select>
       </div>
     </div>
 
     <!-- Rewards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <RewardCard
-        v-for="reward in pointsStore.rewards"
+        v-for="reward in filteredRewards"
         :key="reward.id"
         :reward="reward"
         :bank="pointsStore.bank"
         :is-parent="isParent"
         @purchase="handlePurchase"
+        @edit="openEditForm"
         @delete="handleDelete"
       />
     </div>
 
-    <div v-if="pointsStore.rewards.length === 0" class="card p-8 text-center">
+    <!-- Empty state -->
+    <div v-if="filteredRewards.length === 0 && pointsStore.rewards.length > 0" class="card p-8 text-center">
+      <p class="text-lavender-500 dark:text-lavender-400">No rewards match your filters.</p>
+    </div>
+
+    <div v-if="pointsStore.rewards.length === 0 && !showForm" class="card p-8 text-center">
       <p class="text-lavender-500 dark:text-lavender-400">No rewards yet.</p>
       <p v-if="isParent" class="text-sm text-lavender-400 mt-1">Create some rewards for your family!</p>
     </div>
@@ -58,36 +89,112 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { usePointsStore } from '@/stores/points'
 import { useAuthStore } from '@/stores/auth'
 import RewardCard from '@/components/points/RewardCard.vue'
-import IconPicker from '@/components/common/IconPicker.vue'
+import RewardForm from '@/components/points/RewardForm.vue'
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 
 const pointsStore = usePointsStore()
 const authStore = useAuthStore()
 const { isParent } = storeToRefs(authStore)
 
-const showCreateForm = ref(false)
-const newReward = ref({ title: '', description: '', point_cost: null, icon: '' })
+// Form state
+const showForm = ref(false)
+const editingReward = ref(null)
 
-const createReward = async () => {
-  const result = await pointsStore.createReward(newReward.value)
-  if (result.success) {
-    newReward.value = { title: '', description: '', point_cost: null, icon: '' }
-    showCreateForm.value = false
+const openCreateForm = () => {
+  editingReward.value = null
+  showForm.value = true
+}
+
+const openEditForm = (reward) => {
+  editingReward.value = reward
+  showForm.value = true
+}
+
+const closeForm = () => {
+  showForm.value = false
+  editingReward.value = null
+}
+
+const handleSave = async (data) => {
+  if (editingReward.value) {
+    const result = await pointsStore.updateReward(editingReward.value.id, data)
+    if (result.success) {
+      closeForm()
+      await pointsStore.fetchRewards()
+    }
+  } else {
+    const result = await pointsStore.createReward(data)
+    if (result.success) closeForm()
   }
 }
 
 const handlePurchase = async (rewardId) => {
-  await pointsStore.purchaseReward(rewardId)
+  const result = await pointsStore.purchaseReward(rewardId)
+  if (result.success) {
+    // Refresh rewards to get updated stock counts
+    await pointsStore.fetchRewards()
+  }
 }
 
 const handleDelete = async (rewardId) => {
   await pointsStore.deleteReward(rewardId)
 }
+
+// Search, filter, sort state
+const searchQuery = ref('')
+const activeFilter = ref(localStorage.getItem('rewards_filter') || 'all')
+const sortBy = ref(localStorage.getItem('rewards_sort') || 'sort_order')
+
+// Persist preferences
+watch(activeFilter, (v) => localStorage.setItem('rewards_filter', v))
+watch(sortBy, (v) => localStorage.setItem('rewards_sort', v))
+
+const filterOptions = [
+  { label: 'All', value: 'all' },
+  { label: 'Affordable', value: 'affordable' },
+  { label: 'Available', value: 'available' },
+]
+
+const filteredRewards = computed(() => {
+  let list = [...pointsStore.rewards]
+
+  // Search
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter((r) =>
+      r.title.toLowerCase().includes(q) ||
+      (r.description && r.description.toLowerCase().includes(q)),
+    )
+  }
+
+  // Filter
+  if (activeFilter.value === 'affordable') {
+    list = list.filter((r) => pointsStore.bank >= r.point_cost)
+  } else if (activeFilter.value === 'available') {
+    list = list.filter((r) => r.is_purchasable !== false)
+  }
+
+  // Sort
+  if (sortBy.value === 'price_asc') {
+    list.sort((a, b) => a.point_cost - b.point_cost)
+  } else if (sortBy.value === 'price_desc') {
+    list.sort((a, b) => b.point_cost - a.point_cost)
+  } else if (sortBy.value === 'name') {
+    list.sort((a, b) => a.title.localeCompare(b.title))
+  } else if (sortBy.value === 'newest') {
+    list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  } else {
+    // Default: sort_order then price
+    list.sort((a, b) => (a.sort_order - b.sort_order) || (a.point_cost - b.point_cost))
+  }
+
+  return list
+})
 
 onMounted(async () => {
   await Promise.all([
