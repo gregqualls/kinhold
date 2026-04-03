@@ -161,8 +161,10 @@ const handleSave = async (data) => {
 const handlePurchase = async (rewardId) => {
   const result = await pointsStore.purchaseReward(rewardId)
   if (result.success) {
-    // Refresh rewards to get updated stock counts
+    notify.success(result.data?.message || 'Reward purchased!')
     await pointsStore.fetchRewards()
+  } else {
+    notify.error(result.error || 'Failed to purchase reward')
   }
 }
 
@@ -177,22 +179,29 @@ const openBidModal = (reward) => {
   biddingReward.value = reward
 }
 
-const handleBidPlaced = async () => {
+const handleBidPlaced = async (data) => {
   biddingReward.value = null
+  notify.success(data?.message || 'Bid placed!')
   await Promise.all([pointsStore.fetchRewards(), pointsStore.fetchBank()])
 }
 
 const handleCloseAuction = async (rewardId) => {
   const result = await pointsStore.closeAuction(rewardId)
   if (result.success) {
+    notify.success(result.data?.message || 'Auction closed!')
     await pointsStore.fetchRewards()
+  } else {
+    notify.error(result.error || 'Failed to close auction')
   }
 }
 
 const handleCancelAuction = async (rewardId) => {
   const result = await pointsStore.cancelAuction(rewardId)
   if (result.success) {
+    notify.success(result.data?.message || 'Auction cancelled')
     await Promise.all([pointsStore.fetchRewards(), pointsStore.fetchBank()])
+  } else {
+    notify.error(result.error || 'Failed to cancel auction')
   }
 }
 
