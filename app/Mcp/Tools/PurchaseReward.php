@@ -15,7 +15,7 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
 #[Name('purchase-reward')]
-#[Description('Purchase a reward with points, place a bid on an auction, or view purchase history. Actions: purchase, bid, history.')]
+#[Description('Purchase a reward with points, place a bid on an auction, close/cancel auctions, or view purchase history. Actions: purchase, bid, close_auction, cancel_auction, history.')]
 class PurchaseReward extends Tool
 {
     use ScopesToFamily;
@@ -23,7 +23,7 @@ class PurchaseReward extends Tool
     public function schema($schema): array
     {
         return [
-            'action' => $schema->string()->required()->enum(['purchase', 'bid', 'history'])->description('Action to perform'),
+            'action' => $schema->string()->required()->enum(['purchase', 'bid', 'close_auction', 'cancel_auction', 'history'])->description('Action to perform'),
             'reward_id' => $schema->string()->description('Reward UUID (required for purchase and bid)'),
             'bid_amount' => $schema->integer()->description('Bid amount in points (required for bid action)'),
             'user_id' => $schema->string()->description('Filter history by user UUID'),
@@ -35,6 +35,8 @@ class PurchaseReward extends Tool
         return match ($request->get('action')) {
             'purchase' => $this->purchase($request),
             'bid' => $this->bid($request),
+            'close_auction' => $this->closeAuction($request),
+            'cancel_auction' => $this->cancelAuction($request),
             'history' => $this->history($request),
             default => Response::error("Unknown action: {$request->get('action')}"),
         };
@@ -103,6 +105,59 @@ class PurchaseReward extends Tool
             'bid_amount' => $bid->bid_amount,
             'held_points' => $bid->held_points,
             'available_points' => $user->availablePoints(),
+        ]);
+    }
+
+    private function closeAuction(Request $request): Response
+    {
+        $rewardId = $request->get('reward_id');
+        if (! $rewardId) {
+            return Response::error('reward_id is required to close an auction.');
+        }
+
+        if ($denied = $this->authorize('closeAuction', Reward::where('family_id', $this->familyId())->findOrFail($rewardId))) {
+            return $denied;
+        }
+
+        $reward = Reward::where('family_id', $this->familyId())->findOrFail($rewardId);
+        $auctionService = app(AuctionService::class);
+
+        try {
+            $winner = $auctionService->closeAuction($reward);
+        } catch (\Exception $e) {
+            return Response::error($e->getMessage());
+        }
+
+        return Response::json([
+            'message' => $winner
+                ? "Auction closed! {$winner->user->name} won with {$winner->bid_amount} points."
+                : 'Auction closed with no bids.',
+            'winner' => $winner ? ['user_name' => $winner->user->name, 'bid_amount' => $winner->bid_amount] : null,
+        ]);
+    }
+
+    private function cancelAuction(Request $request): Response
+    {
+        $rewardId = $request->get('reward_id');
+        if (! $rewardId) {
+            return Response::error('reward_id is required to cancel an auction.');
+        }
+
+        if ($denied = $this->authorize('cancelAuction', Reward::where('family_id', $this->familyId())->findOrFail($rewardId))) {
+            return $denied;
+        }
+
+        $reward = Reward::where('family_id', $this->familyId())->findOrFail($rewardId);
+        $auctionService = app(AuctionService::class);
+
+        try {
+            $auctionService->cancelAuction($reward);
+        } catch (\Exception $e) {
+            return Response::error($e->getMessage());
+        }
+
+        return Response::json([
+            'message' => "Auction for \"{$reward->title}\" cancelled. All held points released.",
         ]);
     }
 

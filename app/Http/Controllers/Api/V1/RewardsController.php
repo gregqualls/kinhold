@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reward;
+use App\Models\RewardBid;
 use App\Models\RewardPurchase;
 use App\Models\User;
 use App\Services\AuctionService;
@@ -30,6 +31,7 @@ class RewardsController extends Controller
 
         $query = Reward::where('family_id', $family->id)
             ->visibleTo($user)
+            ->with(['activeBids', 'bids'])
             ->orderBy('sort_order')
             ->orderBy('point_cost');
 
@@ -62,13 +64,18 @@ class RewardsController extends Controller
             $data['is_expired'] = $reward->isExpired();
             $data['is_purchasable'] = $reward->isPurchasable();
 
-            // Auction metadata
+            // Auction metadata (uses eager-loaded activeBids to avoid N+1)
             if ($reward->isAuction()) {
+                $active = $reward->activeBids;
+                /** @var RewardBid|null $highBid */
+                $highBid = $active->sortByDesc('bid_amount')->first();
+                /** @var RewardBid|null $myBid */
+                $myBid = $active->firstWhere('user_id', $user->id);
                 $data['bidding_open'] = $reward->isBiddingOpen();
-                $data['highest_bid'] = $reward->highestBid()?->bid_amount;
-                $data['total_bids'] = $reward->activeBids()->count();
-                $data['my_bid'] = $reward->currentUserBid($user)?->bid_amount;
-                $data['is_resolved'] = $reward->isResolved();
+                $data['highest_bid'] = $highBid?->bid_amount;
+                $data['total_bids'] = $active->count();
+                $data['my_bid'] = $myBid?->bid_amount;
+                $data['is_resolved'] = $reward->bids->contains('is_winning', true);
             }
 
             // Resolve visible_to names for parents
@@ -270,6 +277,7 @@ class RewardsController extends Controller
     {
         $user = $request->user();
         abort_unless($reward->family_id === $user->family_id, 404);
+        $this->authorize('bid', $reward);
 
         $validated = $request->validate([
             'bid_amount' => 'required|integer|min:1',
@@ -299,6 +307,7 @@ class RewardsController extends Controller
     {
         $user = $request->user();
         abort_unless($reward->family_id === $user->family_id, 404);
+        abort_unless($reward->isVisibleTo($user), 404);
 
         $bids = $reward->bids()
             ->with('user:id,name,avatar')
@@ -350,7 +359,7 @@ class RewardsController extends Controller
     {
         $user = $request->user();
         abort_unless($reward->family_id === $user->family_id, 404);
-        abort_unless($user->isParent(), 403);
+        $this->authorize('closeAuction', $reward);
 
         try {
             $winner = $this->auctionService->closeAuction($reward);
@@ -376,7 +385,7 @@ class RewardsController extends Controller
     {
         $user = $request->user();
         abort_unless($reward->family_id === $user->family_id, 404);
-        abort_unless($user->isParent(), 403);
+        $this->authorize('cancelAuction', $reward);
 
         try {
             $this->auctionService->cancelAuction($reward);

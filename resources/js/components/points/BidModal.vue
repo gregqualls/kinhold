@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="$emit('close')">
+  <div ref="backdrop" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" tabindex="-1" @click.self="$emit('close')" @keydown.escape="$emit('close')">
     <div class="card p-5 w-full max-w-sm mx-4">
       <h3 class="text-lg font-bold text-prussian-500 dark:text-lavender-200 mb-1">
         Place Bid
@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { usePointsStore } from '@/stores/points'
 
 const props = defineProps({
@@ -84,7 +84,12 @@ const props = defineProps({
 const emit = defineEmits(['close', 'bid-placed'])
 
 const pointsStore = usePointsStore()
+const backdrop = ref(null)
 const bidAmount = ref(null)
+
+onMounted(() => {
+  backdrop.value?.focus()
+})
 const error = ref('')
 const submitting = ref(false)
 
