@@ -31,7 +31,7 @@ class RewardsController extends Controller
 
         $query = Reward::where('family_id', $family->id)
             ->visibleTo($user)
-            ->with(['activeBids', 'bids'])
+            ->with(['activeBids.user:id,name', 'bids'])
             ->orderBy('sort_order')
             ->orderBy('point_cost');
 
@@ -71,10 +71,13 @@ class RewardsController extends Controller
                 $highBid = $active->sortByDesc('bid_amount')->first();
                 /** @var RewardBid|null $myBid */
                 $myBid = $active->firstWhere('user_id', $user->id);
+                $isLeading = $highBid && $myBid && $highBid->id === $myBid->id;
                 $data['bidding_open'] = $reward->isBiddingOpen();
                 $data['highest_bid'] = $highBid?->bid_amount;
+                $data['highest_bidder'] = $user->isParent() && $highBid ? ($highBid->user->name ?? null) : null;
                 $data['total_bids'] = $active->count();
                 $data['my_bid'] = $myBid?->bid_amount;
+                $data['is_leading'] = $isLeading;
                 $data['is_resolved'] = $reward->bids->contains('is_winning', true);
             }
 
@@ -109,7 +112,7 @@ class RewardsController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'point_cost' => 'required|integer|min:1',
+            'point_cost' => 'required|integer|min:0',
             'icon' => 'nullable|string|max:50',
             'quantity' => 'nullable|integer|min:0',
             'expires_at' => 'nullable|date|after:now',

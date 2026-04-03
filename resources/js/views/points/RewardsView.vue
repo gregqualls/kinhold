@@ -21,6 +21,7 @@
     <!-- Create/Edit Form -->
     <RewardForm
       v-if="showForm"
+      data-reward-form
       :reward="editingReward"
       :is-editing="!!editingReward"
       @save="handleSave"
@@ -101,7 +102,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watch } from 'vue'
+import { onMounted, ref, computed, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { usePointsStore } from '@/stores/points'
 import { useAuthStore } from '@/stores/auth'
@@ -126,6 +127,9 @@ const openCreateForm = () => {
 const openEditForm = (reward) => {
   editingReward.value = reward
   showForm.value = true
+  nextTick(() => {
+    document.querySelector('[data-reward-form]')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
 }
 
 const closeForm = () => {

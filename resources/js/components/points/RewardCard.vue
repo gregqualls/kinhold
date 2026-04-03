@@ -10,9 +10,13 @@
         <IconRenderer v-if="reward.icon" :icon="reward.icon" :size="28" color="currentColor" />
         <GiftIcon v-else class="w-7 h-7" />
       </div>
-      <div v-if="isParent" class="flex items-center gap-2">
-        <span class="text-xs text-lavender-500 dark:text-lavender-400 cursor-pointer hover:text-wisteria-500" @click="$emit('edit', reward)">Edit</span>
-        <span class="text-xs text-lavender-500 dark:text-lavender-400 cursor-pointer hover:text-red-500" @click="$emit('delete', reward.id)">Delete</span>
+      <div v-if="isParent" class="flex items-center gap-1.5">
+        <button class="p-1 rounded hover:bg-lavender-100 dark:hover:bg-prussian-700 text-lavender-400 hover:text-wisteria-500 dark:hover:text-wisteria-400" aria-label="Edit reward" @click="$emit('edit', reward)">
+          <PencilIcon class="w-4 h-4" />
+        </button>
+        <button class="p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-lavender-400 hover:text-red-500" aria-label="Delete reward" @click="$emit('delete', reward.id)">
+          <TrashIcon class="w-4 h-4" />
+        </button>
       </div>
     </div>
 
@@ -68,9 +72,13 @@
           · {{ countdownLabel }}
         </span>
       </div>
-      <div v-if="isParent" class="flex items-center gap-2">
-        <span class="text-xs text-lavender-500 dark:text-lavender-400 cursor-pointer hover:text-wisteria-500" @click="$emit('edit', reward)">Edit</span>
-        <span class="text-xs text-lavender-500 dark:text-lavender-400 cursor-pointer hover:text-red-500" @click="$emit('delete', reward.id)">Delete</span>
+      <div v-if="isParent" class="flex items-center gap-1">
+        <button class="p-1 rounded hover:bg-wisteria-200/50 dark:hover:bg-wisteria-800/30 text-lavender-400 hover:text-wisteria-500 dark:hover:text-wisteria-400" aria-label="Edit auction" @click="$emit('edit', reward)">
+          <PencilIcon class="w-4 h-4" />
+        </button>
+        <button class="p-1 rounded hover:bg-red-100/50 dark:hover:bg-red-900/20 text-lavender-400 hover:text-red-500" aria-label="Delete auction" @click="$emit('delete', reward.id)">
+          <TrashIcon class="w-4 h-4" />
+        </button>
       </div>
     </div>
 
@@ -94,12 +102,19 @@
         </div>
 
         <!-- Right: bid stats -->
-        <div v-if="!reward.is_resolved" class="sm:w-44 shrink-0 space-y-1.5 bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
+        <div v-if="!reward.is_resolved" class="sm:w-48 shrink-0 space-y-1.5 bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
           <div v-if="reward.highest_bid" class="flex justify-between text-xs">
             <span class="text-lavender-500 dark:text-lavender-400">High bid</span>
             <span class="font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ reward.highest_bid }} pts</span>
           </div>
           <div v-else class="text-xs text-lavender-400 dark:text-lavender-500 text-center py-1">No bids yet</div>
+
+          <!-- Leading bidder (parent view) -->
+          <div v-if="isParent && reward.highest_bidder" class="flex justify-between text-xs">
+            <span class="text-lavender-500 dark:text-lavender-400">Leader</span>
+            <span class="font-medium text-prussian-500 dark:text-lavender-300">{{ reward.highest_bidder }}</span>
+          </div>
+
           <div v-if="reward.total_bids" class="flex justify-between text-xs">
             <span class="text-lavender-500 dark:text-lavender-400">Total bids</span>
             <span class="font-medium text-prussian-500 dark:text-lavender-300">{{ reward.total_bids }}</span>
@@ -108,23 +123,39 @@
             <span class="text-lavender-500 dark:text-lavender-400">Min bid</span>
             <span class="font-medium text-prussian-500 dark:text-lavender-300">{{ reward.min_bid }} pts</span>
           </div>
+
+          <!-- User's bid status -->
           <div v-if="reward.my_bid" class="flex justify-between text-xs pt-1.5 border-t border-lavender-200 dark:border-prussian-600">
-            <span class="text-golden-600 dark:text-golden-400">Your bid</span>
-            <span class="font-bold font-mono text-golden-600 dark:text-golden-400">{{ reward.my_bid }} pts</span>
+            <span :class="reward.is_leading ? 'text-green-600 dark:text-green-400' : 'text-golden-600 dark:text-golden-400'">
+              {{ reward.is_leading ? 'Winning!' : 'Your bid' }}
+            </span>
+            <span class="font-bold font-mono" :class="reward.is_leading ? 'text-green-600 dark:text-green-400' : 'text-golden-600 dark:text-golden-400'">
+              {{ reward.my_bid }} pts
+            </span>
           </div>
         </div>
 
         <!-- Resolved state -->
-        <div v-else class="sm:w-44 shrink-0 flex items-center justify-center bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
+        <div v-else class="sm:w-48 shrink-0 flex items-center justify-center bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
           <span class="text-sm font-medium text-lavender-500 dark:text-lavender-400">Auction ended</span>
         </div>
       </div>
 
       <!-- Action bar -->
       <div v-if="reward.bidding_open" class="flex items-center justify-between mt-4 pt-3 border-t border-lavender-100 dark:border-prussian-700">
-        <button class="btn-primary btn-sm" @click="$emit('bid', reward)">
-          {{ reward.my_bid ? 'Update Bid' : 'Place Bid' }}
-        </button>
+        <!-- Bid button: hide if user is already winning -->
+        <div>
+          <button
+            v-if="!reward.is_leading"
+            class="btn-primary btn-sm"
+            @click="$emit('bid', reward)"
+          >
+            {{ reward.my_bid ? 'Raise Bid' : 'Place Bid' }}
+          </button>
+          <span v-else class="text-xs font-medium text-green-600 dark:text-green-400">
+            You're in the lead!
+          </span>
+        </div>
         <div v-if="isParent" class="flex items-center gap-3">
           <button
             v-if="!reward.bid_end_at"
@@ -148,6 +179,7 @@
 <script setup>
 import { computed } from 'vue'
 import { GiftIcon } from '@heroicons/vue/24/outline'
+import { PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import IconRenderer from '@/components/common/IconRenderer.vue'
 
 const props = defineProps({

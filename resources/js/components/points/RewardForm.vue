@@ -202,7 +202,12 @@ watch(() => props.reward, (reward) => {
   }
 }, { immediate: true })
 
-const isValid = computed(() => form.value.title && form.value.point_cost > 0)
+const isValid = computed(() => {
+  if (!form.value.title) return false
+  // Auctions don't need point_cost (it's the display price / starting price)
+  if (form.value.reward_type === 'auction') return true
+  return form.value.point_cost > 0
+})
 
 const isSelected = (memberId) => (form.value.visible_to || []).includes(memberId)
 
