@@ -10,3 +10,6 @@ Schedule::command('app:generate-recurring-tasks')->dailyAt('00:05');
 
 // Re-seed demo family daily so data stays fresh
 Schedule::command('app:refresh-demo')->dailyAt('03:05');
+
+// Resolve timed auctions every minute
+Schedule::command('rewards:resolve-auctions')->everyMinute();

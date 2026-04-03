@@ -247,6 +247,18 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get available points (bank minus active bid holds).
+     */
+    public function availablePoints(): int
+    {
+        $heldPoints = RewardBid::where('user_id', $this->id)
+            ->whereNull('resolved_at')
+            ->sum('held_points');
+
+        return $this->pointBank() - (int) $heldPoints;
+    }
+
+    /**
      * Check if user has sufficient points for a purchase.
      */
     public function hasSufficientPoints(int $cost): bool

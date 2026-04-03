@@ -97,6 +97,7 @@ import {
   LockClosedIcon,
   CpuChipIcon,
   TrophyIcon,
+  GiftIcon,
   ShieldCheckIcon,
   ArrowRightOnRectangleIcon,
   ChevronDoubleLeftIcon,
@@ -135,6 +136,7 @@ const navItems = [
   { label: 'Vault', path: '/vault', icon: LockClosedIcon, name: 'Vault', module: 'vault' },
   { label: 'Assistant', path: '/chat', icon: CpuChipIcon, name: 'Chat', module: 'chat' },
   { label: 'Points', path: '/points', icon: TrophyIcon, name: 'Points', module: 'points' },
+  { label: 'Rewards', path: '/points/rewards', icon: GiftIcon, name: 'Rewards', module: 'points' },
   { label: 'Badges', path: '/badges', icon: ShieldCheckIcon, name: 'Badges', module: 'badges' },
 ]
 
@@ -147,6 +149,10 @@ const filteredNavItems = computed(() => {
 
 const isActive = (path) => {
   if (path === '/') return route.path === '/'
+  // Exact match takes priority over startsWith to avoid parent routes
+  // highlighting when a child route is active (e.g. /points vs /points/rewards)
+  const exactMatch = filteredNavItems.value.find(item => item.path === route.path)
+  if (exactMatch) return path === route.path
   return route.path.startsWith(path)
 }
 </script>

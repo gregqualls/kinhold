@@ -27,8 +27,23 @@ class RewardPolicy
         return $user->isParent();
     }
 
-    public function purchase(User $user): bool
+    public function purchase(User $user, Reward $reward): bool
     {
-        return true;
+        return $reward->isVisibleTo($user) && $reward->isPurchasable();
+    }
+
+    public function bid(User $user, Reward $reward): bool
+    {
+        return $reward->isVisibleTo($user) && $reward->isAuction() && $reward->isBiddingOpen();
+    }
+
+    public function closeAuction(User $user, Reward $reward): bool
+    {
+        return $user->isParent() && $reward->isAuction();
+    }
+
+    public function cancelAuction(User $user, Reward $reward): bool
+    {
+        return $user->isParent() && $reward->isAuction();
     }
 }

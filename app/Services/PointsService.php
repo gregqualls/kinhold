@@ -11,6 +11,7 @@ use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class PointsService
 {
@@ -104,29 +105,44 @@ class PointsService
      */
     public function redeemReward(Reward $reward, User $user): array
     {
-        if (! $user->hasSufficientPoints($reward->point_cost)) {
-            throw new \Exception('Insufficient points');
-        }
+        return DB::transaction(function () use ($reward, $user) {
+            // Re-fetch with lock to prevent race conditions
+            $reward = Reward::lockForUpdate()->findOrFail($reward->id);
 
-        $transaction = PointTransaction::create([
-            'family_id' => $user->family_id,
-            'user_id' => $user->id,
-            'type' => PointTransactionType::Redemption,
-            'points' => -$reward->point_cost,
-            'description' => "Purchased: {$reward->title}",
-            'source_type' => Reward::class,
-            'source_id' => $reward->id,
-        ]);
+            if (! $reward->isPurchasable()) {
+                $reason = $reward->isExpired() ? 'This reward has expired' : (! $reward->hasStock() ? 'This reward is sold out' : 'This reward is not available');
+                throw new \Exception($reason);
+            }
 
-        $purchase = RewardPurchase::create([
-            'family_id' => $user->family_id,
-            'reward_id' => $reward->id,
-            'user_id' => $user->id,
-            'points_spent' => $reward->point_cost,
-            'purchased_at' => now(),
-        ]);
+            if (! $user->hasSufficientPoints($reward->point_cost)) {
+                throw new \Exception('Insufficient points');
+            }
 
-        return ['transaction' => $transaction, 'purchase' => $purchase];
+            $transaction = PointTransaction::create([
+                'family_id' => $user->family_id,
+                'user_id' => $user->id,
+                'type' => PointTransactionType::Redemption,
+                'points' => -$reward->point_cost,
+                'description' => "Purchased: {$reward->title}",
+                'source_type' => Reward::class,
+                'source_id' => $reward->id,
+            ]);
+
+            $purchase = RewardPurchase::create([
+                'family_id' => $user->family_id,
+                'reward_id' => $reward->id,
+                'user_id' => $user->id,
+                'points_spent' => $reward->point_cost,
+                'purchased_at' => now(),
+            ]);
+
+            // Increment purchase counter for limited-stock rewards
+            if ($reward->quantity !== null) {
+                $reward->increment('quantity_purchased');
+            }
+
+            return ['transaction' => $transaction, 'purchase' => $purchase, 'reward' => $reward->fresh()];
+        });
     }
 
     /**

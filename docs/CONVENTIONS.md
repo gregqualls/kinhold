@@ -110,9 +110,11 @@ onMounted(() => fetchData())
 ### Accessibility
 - Every interactive element needs focus styles
 - Images need alt text
-- Form inputs need associated labels
+- Form inputs need associated labels or `aria-label`
 - Color is never the only indicator (always pair with icon or text)
 - Minimum contrast ratio: 4.5:1 for text
+- **Icons over text for actions** — Use recognizable icons (PencilIcon, TrashIcon, etc.) instead of text links for common actions like Edit/Delete. This helps users with reading difficulties, ESL speakers, and improves visual scannability. Always include `aria-label` on icon-only buttons.
+- Modals must support Escape key to close and should trap focus within the dialog
 
 ## Tailwind CSS
 

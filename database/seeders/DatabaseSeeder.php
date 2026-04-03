@@ -510,6 +510,7 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 20,
             'icon' => 'tv',
             'sort_order' => 1,
+            'visibility' => 'child_only',
         ]);
 
         $pickDinner = Reward::create([
@@ -530,6 +531,7 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 40,
             'icon' => 'film',
             'sort_order' => 3,
+            'quantity' => 2,
         ]);
 
         $stayUpLate = Reward::create([
@@ -540,6 +542,8 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 75,
             'icon' => 'moon',
             'sort_order' => 4,
+            'min_age' => 10,
+            'visibility' => 'child_only',
         ]);
 
         $friendSleepover = Reward::create([
@@ -550,6 +554,8 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 100,
             'icon' => 'house',
             'sort_order' => 5,
+            'quantity' => 1,
+            'expires_at' => now()->addDays(30),
         ]);
 
         $skipChoreDay = Reward::create([
@@ -560,6 +566,37 @@ class DatabaseSeeder extends Seeder
             'point_cost' => 50,
             'icon' => 'confetti',
             'sort_order' => 6,
+            'visibility' => 'specific',
+            'visible_to' => [$emma->id, $jake->id],
+        ]);
+
+        // Auction rewards
+        Reward::create([
+            'family_id' => $family->id,
+            'created_by' => $mike->id,
+            'title' => 'Weekend Trip Pick',
+            'description' => 'Choose where the family goes this weekend! Highest bid wins.',
+            'point_cost' => 0,
+            'icon' => 'car',
+            'sort_order' => 7,
+            'reward_type' => 'auction',
+            'quantity' => 1,
+            'min_bid' => 20,
+            'bid_end_at' => now()->addDays(5),
+        ]);
+
+        Reward::create([
+            'family_id' => $family->id,
+            'created_by' => $sarah->id,
+            'title' => 'Extra Allowance ($5)',
+            'description' => 'Bid for a $5 bonus allowance. Parent calls the winner!',
+            'point_cost' => 0,
+            'icon' => 'dollar-sign',
+            'sort_order' => 8,
+            'reward_type' => 'auction',
+            'quantity' => 1,
+            'min_bid' => 10,
+            'visibility' => 'child_only',
         ]);
 
         // ─────────────────────────────────────────────

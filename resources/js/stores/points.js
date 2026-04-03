@@ -122,6 +122,42 @@ export const usePointsStore = defineStore('points', () => {
     }
   }
 
+  const placeBid = async (rewardId, bidAmount) => {
+    try {
+      const response = await api.post(`/rewards/${rewardId}/bid`, { bid_amount: bidAmount })
+      return { success: true, data: response.data }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to place bid' }
+    }
+  }
+
+  const fetchBids = async (rewardId) => {
+    try {
+      const response = await api.get(`/rewards/${rewardId}/bids`)
+      return { success: true, data: response.data }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to fetch bids' }
+    }
+  }
+
+  const closeAuction = async (rewardId) => {
+    try {
+      const response = await api.post(`/rewards/${rewardId}/close-auction`)
+      return { success: true, data: response.data }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to close auction' }
+    }
+  }
+
+  const cancelAuction = async (rewardId) => {
+    try {
+      const response = await api.post(`/rewards/${rewardId}/cancel-auction`)
+      return { success: true, data: response.data }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to cancel auction' }
+    }
+  }
+
   const fetchPurchases = async () => {
     try {
       const response = await api.get('/rewards/purchases')
@@ -196,6 +232,10 @@ export const usePointsStore = defineStore('points', () => {
     updateReward,
     deleteReward,
     purchaseReward,
+    placeBid,
+    fetchBids,
+    closeAuction,
+    cancelAuction,
     fetchPurchases,
     pointRequests,
     fetchPointRequests,
