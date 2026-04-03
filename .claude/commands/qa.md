@@ -1,5 +1,6 @@
 ---
 description: CI + Upsun preview checker — verifies PR is ready for manual QA
+model: haiku
 ---
 
 Check the CI pipeline status and Upsun preview environment for the current branch's PR. Tells Greg whether everything is green and what to manually test.

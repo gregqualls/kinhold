@@ -1,5 +1,6 @@
 ---
 description: Remove stale worktrees — keeps the current one if you're in one
+model: haiku
 ---
 
 Clean up Claude Code worktrees that have accumulated across sessions.

@@ -1,5 +1,6 @@
 ---
 description: Single-command quality gate — runs all automated checks and reports pass/fail
+model: haiku
 ---
 
 Run all quality checks in one shot. Output a single pass/fail results table.

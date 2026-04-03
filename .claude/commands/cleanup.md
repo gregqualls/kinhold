@@ -1,5 +1,6 @@
 ---
 description: Post-merge cleanup — prune worktrees, delete merged branches, pull main
+model: haiku
 ---
 
 Run post-merge cleanup for the Kinhold repo. This is purely git hygiene — no documentation updates.

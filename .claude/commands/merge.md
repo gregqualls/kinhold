@@ -1,5 +1,6 @@
 ---
 description: Merge PR after QA — verifies CI, merges, confirms production deploy
+model: haiku
 ---
 
 Merge the current branch's PR after QA is complete. Verifies all gates before merging and confirms the production deployment succeeds.
