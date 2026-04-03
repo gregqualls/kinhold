@@ -53,6 +53,10 @@ class PurchaseReward extends Tool
             ->where('is_active', true)
             ->findOrFail($rewardId);
 
+        if ($denied = $this->authorize('purchase', $reward)) {
+            return $denied;
+        }
+
         $user = $this->user();
         $pointsService = app(PointsService::class);
 
@@ -91,6 +95,11 @@ class PurchaseReward extends Tool
         }
 
         $reward = Reward::where('family_id', $this->familyId())->findOrFail($rewardId);
+
+        if ($denied = $this->authorize('bid', $reward)) {
+            return $denied;
+        }
+
         $user = $this->user();
         $auctionService = app(AuctionService::class);
 
@@ -115,11 +124,12 @@ class PurchaseReward extends Tool
             return Response::error('reward_id is required to close an auction.');
         }
 
-        if ($denied = $this->authorize('closeAuction', Reward::where('family_id', $this->familyId())->findOrFail($rewardId))) {
+        $reward = Reward::where('family_id', $this->familyId())->findOrFail($rewardId);
+
+        if ($denied = $this->authorize('closeAuction', $reward)) {
             return $denied;
         }
 
-        $reward = Reward::where('family_id', $this->familyId())->findOrFail($rewardId);
         $auctionService = app(AuctionService::class);
 
         try {
@@ -143,11 +153,12 @@ class PurchaseReward extends Tool
             return Response::error('reward_id is required to cancel an auction.');
         }
 
-        if ($denied = $this->authorize('cancelAuction', Reward::where('family_id', $this->familyId())->findOrFail($rewardId))) {
+        $reward = Reward::where('family_id', $this->familyId())->findOrFail($rewardId);
+
+        if ($denied = $this->authorize('cancelAuction', $reward)) {
             return $denied;
         }
 
-        $reward = Reward::where('family_id', $this->familyId())->findOrFail($rewardId);
         $auctionService = app(AuctionService::class);
 
         try {

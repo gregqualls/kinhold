@@ -53,7 +53,7 @@
           {{ f.label }}
         </button>
 
-        <select v-model="sortBy" class="input-base ml-auto text-xs py-1 w-auto">
+        <select v-model="sortBy" class="input-base ml-auto text-xs py-1 w-auto" aria-label="Sort rewards">
           <option value="sort_order">Default</option>
           <option value="price_asc">Price: Low → High</option>
           <option value="price_desc">Price: High → Low</option>
