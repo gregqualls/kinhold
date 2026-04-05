@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col h-full">
     <div class="flex items-center justify-between mb-3 flex-shrink-0">
       <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
         <BellIcon class="w-4 h-4 text-wisteria-500" />
@@ -22,7 +22,7 @@
       <p class="text-sm text-lavender-500 dark:text-lavender-400">No recent activity</p>
     </div>
 
-    <div v-else class="space-y-2">
+    <div v-else :class="config.size === 'md' ? 'columns-2 gap-x-6 space-y-2 [&>*]:break-inside-avoid flex-1 min-h-0 overflow-y-auto' : 'space-y-2 flex-1 min-h-0 overflow-y-auto'">
       <div
         v-for="item in items"
         :key="item.id"

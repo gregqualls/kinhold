@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col h-full">
     <div class="flex items-center justify-between mb-3 flex-shrink-0">
       <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
         <CalendarIcon class="w-4 h-4 text-wisteria-600" />
@@ -23,7 +23,7 @@
       <p class="text-xs text-lavender-400 dark:text-lavender-500 mt-0.5">Your calendar is clear!</p>
     </div>
 
-    <div v-else class="space-y-2">
+    <div v-else :class="config.size === 'md' ? 'columns-2 gap-x-6 space-y-2 [&>*]:break-inside-avoid' : 'space-y-2'">
       <div
         v-for="event in events"
         :key="event.id"

@@ -98,7 +98,7 @@ const taskLimit = computed(() => {
 
 const columnsClass = computed(() => {
   const size = props.config.size || 'sm'
-  if (size === 'md') return 'grid grid-cols-2 gap-x-4 gap-y-1'
+  if (size === 'md') return 'columns-2 gap-x-4 space-y-1 [&>*]:break-inside-avoid'
   return 'space-y-1'
 })
 

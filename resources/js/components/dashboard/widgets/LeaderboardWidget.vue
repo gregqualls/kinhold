@@ -105,7 +105,9 @@ const { data, loading } = useWidgetData('/api/v1/points/leaderboard', {})
 const leaderboard = computed(() => {
   if (!data.value) return []
   const list = data.value.leaderboard || data.value.data || data.value
-  return Array.isArray(list) ? list.slice(0, 5) : []
+  if (!Array.isArray(list)) return []
+  const limit = props.config.size === 'md' ? 10 : 5
+  return list.slice(0, limit)
 })
 
 const topThree = computed(() => leaderboard.value.slice(0, 3))
