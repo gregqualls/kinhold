@@ -1,13 +1,15 @@
 /**
- * Widget Registry — maps type keys to Vue components and metadata.
+ * Widget Registry — maps type keys to purpose-built Vue components.
  *
  * Each widget type has:
- *  - component: async import function (code-split)
- *  - name: display name for the widget picker
- *  - description: short description
- *  - icon: Heroicon component name
- *  - category: grouping for the widget picker
- *  - defaultConfig: sensible defaults when adding from the picker
+ *  - component: async import (code-split)
+ *  - name: display name
+ *  - description: short description for picker
+ *  - icon: Heroicon name for picker
+ *  - category: grouping for picker
+ *  - supportedSizes: which sizes this widget renders well at
+ *  - heights: CSS height per size (null = auto)
+ *  - defaultSize: size to use when adding from picker
  */
 
 export const widgetTypes = {
@@ -16,150 +18,110 @@ export const widgetTypes = {
     name: 'Welcome',
     description: 'Greeting with date and celebrations',
     icon: 'HandRaisedIcon',
-    category: 'special',
-    defaultConfig: {
-      endpoint: null,
-      params: {},
-      size: 'lg',
-      settings: {},
-    },
+    category: 'general',
+    supportedSizes: ['lg'],
+    heights: { lg: null },
+    defaultSize: 'lg',
   },
   'countdown': {
     component: () => import('./widgets/CountdownWidget.vue'),
     name: 'Countdown',
     description: 'Countdown to next featured event',
     icon: 'ClockIcon',
-    category: 'special',
-    defaultConfig: {
-      endpoint: '/api/v1/featured-events/countdown',
-      params: {},
-      size: 'lg',
-      settings: {},
-    },
+    category: 'general',
+    supportedSizes: ['lg'],
+    heights: { lg: null },
+    defaultSize: 'lg',
   },
-  'stat': {
-    component: () => import('./widgets/StatWidget.vue'),
-    name: 'Stat Card',
-    description: 'Single metric with icon and label',
-    icon: 'ChartBarIcon',
-    category: 'data',
-    defaultConfig: {
-      endpoint: '/api/v1/points/bank',
-      params: {},
-      size: 'sm',
-      settings: { valueKey: 'bank', icon: 'trophy', suffix: 'pts' },
-    },
+  'my-tasks': {
+    component: () => import('./widgets/MyTasksWidget.vue'),
+    name: 'My Tasks',
+    description: 'Your assigned tasks with checkboxes',
+    icon: 'CheckCircleIcon',
+    category: 'tasks',
+    supportedSizes: ['sm', 'md', 'lg'],
+    heights: { sm: '280px', md: '280px', lg: '320px' },
+    defaultSize: 'sm',
   },
-  'list': {
-    component: () => import('./widgets/ListWidget.vue'),
-    name: 'List',
-    description: 'Scrollable list of items from any endpoint',
-    icon: 'ListBulletIcon',
-    category: 'lists',
-    defaultConfig: {
-      endpoint: '/api/v1/tasks',
-      params: { assigned_to: 'me', status: 'pending' },
-      size: 'sm',
-      settings: { limit: 5, viewAllPath: '/tasks', emptyMessage: 'Nothing to show.' },
-    },
+  'family-tasks': {
+    component: () => import('./widgets/FamilyTasksWidget.vue'),
+    name: 'Family Tasks',
+    description: 'Open tasks anyone can complete',
+    icon: 'UserGroupIcon',
+    category: 'tasks',
+    supportedSizes: ['sm', 'md'],
+    heights: { sm: '280px', md: '280px' },
+    defaultSize: 'md',
+  },
+  'todays-schedule': {
+    component: () => import('./widgets/TodaysScheduleWidget.vue'),
+    name: "Today's Schedule",
+    description: "Today's events with times",
+    icon: 'CalendarDaysIcon',
+    category: 'calendar',
+    supportedSizes: ['sm', 'md'],
+    heights: { sm: '280px', md: '280px' },
+    defaultSize: 'md',
+  },
+  'points-summary': {
+    component: () => import('./widgets/PointsSummaryWidget.vue'),
+    name: 'Points Balance',
+    description: 'Your current point balance',
+    icon: 'TrophyIcon',
+    category: 'points',
+    supportedSizes: ['sm'],
+    heights: { sm: '120px' },
+    defaultSize: 'sm',
   },
   'leaderboard': {
     component: () => import('./widgets/LeaderboardWidget.vue'),
     name: 'Leaderboard',
-    description: 'Points leaderboard with podium',
+    description: 'Family points ranking with podium',
     icon: 'TrophyIcon',
-    category: 'lists',
-    defaultConfig: {
-      endpoint: '/api/v1/points/leaderboard',
-      params: {},
-      size: 'sm',
-      settings: { limit: 5 },
-    },
+    category: 'points',
+    supportedSizes: ['sm', 'md'],
+    heights: { sm: '280px', md: '360px' },
+    defaultSize: 'sm',
   },
-  'feed': {
-    component: () => import('./widgets/FeedWidget.vue'),
+  'activity-feed': {
+    component: () => import('./widgets/ActivityFeedWidget.vue'),
     name: 'Activity Feed',
-    description: 'Chronological activity stream',
+    description: 'Recent point transactions',
     icon: 'BellIcon',
-    category: 'lists',
-    defaultConfig: {
-      endpoint: '/api/v1/points/feed',
-      params: {},
-      size: 'md',
-      settings: { limit: 10 },
-    },
+    category: 'points',
+    supportedSizes: ['sm', 'md'],
+    heights: { sm: '280px', md: '280px' },
+    defaultSize: 'sm',
+  },
+  'rewards-shop': {
+    component: () => import('./widgets/RewardsWidget.vue'),
+    name: 'Rewards Shop',
+    description: 'Featured rewards with prices',
+    icon: 'GiftIcon',
+    category: 'rewards',
+    supportedSizes: ['sm', 'md'],
+    heights: { sm: '280px', md: '320px' },
+    defaultSize: 'sm',
+  },
+  'badge-collection': {
+    component: () => import('./widgets/BadgesWidget.vue'),
+    name: 'Badges',
+    description: 'Badge collection with earned status',
+    icon: 'ShieldCheckIcon',
+    category: 'badges',
+    supportedSizes: ['sm', 'md'],
+    heights: { sm: '280px', md: '320px' },
+    defaultSize: 'sm',
   },
   'quick-actions': {
     component: () => import('./widgets/QuickActionsWidget.vue'),
     name: 'Quick Actions',
-    description: 'Grid of shortcut buttons',
+    description: 'Navigation shortcuts',
     icon: 'Squares2X2Icon',
-    category: 'special',
-    defaultConfig: {
-      endpoint: null,
-      params: {},
-      size: 'sm',
-      settings: {
-        actions: [
-          { label: 'Add Task', icon: 'plus-circle', path: '/tasks' },
-          { label: 'Vault', icon: 'lock-closed', path: '/vault' },
-          { label: 'Assistant', icon: 'cpu-chip', path: '/chat' },
-          { label: 'Calendar', icon: 'calendar', path: '/calendar' },
-        ],
-      },
-    },
-  },
-  'calendar-mini': {
-    component: () => import('./widgets/CalendarMiniWidget.vue'),
-    name: "Today's Schedule",
-    description: "Compact view of today's events",
-    icon: 'CalendarDaysIcon',
-    category: 'special',
-    defaultConfig: {
-      endpoint: '/api/v1/calendar/events',
-      params: { range: 'today' },
-      size: 'md',
-      settings: { limit: 5, viewAllPath: '/calendar' },
-    },
-  },
-  'progress': {
-    component: () => import('./widgets/ProgressWidget.vue'),
-    name: 'Progress',
-    description: 'Progress bar or ring for a metric',
-    icon: 'ChartPieIcon',
-    category: 'data',
-    defaultConfig: {
-      endpoint: '/api/v1/tasks',
-      params: {},
-      size: 'sm',
-      settings: { label: 'Task Completion', valueKey: 'completed', maxKey: 'total' },
-    },
-  },
-  'badges': {
-    component: () => import('./widgets/BadgesWidget.vue'),
-    name: 'Badges',
-    description: 'Recent earned badges with hex icons',
-    icon: 'ShieldCheckIcon',
-    category: 'special',
-    defaultConfig: {
-      endpoint: '/api/v1/badges/earned',
-      params: {},
-      size: 'sm',
-      settings: {},
-    },
-  },
-  'rewards': {
-    component: () => import('./widgets/RewardsWidget.vue'),
-    name: 'Rewards',
-    description: 'Featured rewards from the shop',
-    icon: 'GiftIcon',
-    category: 'special',
-    defaultConfig: {
-      endpoint: '/api/v1/rewards',
-      params: {},
-      size: 'sm',
-      settings: {},
-    },
+    category: 'general',
+    supportedSizes: ['sm'],
+    heights: { sm: '160px' },
+    defaultSize: 'sm',
   },
 }
 
@@ -171,15 +133,22 @@ export function getWidgetComponent(type) {
 }
 
 /**
- * Get metadata for a widget type.
+ * Get the CSS height for a widget at a given size.
+ * Returns null for auto-height widgets (welcome, countdown).
  */
-export function getWidgetMeta(type) {
-  const { component: _component, ...meta } = widgetTypes[type] || {}
-  return meta
+export function getWidgetHeight(type, size) {
+  return widgetTypes[type]?.heights?.[size] || '280px'
 }
 
 /**
- * Get all widget types as an array with their keys.
+ * Get supported sizes for a widget type.
+ */
+export function getSupportedSizes(type) {
+  return widgetTypes[type]?.supportedSizes || ['sm']
+}
+
+/**
+ * Get all widget types as an array with their keys (for picker).
  */
 export function allWidgetTypes() {
   return Object.entries(widgetTypes).map(([key, value]) => ({
@@ -189,7 +158,7 @@ export function allWidgetTypes() {
 }
 
 /**
- * Get widget types grouped by category.
+ * Get widget types grouped by category (for picker).
  */
 export function widgetTypesByCategory() {
   const grouped = {}

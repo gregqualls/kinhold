@@ -11,53 +11,41 @@ tags:
 
 # Dashboard Builder Playbook
 
-Help the user create a personalized dashboard by asking about their priorities and building a widget layout.
+Help the user create a personalized dashboard by asking about their priorities.
 
 ## Step 1: Get Current Config
-Use `manage-dashboard` with action `get` to see what the user currently has.
+Use `manage-dashboard` with action `get` to see current widgets and available types/sizes.
 
 ## Step 2: Ask About Priorities
-Ask the user what matters most to them. Suggest options based on their role:
+Ask what matters most. Suggest based on role:
 
-**For parents:**
-- Family calendar and upcoming events
-- Task management and open family tasks
-- Points leaderboard and rewards
-- Quick access to vault and assistant
-
-**For kids:**
-- My tasks and points balance
-- Badges and achievements
-- Rewards shop preview
-- Leaderboard ranking
+**Parents:** Calendar, task management, leaderboard, rewards
+**Kids:** My tasks, points balance, badges, rewards shop
 
 ## Step 3: Build the Config
-Based on their answers, construct a dashboard config:
+Construct a dashboard with version 2. Each widget only needs type and size.
 
-- Start with `welcome` (lg) at the top
-- Add `countdown` (lg) if they care about upcoming events
-- Add the most important widgets first (they appear higher on the page)
-- Use `md` or `lg` size for primary widgets, `sm` for secondary
-- Keep it to 6-10 widgets — don't overwhelm
+### Widget Reference
 
-### Widget Quick Reference
+| Type | Sizes | Best For |
+|------|-------|----------|
+| welcome | lg | Greeting (keep at top) |
+| countdown | lg | Event countdown (keep near top) |
+| my-tasks | sm, md, lg | Personal task list with checkboxes |
+| family-tasks | sm, md | Open tasks anyone can grab |
+| todays-schedule | sm, md | Today's calendar events |
+| points-summary | sm | Compact point balance |
+| leaderboard | sm, md | sm: compact podium, md: full animated |
+| activity-feed | sm, md | Recent point transactions |
+| rewards-shop | sm, md | Reward cards with prices |
+| badge-collection | sm, md | Badge grid (earned + locked) |
+| quick-actions | sm | Navigation shortcuts |
 
-| Type | Best For | Endpoint | Key Settings |
-|------|----------|----------|-------------|
-| stat | Single number (points, task count) | /api/v1/points/bank | valueKey, icon, suffix |
-| list | Tasks, rewards, badges, vault items | /api/v1/tasks | limit, showDueDate, showPoints, completable, viewAllPath, emptyMessage |
-| leaderboard | Points ranking | /api/v1/points/leaderboard | limit |
-| feed | Activity stream | /api/v1/points/feed | limit |
-| calendar-mini | Today's schedule | /api/v1/calendar/events | limit, viewAllPath (params: range=today) |
-| quick-actions | Shortcut buttons | null | actions array of {label, icon, path} |
-| progress | Completion metrics | /api/v1/tasks | label, valueKey, maxKey |
-| countdown | Next event countdown | /api/v1/featured-events/countdown | — |
-| welcome | Greeting + celebrations | null | — |
-
-### Common Task List Params
-- My tasks: `{ assigned_to: "me", status: "pending" }`
-- Open tasks: `{ is_family_task: true, status: "pending" }`
-- All pending: `{ status: "pending" }`
+### Tips
+- Start with welcome (lg) and countdown (lg) at top
+- Put most important widgets first
+- Keep to 8-10 widgets max
+- Use md for primary widgets, sm for secondary
 
 ## Step 4: Save
-Use `manage-dashboard` with action `set` to save the full config. Confirm to the user what you built.
+Use `manage-dashboard` with action `set`. Confirm what you built.

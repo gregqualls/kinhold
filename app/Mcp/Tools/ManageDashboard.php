@@ -12,7 +12,7 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
 #[Name('manage-dashboard')]
-#[Description('Get or set the user\'s dashboard layout. Actions: get (view current config), set (replace entire config), add_widget (add one widget), remove_widget (remove by ID), reorder (reorder widget IDs). The dashboard is a JSON config of widgets bound to API endpoints.')]
+#[Description('Get or set the user\'s dashboard layout. Actions: get, set, add_widget, remove_widget, reorder. Widgets are purpose-built per feature: my-tasks, family-tasks, todays-schedule, points-summary, leaderboard, activity-feed, rewards-shop, badge-collection, welcome, countdown, quick-actions.')]
 class ManageDashboard extends Tool
 {
     use ScopesToFamily;
@@ -22,16 +22,20 @@ class ManageDashboard extends Tool
         return [
             'action' => $schema->string()
                 ->required()
-                ->description('Action to perform')
+                ->description('Action: get, set, add_widget, remove_widget, reorder')
                 ->enum(['get', 'set', 'add_widget', 'remove_widget', 'reorder']),
             'config' => $schema->object()
-                ->description('Full dashboard config JSON (for "set" action). Must have version:1 and widgets array.'),
-            'widget' => $schema->object()
-                ->description('Widget to add (for "add_widget"). Fields: type (required), title, endpoint, params, size (sm/md/lg), settings.'),
+                ->description('Full dashboard config (for "set"). Must have version and widgets array.'),
+            'widget_type' => $schema->string()
+                ->description('Widget type to add (for "add_widget"). E.g., my-tasks, leaderboard, badge-collection.')
+                ->enum(DashboardConfigService::WIDGET_TYPES),
+            'widget_size' => $schema->string()
+                ->description('Widget size (for "add_widget"). Must be a supported size for the type.')
+                ->enum(['sm', 'md', 'lg']),
             'widget_id' => $schema->string()
-                ->description('Widget UUID to remove (for "remove_widget" action).'),
+                ->description('Widget UUID to remove (for "remove_widget").'),
             'widget_ids' => $schema->array()
-                ->description('Ordered array of widget UUIDs (for "reorder" action).'),
+                ->description('Ordered widget UUIDs (for "reorder").'),
         ];
     }
 
@@ -54,12 +58,16 @@ class ManageDashboard extends Tool
 
         if (! $config) {
             $config = DashboardConfigService::defaultFor($user);
+        } elseif (($config['version'] ?? 1) < DashboardConfigService::CONFIG_VERSION) {
+            $config = DashboardConfigService::migrateV1ToV2($config);
+            $user->dashboard_config = $config;
+            $user->save();
         }
 
         return Response::json([
             'config' => $config,
-            'available_widget_types' => DashboardConfigService::WIDGET_TYPES,
-            'available_endpoints' => DashboardConfigService::AVAILABLE_ENDPOINTS,
+            'available_types' => DashboardConfigService::WIDGET_TYPES,
+            'widget_sizes' => DashboardConfigService::WIDGET_SIZES,
         ]);
     }
 
@@ -68,7 +76,7 @@ class ManageDashboard extends Tool
         $config = $request->get('config');
 
         if (! $config || ! is_array($config)) {
-            return Response::error('Config is required and must be an object with version and widgets.');
+            return Response::error('Config is required with version and widgets array.');
         }
 
         $errors = DashboardConfigService::validate($config);
@@ -88,14 +96,19 @@ class ManageDashboard extends Tool
 
     private function addWidget(Request $request): Response
     {
-        $widget = $request->get('widget');
+        $type = $request->get('widget_type');
+        $size = $request->get('widget_size');
 
-        if (! $widget || ! is_array($widget)) {
-            return Response::error('Widget object is required with at least a type field.');
+        if (! $type || ! in_array($type, DashboardConfigService::WIDGET_TYPES, true)) {
+            return Response::error('Invalid widget type. Valid: '.implode(', ', DashboardConfigService::WIDGET_TYPES));
         }
 
-        if (! isset($widget['type']) || ! in_array($widget['type'], DashboardConfigService::WIDGET_TYPES, true)) {
-            return Response::error('Invalid widget type. Valid types: '.implode(', ', DashboardConfigService::WIDGET_TYPES));
+        $supported = DashboardConfigService::WIDGET_SIZES[$type] ?? ['sm'];
+        if (! $size) {
+            $size = $supported[0];
+        }
+        if (! in_array($size, $supported, true)) {
+            return Response::error("Size '{$size}' not supported for '{$type}'. Valid: ".implode(', ', $supported));
         }
 
         $user = $this->user();
@@ -105,25 +118,16 @@ class ManageDashboard extends Tool
             return Response::error('Maximum 20 widgets allowed.');
         }
 
-        $newWidget = [
+        $config['widgets'][] = [
             'id' => (string) Str::uuid(),
-            'type' => $widget['type'],
-            'title' => $widget['title'] ?? ucfirst($widget['type']),
-            'endpoint' => $widget['endpoint'] ?? null,
-            'params' => $widget['params'] ?? [],
-            'size' => $widget['size'] ?? 'sm',
-            'settings' => $widget['settings'] ?? [],
+            'type' => $type,
+            'size' => $size,
         ];
-
-        $config['widgets'][] = $newWidget;
 
         $user->dashboard_config = $config;
         $user->save();
 
-        return Response::json([
-            'message' => "Widget '{$newWidget['title']}' added.",
-            'widget_id' => $newWidget['id'],
-        ]);
+        return Response::json(['message' => "Added '{$type}' widget."]);
     }
 
     private function removeWidget(Request $request): Response
@@ -144,13 +148,13 @@ class ManageDashboard extends Tool
         ));
 
         if (count($config['widgets']) === $before) {
-            return Response::error("Widget with ID '{$widgetId}' not found.");
+            return Response::error("Widget '{$widgetId}' not found.");
         }
 
         $user->dashboard_config = $config;
         $user->save();
 
-        return Response::json(['message' => 'Widget removed.', 'remaining' => count($config['widgets'])]);
+        return Response::json(['message' => 'Widget removed.']);
     }
 
     private function reorder(Request $request): Response
@@ -173,7 +177,6 @@ class ManageDashboard extends Tool
             }
         }
 
-        // Append any widgets not in the reorder list at the end
         foreach ($config['widgets'] as $widget) {
             if (! in_array($widget['id'], $widgetIds, true)) {
                 $reordered[] = $widget;
@@ -181,10 +184,9 @@ class ManageDashboard extends Tool
         }
 
         $config['widgets'] = $reordered;
-
         $user->dashboard_config = $config;
         $user->save();
 
-        return Response::json(['message' => 'Widgets reordered.', 'order' => array_column($reordered, 'id')]);
+        return Response::json(['message' => 'Widgets reordered.']);
     }
 }

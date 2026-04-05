@@ -19,6 +19,11 @@ class DashboardController extends Controller
 
         if (! $config) {
             $config = DashboardConfigService::defaultFor($user);
+        } elseif (($config['version'] ?? 1) < DashboardConfigService::CONFIG_VERSION) {
+            // Auto-migrate old config versions
+            $config = DashboardConfigService::migrateV1ToV2($config);
+            $user->dashboard_config = $config;
+            $user->save();
         }
 
         return response()->json(['config' => $config]);
@@ -35,7 +40,6 @@ class DashboardController extends Controller
             'config.widgets' => 'required|array|max:20',
             'config.widgets.*.id' => 'required|string',
             'config.widgets.*.type' => 'required|string',
-            'config.widgets.*.title' => 'required|string|max:100',
             'config.widgets.*.size' => 'required|string|in:sm,md,lg',
         ]);
 
