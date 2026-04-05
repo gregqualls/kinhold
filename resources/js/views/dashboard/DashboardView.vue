@@ -83,8 +83,16 @@ const showPicker = ref(false)
 const gridRef = ref(null)
 let sortableInstance = null
 
-function onAddWidget(widgetConfig) {
+async function onAddWidget(widgetConfig) {
   dashboardStore.addWidget(widgetConfig)
+  // Scroll to the newly added widget after Vue renders it
+  await nextTick()
+  if (gridRef.value) {
+    const lastChild = gridRef.value.lastElementChild
+    if (lastChild) {
+      lastChild.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
 }
 
 async function saveDashboard() {
