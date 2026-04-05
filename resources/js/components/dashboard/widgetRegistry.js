@@ -137,7 +137,11 @@ export function getWidgetComponent(type) {
  * Returns null for auto-height widgets (welcome, countdown).
  */
 export function getWidgetHeight(type, size) {
-  return widgetTypes[type]?.heights?.[size] || '280px'
+  const heights = widgetTypes[type]?.heights
+  if (!heights) return '280px'
+  // Explicit null means auto-height — preserve it
+  if (size in heights) return heights[size]
+  return '280px'
 }
 
 /**

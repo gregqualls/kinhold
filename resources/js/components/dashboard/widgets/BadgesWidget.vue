@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
         <ShieldCheckIcon class="w-4 h-4 text-wisteria-600" />
-        {{ config.title }}
+        {{ config.title || 'Badges' }}
       </h3>
       <RouterLink
         to="/badges"

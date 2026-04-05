@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
         <GiftIcon class="w-4 h-4 text-sand-500" />
-        {{ config.title }}
+        {{ config.title || 'Rewards Shop' }}
       </h3>
       <RouterLink
         to="/points/rewards"
@@ -43,7 +43,7 @@ const props = defineProps({
 const authStore = useAuthStore()
 const { isParent } = storeToRefs(authStore)
 
-const { data: rewardsData, loading } = useWidgetData(props.config.endpoint, props.config.params)
+const { data: rewardsData, loading } = useWidgetData('/api/v1/rewards', {})
 const { data: bankData } = useWidgetData('/api/v1/points/bank', {})
 
 const rewards = computed(() => {
