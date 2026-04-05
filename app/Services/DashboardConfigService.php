@@ -54,36 +54,33 @@ class DashboardConfigService
     public static function defaultFor(User $user): array
     {
         $family = $user->family;
-        $enabledModules = $family?->settings['modules'] ?? [
-            'tasks' => true,
-            'vault' => true,
-            'calendar' => true,
-            'chat' => true,
-            'points' => true,
-            'badges' => true,
-        ];
+        /** @var array<string, bool> $enabledModules */
+        $enabledModules = array_merge(
+            ['tasks' => true, 'vault' => true, 'calendar' => true, 'chat' => true, 'points' => true, 'badges' => true],
+            is_array($family?->settings['modules'] ?? null) ? $family->settings['modules'] : []
+        );
 
         $widgets = [];
 
         $widgets[] = self::widget('welcome', 'lg');
         $widgets[] = self::widget('countdown', 'lg');
 
-        if ($enabledModules['calendar'] ?? true) {
+        if ($enabledModules['calendar']) {
             $widgets[] = self::widget('todays-schedule', 'md');
         }
 
-        if ($enabledModules['tasks'] ?? true) {
+        if ($enabledModules['tasks']) {
             $widgets[] = self::widget('my-tasks', 'sm');
             $widgets[] = self::widget('family-tasks', 'md');
         }
 
-        if ($enabledModules['points'] ?? true) {
+        if ($enabledModules['points']) {
             $widgets[] = self::widget('points-summary', 'sm');
             $widgets[] = self::widget('leaderboard', 'sm');
             $widgets[] = self::widget('rewards-shop', 'sm');
         }
 
-        if ($enabledModules['badges'] ?? true) {
+        if ($enabledModules['badges']) {
             $widgets[] = self::widget('badge-collection', 'sm');
         }
 
@@ -139,7 +136,7 @@ class DashboardConfigService
             $type = $widget['type'] ?? null;
             $size = $widget['size'] ?? null;
             if ($type && $size) {
-                $supported = self::WIDGET_SIZES[$type] ?? ['sm'];
+                $supported = in_array($type, self::WIDGET_TYPES, true) ? self::WIDGET_SIZES[$type] : ['sm'];
                 if (! in_array($size, $supported, true)) {
                     $errors[] = "Widget {$i}: size '{$size}' not supported for type '{$type}'. Valid: ".implode(', ', $supported).'.';
                 }
@@ -224,7 +221,7 @@ class DashboardConfigService
             }
 
             // Clamp size to supported sizes
-            $supported = self::WIDGET_SIZES[$newType] ?? ['sm'];
+            $supported = self::WIDGET_SIZES[$newType] ?? ['sm']; // @phpstan-ignore-line
             if (! in_array($size, $supported, true)) {
                 $size = $supported[0];
             }

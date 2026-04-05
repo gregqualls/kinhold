@@ -107,7 +107,7 @@ class ManageDashboard extends Tool
             return Response::error('Invalid widget type. Valid: '.implode(', ', DashboardConfigService::WIDGET_TYPES));
         }
 
-        $supported = DashboardConfigService::WIDGET_SIZES[$type] ?? ['sm'];
+        $supported = DashboardConfigService::WIDGET_SIZES[$type] ?? ['sm']; // @phpstan-ignore-line
         if (! $size) {
             $size = $supported[0];
         }

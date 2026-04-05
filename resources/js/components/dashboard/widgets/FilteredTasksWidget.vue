@@ -128,6 +128,7 @@ onMounted(async () => {
     const res = await api.get('/tags')
     allTags.value = res.data.tags || res.data.data || res.data || []
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.warn('Failed to fetch tags for filter pills:', e.message)
   }
 })

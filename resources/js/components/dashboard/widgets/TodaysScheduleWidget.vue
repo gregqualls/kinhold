@@ -62,7 +62,7 @@ import { DateTime } from 'luxon'
 import { CalendarIcon } from '@heroicons/vue/24/outline'
 import { useWidgetData } from '@/composables/useWidgetData'
 
-const props = defineProps({
+defineProps({
   config: { type: Object, required: true },
 })
 

@@ -26,6 +26,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
       const { data } = await api.get('/user/dashboard')
       config.value = data.config
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch dashboard config:', e)
     } finally {
       loading.value = false
@@ -45,6 +46,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
       config.value = data.config
       exitEditMode()
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error('Failed to save dashboard config:', e)
       throw e
     } finally {

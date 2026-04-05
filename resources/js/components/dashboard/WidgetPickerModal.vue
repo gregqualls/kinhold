@@ -130,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import { widgetTypesByCategory } from './widgetRegistry'
 import {
