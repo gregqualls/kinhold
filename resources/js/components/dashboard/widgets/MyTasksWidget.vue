@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col h-full">
     <div class="flex items-center justify-between mb-3 flex-shrink-0">
       <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
         <CheckCircleIcon class="w-4 h-4 text-sand-600" />
@@ -13,16 +13,18 @@
       </RouterLink>
     </div>
 
-    <div v-if="loading" :class="columnsClass">
+    <div v-if="loading" class="flex-1 min-h-0" :class="columnsClass">
       <div v-for="n in 4" :key="n" class="h-12 bg-lavender-100 dark:bg-prussian-700 rounded-lg animate-pulse"></div>
     </div>
 
-    <div v-else-if="tasks.length === 0" class="flex flex-col items-center justify-center py-6">
-      <CheckCircleIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mb-1" />
-      <p class="text-sm text-lavender-500 dark:text-lavender-400">All caught up!</p>
+    <div v-else-if="tasks.length === 0" class="flex-1 flex items-center justify-center">
+      <div class="text-center">
+        <CheckCircleIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mx-auto mb-1" />
+        <p class="text-sm text-lavender-500 dark:text-lavender-400">All caught up!</p>
+      </div>
     </div>
 
-    <div v-else :class="columnsClass">
+    <div v-else class="flex-1 min-h-0 overflow-y-auto" :class="columnsClass">
       <div
         v-for="task in tasks"
         :key="task.id"

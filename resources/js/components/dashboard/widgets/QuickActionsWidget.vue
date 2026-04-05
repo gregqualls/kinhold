@@ -37,9 +37,11 @@ const props = defineProps({
 const actions = computed(() => {
   return props.config.settings?.actions || [
     { label: 'Add Task', icon: 'plus-circle', path: '/tasks' },
-    { label: 'Vault', icon: 'lock-closed', path: '/vault' },
-    { label: 'Assistant', icon: 'cpu-chip', path: '/chat' },
     { label: 'Calendar', icon: 'calendar', path: '/calendar' },
+    { label: 'Assistant', icon: 'cpu-chip', path: '/chat' },
+    { label: 'Vault', icon: 'lock-closed', path: '/vault' },
+    { label: 'Points', icon: 'trophy', path: '/points' },
+    { label: 'Rewards', icon: 'gift', path: '/points/rewards' },
   ]
 })
 

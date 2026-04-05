@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="flex flex-col h-full">
+    <!-- Header -->
     <div class="flex items-center justify-between mb-3 flex-shrink-0">
       <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
         <TrophyIcon class="w-4 h-4 text-wisteria-600" />
@@ -13,22 +14,28 @@
       </RouterLink>
     </div>
 
-    <div v-if="loading" class="space-y-2">
+    <!-- Loading -->
+    <div v-if="loading" class="space-y-2 flex-1">
       <div v-for="n in 4" :key="n" class="h-8 bg-lavender-100 dark:bg-prussian-700 rounded animate-pulse"></div>
     </div>
 
-    <div v-else-if="leaderboard.length === 0" class="flex flex-col items-center justify-center py-6">
-      <TrophyIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mb-1" />
-      <p class="text-sm text-lavender-500 dark:text-lavender-400">No activity yet</p>
+    <!-- Empty -->
+    <div v-else-if="leaderboard.length === 0" class="flex-1 flex items-center justify-center">
+      <div class="text-center">
+        <TrophyIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mx-auto mb-1" />
+        <p class="text-sm text-lavender-500 dark:text-lavender-400">No activity yet</p>
+      </div>
     </div>
 
     <!-- Medium: full animated LeaderboardStrip -->
-    <LeaderboardStrip v-else-if="config.size === 'md'" :leaderboard="leaderboard" />
+    <div v-else-if="config.size === 'md'" class="flex-1 min-h-0 overflow-y-auto">
+      <LeaderboardStrip :leaderboard="leaderboard" />
+    </div>
 
-    <!-- Small: compact side-by-side layout -->
-    <div v-else class="flex gap-4 h-full">
+    <!-- Small: responsive layout — side-by-side on desktop, stacked on mobile -->
+    <div v-else class="flex-1 min-h-0 flex flex-col md:flex-row gap-3 md:gap-4">
       <!-- Podium -->
-      <div v-if="topThree.length > 0" class="flex items-end justify-center gap-1 flex-shrink-0 pb-1">
+      <div v-if="topThree.length > 0" class="flex items-end justify-center gap-1 flex-shrink-0">
         <div v-if="topThree.length > 1" class="flex flex-col items-center">
           <div class="text-[10px] font-bold text-lavender-500 dark:text-lavender-300 mb-0.5">2nd</div>
           <UserAvatar :user="topThree[1].user" size="sm" />
@@ -63,14 +70,14 @@
           <span class="text-[10px] font-bold w-3 text-center text-lavender-500 dark:text-lavender-400">{{ idx + 1 }}</span>
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] font-medium truncate" :class="isCurrentUser(entry) ? 'text-wisteria-700 dark:text-wisteria-300' : 'text-prussian-500 dark:text-lavender-300'">
+              <span class="text-xs font-medium truncate" :class="isCurrentUser(entry) ? 'text-wisteria-700 dark:text-wisteria-300' : 'text-prussian-500 dark:text-lavender-300'">
                 {{ firstName(entry) }}
               </span>
               <span class="text-[10px] font-semibold font-mono text-wisteria-600 dark:text-wisteria-400 ml-1 flex-shrink-0">
                 {{ entry.total_points }} pts
               </span>
             </div>
-            <div class="h-1 bg-lavender-200 dark:bg-prussian-700 rounded-full overflow-hidden mt-0.5">
+            <div class="h-1.5 bg-lavender-200 dark:bg-prussian-700 rounded-full overflow-hidden mt-0.5">
               <div class="h-full rounded-full transition-all duration-700" :class="progressColor(idx)" :style="{ width: progressWidth(entry) }"></div>
             </div>
           </div>

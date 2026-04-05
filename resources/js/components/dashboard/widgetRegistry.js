@@ -70,7 +70,7 @@ export const widgetTypes = {
     icon: 'TrophyIcon',
     category: 'points',
     supportedSizes: ['sm'],
-    heights: { sm: '120px' },
+    heights: { sm: '280px' },
     defaultSize: 'sm',
   },
   'leaderboard': {
@@ -120,7 +120,7 @@ export const widgetTypes = {
     icon: 'Squares2X2Icon',
     category: 'general',
     supportedSizes: ['sm'],
-    heights: { sm: '160px' },
+    heights: { sm: '280px' },
     defaultSize: 'sm',
   },
 }
