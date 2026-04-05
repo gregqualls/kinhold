@@ -26,16 +26,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/AuthController.php
 
 		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: "#^Offset 'children_can_change…' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
 			message: "#^Parameter \\#1 \\$familyId of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string, int given\\.$#"
 			count: 1
 			path: app/Http/Controllers/Api/V1/AuthController.php
@@ -546,21 +536,6 @@ parameters:
 			path: app/Mcp/Tools/CompleteTask.php
 
 		-
-			message: "#^Offset 'ai_api_key' on array\\{\\}\\|string in empty\\(\\) does not exist\\.$#"
-			count: 1
-			path: app/Mcp/Tools/GetSettings.php
-
-		-
-			message: "#^Offset 'ai_provider' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Mcp/Tools/GetSettings.php
-
-		-
-			message: "#^Offset 'kudos_cost_enabled' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Mcp/Tools/GetSettings.php
-
-		-
 			message: "#^Cannot access property \\$value on string\\.$#"
 			count: 1
 			path: app/Mcp/Tools/ManageBadges.php
@@ -656,42 +631,7 @@ parameters:
 			path: app/Models/Family.php
 
 		-
-			message: "#^Offset 'enabled_modules' on string\\|null on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Models/Family.php
-
-		-
-			message: "#^Offset 'leaderboard_period' on string\\|null on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Models/Family.php
-
-		-
 			message: "#^Offset 'mode' on array\\{mode\\: string, roles\\?\\: array\\<string\\>, users\\?\\: array\\<string\\>\\} on left side of \\?\\? always exists and is not nullable\\.$#"
-			count: 1
-			path: app/Models/Family.php
-
-		-
-			message: "#^Offset 'module_access' on array\\{\\}\\|string in isset\\(\\) does not exist\\.$#"
-			count: 1
-			path: app/Models/Family.php
-
-		-
-			message: "#^Offset 'modules' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Models/Family.php
-
-		-
-			message: "#^Offset 'task_assignment' on string\\|null on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Models/Family.php
-
-		-
-			message: "#^Offset non\\-falsy\\-string on string\\|null on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Models/Family.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between true and false will always evaluate to false\\.$#"
 			count: 1
 			path: app/Models/Family.php
 
@@ -806,46 +746,6 @@ parameters:
 			path: app/Services/AgentService.php
 
 		-
-			message: "#^Offset 'ai_api_key' does not exist on array\\{\\}\\|string\\.$#"
-			count: 1
-			path: app/Services/AgentService.php
-
-		-
-			message: "#^Offset 'ai_api_key' on array\\{\\}\\|string in empty\\(\\) does not exist\\.$#"
-			count: 1
-			path: app/Services/AgentService.php
-
-		-
-			message: "#^Offset 'ai_mode' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Services/AgentService.php
-
-		-
-			message: "#^Offset 'ai_model' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Services/AgentService.php
-
-		-
-			message: "#^Offset 'ai_provider' on array\\{\\}\\|string on left side of \\?\\? does not exist\\.$#"
-			count: 1
-			path: app/Services/AgentService.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: app/Services/AgentService.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between 'kinhold' and 'byok' will always evaluate to false\\.$#"
-			count: 1
-			path: app/Services/AgentService.php
-
-		-
-			message: "#^Variable \\$apiKey in empty\\(\\) always exists and is always falsy\\.$#"
-			count: 1
-			path: app/Services/AgentService.php
-
-		-
 			message: "#^Parameter \\#2 \\$triggerType of method App\\\\Services\\\\BadgeService\\:\\:getCurrentValueForTrigger\\(\\) expects App\\\\Enums\\\\BadgeTriggerType, string given\\.$#"
 			count: 1
 			path: app/Services/BadgeService.php
@@ -862,20 +762,5 @@ parameters:
 
 		-
 			message: "#^Access to an undefined property App\\\\Models\\\\PointTransaction\\:\\:\\$total_points\\.$#"
-			count: 1
-			path: app/Services/PointsService.php
-
-		-
-			message: "#^If condition is always false\\.$#"
-			count: 1
-			path: app/Services/PointsService.php
-
-		-
-			message: "#^Left side of && is always false\\.$#"
-			count: 1
-			path: app/Services/PointsService.php
-
-		-
-			message: "#^Offset 'kudos_cost_enabled' on string\\|null on left side of \\?\\? does not exist\\.$#"
 			count: 1
 			path: app/Services/PointsService.php

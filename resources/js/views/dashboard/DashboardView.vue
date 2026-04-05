@@ -1,367 +1,170 @@
 <template>
   <div class="p-4 md:p-6 max-w-6xl">
-    <!-- Countdown Banner -->
-    <CountdownBanner :countdown-event="featuredEventsStore.countdownEvent" />
-
-    <!-- Welcome Header -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold font-heading text-prussian-500 dark:text-lavender-200">
-        {{ greeting }}, {{ currentUser?.name?.split(' ')[0] }}!
-      </h1>
-      <p class="text-sand-600 dark:text-sand-400">{{ dateMessage }}</p>
-    </div>
-
-    <!-- Celebration Banners (birthdays & holidays) -->
-    <CelebrationBanner
-      :show-birthday="hasBirthdays"
-      :is-my-birthday="isMyBirthday"
-      :birthday-members="birthdayMembers"
-      :show-holiday="isHoliday"
-      :holiday="todayHoliday"
+    <!-- Edit mode toolbar -->
+    <DashboardToolbar
+      v-if="dashboardStore.editMode"
+      :saving="dashboardStore.saving"
+      @add="showPicker = true"
+      @cancel="dashboardStore.exitEditMode()"
+      @save="saveDashboard"
     />
 
-    <!-- Featured Events -->
-    <FeaturedEventsSection
-      v-if="featuredEventsStore.upcomingEvents.length > 0 || isParent"
-      :is-parent="isParent"
-      class="mb-4 md:mb-6"
-    />
-
-    <!-- Content Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-      <!-- Today's Events -->
-      <BaseCard class="md:col-span-1 lg:col-span-2" shadow="lg">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-            <CalendarIcon class="w-5 h-5 text-wisteria-600" />
-            Today's Events
-          </h2>
-          <RouterLink to="/calendar" class="text-wisteria-600 dark:text-wisteria-400 text-sm font-medium hover:text-wisteria-500">
-            View Calendar
-          </RouterLink>
-        </div>
-
-        <div v-if="todayEvents.length > 0" class="space-y-2">
-          <div
-            v-for="event in todayEvents.slice(0, 5)"
-            :key="event.id"
-            class="flex items-start gap-3 pb-3 border-b border-lavender-200 dark:border-prussian-700 last:border-0 last:pb-0"
-          >
-            <div class="w-2 h-full rounded-full mt-1" :style="{ backgroundColor: event.user?.color || '#8B5CF6' }"></div>
-            <div class="flex-1 min-w-0">
-              <p class="font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ event.title }}</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ formatTime(event.start) }}</p>
-            </div>
-          </div>
-        </div>
-
-        <EmptyState
-          v-else
-          :icon="CalendarIcon"
-          title="No events today"
-          description="Your calendar is clear!"
-        />
-      </BaseCard>
-
-      <!-- My Tasks -->
-      <BaseCard shadow="lg">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-            <CheckCircleIcon class="w-5 h-5 text-sand-600" />
-            My Tasks
-          </h2>
-          <RouterLink to="/tasks" class="text-wisteria-600 dark:text-wisteria-400 text-sm font-medium hover:text-wisteria-500">
-            All Tasks
-          </RouterLink>
-        </div>
-
-        <div v-if="myTasks.length > 0" class="space-y-1">
-          <div
-            v-for="task in myTasks.slice(0, 5)"
-            :key="task.id"
-            class="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
-          >
-            <button
-              class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
-              :class="'border-lavender-300 dark:border-prussian-500 hover:border-wisteria-400 dark:hover:border-wisteria-400'"
-              @click.stop="toggleTask(task)"
-            >
-            </button>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200">
-                {{ task.title }}
-              </p>
-              <div class="flex items-center gap-2 mt-0.5">
-                <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
-                  Due: {{ formatDate(task.due_date) }}
-                </p>
-                <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium font-mono">
-                  {{ task.effective_points }} pts
-                </span>
-                <span
-                  v-if="task.recurrence_label"
-                  class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-wisteria-100 text-wisteria-600 dark:bg-wisteria-900/30 dark:text-wisteria-400"
-                >
-                  <ArrowPathIcon class="w-3 h-3" />
-                  {{ task.recurrence_label }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <EmptyState
-          v-else
-          :icon="CheckCircleIcon"
-          title="No tasks assigned"
-          description="Check back soon!"
-        />
-      </BaseCard>
-
-      <!-- Points & Leaderboard -->
-      <BaseCard v-if="enabledModules.points" shadow="lg">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-            <TrophyIcon class="w-5 h-5 text-wisteria-600" />
-            Points
-          </h2>
-          <RouterLink to="/points" class="text-wisteria-600 dark:text-wisteria-400 text-sm font-medium hover:text-wisteria-500">
-            View Feed
-          </RouterLink>
-        </div>
-
-        <div class="mb-3">
-          <p class="text-xs text-lavender-500 dark:text-lavender-400 uppercase tracking-wide font-medium">Your Balance</p>
-          <p class="text-2xl font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ pointsStore.bank }} pts</p>
-        </div>
-
-        <LeaderboardStrip :leaderboard="pointsStore.leaderboard" />
-      </BaseCard>
-
-      <!-- Featured Rewards -->
-      <BaseCard v-if="enabledModules.points" shadow="lg">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-            <GiftIcon class="w-5 h-5 text-sand-500" />
-            Rewards Shop
-          </h2>
-          <RouterLink to="/points/rewards" class="text-wisteria-600 dark:text-wisteria-400 text-sm font-medium hover:text-wisteria-500">
-            View All
-          </RouterLink>
-        </div>
-
-        <FeaturedRewards
-          :rewards="pointsStore.rewards"
-          :bank="pointsStore.bank"
-          :is-parent="isParent"
-          @navigate="$router.push('/points/rewards')"
-        />
-      </BaseCard>
-
-      <!-- Badges Showcase -->
-      <BaseCard v-if="enabledModules.badges" shadow="lg">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-            <ShieldCheckIcon class="w-5 h-5 text-wisteria-600" />
-            Badges
-          </h2>
-          <RouterLink to="/badges" class="text-wisteria-600 dark:text-wisteria-400 text-sm font-medium hover:text-wisteria-500">
-            View All
-          </RouterLink>
-        </div>
-
-        <BadgeShowcase :badges="badgesStore.earnedBadges" />
-      </BaseCard>
-
-      <!-- Quick Actions -->
-      <BaseCard shadow="lg">
-        <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4 flex items-center gap-2">
-          <SparklesIcon class="w-5 h-5 text-sand-500" />
-          Quick Actions
-        </h2>
-
-        <div class="space-y-2">
-          <RouterLink
-            to="/tasks"
-            class="flex items-center gap-3 p-3 rounded-lg hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
-          >
-            <PlusIcon class="w-5 h-5 text-wisteria-600" />
-            <span class="font-medium text-prussian-500 dark:text-lavender-200">Add Task</span>
-          </RouterLink>
-
-          <RouterLink
-            to="/vault"
-            class="flex items-center gap-3 p-3 rounded-lg hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
-          >
-            <LockClosedIcon class="w-5 h-5 text-wisteria-600" />
-            <span class="font-medium text-prussian-500 dark:text-lavender-200">Access Vault</span>
-          </RouterLink>
-
-          <RouterLink
-            to="/chat"
-            class="flex items-center gap-3 p-3 rounded-lg hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
-          >
-            <CpuChipIcon class="w-5 h-5 text-wisteria-600" />
-            <span class="font-medium text-prussian-500 dark:text-lavender-200">Assistant</span>
-          </RouterLink>
-        </div>
-      </BaseCard>
-
-      <!-- Open Tasks (visible to everyone) -->
-      <BaseCard v-if="openTasks.length > 0" class="md:col-span-1 lg:col-span-2" shadow="lg">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-            <UserGroupIcon class="w-5 h-5 text-sand-500" />
-            Open Tasks
-          </h2>
-          <RouterLink to="/tasks" class="text-wisteria-600 dark:text-wisteria-400 text-sm font-medium hover:text-wisteria-500">
-            View All
-          </RouterLink>
-        </div>
-
-        <p class="text-xs text-lavender-500 dark:text-lavender-400 mb-3">Anyone in the family can complete these</p>
-
-        <div class="space-y-1">
-          <div
-            v-for="task in openTasks.slice(0, 5)"
-            :key="task.id"
-            class="flex items-start gap-3 py-2 px-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
-          >
-            <button
-              class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all border-lavender-300 dark:border-prussian-500 hover:border-wisteria-400"
-              @click.stop="toggleTask(task)"
-            >
-            </button>
-            <div class="flex-1 min-w-0">
-              <p class="font-medium truncate text-prussian-500 dark:text-lavender-200">
-                {{ task.title }}
-              </p>
-              <div class="flex items-center gap-2 mt-0.5">
-                <p v-if="task.due_date" class="text-xs text-lavender-600 dark:text-lavender-400">
-                  Due: {{ formatDate(task.due_date) }}
-                </p>
-                <span v-if="enabledModules.points && task.effective_points" class="text-xs text-wisteria-500 dark:text-wisteria-400 font-medium font-mono">
-                  {{ task.effective_points }} pts
-                </span>
-                <span
-                  v-if="task.recurrence_label"
-                  class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-wisteria-100 text-wisteria-600 dark:bg-wisteria-900/30 dark:text-wisteria-400"
-                >
-                  <ArrowPathIcon class="w-3 h-3" />
-                  {{ task.recurrence_label }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </BaseCard>
+    <!-- Edit button (shown when not editing) -->
+    <div v-else class="flex justify-end mb-2">
+      <button
+        class="p-2 rounded-lg text-lavender-400 hover:text-wisteria-500 hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
+        title="Edit Dashboard"
+        @click="dashboardStore.enterEditMode()"
+      >
+        <PencilSquareIcon class="w-5 h-5" />
+      </button>
     </div>
+
+    <!-- Loading skeleton -->
+    <div v-if="dashboardStore.loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 items-start">
+      <div v-for="n in 6" :key="n" class="h-32 bg-lavender-100 dark:bg-prussian-700 rounded-card animate-pulse"></div>
+    </div>
+
+    <!-- Widget grid -->
+    <div v-else ref="gridRef" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      <DashboardWidget
+        v-for="(widget, index) in dashboardStore.widgets"
+        :key="widget.id"
+        :data-id="widget.id"
+        :config="widget"
+        :edit-mode="dashboardStore.editMode"
+        :index="index"
+        @remove="dashboardStore.removeWidget(widget.id)"
+        @resize="(size) => dashboardStore.resizeWidget(widget.id, size)"
+      />
+    </div>
+
+    <!-- Empty state (no widgets) -->
+    <div
+      v-if="!dashboardStore.loading && dashboardStore.widgets.length === 0"
+      class="text-center py-12"
+    >
+      <Squares2X2Icon class="w-12 h-12 text-lavender-400 dark:text-lavender-500 mx-auto mb-3" />
+      <h3 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-1">No widgets yet</h3>
+      <p class="text-sm text-lavender-500 dark:text-lavender-400 mb-4">
+        Add widgets to customize your dashboard, or ask the Assistant to build one for you.
+      </p>
+      <button
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-wisteria-600 text-white hover:bg-wisteria-700 transition-colors"
+        @click="dashboardStore.enterEditMode(); showPicker = true"
+      >
+        <PlusIcon class="w-4 h-4" />
+        Add Widget
+      </button>
+    </div>
+
+    <!-- Widget picker modal -->
+    <WidgetPickerModal
+      :show="showPicker"
+      @close="showPicker = false"
+      @add="onAddWidget"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
-import { DateTime } from 'luxon'
-import { storeToRefs } from 'pinia'
-import { useAuthStore } from '@/stores/auth'
-import { useCalendarStore } from '@/stores/calendar'
-import { useTasksStore } from '@/stores/tasks'
-import { usePointsStore } from '@/stores/points'
-import { useBadgesStore } from '@/stores/badges'
+import { ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
+import Sortable from 'sortablejs'
+import { useDashboardStore } from '@/stores/dashboard'
 import { useFeaturedEventsStore } from '@/stores/featuredEvents'
-import BaseCard from '@/components/common/BaseCard.vue'
-import EmptyState from '@/components/common/EmptyState.vue'
-import LeaderboardStrip from '@/components/points/LeaderboardStrip.vue'
-import FeaturedRewards from '@/components/points/FeaturedRewards.vue'
-import BadgeShowcase from '@/components/badges/BadgeShowcase.vue'
-import FeaturedEventsSection from '@/components/featured-events/FeaturedEventsSection.vue'
-import CountdownBanner from '@/components/featured-events/CountdownBanner.vue'
-import CelebrationBanner from '@/components/common/CelebrationBanner.vue'
-import { useCelebrations } from '@/composables/useCelebrations'
-import {
-  ArrowPathIcon,
-  CalendarIcon,
-  CheckCircleIcon,
-  SparklesIcon,
-  PlusIcon,
-  LockClosedIcon,
-  CpuChipIcon,
-  UserGroupIcon,
-  TrophyIcon,
-  ShieldCheckIcon,
-  GiftIcon,
-} from '@heroicons/vue/24/outline'
+import DashboardWidget from '@/components/dashboard/DashboardWidget.vue'
+import DashboardToolbar from '@/components/dashboard/DashboardToolbar.vue'
+import WidgetPickerModal from '@/components/dashboard/WidgetPickerModal.vue'
+import { useNotification } from '@/composables/useNotification'
+import { PencilSquareIcon, PlusIcon, Squares2X2Icon } from '@heroicons/vue/24/outline'
 
-const authStore = useAuthStore()
-const calendarStore = useCalendarStore()
-const tasksStore = useTasksStore()
-const pointsStore = usePointsStore()
-const badgesStore = useBadgesStore()
+const dashboardStore = useDashboardStore()
 const featuredEventsStore = useFeaturedEventsStore()
+const showPicker = ref(false)
+const gridRef = ref(null)
+let sortableInstance = null
 
-const { currentUser, isParent, enabledModules } = storeToRefs(authStore)
-const { todayEvents } = storeToRefs(calendarStore)
-const { tasks } = storeToRefs(tasksStore)
-
-// Celebration detection (birthdays & holidays)
-const { birthdayMembers, hasBirthdays, isMyBirthday, todayHoliday, isHoliday } = useCelebrations()
-
-// My Tasks: assigned specifically to me, incomplete
-const myTasks = computed(() => {
-  const userId = currentUser.value?.id
-  return tasks.value.filter((t) => !t.completed_at && !t.is_family_task && t.assigned_to_id === userId)
-})
-
-// Open Tasks: family tasks anyone can grab, incomplete
-const openTasks = computed(() => {
-  return tasks.value.filter((t) => !t.completed_at && t.is_family_task)
-})
-
-const toggleTask = async (task) => {
-  await tasksStore.toggleComplete(task.id)
+async function onAddWidget(widgetConfig) {
+  dashboardStore.addWidget(widgetConfig)
+  // Scroll to the newly added widget after Vue renders it
+  await nextTick()
+  if (gridRef.value) {
+    const lastChild = gridRef.value.lastElementChild
+    if (lastChild) {
+      lastChild.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
 }
 
-const now = DateTime.now()
+const { success: notifySuccess, error: notifyError } = useNotification()
 
-const greeting = computed(() => {
-  const hour = now.hour
-  if (hour < 12) return 'Good morning'
-  if (hour < 18) return 'Good afternoon'
-  return 'Good evening'
-})
-
-const dateMessage = computed(() => {
-  return now.toFormat('EEEE, MMMM d, yyyy')
-})
-
-const formatTime = (dateStr) => {
-  return DateTime.fromISO(dateStr).toFormat('h:mm a')
+async function saveDashboard() {
+  try {
+    await dashboardStore.saveConfig()
+    notifySuccess('Dashboard saved')
+  } catch {
+    notifyError('Failed to save dashboard. Please try again.')
+  }
 }
 
-const formatDate = (dateStr) => {
-  return DateTime.fromISO(dateStr).toFormat('MMM d')
+function initSortable() {
+  if (!gridRef.value) return
+  sortableInstance = Sortable.create(gridRef.value, {
+    animation: 250,
+    handle: '.drag-handle',
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    dragClass: 'sortable-drag',
+    forceFallback: true,
+    fallbackClass: 'sortable-fallback',
+    fallbackOnBody: true,
+    onEnd(evt) {
+      if (evt.oldIndex !== evt.newIndex) {
+        dashboardStore.moveWidget(evt.oldIndex, evt.newIndex)
+      }
+    },
+  })
 }
+
+function destroySortable() {
+  if (sortableInstance) {
+    sortableInstance.destroy()
+    sortableInstance = null
+  }
+}
+
+// Toggle sortable when edit mode changes
+watch(() => dashboardStore.editMode, async (editing) => {
+  destroySortable()
+  if (editing) {
+    await nextTick()
+    initSortable()
+  }
+})
+
+onBeforeUnmount(() => {
+  destroySortable()
+})
 
 onMounted(async () => {
-  // Fetch featured events and countdown
+  await dashboardStore.fetchConfig()
   featuredEventsStore.fetchEvents()
   featuredEventsStore.fetchCountdown()
-
-  // Fetch today's events
-  const endOfDay = now.endOf('day')
-  await calendarStore.fetchEvents(now.startOf('day'), endOfDay)
-
-  // Fetch tasks
-  await tasksStore.fetchTasks()
-
-  // Fetch points and badges
-  if (enabledModules.value.points) {
-    pointsStore.fetchBank()
-    pointsStore.fetchLeaderboard()
-    pointsStore.fetchRewards()
-  }
-  if (enabledModules.value.badges) {
-    badgesStore.fetchEarned()
-  }
 })
 </script>
+
+<style scoped>
+.sortable-ghost {
+  opacity: 0.2;
+}
+
+.sortable-chosen {
+  opacity: 0.8;
+}
+
+.sortable-fallback {
+  opacity: 0.9;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+}
+</style>

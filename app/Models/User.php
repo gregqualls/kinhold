@@ -13,6 +13,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property array<string, mixed>|null $dashboard_config
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, HasUuids, Notifiable;
@@ -51,6 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'family_id',
         'is_managed',
         'managed_by',
+        'dashboard_config',
     ];
 
     /**
@@ -78,6 +82,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'is_managed' => 'boolean',
             'email_preferences' => 'json',
             'easter_eggs_found' => 'array',
+            'dashboard_config' => 'json',
             'onboarding_completed_at' => 'datetime',
         ];
     }

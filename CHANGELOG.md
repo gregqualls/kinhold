@@ -2,6 +2,45 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-05 — Session 24: Modular Dashboard
+
+### What Was Done
+- **Customizable per-user dashboard** — JSON-driven widget grid stored per user in `dashboard_config` column. 12 purpose-built widget types, each designed for specific sizes.
+- **Widget types:** welcome, countdown, my-tasks, family-tasks, filtered-tasks, todays-schedule, points-summary, leaderboard, activity-feed, rewards-shop, badge-collection, quick-actions.
+- **Edit mode** — Drag-and-drop reordering (sortablejs), size toggle (S/M/L per widget's supported sizes), add/remove widgets, save/cancel.
+- **Widget picker** — Categorized modal with size selector. Filtered-tasks widget has tag multi-select and due date range picker.
+- **Filtered tasks widget** — Configurable task view filtered by tags and date range. Stored as `filters` object in config.
+- **Multi-column layouts** — Task, schedule, and feed widgets use CSS columns at md/lg for natural content flow.
+- **Purpose-built rendering** — Badges use BadgeShowcase with hex icons, Rewards use FeaturedRewards with affordability indicators, Leaderboard uses LeaderboardStrip at md size.
+- **Dynamic widget heights** — Each widget declares height per size (120px–360px or auto). No wasted whitespace.
+- **Points summary widget** — Balance + recent activity feed in one card.
+- **Config v2 schema** — Simplified: `{ type, size }` per widget. Auto-migration from v1 on dashboard load.
+- **ManageDashboard MCP tool** — get/set/add_widget/remove_widget/reorder with filter validation.
+- **Dashboard builder playbook** — AI-guided layout creation.
+- **Sidebar reorder** — Dashboard, Assistant, Calendar, Tasks, Points, Rewards, Badges, Vault.
+- **Security** — `dashboard_config` guarded from mass assignment, widget filter validation on API + MCP, title sanitization.
+
+### Files Created
+- `app/Http/Controllers/Api/V1/DashboardController.php`
+- `app/Mcp/Tools/ManageDashboard.php`
+- `app/Services/DashboardConfigService.php`
+- `database/migrations/2026_04_03_100000_add_dashboard_config_to_users_table.php`
+- `playbooks/dashboard/dashboard-builder.md`
+- 12 widget components in `resources/js/components/dashboard/widgets/`
+- `resources/js/components/dashboard/DashboardWidget.vue`, `DashboardToolbar.vue`, `SizeToggle.vue`, `WidgetPickerModal.vue`, `widgetRegistry.js`
+- `resources/js/stores/dashboard.js`, `resources/js/composables/useWidgetData.js`
+
+### Files Modified
+- `app/Models/User.php` — dashboard_config column + guarded
+- `app/Mcp/Servers/KinholdServer.php` — ManageDashboard registered
+- `app/Services/AgentService.php` — dashboard system prompt
+- `resources/js/components/layout/Sidebar.vue` — nav reorder
+- `resources/js/views/dashboard/DashboardView.vue` — full rewrite
+- `routes/api.php` — dashboard endpoints
+- `package.json` — sortablejs dependency
+
+---
+
 ## 2026-04-03 — Session 23: Rewards Marketplace Overhaul
 
 ### What Was Done
