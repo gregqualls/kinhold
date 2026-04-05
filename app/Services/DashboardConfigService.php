@@ -146,6 +146,38 @@ class DashboardConfigService
             } elseif (! $size) {
                 $errors[] = "Widget {$i}: missing size.";
             }
+
+            // Validate optional title
+            if (isset($widget['title']) && (! is_string($widget['title']) || strlen($widget['title']) > 255)) {
+                $errors[] = "Widget {$i}: title must be a string under 255 characters.";
+            }
+
+            // Validate filters for filtered-tasks widgets
+            if ($type === 'filtered-tasks' && isset($widget['filters'])) {
+                $filters = $widget['filters'];
+                if (! is_array($filters)) {
+                    $errors[] = "Widget {$i}: filters must be an object.";
+                } else {
+                    if (isset($filters['tags'])) {
+                        if (! is_array($filters['tags'])) {
+                            $errors[] = "Widget {$i}: filters.tags must be an array.";
+                        } else {
+                            foreach ($filters['tags'] as $tag) {
+                                if (! is_string($tag)) {
+                                    $errors[] = "Widget {$i}: filters.tags must contain strings.";
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (isset($filters['due_within']) && ! in_array($filters['due_within'], ['today', 'week', 'month'], true)) {
+                        $errors[] = "Widget {$i}: filters.due_within must be today, week, or month.";
+                    }
+                    if (isset($filters['assigned_to']) && ! is_string($filters['assigned_to'])) {
+                        $errors[] = "Widget {$i}: filters.assigned_to must be a string.";
+                    }
+                }
+            }
         }
 
         return $errors;

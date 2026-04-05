@@ -129,11 +129,28 @@ class ManageDashboard extends Tool
         ];
 
         if ($request->get('widget_title')) {
-            $widget['title'] = $request->get('widget_title');
+            $title = $request->get('widget_title');
+            if (! is_string($title) || strlen($title) > 255) {
+                return Response::error('Widget title must be a string under 255 characters.');
+            }
+            $widget['title'] = $title;
         }
 
         if ($type === 'filtered-tasks' && $request->get('widget_filters')) {
-            $widget['filters'] = $request->get('widget_filters');
+            $filters = $request->get('widget_filters');
+            if (! is_array($filters)) {
+                return Response::error('Widget filters must be an object.');
+            }
+            if (isset($filters['tags']) && ! is_array($filters['tags'])) {
+                return Response::error('filters.tags must be an array of tag UUIDs.');
+            }
+            if (isset($filters['due_within']) && ! in_array($filters['due_within'], ['today', 'week', 'month'], true)) {
+                return Response::error('filters.due_within must be today, week, or month.');
+            }
+            if (isset($filters['assigned_to']) && ! is_string($filters['assigned_to'])) {
+                return Response::error('filters.assigned_to must be a string.');
+            }
+            $widget['filters'] = $filters;
         }
 
         $config['widgets'][] = $widget;

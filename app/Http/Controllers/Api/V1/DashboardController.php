@@ -41,6 +41,12 @@ class DashboardController extends Controller
             'config.widgets.*.id' => 'required|string',
             'config.widgets.*.type' => 'required|string',
             'config.widgets.*.size' => 'required|string|in:sm,md,lg',
+            'config.widgets.*.title' => 'sometimes|string|max:255',
+            'config.widgets.*.filters' => 'sometimes|array',
+            'config.widgets.*.filters.tags' => 'sometimes|array',
+            'config.widgets.*.filters.tags.*' => 'string',
+            'config.widgets.*.filters.due_within' => 'sometimes|string|in:today,week,month',
+            'config.widgets.*.filters.assigned_to' => 'sometimes|string',
         ]);
 
         $config = $request->input('config');

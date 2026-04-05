@@ -60,6 +60,7 @@
           <div v-if="tagsLoading" class="flex gap-2">
             <div v-for="n in 3" :key="n" class="h-7 w-16 bg-lavender-100 dark:bg-prussian-700 rounded-full animate-pulse"></div>
           </div>
+          <p v-else-if="tagsError" class="text-xs text-red-500 dark:text-red-400">Failed to load tags. Try again later.</p>
           <div v-else class="flex flex-wrap gap-1.5">
             <button
               v-for="tag in availableTags"
@@ -216,13 +217,17 @@ function toggleTag(tagId) {
   }
 }
 
+const tagsError = ref(false)
+
 async function fetchTags() {
   tagsLoading.value = true
+  tagsError.value = false
   try {
     const res = await api.get('/tags')
     availableTags.value = res.data.tags || res.data.data || res.data || []
   } catch {
     availableTags.value = []
+    tagsError.value = true
   } finally {
     tagsLoading.value = false
   }

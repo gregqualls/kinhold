@@ -75,6 +75,7 @@ import { useFeaturedEventsStore } from '@/stores/featuredEvents'
 import DashboardWidget from '@/components/dashboard/DashboardWidget.vue'
 import DashboardToolbar from '@/components/dashboard/DashboardToolbar.vue'
 import WidgetPickerModal from '@/components/dashboard/WidgetPickerModal.vue'
+import { useNotification } from '@/composables/useNotification'
 import { PencilSquareIcon, PlusIcon, Squares2X2Icon } from '@heroicons/vue/24/outline'
 
 const dashboardStore = useDashboardStore()
@@ -95,11 +96,14 @@ async function onAddWidget(widgetConfig) {
   }
 }
 
+const { success: notifySuccess, error: notifyError } = useNotification()
+
 async function saveDashboard() {
   try {
     await dashboardStore.saveConfig()
+    notifySuccess('Dashboard saved')
   } catch {
-    // Error already logged in store
+    notifyError('Failed to save dashboard. Please try again.')
   }
 }
 

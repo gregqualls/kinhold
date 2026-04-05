@@ -36,8 +36,8 @@
     <div v-else class="flex-1 min-h-0 flex flex-col md:flex-row gap-3 md:gap-4">
       <!-- Podium -->
       <div v-if="topThree.length > 0" class="flex items-end justify-center gap-1 flex-shrink-0">
-        <div v-if="topThree.length > 1" class="flex flex-col items-center">
-          <div class="text-[10px] font-bold text-lavender-500 dark:text-lavender-300 mb-0.5">2nd</div>
+        <div v-if="topThree.length > 1" class="flex flex-col items-center" :aria-label="`2nd place: ${firstName(topThree[1])}, ${topThree[1].total_points} points`">
+          <div class="text-[10px] font-bold text-lavender-500 dark:text-lavender-300 mb-0.5" aria-hidden="true">2nd</div>
           <UserAvatar :user="topThree[1].user" size="sm" />
           <div class="w-12 rounded-t-lg mt-1 flex items-center justify-center bg-gradient-to-t from-lavender-300 to-lavender-200 dark:from-prussian-600 dark:to-prussian-500" style="height: 28px">
             <span class="text-[10px] font-bold font-mono text-prussian-500 dark:text-lavender-200">{{ topThree[1].total_points }}</span>
@@ -50,8 +50,8 @@
             <span class="text-xs font-bold font-mono text-prussian-600 dark:text-sand-100">{{ topThree[0].total_points }}</span>
           </div>
         </div>
-        <div v-if="topThree.length > 2" class="flex flex-col items-center">
-          <div class="text-[10px] font-bold text-lavender-500 dark:text-lavender-300 mb-0.5">3rd</div>
+        <div v-if="topThree.length > 2" class="flex flex-col items-center" :aria-label="`3rd place: ${firstName(topThree[2])}, ${topThree[2].total_points} points`">
+          <div class="text-[10px] font-bold text-lavender-500 dark:text-lavender-300 mb-0.5" aria-hidden="true">3rd</div>
           <UserAvatar :user="topThree[2].user" size="sm" />
           <div class="w-12 rounded-t-lg mt-1 flex items-center justify-center bg-gradient-to-t from-amber-200 to-amber-100 dark:from-prussian-700 dark:to-prussian-600" style="height: 20px">
             <span class="text-[10px] font-bold font-mono text-amber-800 dark:text-lavender-300">{{ topThree[2].total_points }}</span>

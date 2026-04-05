@@ -38,7 +38,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'timezone',
         'email_preferences',
         'easter_eggs_found',
-        'dashboard_config',
         'onboarding_completed_at',
     ];
 
@@ -52,6 +51,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'family_id',
         'is_managed',
         'managed_by',
+        'dashboard_config',
     ];
 
     /**
