@@ -7,6 +7,7 @@ use App\Mcp\Tools\GetPlaybook;
 use App\Mcp\Tools\GetSettings;
 use App\Mcp\Tools\ListPlaybooks;
 use App\Mcp\Tools\ManageBadges;
+use App\Mcp\Tools\ManageDashboard;
 use App\Mcp\Tools\ManageFeaturedEvents;
 use App\Mcp\Tools\ManagePointRequests;
 use App\Mcp\Tools\ManagePoints;
@@ -60,6 +61,9 @@ class KinholdServer extends Server
         ViewCalendar::class,
         ManageVault::class,
         ManageVaultAccess::class,
+
+        // Dashboard
+        ManageDashboard::class,
 
         // Playbooks
         ListPlaybooks::class,
