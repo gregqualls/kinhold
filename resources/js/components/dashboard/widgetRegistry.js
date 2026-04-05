@@ -113,6 +113,17 @@ export const widgetTypes = {
     heights: { sm: '280px', md: '320px' },
     defaultSize: 'sm',
   },
+  'filtered-tasks': {
+    component: () => import('./widgets/FilteredTasksWidget.vue'),
+    name: 'Filtered Tasks',
+    description: 'Tasks filtered by tags and date range',
+    icon: 'FunnelIcon',
+    category: 'tasks',
+    supportedSizes: ['sm', 'md', 'lg'],
+    heights: { sm: '280px', md: '280px', lg: '320px' },
+    defaultSize: 'sm',
+    configurable: true,
+  },
   'quick-actions': {
     component: () => import('./widgets/QuickActionsWidget.vue'),
     name: 'Quick Actions',

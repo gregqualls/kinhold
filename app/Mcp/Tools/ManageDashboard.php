@@ -34,6 +34,10 @@ class ManageDashboard extends Tool
                 ->enum(['sm', 'md', 'lg']),
             'widget_id' => $schema->string()
                 ->description('Widget UUID to remove (for "remove_widget").'),
+            'widget_title' => $schema->string()
+                ->description('Optional custom title for the widget.'),
+            'widget_filters' => $schema->object()
+                ->description('Filters for "filtered-tasks" widget. Keys: tags (array of tag UUIDs), due_within (today/week/month), assigned_to (user UUID or "me").'),
             'widget_ids' => $schema->array()
                 ->description('Ordered widget UUIDs (for "reorder").'),
         ];
@@ -118,11 +122,21 @@ class ManageDashboard extends Tool
             return Response::error('Maximum 20 widgets allowed.');
         }
 
-        $config['widgets'][] = [
+        $widget = [
             'id' => (string) Str::uuid(),
             'type' => $type,
             'size' => $size,
         ];
+
+        if ($request->get('widget_title')) {
+            $widget['title'] = $request->get('widget_title');
+        }
+
+        if ($type === 'filtered-tasks' && $request->get('widget_filters')) {
+            $widget['filters'] = $request->get('widget_filters');
+        }
+
+        $config['widgets'][] = $widget;
 
         $user->dashboard_config = $config;
         $user->save();

@@ -21,6 +21,7 @@ class DashboardConfigService
         'activity-feed',
         'rewards-shop',
         'badge-collection',
+        'filtered-tasks',
         'quick-actions',
     ];
 
@@ -38,6 +39,7 @@ class DashboardConfigService
         'activity-feed' => ['sm', 'md'],
         'rewards-shop' => ['sm', 'md'],
         'badge-collection' => ['sm', 'md'],
+        'filtered-tasks' => ['sm', 'md', 'lg'],
         'quick-actions' => ['sm'],
     ];
 
