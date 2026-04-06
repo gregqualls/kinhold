@@ -4,7 +4,7 @@
     <nav class="sticky top-0 z-50 bg-white/80 dark:bg-prussian-800/80 backdrop-blur-md border-b border-lavender-200 dark:border-prussian-700">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <RouterLink to="/dashboard" class="flex items-center gap-2">
+          <RouterLink to="/" class="flex items-center gap-2">
             <span class="text-2xl">&#x1F3E0;</span>
             <span class="text-xl font-bold text-wisteria-600 dark:text-wisteria-400">Kinhold</span>
           </RouterLink>
@@ -174,7 +174,7 @@
       <div class="max-w-4xl mx-auto px-4">
         <p>&copy; {{ new Date().getFullYear() }} Kinhold &mdash; Open source under the MIT License</p>
         <div class="mt-2 flex items-center justify-center gap-4">
-          <RouterLink to="/dashboard" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Home</RouterLink>
+          <RouterLink to="/" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Home</RouterLink>
           <span>&bull;</span>
           <RouterLink to="/privacy" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Privacy</RouterLink>
           <span>&bull;</span>
