@@ -2,6 +2,27 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-06 — Session 25: Housekeeping & Infrastructure
+
+### What Was Done
+- **GitHub cleanup** — Closed stale issues (#33 auctions, #17 calendar visibility, #20 duplicate meal planner). Renamed project board from "Q32 Hub" to "Kinhold". Assigned all 20 open issues to milestones (was 8 unassigned).
+- **Milestone restructure** — Phase A renamed to "Make It Solid" (foundational work: GDPR, bugs, infra). New Phase F created for food features (#65, #66, #67) so they no longer block foundational work.
+- **`/check` refactor** — Moved 10-check logic from 117-line LLM prompt to `scripts/check.sh` (bash). `check.md` simplified to ~15 lines — haiku just runs the script and reports. Script is macOS-compatible and CI-reusable.
+- **New issues created** — #134 (landing page separation), #135 (/check refactor), #137 (AI assistant usage limits), #138 (license single-family enforcement).
+- **ROADMAP.md updated** — Fully rewritten to match new milestone structure including Phase F.
+
+### Files Created
+- `scripts/check.sh`
+
+### Files Modified
+- `.claude/commands/check.md` — simplified to haiku reporter
+- `docs/ROADMAP.md` — restructured phases
+
+### In Progress (PR #136)
+- Not yet merged — PR open, CI green, Upsun preview active.
+
+---
+
 ## 2026-04-05 — Session 24: Modular Dashboard
 
 ### What Was Done
