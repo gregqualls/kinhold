@@ -5,8 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
 
-// Public Views
-import LandingView from '@/views/LandingView.vue'
+// Public Views (landing page is served separately — see /landing/)
 const PrivacyPolicyView = () => import('@/views/PrivacyPolicyView.vue')
 const TermsView = () => import('@/views/TermsView.vue')
 
@@ -30,7 +29,7 @@ const BadgesView = () => import('@/views/badges/BadgesView.vue')
 const OnboardingView = () => import('@/views/onboarding/OnboardingView.vue')
 
 const routes = [
-  { path: '/', name: 'Landing', component: LandingView, meta: { isPublic: true } },
+  { path: '/', redirect: '/login' },
   { path: '/privacy', name: 'Privacy', component: PrivacyPolicyView, meta: { isOpen: true } },
   { path: '/terms', name: 'Terms', component: TermsView, meta: { isOpen: true } },
   { path: '/login', name: 'Login', component: LoginView, meta: { requiresGuest: true } },
@@ -67,10 +66,6 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.meta.isOpen) return next()
-
-  if (to.meta.isPublic) {
-    return authStore.isAuthenticated ? next({ name: 'Dashboard' }) : next()
-  }
 
   if (to.name === 'Login' && authStore.appConfig?.first_boot) {
     return next({ name: 'Register' })

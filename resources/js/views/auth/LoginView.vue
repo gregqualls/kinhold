@@ -3,7 +3,7 @@
     <div class="w-full max-w-md">
       <!-- Logo -->
       <div class="text-center mb-8">
-        <router-link to="/" class="inline-flex flex-col items-center gap-3">
+        <router-link to="/dashboard" class="inline-flex flex-col items-center gap-3">
           <img src="/images/logo-100.png" alt="Kinhold" class="w-16 h-16 rounded-2xl" />
           <h1 class="text-4xl font-heading font-bold text-kin-gold">Kinhold</h1>
         </router-link>
