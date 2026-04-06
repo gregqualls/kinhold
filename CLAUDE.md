@@ -281,13 +281,14 @@ chmod +x setup.sh && ./setup.sh
 - VaultEncryptionService uses a simple encrypt/decrypt — verify round-trip works on first real entry
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 
-**What's next:**
-- Versioning, GitHub Releases, and self-hosted update notifications (Issue #117) — close to needing this
+**What's next (Phase A: Make It Solid):**
+- GDPR compliance: account deletion + data export (Issue #96) — critical before any marketing push
+- Separate landing page from SPA (Issue #134) — static site at kinhold.app, app at app.kinhold.app
+- Fix vault file uploads bug (Issue #121)
+- Versioning, GitHub Releases, self-hosted update notifications (Issue #117)
+- AI assistant usage limits for hosted version (Issue #137) — design needed before billing work
+- License enforcement: single-family limit for self-hosted (Issue #138)
 - Audit all controllers for family_id scoping before Corey's family signs up
-- Add dark mode toggle to TopBar (desktop) and mobile header for quick access
-- End-to-end testing of gamification flow (complete task → points → badge earned → toast)
-- Test recurring task generation: `php artisan app:generate-recurring-tasks`
-- Continue UI/UX overhaul: Phase 3 (Calendar components) and Phase 5 (Dashboard enhancements)
 - See `docs/ROADMAP.md` for full phased approach
 
 ## Deployment Strategy (Upsun)

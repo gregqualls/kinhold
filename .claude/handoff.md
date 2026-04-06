@@ -1,40 +1,40 @@
 # Session Handoff
 
-**Date:** 2026-04-05
-**Branch:** `main` (PR #133 merged ✅)
-**Last commit:** `58fc955` — merge PR #133: modular dashboard
+**Date:** 2026-04-06
+**Branch:** chore/housekeeping-github-check-landing
+**Last commit:** b0a7ffc — revert: remove landing page changes — keep as issue #134 only
+**PR:** #136 (open, CI green, Upsun preview deployed)
 
 ## What Was Done This Session
-
-- **Built modular per-user dashboard** — 12 purpose-built widget types (my-tasks, family-tasks, filtered-tasks, todays-schedule, points-summary, leaderboard, activity-feed, rewards-shop, badge-collection, welcome, countdown, quick-actions) with per-widget size support (sm/md/lg). Widgets use fixed heights and internal scroll.
-- **Edit mode with drag-and-drop** — SortableJS reorder, size toggle per widget, add/remove via modal picker, save/cancel with toast feedback.
-- **Filtered tasks widget** — Tag multi-select + due_within date range filter. Config stored in `filters` object within widget config JSON.
-- **Config v2 schema** — Simplified from generic endpoint-binding (v1) to purpose-built types. Auto-migration runs on first load.
-- **`manage-dashboard` MCP tool** — get/set/add_widget/remove_widget/reorder with full filter and title validation.
-- **All quality gates passed** — Fixed Larastan type errors, ESLint warnings, lodash-es vulnerability before PR creation. Merged to main and deployed to production.
+- **GitHub housekeeping** — Closed stale issues (#33, #17, #20), renamed project board to "Kinhold", assigned all 20 open issues to milestones
+- **Milestone restructure** — Phase A → "Make It Solid" (foundations), new Phase F for food features so they don't block foundational work
+- **`/check` refactor** — Logic moved from 117-line LLM prompt to `scripts/check.sh`; `check.md` simplified to ~15 lines for haiku reliability
+- **New issues** — #134 landing page separation, #135 /check refactor, #137 AI usage limits, #138 license/single-family enforcement
+- **ROADMAP.md + CLAUDE.md** — Fully updated to reflect new structure
 
 ## Quality State
-
-- **Tests:** 60 tests, 118 assertions — PASS (2 deprecation notices, non-blocking)
-- **Pint:** PASS
-- **Larastan:** PASS — 0 new errors (195 pre-existing in baseline)
-- **ESLint:** PASS — 0 errors, 0 warnings
-- **Build:** PASS — clean Vite build, largest chunk app.js 167KB gzip (pre-existing)
-- **CI:** ✅ All checks passed, merged to main
-- **Production:** ✅ Deployed to kinhold.app
+- Tests: 60 tests, 118 assertions ✅
+- Pint: ✅ pass
+- Larastan: ✅ 0 errors
+- ESLint: ✅ 0 errors
+- Build: ✅ 3197 modules
+- Dependency Audit: ⚠️ low/moderate vulns (not a blocker)
+- Coverage: ⏭ skipped (pcov not installed)
 
 ## What's Next
-
-1. **Audit all controllers for family_id scoping** — Before Corey's family signs up. High security priority.
-2. **Add dark mode toggle to TopBar** — Currently only in Settings > Appearance. Needs quick-access toggle in the top bar for desktop and mobile header.
-3. **Continue UI/UX overhaul** — Phase 3 (Calendar components) and Phase 5 (Dashboard enhancements per Phase 0 roadmap)
+1. **Merge PR #136** — run `/merge` to finish this session's work
+2. **GDPR compliance (#96)** — account deletion + data export. Legal requirement before any marketing push. Critical before Corey's family signs up.
+3. **Fix vault file uploads (#121)** — reported bug, needs investigation
 
 ## Blockers or Gotchas
+- PR #136 is open but NOT merged yet — run `/merge` first before starting new work
+- The landing page revert was intentional: Greg confirmed this session was about organizing, not implementing. Issue #134 tracks the actual work.
+- `scripts/check.sh` uses `/opt/homebrew/bin` PATH fix for macOS — will work fine in CI too (Linux has tools in standard PATH)
+- Food features (#65, #66, #67) are now in Phase F — no longer blocking Phase A work
 
-- **No new tests added** for `DashboardController` or `DashboardConfigService`. PHPUnit coverage unchanged at 60 tests. Consider adding unit tests for `validate()` and `migrateV1ToV2()` in a future session.
-- **Dashboard test coverage** — optional next session task. Low risk since the code is pure data transformation.
+## Open Questions
+- **AI usage limits (#137):** Deferred — Greg will discuss when working on that issue.
+- **Staging environment:** Greg wanted to think through whether to add a persistent staging env. Parked — start a GitHub Discussion when ready.
 
-## Open Questions for Greg
-
-- **Filtered tasks "assigned_to" filter** — currently only configurable via MCP (not in the picker modal). Should the picker expose a family member dropdown? Greg hasn't weighed in.
-- **Dark mode toggle location** — TopBar (always visible) vs. mobile hamburger menu. What does Greg prefer?
+## Decisions Made
+- **License enforcement (#138):** Code enforcement confirmed — app should block creating additional families on self-hosted instances. Not just license text.
