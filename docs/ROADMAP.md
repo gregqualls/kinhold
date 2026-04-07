@@ -7,6 +7,25 @@
 
 ---
 
+## 🚀 v1.0.0 Launch (Due: April 12, 2026)
+
+**Goal:** Get Kinhold ready for the r/selfhosted post. Self-hosted experience must be polished, demo must be compelling, versioning must exist.
+
+**Full plan:** [docs/LAUNCH-PLAN.md](LAUNCH-PLAN.md)
+
+| Issue | Title | Priority |
+|-------|-------|----------|
+| [#139](https://github.com/gregqualls/kinhold/issues/139) | Self-hosted mode: skip landing page on local installs | P0 |
+| [#140](https://github.com/gregqualls/kinhold/issues/140) | OG/Twitter meta tags for social sharing | P0 |
+| [#141](https://github.com/gregqualls/kinhold/issues/141) | Quick fixes: license text, domain refs, 404 page | P0 |
+| [#117](https://github.com/gregqualls/kinhold/issues/117) | Versioning, GitHub Releases, update notifications | P0 |
+| [#142](https://github.com/gregqualls/kinhold/issues/142) | Docker polish: sessions, .dockerignore, env defaults | P1 |
+| [#124](https://github.com/gregqualls/kinhold/issues/124) | Demo family outdated — refresh seed data | P1 |
+| [#126](https://github.com/gregqualls/kinhold/issues/126) | Demo email verification bug | P1 |
+| [#143](https://github.com/gregqualls/kinhold/issues/143) | Demo banner: "install on your server" CTA | P1 |
+
+---
+
 ## What's Already Built (MVP Complete)
 
 These features are live and working:
@@ -48,10 +67,7 @@ These features are live and working:
 | [#96](https://github.com/gregqualls/kinhold/issues/96) | GDPR compliance: account deletion and data export | Critical |
 | [#134](https://github.com/gregqualls/kinhold/issues/134) | Separate landing page from SPA | High |
 | [#135](https://github.com/gregqualls/kinhold/issues/135) | Refactor /check command: shell script + haiku reporter | Medium |
-| [#117](https://github.com/gregqualls/kinhold/issues/117) | Versioning, GitHub Releases, update notifications | High |
 | [#121](https://github.com/gregqualls/kinhold/issues/121) | Bug: file uploads to the vault | High |
-| [#124](https://github.com/gregqualls/kinhold/issues/124) | Bug: demo family outdated | Medium |
-| [#126](https://github.com/gregqualls/kinhold/issues/126) | Bug: demo email verification | Medium |
 | [#104](https://github.com/gregqualls/kinhold/issues/104) | Brand colors in transactional email templates | Low |
 | [#99](https://github.com/gregqualls/kinhold/issues/99) | Show Kinhold icon in Claude Desktop MCP connector | Low |
 
