@@ -1,0 +1,8 @@
+# Kinhold — robots.txt
+# Allow all crawlers (search engines, social media, AI training)
+
+User-agent: *
+Allow: /
+
+# Sitemap (future)
+# Sitemap: https://kinhold.app/sitemap.xml
