@@ -9,6 +9,23 @@
         <meta name="description" content="Kinhold — the family hub for calendars, tasks, documents, and more.">
         <meta name="theme-color" content="#1B3A4B">
 
+        <!-- Open Graph -->
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="Kinhold">
+        <meta property="og:title" content="Kinhold — Your Family Hub">
+        <meta property="og:description" content="An open-source family hub for calendars, tasks, documents, and more. Privacy-first, AI-powered, self-hostable.">
+        <meta property="og:image" content="{{ url('/images/og-card.png') }}">
+        <meta property="og:url" content="{{ url('/') }}">
+
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Kinhold — Your Family Hub">
+        <meta name="twitter:description" content="An open-source family hub for calendars, tasks, documents, and more. Privacy-first, AI-powered, self-hostable.">
+        <meta name="twitter:image" content="{{ url('/images/og-card.png') }}">
+
+        <!-- Canonical -->
+        <link rel="canonical" href="{{ url('/') }}">
+
         <!-- Favicon & Icons -->
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">

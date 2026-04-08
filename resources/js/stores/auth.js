@@ -226,8 +226,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Restore auth from saved token on app init
   const initAuth = async () => {
-    // Fetch public config (services availability) in background
-    fetchAppConfig()
+    // Fetch public config (services availability) — awaited so router guard has appConfig
+    await fetchAppConfig()
 
     // Check for OAuth callback auth code in URL (exchanged for token securely via POST)
     const urlParams = new URLSearchParams(window.location.search)

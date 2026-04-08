@@ -33,6 +33,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/config', function () {
         return response()->json([
             'app_name' => config('app.name', 'Kinhold'),
+            'self_hosted' => (bool) env('SELF_HOSTED', false),
             'services' => [
                 'google_oauth' => ! empty(config('services.google.client_id')),
                 'google_calendar' => ! empty(config('kinhold.google.client_id')),

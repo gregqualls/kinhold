@@ -28,6 +28,7 @@ const RewardsView = () => import('@/views/points/RewardsView.vue')
 const PointsHistoryView = () => import('@/views/points/PointsHistoryView.vue')
 const BadgesView = () => import('@/views/badges/BadgesView.vue')
 const OnboardingView = () => import('@/views/onboarding/OnboardingView.vue')
+const NotFoundView = () => import('@/views/NotFoundView.vue')
 
 const routes = [
   { path: '/', name: 'Landing', component: LandingView, meta: { isPublic: true } },
@@ -48,6 +49,7 @@ const routes = [
   { path: '/points/history', name: 'PointsHistory', component: PointsHistoryView, meta: { requiresAuth: true, module: 'points' } },
   { path: '/badges', name: 'Badges', component: BadgesView, meta: { requiresAuth: true, module: 'badges' } },
   { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true } },
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView, meta: { isOpen: true } },
 ]
 
 const router = createRouter({
@@ -69,7 +71,9 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.isOpen) return next()
 
   if (to.meta.isPublic) {
-    return authStore.isAuthenticated ? next({ name: 'Dashboard' }) : next()
+    if (authStore.isAuthenticated) return next({ name: 'Dashboard' })
+    if (authStore.appConfig?.self_hosted) return next({ name: 'Login' })
+    return next()
   }
 
   if (to.name === 'Login' && authStore.appConfig?.first_boot) {
