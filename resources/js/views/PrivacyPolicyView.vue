@@ -126,8 +126,8 @@
         <section>
           <h2>Self-Hosting</h2>
           <p>
-            Kinhold is open source (MIT license). If you self-host, your data stays entirely on your own infrastructure.
-            This privacy policy applies only to the instance at <strong>kinhold.com</strong> operated by Greg Qualls.
+            Kinhold is open source (Elastic License 2.0). If you self-host, your data stays entirely on your own infrastructure.
+            This privacy policy applies only to the instance at <strong>kinhold.app</strong> operated by Greg Qualls.
           </p>
         </section>
 
@@ -183,7 +183,7 @@
     <!-- Footer -->
     <footer class="border-t border-lavender-200 dark:border-prussian-700 mt-16 py-8 text-center text-sm text-prussian-400 dark:text-lavender-500">
       <div class="max-w-4xl mx-auto px-4">
-        <p>&copy; {{ new Date().getFullYear() }} Kinhold &mdash; Open source under the MIT License</p>
+        <p>&copy; {{ new Date().getFullYear() }} Kinhold &mdash; Open source under the Elastic License 2.0</p>
         <div class="mt-2 flex items-center justify-center gap-4">
           <RouterLink to="/" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Home</RouterLink>
           <span>&bull;</span>

@@ -27,14 +27,14 @@
           <p>
             Kinhold is an open-source family management application that helps households organize tasks,
             calendars, sensitive documents, and family activities. It is provided as-is under the
-            <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">MIT License</a>.
+            <a href="https://github.com/gregqualls/kinhold/blob/main/LICENSE" target="_blank" rel="noopener" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Elastic License 2.0</a>.
           </p>
         </section>
 
         <section>
           <h2>2. Acceptance of Terms</h2>
           <p>
-            By creating an account or using Kinhold at <strong>kinhold.com</strong>,
+            By creating an account or using Kinhold at <strong>kinhold.app</strong>,
             you agree to these Terms of Service and our
             <RouterLink to="/privacy" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Privacy Policy</RouterLink>.
             If you do not agree, do not use the service.
@@ -145,7 +145,7 @@
           <h2>12. Self-Hosting</h2>
           <p>
             Kinhold is open-source software. If you self-host your own instance, these Terms of Service
-            apply only to the hosted instance at <strong>kinhold.com</strong>.
+            apply only to the hosted instance at <strong>kinhold.app</strong>.
             Self-hosted instances are your responsibility.
           </p>
         </section>
@@ -172,7 +172,7 @@
     <!-- Footer -->
     <footer class="border-t border-lavender-200 dark:border-prussian-700 mt-16 py-8 text-center text-sm text-prussian-400 dark:text-lavender-500">
       <div class="max-w-4xl mx-auto px-4">
-        <p>&copy; {{ new Date().getFullYear() }} Kinhold &mdash; Open source under the MIT License</p>
+        <p>&copy; {{ new Date().getFullYear() }} Kinhold &mdash; Open source under the Elastic License 2.0</p>
         <div class="mt-2 flex items-center justify-center gap-4">
           <RouterLink to="/" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Home</RouterLink>
           <span>&bull;</span>

@@ -47,7 +47,7 @@
         <!-- Social proof -->
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
           <div class="flex items-center gap-3 text-sm kin-muted">
-            <span>MIT Licensed</span>
+            <span>Elastic License 2.0</span>
             <span class="hidden sm:inline text-kin-border dark:text-kin-border-dark">&middot;</span>
             <span>Open Source</span>
             <span class="hidden sm:inline text-kin-border dark:text-kin-border-dark">&middot;</span>
@@ -457,7 +457,7 @@ const differentiators = [
   {
     icon: CodeBracketIcon,
     title: 'Open source',
-    description: 'MIT licensed. Fork it, host it, own it. No vendor lock-in, ever. Pull updates from upstream anytime.',
+    description: 'Elastic License 2.0. Fork it, host it, own it. No vendor lock-in, ever. Pull updates from upstream anytime.',
   },
   {
     icon: SparklesIcon,
