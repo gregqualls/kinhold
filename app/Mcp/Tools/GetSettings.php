@@ -3,6 +3,7 @@
 namespace App\Mcp\Tools;
 
 use App\Mcp\Tools\Concerns\ScopesToFamily;
+use App\Services\UpdateCheckService;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -11,7 +12,7 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('get-settings')]
-#[Description('View current family settings including enabled modules, leaderboard period, default points, and AI configuration status. Read-only.')]
+#[Description('View current family settings including enabled modules, leaderboard period, default points, AI configuration status, and app version info. Read-only.')]
 #[IsReadOnly]
 class GetSettings extends Tool
 {
@@ -40,6 +41,8 @@ class GetSettings extends Tool
                 'task_assignment' => $family->getTaskAssignment(),
                 'ai_provider' => $settings['ai_provider'] ?? 'anthropic',
                 'ai_has_key' => ! empty($settings['ai_api_key']),
+                'app_version' => config('version.current'),
+                'update_available' => app(UpdateCheckService::class)->getStatus(),
             ],
         ]);
     }

@@ -2,6 +2,57 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-09 — Session 27: Launch Day 2 — Versioning, Docker Polish
+
+### What Was Done
+- **Versioning infrastructure (#117)** — Created `config/version.php` as single source of truth (v1.0.0). `UpdateCheckService` checks GitHub Releases API once per day (cached 24h), fails silently if offline or disabled. Version and update info exposed in `/api/v1/config` (public) and MCP `get-settings` tool. New "About Kinhold" section in Settings shows version, license, update banner (parent-only, dismissible per-version via localStorage), and links to GitHub/releases/website. Child view shows version only.
+- **GitHub Actions release workflow (#117)** — `.github/workflows/release.yml` auto-creates GitHub Release with auto-generated notes when a `v*` tag is pushed. Uses `softprops/action-gh-release@v2`.
+- **Docker polish (#142)** — Changed `.env.docker-simple` defaults: `APP_ENV=production`, `APP_DEBUG=false`, `SESSION_DRIVER=database` (sessions table migration already exists, entrypoint runs migrate). Created `.dockerignore` to exclude `.git`, `node_modules`, `vendor`, tests, docs, and dev tooling from Docker build context. Added `DISABLE_UPDATE_CHECK` env var to `.env.example` and `.env.docker-simple`.
+
+### Files Created
+- `config/version.php`
+- `app/Services/UpdateCheckService.php`
+- `.github/workflows/release.yml`
+- `.dockerignore`
+
+### Files Modified
+- `routes/api.php` — version + update_available in `/api/v1/config`
+- `app/Mcp/Tools/GetSettings.php` — app_version + update_available in MCP response
+- `resources/js/views/settings/SettingsView.vue` — About section (parent + child views)
+- `.env.docker-simple` — production defaults, database sessions, update check opt-out
+- `.env.example` — DISABLE_UPDATE_CHECK env var
+
+---
+
+## 2026-04-08 — Session 26: Launch Day 1 — Social Card, Self-Hosted Mode, Quick Fixes
+
+### What Was Done
+- **Self-hosted mode (#139)** — Added `SELF_HOSTED` env var to `.env.example` (default `false`) and `.env.docker-simple` (default `true`). Exposed as `self_hosted` flag in `/api/v1/config`. Router guard now skips the marketing landing page and redirects unauthenticated users directly to `/login` (which chains to `/register` on first boot) when `self_hosted` is true. Fixed race condition by awaiting `fetchAppConfig()` in auth store init.
+- **OG/Twitter meta tags (#140)** — Added full Open Graph + Twitter Card meta block to `app.blade.php`. URLs use `{{ url('/') }}` (reads `APP_URL`) so self-hosters get correct preview URLs automatically. Greg added 1200×630 `public/images/og-card.png` social card image.
+- **License + domain fixes (#141)** — Updated 6 "MIT License" references to "Elastic License 2.0" across `LandingView.vue`, `TermsView.vue`, `PrivacyPolicyView.vue`. Fixed 3 "kinhold.com" references to "kinhold.app" in Terms and Privacy pages.
+- **404 page (#141)** — Created `NotFoundView.vue` (styled to match Terms/Privacy, dark mode support). Added catch-all `/:pathMatch(.*)*` route as last entry in router with `meta: { isOpen: true }`.
+- **PR #144 open** — All changes bundled into one PR. `/check` passes (8/8). CI running on GitHub Actions. Upsun preview at `pr-144-vzmcodi-2rozcvqjtjdta.ch-1.platformsh.site`.
+
+### Files Created
+- `resources/js/views/NotFoundView.vue`
+- `public/images/og-card.png`
+
+### Files Modified
+- `routes/api.php` — `self_hosted` added to config response
+- `resources/js/stores/auth.js` — `await fetchAppConfig()`
+- `resources/js/router/index.js` — self-hosted redirect + 404 catch-all
+- `resources/views/app.blade.php` — OG/Twitter meta tags
+- `resources/js/views/LandingView.vue` — license fix
+- `resources/js/views/TermsView.vue` — license + domain fix
+- `resources/js/views/PrivacyPolicyView.vue` — license + domain fix
+- `.env.example` — `SELF_HOSTED=false`
+- `.env.docker-simple` — `SELF_HOSTED=true`
+
+### In Progress (PR #144)
+- Not yet merged — awaiting Greg's final review + merge.
+
+---
+
 ## 2026-04-06 — Session 25: Housekeeping & Infrastructure
 
 ### What Was Done

@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\VaultController;
 use App\Models\Family;
 use App\Models\User;
+use App\Services\UpdateCheckService;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -44,6 +45,8 @@ Route::prefix('v1')->group(function () {
             'registration' => true,
             'first_boot' => User::count() === 0,
             'demo_available' => Family::where('slug', 'q32-demo-family')->exists(),
+            'version' => config('version.current'),
+            'update_available' => app(UpdateCheckService::class)->getStatus(),
         ]);
     });
 
