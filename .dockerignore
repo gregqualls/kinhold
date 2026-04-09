@@ -1,0 +1,31 @@
+# Version control
+.git
+
+# Dependencies (rebuilt during Docker build)
+node_modules
+vendor
+
+# Environment files (use .env.docker-simple or set in compose)
+.env
+.env.local
+
+# Storage artifacts (generated at runtime)
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+
+# Development & CI
+tests
+docs
+.claude
+.github
+.vscode
+.idea
+
+# Non-essential root files
+phpstan.neon
+pint.json
+phpunit.xml
+eslint.config.js
