@@ -43,7 +43,17 @@ Merge the current branch's PR after QA is complete. Verifies all gates before me
    - Squash merge keeps `main` clean with one commit per feature.
    - `--delete-branch` cleans up the remote branch.
 
-6. **Monitor production deployment:**
+6. **Tag release (if version was bumped):**
+   - After merge, checkout main and pull: `git checkout main && git pull origin main`
+   - Read `config/version.php` to get the current version.
+   - Check if a git tag already exists for this version: `git tag -l "v<version>"`
+   - If no tag exists AND the PR included a version bump (check the diff for `config/version.php` changes):
+     - `git tag v<version> && git push origin v<version>`
+     - This triggers the GitHub Actions release workflow which auto-creates a GitHub Release.
+     - Report: "Tagged v<version> — GitHub Release will be created automatically."
+   - If the tag already exists or no version bump was in the PR, skip silently.
+
+8. **Monitor production deployment:**
    - Wait 10 seconds for Upsun to pick up the merge.
    - Use `list-activity` MCP tool (project_id: `2rozcvqjtjdta`) to find the latest activity on the `main` environment.
    - Check activity status:
@@ -52,12 +62,13 @@ Merge the current branch's PR after QA is complete. Verifies all gates before me
      - If `failed`: Use `log-activity` to surface the error.
    - If no activity found after 30 seconds: "No Upsun deploy detected yet. Check the console manually or wait a moment."
 
-7. **Output:**
+9. **Output:**
    ```
    ## Merge Complete
 
    **PR:** #<number> merged into main ✅
    **Commit:** <squash commit hash>
+   **Release:** Tagged v<version> — GitHub Release created (or "No version bump")
    **Production:** Deploying to kinhold.app... (or ✅ Deployed)
 
    Next steps:
