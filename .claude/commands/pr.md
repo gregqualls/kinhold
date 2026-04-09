@@ -27,9 +27,20 @@ Create a pull request for the current branch with all the right metadata. Refuse
    - If no new tests and new controllers/services were added, WARN: "No new tests found. Consider adding tests for new functionality."
    - This is a warning, not a blocker — Greg decides.
 
-5. **Build the PR:**
+5. **Version bump (optional):**
+   - Ask Greg: "Does this PR warrant a version bump?" with options: **patch** (bug fixes), **minor** (new features), **major** (breaking changes), or **skip**.
+   - If not skipped:
+     - Read the current version from `config/version.php` (the `'current'` value).
+     - Bump it according to semver (e.g., `1.0.0` → `1.0.1` for patch, `1.1.0` for minor, `2.0.0` for major).
+     - Update `config/version.php` with the new version.
+     - `git add config/version.php && git commit -m "chore: bump version to <new_version>"`
+     - Note the version in the PR body so `/merge` knows to tag it.
+   - This keeps the version bump CI-verified as part of the PR, and `/merge` will tag after squash.
+
+6. **Build the PR:**
 
    **Title:** Generate from branch name and issue title (if linked):
+
    - Fetch issue title: `gh issue view <number> --json title --jq .title`
    - Format: `<type>: <issue title>` (e.g., "feat: add shopping list module (#65)")
    - Type mapping: `feature/` → `feat`, `fix/` → `fix`, `chore/` → `chore`, `refactor/` → `refactor`
@@ -57,18 +68,19 @@ Create a pull request for the current branch with all the right metadata. Refuse
 
    **Milestone:** If the issue is in a milestone, assign the PR to the same milestone.
 
-6. **Push and create:**
+7. **Push and create:**
    - Push the branch if not already pushed: `git push -u origin <branch>`
    - Create the PR: `gh pr create --title "<title>" --body "<body>" --label "<labels>" --milestone "<milestone>"`
    - If issue is linked, the `Closes #N` in the body auto-links it.
 
-7. **Output:**
+8. **Output:**
    ```
    ## PR Created
 
    **PR:** #<number> — <title>
    **URL:** <github url>
    **Linked Issue:** #<number>
+   **Version:** v<new_version> (will be tagged on merge) — or "No version bump"
    **CI:** Running... (check status with `/qa`)
 
    Next step: Run `/qa` to check CI status and get the Upsun preview URL.
