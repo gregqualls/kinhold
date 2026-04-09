@@ -943,6 +943,88 @@
           </BaseButton>
         </div>
       </SettingsSection>
+
+      <!-- Section 7: About -->
+      <SettingsSection
+        id="about"
+        title="About Kinhold"
+        description="Version info and updates"
+        :icon="InformationCircleIcon"
+        :model-value="expandedSections.has('about')"
+        @update:model-value="val => toggleSection('about', val)"
+      >
+        <!-- Update Available Banner -->
+        <div
+          v-if="updateAvailable && !updateDismissed"
+          class="flex items-start gap-3 p-4 mb-4 bg-sand-50 dark:bg-sand-900/30 border border-sand-300 dark:border-sand-700 rounded-lg"
+        >
+          <div class="flex-1">
+            <p class="font-semibold text-sand-800 dark:text-sand-200">
+              Update available: v{{ updateAvailable.latest_version }}
+            </p>
+            <p class="text-sm text-sand-700 dark:text-sand-400 mt-1">
+              You're running v{{ appVersion }}. A newer version is available on GitHub.
+            </p>
+            <a
+              :href="updateAvailable.url"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-1 text-sm font-medium text-wisteria-600 dark:text-wisteria-400 hover:underline mt-2"
+            >
+              View release notes
+              <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
+            </a>
+          </div>
+          <button
+            class="p-1 text-sand-500 hover:text-sand-700 dark:text-sand-400 dark:hover:text-sand-200 rounded transition-colors"
+            title="Dismiss"
+            @click="dismissUpdate"
+          >
+            <XMarkIcon class="w-5 h-5" />
+          </button>
+        </div>
+
+        <!-- Version Info -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+            <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Version</span>
+            <span class="text-sm font-mono text-lavender-700 dark:text-lavender-400">v{{ appVersion }}</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+            <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">License</span>
+            <span class="text-sm text-lavender-700 dark:text-lavender-400">Elastic License 2.0</span>
+          </div>
+          <div class="flex items-center gap-4 pt-2">
+            <a
+              :href="`https://github.com/${githubRepo}`"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-1.5 text-sm text-wisteria-600 dark:text-wisteria-400 hover:underline"
+            >
+              GitHub
+              <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
+            </a>
+            <a
+              :href="`https://github.com/${githubRepo}/releases`"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-1.5 text-sm text-wisteria-600 dark:text-wisteria-400 hover:underline"
+            >
+              Release Notes
+              <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
+            </a>
+            <a
+              href="https://kinhold.app"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-1.5 text-sm text-wisteria-600 dark:text-wisteria-400 hover:underline"
+            >
+              Website
+              <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+      </SettingsSection>
     </template>
 
     <!-- ============================================ -->
@@ -986,6 +1068,18 @@
           <BaseButton variant="primary" :loading="savingEmailPrefs" @click="saveEmailPreferences">
             Save Email Preferences
           </BaseButton>
+        </div>
+      </div>
+
+      <!-- About (child version — just version number) -->
+      <div class="card-lg mb-6">
+        <div class="flex items-center gap-2 mb-3">
+          <InformationCircleIcon class="w-5 h-5 text-wisteria-500 dark:text-wisteria-400" />
+          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200">About</h2>
+        </div>
+        <div class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+          <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Version</span>
+          <span class="text-sm font-mono text-lavender-700 dark:text-lavender-400">v{{ appVersion }}</span>
         </div>
       </div>
     </template>
@@ -1154,6 +1248,9 @@ import {
   ShieldCheckIcon,
   SwatchIcon,
   BellIcon,
+  InformationCircleIcon,
+  ArrowTopRightOnSquareIcon,
+  XMarkIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -1165,8 +1262,28 @@ const { success, error: notificationError } = useNotification()
 const { isDark, toggle: toggleDarkMode } = useDarkMode()
 const { currentTheme, setTheme: selectTheme } = useTheme()
 
-const { family, familyMembers, currentUser, isParent } = storeToRefs(authStore)
+const { family, familyMembers, currentUser, isParent, appConfig } = storeToRefs(authStore)
 const { connections } = storeToRefs(calendarStore)
+
+// ---- Version & Update Check ----
+const appVersion = computed(() => appConfig.value?.version ?? '—')
+const updateAvailable = computed(() => appConfig.value?.update_available ?? null)
+const updateDismissed = ref(false)
+const githubRepo = 'gregqualls/kinhold'
+
+const checkDismissedUpdate = () => {
+  const update = updateAvailable.value
+  if (!update) return
+  const key = `kinhold:dismissed_update:${update.latest_version}`
+  updateDismissed.value = localStorage.getItem(key) === 'true'
+}
+
+const dismissUpdate = () => {
+  const update = updateAvailable.value
+  if (!update) return
+  localStorage.setItem(`kinhold:dismissed_update:${update.latest_version}`, 'true')
+  updateDismissed.value = true
+}
 
 // ---- Section expand/collapse state ----
 const expandedSections = ref(new Set())
@@ -1965,6 +2082,9 @@ onMounted(async () => {
 
   await calendarStore.fetchConnections()
   fetchMcpTokenStatus()
+
+  // Check if update was previously dismissed
+  checkDismissedUpdate()
 
   // Load email preferences
   if (currentUser.value?.email) {
