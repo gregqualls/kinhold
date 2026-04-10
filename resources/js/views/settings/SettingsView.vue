@@ -1045,7 +1045,7 @@
                   <span v-if="managedChildrenNames.length"> Your managed children ({{ managedChildrenNames.join(', ') }}) will also be deleted.</span>
                 </p>
               </div>
-              <BaseButton variant="danger" size="sm" @click="showDeleteAccountModal = true">
+              <BaseButton variant="danger" size="sm" @click="isDemoFamily ? showDemoDeletePopup = true : showDeleteAccountModal = true">
                 Delete Account
               </BaseButton>
             </div>
@@ -1059,7 +1059,7 @@
                   Permanently delete the <strong>{{ family?.name }}</strong> family, all members, and all shared data. This cannot be undone.
                 </p>
               </div>
-              <BaseButton variant="danger" size="sm" @click="showDeleteFamilyModal = true">
+              <BaseButton variant="danger" size="sm" @click="isDemoFamily ? showDemoDeletePopup = true : showDeleteFamilyModal = true">
                 Delete Family
               </BaseButton>
             </div>
@@ -1134,7 +1134,7 @@
           <p class="text-sm text-lavender-600 dark:text-lavender-400">
             Permanently delete your account and all your data. This cannot be undone.
           </p>
-          <BaseButton variant="danger" size="sm" @click="showDeleteAccountModal = true">
+          <BaseButton variant="danger" size="sm" @click="isDemoFamily ? showDemoDeletePopup = true : showDeleteAccountModal = true">
             Delete Account
           </BaseButton>
         </div>
@@ -1270,6 +1270,23 @@
       @updated="handleAvatarUpdated"
       @color-changed="authStore.fetchUser()"
     />
+
+    <!-- Demo Family Deletion Popup -->
+    <BaseModal
+      :show="showDemoDeletePopup"
+      title="Demo Family"
+      @close="showDemoDeletePopup = false"
+    >
+      <p class="text-sm text-lavender-600 dark:text-lavender-400">
+        Account and family deletion is disabled for the demo family.
+      </p>
+      <p class="text-sm text-lavender-600 dark:text-lavender-400 mt-2">
+        Create your own family to try all features!
+      </p>
+      <template #footer>
+        <BaseButton variant="primary" @click="showDemoDeletePopup = false">Got it</BaseButton>
+      </template>
+    </BaseModal>
 
     <!-- Delete Account Modal -->
     <BaseModal
@@ -2173,6 +2190,8 @@ const copyMcpSnippet = async (field, text) => {
 }
 
 // ---- Account & Family Deletion ----
+const isDemoFamily = computed(() => family.value?.slug === 'q32-demo-family')
+const showDemoDeletePopup = ref(false)
 const showDeleteAccountModal = ref(false)
 const showDeleteFamilyModal = ref(false)
 const deleteAccountPassword = ref('')

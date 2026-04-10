@@ -422,6 +422,7 @@ class AuthController extends Controller
             'family' => $user->family ? [
                 'id' => $user->family->id,
                 'name' => $user->family->name,
+                'slug' => $user->family->slug,
                 'invite_code' => $user->isParent() ? $user->family->invite_code : null,
                 'settings' => $user->family->settings ?? [],
                 'module_access' => $user->family->getAllModuleAccess(),
