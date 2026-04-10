@@ -15,12 +15,18 @@ if (savedToken) {
   api.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`
 }
 
-// Request interceptor to add CSRF token
+// Request interceptor to add CSRF token and fix Content-Type for file uploads
 api.interceptors.request.use((config) => {
   const token = document.querySelector('meta[name="csrf-token"]')?.content
   if (token) {
     config.headers['X-CSRF-TOKEN'] = token
   }
+
+  // Let axios set the correct Content-Type (with boundary) for FormData
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type']
+  }
+
   return config
 })
 

@@ -326,6 +326,12 @@ class VaultController extends Controller
     {
         $this->authorize('view', $entry);
 
+        // Block uploads for demo family
+        $family = $request->user()->currentFamily()->first();
+        if ($family && $family->slug === 'q32-demo-family') {
+            return response()->json(['message' => 'File uploads are disabled for the demo family.'], 403);
+        }
+
         $validated = $request->validate([
             'file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,gif,webp,doc,docx,xls,xlsx,txt,csv',
         ]);
@@ -389,7 +395,13 @@ class VaultController extends Controller
             return response()->json(['message' => 'Document not found.'], 404);
         }
 
-        $this->authorize('view', $entry);
+        $this->authorize('update', $entry);
+
+        // Block deletion for demo family
+        $family = $request->user()->currentFamily()->first();
+        if ($family && $family->slug === 'q32-demo-family') {
+            return response()->json(['message' => 'Document deletion is disabled for the demo family.'], 403);
+        }
 
         // Delete file from storage
         \Storage::disk($document->disk ?? 'private')->delete($document->path);

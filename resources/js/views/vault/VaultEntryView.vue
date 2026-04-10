@@ -86,7 +86,7 @@
       <div v-if="isParent || currentEntry.documents?.length > 0" class="bg-white dark:bg-prussian-800 rounded-xl border border-lavender-200 dark:border-prussian-700 shadow-card overflow-hidden mt-4">
         <div class="px-4 py-3 border-b border-lavender-100 dark:border-prussian-700 flex items-center justify-between">
           <h2 class="text-xs font-semibold text-lavender-500 dark:text-lavender-400 uppercase tracking-wider">Documents</h2>
-          <label v-if="isParent" class="flex items-center gap-1.5 text-xs font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500 cursor-pointer transition-colors">
+          <label v-if="isParent && !isDemoFamily" class="flex items-center gap-1.5 text-xs font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500 cursor-pointer transition-colors">
             <ArrowUpTrayIcon class="w-3.5 h-3.5" />
             Upload
             <input
@@ -99,20 +99,33 @@
           </label>
         </div>
         <div v-if="currentEntry.documents?.length > 0" class="divide-y divide-lavender-50 dark:divide-prussian-700">
-          <a
+          <div
             v-for="doc in currentEntry.documents"
             :key="doc.id"
-            :href="doc.download_url"
-            target="_blank"
-            class="flex items-center gap-3 px-4 py-3 hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
+            class="flex items-center gap-3 px-4 py-3"
           >
-            <DocumentTextIcon class="w-5 h-5 text-lavender-400 flex-shrink-0" />
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ doc.original_filename || doc.filename }}</p>
-              <p class="text-xs text-lavender-400">{{ formatFileSize(doc.size) }}</p>
-            </div>
-            <ArrowDownTrayIcon class="w-4 h-4 text-lavender-400" />
-          </a>
+            <button
+              type="button"
+              class="flex-1 flex items-center gap-3 min-w-0 hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors rounded -ml-2 pl-2 py-1 text-left"
+              @click="handleDocumentDownload(doc)"
+            >
+              <DocumentTextIcon class="w-5 h-5 text-lavender-400 flex-shrink-0" />
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ doc.original_filename || doc.filename }}</p>
+                <p class="text-xs text-lavender-400">{{ formatFileSize(doc.size) }}</p>
+              </div>
+              <ArrowDownTrayIcon class="w-4 h-4 text-lavender-400 flex-shrink-0" />
+            </button>
+            <button
+              v-if="isParent && !isDemoFamily"
+              type="button"
+              class="p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors flex-shrink-0"
+              title="Delete document"
+              @click="documentToDelete = doc; showDeleteDocConfirm = true"
+            >
+              <TrashIcon class="w-4 h-4 text-red-400 hover:text-red-600" />
+            </button>
+          </div>
         </div>
         <div v-else class="px-4 py-3">
           <p class="text-xs text-lavender-400">No documents attached yet.</p>
@@ -177,6 +190,16 @@
       confirm-text="Delete"
       @confirm="handleDeleteEntry"
       @cancel="showDeleteConfirm = false"
+    />
+
+    <!-- Delete Document Confirmation -->
+    <ConfirmDialog
+      :show="showDeleteDocConfirm"
+      title="Delete Document?"
+      :message="`&quot;${documentToDelete?.original_filename || 'this document'}&quot; will be permanently deleted.`"
+      confirm-text="Delete"
+      @confirm="handleDeleteDocument"
+      @cancel="showDeleteDocConfirm = false; documentToDelete = null"
     />
 
     <!-- Share Modal -->
@@ -326,6 +349,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
+import api from '@/services/api'
 import { useVaultStore } from '@/stores/vault'
 import { useAuthStore } from '@/stores/auth'
 import { useNotification } from '@/composables/useNotification'
@@ -357,7 +381,8 @@ const authStore = useAuthStore()
 const { success, error: notifyError } = useNotification()
 
 const { currentEntry, isLoading, categories } = storeToRefs(vaultStore)
-const { isParent, familyMembers } = storeToRefs(authStore)
+const { isParent, familyMembers, family } = storeToRefs(authStore)
+const isDemoFamily = computed(() => family.value?.slug === 'q32-demo-family')
 
 const entryId = route.params.id
 const showDeleteConfirm = ref(false)
@@ -368,6 +393,8 @@ const showShareModal = ref(false)
 const sharingEntry = ref(false)
 const uploading = ref(false)
 const fileInput = ref(null)
+const showDeleteDocConfirm = ref(false)
+const documentToDelete = ref(null)
 
 const shareForm = ref({ userId: null, level: 'view' })
 
@@ -505,6 +532,35 @@ const handleShareEntry = async () => {
     notifyError(result.error || 'Failed to share')
   }
   sharingEntry.value = false
+}
+
+const handleDeleteDocument = async () => {
+  const doc = documentToDelete.value
+  if (!doc) return
+  const result = await vaultStore.deleteDocument(doc.id)
+  if (result.success) {
+    success('Document deleted')
+  } else {
+    notifyError(result.error || 'Failed to delete document')
+  }
+  showDeleteDocConfirm.value = false
+  documentToDelete.value = null
+}
+
+const handleDocumentDownload = async (doc) => {
+  try {
+    const response = await api.get(doc.download_url, { responseType: 'blob' })
+    const url = window.URL.createObjectURL(response.data)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = doc.original_filename || 'download'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch {
+    notifyError('Failed to download document')
+  }
 }
 
 const handleFileUpload = async (event) => {
