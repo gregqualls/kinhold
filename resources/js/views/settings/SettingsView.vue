@@ -1025,6 +1025,47 @@
           </div>
         </div>
       </SettingsSection>
+
+      <!-- Section 8: Danger Zone -->
+      <SettingsSection
+        id="danger"
+        title="Danger Zone"
+        description="Irreversible actions — delete account or family"
+        :icon="ExclamationTriangleIcon"
+        :model-value="expandedSections.has('danger')"
+        @update:model-value="val => toggleSection('danger', val)"
+      >
+        <div class="space-y-4">
+          <div class="p-4 border border-red-200 dark:border-red-800 rounded-lg">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="font-medium text-prussian-500 dark:text-lavender-200">Delete My Account</p>
+                <p class="text-sm text-lavender-600 dark:text-lavender-400 mt-1">
+                  Permanently delete your account and all your personal data (tasks, vault entries, chat history).
+                  <span v-if="managedChildrenNames.length"> Your managed children ({{ managedChildrenNames.join(', ') }}) will also be deleted.</span>
+                </p>
+              </div>
+              <BaseButton variant="danger" size="sm" @click="showDeleteAccountModal = true">
+                Delete Account
+              </BaseButton>
+            </div>
+          </div>
+
+          <div class="p-4 border border-red-200 dark:border-red-800 rounded-lg">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="font-medium text-prussian-500 dark:text-lavender-200">Delete Entire Family</p>
+                <p class="text-sm text-lavender-600 dark:text-lavender-400 mt-1">
+                  Permanently delete the <strong>{{ family?.name }}</strong> family, all members, and all shared data. This cannot be undone.
+                </p>
+              </div>
+              <BaseButton variant="danger" size="sm" @click="showDeleteFamilyModal = true">
+                Delete Family
+              </BaseButton>
+            </div>
+          </div>
+        </div>
+      </SettingsSection>
     </template>
 
     <!-- ============================================ -->
@@ -1080,6 +1121,22 @@
         <div class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
           <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Version</span>
           <span class="text-sm font-mono text-lavender-700 dark:text-lavender-400">v{{ appVersion }}</span>
+        </div>
+      </div>
+
+      <!-- Danger Zone (child version — account deletion only, not managed accounts) -->
+      <div v-if="!currentUser?.is_managed" class="card-lg mb-6 border border-red-200 dark:border-red-800">
+        <div class="flex items-center gap-2 mb-3">
+          <ExclamationTriangleIcon class="w-5 h-5 text-red-500 dark:text-red-400" />
+          <h2 class="text-lg font-semibold font-heading text-red-600 dark:text-red-400">Danger Zone</h2>
+        </div>
+        <div class="flex items-start justify-between gap-4">
+          <p class="text-sm text-lavender-600 dark:text-lavender-400">
+            Permanently delete your account and all your data. This cannot be undone.
+          </p>
+          <BaseButton variant="danger" size="sm" @click="showDeleteAccountModal = true">
+            Delete Account
+          </BaseButton>
         </div>
       </div>
     </template>
@@ -1213,6 +1270,94 @@
       @updated="handleAvatarUpdated"
       @color-changed="authStore.fetchUser()"
     />
+
+    <!-- Delete Account Modal -->
+    <BaseModal
+      :show="showDeleteAccountModal"
+      title="Delete Your Account"
+      @close="closeDeleteAccountModal"
+    >
+      <div class="space-y-4">
+        <div class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p class="text-sm text-red-800 dark:text-red-200 font-medium">This action is permanent and cannot be undone.</p>
+          <ul class="text-sm text-red-700 dark:text-red-300 mt-2 space-y-1 list-disc list-inside">
+            <li>All your tasks, vault entries, and chat history will be deleted</li>
+            <li>Your calendar connections will be revoked</li>
+            <li>Your uploaded documents will be permanently removed</li>
+            <li v-if="managedChildrenNames.length">
+              Your managed children ({{ managedChildrenNames.join(', ') }}) will also be deleted
+            </li>
+          </ul>
+        </div>
+
+        <BaseInput
+          v-model="deleteAccountPassword"
+          label="Enter your password to confirm"
+          type="password"
+          placeholder="Current password"
+          :error="deleteAccountError"
+        />
+      </div>
+
+      <div class="flex gap-2 justify-end pt-4">
+        <BaseButton variant="ghost" @click="closeDeleteAccountModal">Cancel</BaseButton>
+        <BaseButton
+          variant="danger"
+          :loading="deletingAccount"
+          :disabled="!deleteAccountPassword"
+          @click="handleDeleteAccount"
+        >
+          Permanently Delete Account
+        </BaseButton>
+      </div>
+    </BaseModal>
+
+    <!-- Delete Family Modal -->
+    <BaseModal
+      :show="showDeleteFamilyModal"
+      title="Delete Entire Family"
+      @close="closeDeleteFamilyModal"
+    >
+      <div class="space-y-4">
+        <div class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p class="text-sm text-red-800 dark:text-red-200 font-medium">
+            This will permanently delete the "{{ family?.name }}" family and ALL data.
+          </p>
+          <ul class="text-sm text-red-700 dark:text-red-300 mt-2 space-y-1 list-disc list-inside">
+            <li>All {{ familyMembers?.length || 0 }} family members will be removed</li>
+            <li>All tasks, vault entries, calendar events, and chat history</li>
+            <li>All points, rewards, badges, and achievements</li>
+            <li>All uploaded documents and files</li>
+          </ul>
+        </div>
+
+        <BaseInput
+          v-model="deleteFamilyPassword"
+          label="Enter your password"
+          type="password"
+          placeholder="Current password"
+        />
+
+        <BaseInput
+          v-model="deleteFamilyConfirmation"
+          :label="`Type &quot;${family?.name}&quot; to confirm`"
+          :placeholder="family?.name"
+          :error="deleteFamilyError"
+        />
+      </div>
+
+      <div class="flex gap-2 justify-end pt-4">
+        <BaseButton variant="ghost" @click="closeDeleteFamilyModal">Cancel</BaseButton>
+        <BaseButton
+          variant="danger"
+          :loading="deletingFamily"
+          :disabled="!deleteFamilyPassword || deleteFamilyConfirmation !== family?.name"
+          @click="handleDeleteFamily"
+        >
+          Permanently Delete Family
+        </BaseButton>
+      </div>
+    </BaseModal>
   </div>
 </template>
 
@@ -1251,6 +1396,7 @@ import {
   InformationCircleIcon,
   ArrowTopRightOnSquareIcon,
   XMarkIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -2024,6 +2170,72 @@ const copyMcpSnippet = async (field, text) => {
   } catch {
     notificationError('Failed to copy to clipboard')
   }
+}
+
+// ---- Account & Family Deletion ----
+const showDeleteAccountModal = ref(false)
+const showDeleteFamilyModal = ref(false)
+const deleteAccountPassword = ref('')
+const deleteAccountError = ref('')
+const deletingAccount = ref(false)
+const deleteFamilyPassword = ref('')
+const deleteFamilyConfirmation = ref('')
+const deleteFamilyError = ref('')
+const deletingFamily = ref(false)
+
+const managedChildrenNames = computed(() => {
+  if (!familyMembers.value || !currentUser.value) return []
+  return familyMembers.value
+    .filter(m => m.is_managed && m.managed_by === currentUser.value.id)
+    .map(m => m.name)
+})
+
+const closeDeleteAccountModal = () => {
+  showDeleteAccountModal.value = false
+  deleteAccountPassword.value = ''
+  deleteAccountError.value = ''
+}
+
+const closeDeleteFamilyModal = () => {
+  showDeleteFamilyModal.value = false
+  deleteFamilyPassword.value = ''
+  deleteFamilyConfirmation.value = ''
+  deleteFamilyError.value = ''
+}
+
+const handleDeleteAccount = async () => {
+  deleteAccountError.value = ''
+  deletingAccount.value = true
+  try {
+    await api.delete('/settings/account', { data: { password: deleteAccountPassword.value } })
+    authStore.logout()
+    router.push('/login')
+  } catch (err) {
+    const msg = err.response?.data?.message || 'Failed to delete account'
+    deleteAccountError.value = msg
+    notificationError(msg)
+  }
+  deletingAccount.value = false
+}
+
+const handleDeleteFamily = async () => {
+  deleteFamilyError.value = ''
+  deletingFamily.value = true
+  try {
+    await api.delete('/family', {
+      data: {
+        password: deleteFamilyPassword.value,
+        confirmation: deleteFamilyConfirmation.value,
+      },
+    })
+    authStore.logout()
+    router.push('/login')
+  } catch (err) {
+    const msg = err.response?.data?.message || 'Failed to delete family'
+    deleteFamilyError.value = msg
+    notificationError(msg)
+  }
+  deletingFamily.value = false
 }
 
 // ---- Init ----

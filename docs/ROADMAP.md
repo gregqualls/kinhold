@@ -62,14 +62,15 @@ These features are live and working:
 
 **Goal:** Foundational work — GDPR compliance, landing page separation, bug fixes, and quality-of-life improvements before the next feature push.
 
-| Issue | Title | Priority |
-|-------|-------|----------|
-| [#96](https://github.com/gregqualls/kinhold/issues/96) | GDPR compliance: account deletion and data export | Critical |
-| [#134](https://github.com/gregqualls/kinhold/issues/134) | Separate landing page from SPA | High |
-| [#135](https://github.com/gregqualls/kinhold/issues/135) | Refactor /check command: shell script + haiku reporter | Medium |
-| [#121](https://github.com/gregqualls/kinhold/issues/121) | Bug: file uploads to the vault | High |
-| [#104](https://github.com/gregqualls/kinhold/issues/104) | Brand colors in transactional email templates | Low |
-| [#99](https://github.com/gregqualls/kinhold/issues/99) | Show Kinhold icon in Claude Desktop MCP connector | Low |
+| Issue | Title | Priority | Status |
+|-------|-------|----------|--------|
+| [#96](https://github.com/gregqualls/kinhold/issues/96) | GDPR compliance: account deletion and data export | Critical | Account deletion done, data export pending |
+| [#134](https://github.com/gregqualls/kinhold/issues/134) | Separate landing page from SPA | High | |
+| [#121](https://github.com/gregqualls/kinhold/issues/121) | Bug: file uploads to the vault | High | DONE |
+| [#137](https://github.com/gregqualls/kinhold/issues/137) | AI assistant usage limits for hosted version | Medium | |
+| [#138](https://github.com/gregqualls/kinhold/issues/138) | License enforcement: single-family limit for self-hosted | Medium | |
+| [#104](https://github.com/gregqualls/kinhold/issues/104) | Brand colors in transactional email templates | Low | |
+| [#99](https://github.com/gregqualls/kinhold/issues/99) | Show Kinhold icon in Claude Desktop MCP connector | Low | |
 
 ---
 

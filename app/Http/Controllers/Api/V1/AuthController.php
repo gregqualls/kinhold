@@ -58,8 +58,11 @@ class AuthController extends Controller
         // Send welcome email
         $user->notify(new WelcomeNotification($family, $isNewFamily));
 
-        // Send email verification (new users with email only, not managed accounts)
-        if ($user->email) {
+        // Self-hosted: auto-verify since there's likely no mail server
+        if (env('SELF_HOSTED', false)) {
+            $user->update(['email_verified_at' => now()]);
+        } elseif ($user->email) {
+            // Send email verification (new users with email only, not managed accounts)
             $user->sendEmailVerificationNotification();
         }
 
@@ -139,6 +142,10 @@ class AuthController extends Controller
      */
     public function resendVerification(Request $request): JsonResponse
     {
+        if (env('SELF_HOSTED', false)) {
+            return response()->json(['message' => 'Email verification is not required for self-hosted instances'], 200);
+        }
+
         if ($request->user()->hasVerifiedEmail()) {
             return response()->json(['message' => 'Email already verified'], 200);
         }

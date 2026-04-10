@@ -132,6 +132,7 @@ const verificationDismissed = ref(false)
 const resendingVerification = ref(false)
 const showVerificationBanner = computed(() => {
   if (isAuthPage.value || verificationDismissed.value) return false
+  if (authStore.appConfig?.self_hosted) return false
   const u = currentUser.value
   return u && u.email && !u.email_verified_at
 })

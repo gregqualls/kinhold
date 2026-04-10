@@ -177,11 +177,7 @@ export const useVaultStore = defineStore('vault', () => {
       const formData = new FormData()
       formData.append('file', file)
 
-      const response = await api.post(`/vault/entries/${entryId}/documents`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      const response = await api.post(`/vault/entries/${entryId}/documents`, formData)
 
       await fetchEntry(entryId)
       return { success: true, document: response.data.document }

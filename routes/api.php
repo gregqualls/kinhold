@@ -85,6 +85,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/members', [FamilyController::class, 'addMember']);
             Route::put('/members/{member}', [FamilyController::class, 'updateMember']);
             Route::delete('/members/{member}', [FamilyController::class, 'removeMember']);
+            Route::delete('/', [FamilyController::class, 'deleteFamily'])->middleware('throttle:5,1');
         });
 
         // Tags (module: tasks)
@@ -198,6 +199,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/', [SettingsController::class, 'update']);
             Route::get('/email-preferences', [SettingsController::class, 'emailPreferences']);
             Route::put('/email-preferences', [SettingsController::class, 'updateEmailPreferences']);
+            Route::delete('/account', [SettingsController::class, 'deleteAccount'])->middleware('throttle:5,1');
         });
 
         // MCP Token

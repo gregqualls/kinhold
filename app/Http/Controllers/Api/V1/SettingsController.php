@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Family;
 use App\Models\User;
+use App\Services\AccountDeletionService;
 use App\Services\AgentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class SettingsController extends Controller
@@ -276,5 +278,34 @@ class SettingsController extends Controller
             'email_preferences' => $user->email_preferences,
             'message' => 'Email preferences updated successfully.',
         ], 200);
+    }
+
+    /**
+     * Delete the authenticated user's account.
+     */
+    public function deleteAccount(Request $request, AccountDeletionService $service): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user->password) {
+            return response()->json(['message' => 'Password-based deletion is not available for this account type. Contact a parent to remove your account.'], 403);
+        }
+
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        if (! Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Incorrect password'], 403);
+        }
+
+        $blocked = $service->canDeleteSelf($user);
+        if ($blocked) {
+            return response()->json(['message' => $blocked], 403);
+        }
+
+        $service->deleteUser($user);
+
+        return response()->json(['message' => 'Account deleted successfully'], 200);
     }
 }

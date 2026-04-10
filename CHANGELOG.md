@@ -2,6 +2,39 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-10 — Session 28: GDPR, Vault Fix, Self-Hosted Polish
+
+### What Was Done
+- **GDPR account & family deletion (#96)** — `AccountDeletionService` handles full cleanup: file deletion, token revocation, session cleanup, managed children cascade, orphaned family cleanup. `FamilyDeletionService` for nuclear family deletion. `DELETE /api/v1/settings/account` (password-confirmed) and `DELETE /api/v1/family` (password + type family name). Enhanced `removeMember` to use the same cleanup service. Demo family guard on all deletion endpoints. Danger Zone UI in Settings for both parents and children with confirmation modals.
+- **Vault file uploads bug (#121)** — Fixed `Content-Type` header conflict in multipart form data upload. Removed explicit header override so axios auto-detects FormData and sets correct boundary.
+- **Self-hosted email verification** — Auto-verify users on registration when `SELF_HOSTED=true`, hide verification banner, skip resend endpoint. Self-hosted users no longer see a nag banner they can't resolve.
+
+### Security Hardening
+- Rate limiting (5 req/min) on account and family deletion endpoints
+- Passwordless account guard — Google-only and managed accounts rejected with clear message
+- Demo family protected from all deletion operations (account, member, family)
+- Last-parent guard prevents orphaning non-managed family members
+
+### Housekeeping
+- Closed #124 (demo data refresh — already fixed by `app:refresh-demo` daily cron)
+- Closed #126 (demo email verification — already fixed by seeder)
+- Moved #143 (demo CTA banner) to backlog
+
+### Files Created
+- `app/Services/AccountDeletionService.php`
+- `app/Services/FamilyDeletionService.php`
+
+### Files Modified
+- `app/Http/Controllers/Api/V1/AuthController.php` — self-hosted email verification skip
+- `app/Http/Controllers/Api/V1/FamilyController.php` — enhanced removeMember, deleteFamily endpoint
+- `app/Http/Controllers/Api/V1/SettingsController.php` — deleteAccount endpoint
+- `resources/js/App.vue` — hide verification banner on self-hosted
+- `resources/js/stores/vault.js` — fix multipart upload Content-Type
+- `resources/js/views/settings/SettingsView.vue` — Danger Zone section with deletion modals
+- `routes/api.php` — new DELETE routes with rate limiting
+
+---
+
 ## 2026-04-09 — Session 27: Launch Day 2 — Versioning, Docker Polish
 
 ### What Was Done
