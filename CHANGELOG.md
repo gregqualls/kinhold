@@ -2,6 +2,55 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-10 — Session 28: GDPR, Vault Fix, Self-Hosted Polish
+
+### What Was Done
+- **GDPR account & family deletion (#96)** — `AccountDeletionService` handles full cleanup: file deletion, token revocation, session cleanup, managed children cascade, orphaned family cleanup. `FamilyDeletionService` for nuclear family deletion. `DELETE /api/v1/settings/account` (password-confirmed) and `DELETE /api/v1/family` (password + type family name). Enhanced `removeMember` to use the same cleanup service. Demo family guard on all deletion endpoints. Danger Zone UI in Settings for both parents and children with confirmation modals.
+- **Vault file uploads bug (#121)** — Fixed `Content-Type` header conflict in multipart form data upload. Removed explicit header override so axios auto-detects FormData and sets correct boundary.
+- **Self-hosted email verification** — Auto-verify users on registration when `SELF_HOSTED=true`, hide verification banner, skip resend endpoint. Self-hosted users no longer see a nag banner they can't resolve.
+
+### Security Hardening
+- Rate limiting (5 req/min) on account and family deletion endpoints
+- Passwordless account guard — Google-only and managed accounts rejected with clear message
+- Demo family protected from all deletion operations (account, member, family)
+- Last-parent guard prevents orphaning non-managed family members
+
+### Housekeeping
+- Closed #124 (demo data refresh — already fixed by `app:refresh-demo` daily cron)
+- Closed #126 (demo email verification — already fixed by seeder)
+- Moved #143 (demo CTA banner) to backlog
+
+### Files Created
+- `app/Services/AccountDeletionService.php`
+- `app/Services/FamilyDeletionService.php`
+
+### Vault & Document Fixes
+- **Document downloads** — Fixed auth failure when opening vault documents in a new tab. Replaced `<a href>` links with axios blob download (bearer token auth). No more Google OAuth redirect loop on document download.
+- **Document delete UI** — Added delete button and confirmation modal to vault document list. Uses `DELETE /api/v1/vault/documents/{id}` endpoint with proper update authorization.
+- **Demo family vault guards** — Upload button hidden and delete button hidden for demo family members. Uploads/deletes return 403 for demo family to prevent abuse and storage bloat.
+- **Config fix** — Renamed `config/filesystem.php` → `config/filesystems.php` (Laravel convention). Private disk definition now loads correctly, fixing vault file storage.
+- **Review blockers fixed** — `deleteDocument` now requires `update` policy (not `view`). `cleanupOrphanedFamily` uses `Family::find()->delete()` (Eloquent, fires model events) instead of raw `DB::table()`. OAuth-only account holders get actionable error message directing them to set a password first.
+
+### Files Created
+- `app/Services/AccountDeletionService.php`
+- `app/Services/FamilyDeletionService.php`
+
+### Files Modified
+- `app/Http/Controllers/Api/V1/AuthController.php` — self-hosted email verification skip, expose `slug` in `/user` family response
+- `app/Http/Controllers/Api/V1/FamilyController.php` — enhanced removeMember, deleteFamily endpoint
+- `app/Http/Controllers/Api/V1/SettingsController.php` — deleteAccount endpoint
+- `app/Http/Controllers/Api/V1/VaultController.php` — demo guard on upload, fix deleteDocument auth
+- `app/Http/Resources/DocumentResource.php` — relative download URL (no double /api/v1 prefix)
+- `config/filesystems.php` — added private disk definition (renamed from filesystem.php)
+- `resources/js/App.vue` — hide verification banner on self-hosted
+- `resources/js/services/api.js` — interceptor to strip Content-Type for FormData (fixes multipart boundary)
+- `resources/js/stores/vault.js` — remove explicit Content-Type override
+- `resources/js/views/settings/SettingsView.vue` — Danger Zone section with deletion modals, demo popup
+- `resources/js/views/vault/VaultEntryView.vue` — blob download, delete button, demo family guards
+- `routes/api.php` — new DELETE routes with rate limiting
+
+---
+
 ## 2026-04-09 — Session 27: Launch Day 2 — Versioning, Docker Polish
 
 ### What Was Done

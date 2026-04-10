@@ -9,6 +9,8 @@ use App\Models\Family;
 use App\Models\User;
 use App\Notifications\FamilyInviteNotification;
 use App\Notifications\WelcomeNotification;
+use App\Services\AccountDeletionService;
+use App\Services\FamilyDeletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -214,16 +216,61 @@ class FamilyController extends Controller
             return response()->json(['message' => 'Member not found in your family'], 404);
         }
 
-        // Delete managed accounts entirely, unlink non-managed ones
+        $deletionService = app(AccountDeletionService::class);
+
+        // Demo family guard
+        if ($deletionService->isDemoFamily($member)) {
+            return response()->json(['message' => 'Member removal is disabled for the demo family.'], 403);
+        }
+
+        // Delete managed accounts entirely (with full cleanup), unlink non-managed ones
         if ($member->is_managed) {
-            $member->tokens()->delete();
-            $member->delete();
+            $deletionService->deleteUser($member);
         } else {
+            $deletionService->revokeCalendarConnections($member);
+            $deletionService->clearTokensAndSessions($member);
             $member->update(['family_id' => null, 'family_role' => 'child']);
         }
 
         return response()->json([
             'message' => 'Member removed from family',
         ], 200);
+    }
+
+    /**
+     * Delete the entire family (parent only).
+     */
+    public function deleteFamily(Request $request, FamilyDeletionService $service): JsonResponse
+    {
+        $user = $request->user();
+        $family = $user->currentFamily()->firstOrFail();
+
+        $this->authorize('update', $family);
+
+        if (! $user->password) {
+            return response()->json(['message' => 'Password-based deletion is not available for accounts without a password. Please set a password in your profile first.'], 403);
+        }
+
+        $request->validate([
+            'password' => 'required|string',
+            'confirmation' => 'required|string',
+        ]);
+
+        if (! Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Incorrect password'], 403);
+        }
+
+        if ($request->confirmation !== $family->name) {
+            return response()->json(['message' => 'Family name does not match'], 422);
+        }
+
+        $blocked = $service->canDeleteFamily($family);
+        if ($blocked) {
+            return response()->json(['message' => $blocked], 403);
+        }
+
+        $service->deleteFamily($family);
+
+        return response()->json(['message' => 'Family deleted successfully'], 200);
     }
 }

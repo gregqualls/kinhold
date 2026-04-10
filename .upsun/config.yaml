@@ -58,6 +58,7 @@ applications:
         mkdir -p storage/framework/sessions
         mkdir -p storage/framework/cache
         mkdir -p storage/framework/views
+        mkdir -p storage/app/private
         php artisan migrate --force
         php artisan storage:link || true
         php artisan db:seed --force
