@@ -99,20 +99,33 @@
           </label>
         </div>
         <div v-if="currentEntry.documents?.length > 0" class="divide-y divide-lavender-50 dark:divide-prussian-700">
-          <button
+          <div
             v-for="doc in currentEntry.documents"
             :key="doc.id"
-            type="button"
-            class="w-full flex items-center gap-3 px-4 py-3 hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors text-left"
-            @click="handleDocumentDownload(doc)"
+            class="flex items-center gap-3 px-4 py-3"
           >
-            <DocumentTextIcon class="w-5 h-5 text-lavender-400 flex-shrink-0" />
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ doc.original_filename || doc.filename }}</p>
-              <p class="text-xs text-lavender-400">{{ formatFileSize(doc.size) }}</p>
-            </div>
-            <ArrowDownTrayIcon class="w-4 h-4 text-lavender-400" />
-          </button>
+            <button
+              type="button"
+              class="flex-1 flex items-center gap-3 min-w-0 hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors rounded -ml-2 pl-2 py-1 text-left"
+              @click="handleDocumentDownload(doc)"
+            >
+              <DocumentTextIcon class="w-5 h-5 text-lavender-400 flex-shrink-0" />
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ doc.original_filename || doc.filename }}</p>
+                <p class="text-xs text-lavender-400">{{ formatFileSize(doc.size) }}</p>
+              </div>
+              <ArrowDownTrayIcon class="w-4 h-4 text-lavender-400 flex-shrink-0" />
+            </button>
+            <button
+              v-if="isParent"
+              type="button"
+              class="p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors flex-shrink-0"
+              title="Delete document"
+              @click="handleDeleteDocument(doc)"
+            >
+              <TrashIcon class="w-4 h-4 text-red-400 hover:text-red-600" />
+            </button>
+          </div>
         </div>
         <div v-else class="px-4 py-3">
           <p class="text-xs text-lavender-400">No documents attached yet.</p>
@@ -506,6 +519,16 @@ const handleShareEntry = async () => {
     notifyError(result.error || 'Failed to share')
   }
   sharingEntry.value = false
+}
+
+const handleDeleteDocument = async (doc) => {
+  if (!confirm(`Delete "${doc.original_filename || 'this document'}"?`)) return
+  const result = await vaultStore.deleteDocument(doc.id)
+  if (result.success) {
+    success('Document deleted')
+  } else {
+    notifyError(result.error || 'Failed to delete document')
+  }
 }
 
 const handleDocumentDownload = async (doc) => {
