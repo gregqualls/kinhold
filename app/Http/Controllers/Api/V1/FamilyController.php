@@ -248,7 +248,7 @@ class FamilyController extends Controller
         $this->authorize('update', $family);
 
         if (! $user->password) {
-            return response()->json(['message' => 'Password-based deletion is not available for this account type.'], 403);
+            return response()->json(['message' => 'Password-based deletion is not available for accounts without a password. Please set a password in your profile first.'], 403);
         }
 
         $request->validate([

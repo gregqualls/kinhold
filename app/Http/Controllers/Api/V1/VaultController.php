@@ -395,7 +395,7 @@ class VaultController extends Controller
             return response()->json(['message' => 'Document not found.'], 404);
         }
 
-        $this->authorize('view', $entry);
+        $this->authorize('update', $entry);
 
         // Block deletion for demo family
         $family = $request->user()->currentFamily()->first();

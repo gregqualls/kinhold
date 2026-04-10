@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Family;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -114,9 +115,8 @@ class AccountDeletionService
         $remainingMembers = User::where('family_id', $familyId)->count();
 
         if ($remainingMembers === 0) {
-            // Family cascade deletes: tasks, vault entries, categories,
-            // chat messages, point transactions, rewards, badges, etc.
-            DB::table('families')->where('id', $familyId)->delete();
+            // Eloquent delete fires model events and cascades properly
+            Family::where('id', $familyId)->first()?->delete();
         }
     }
 }

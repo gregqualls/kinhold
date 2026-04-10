@@ -288,7 +288,7 @@ class SettingsController extends Controller
         $user = $request->user();
 
         if (! $user->password) {
-            return response()->json(['message' => 'Password-based deletion is not available for this account type. Contact a parent to remove your account.'], 403);
+            return response()->json(['message' => 'Password-based deletion is not available for accounts without a password. Please set a password in your profile first, or ask a parent to remove your account.'], 403);
         }
 
         $request->validate([
