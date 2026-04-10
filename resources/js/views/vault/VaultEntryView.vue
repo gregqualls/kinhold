@@ -99,12 +99,12 @@
           </label>
         </div>
         <div v-if="currentEntry.documents?.length > 0" class="divide-y divide-lavender-50 dark:divide-prussian-700">
-          <a
+          <button
             v-for="doc in currentEntry.documents"
             :key="doc.id"
-            :href="doc.download_url"
-            target="_blank"
-            class="flex items-center gap-3 px-4 py-3 hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
+            type="button"
+            class="w-full flex items-center gap-3 px-4 py-3 hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors text-left"
+            @click="handleDocumentDownload(doc)"
           >
             <DocumentTextIcon class="w-5 h-5 text-lavender-400 flex-shrink-0" />
             <div class="flex-1 min-w-0">
@@ -112,7 +112,7 @@
               <p class="text-xs text-lavender-400">{{ formatFileSize(doc.size) }}</p>
             </div>
             <ArrowDownTrayIcon class="w-4 h-4 text-lavender-400" />
-          </a>
+          </button>
         </div>
         <div v-else class="px-4 py-3">
           <p class="text-xs text-lavender-400">No documents attached yet.</p>
@@ -326,6 +326,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
+import api from '@/services/api'
 import { useVaultStore } from '@/stores/vault'
 import { useAuthStore } from '@/stores/auth'
 import { useNotification } from '@/composables/useNotification'
@@ -505,6 +506,22 @@ const handleShareEntry = async () => {
     notifyError(result.error || 'Failed to share')
   }
   sharingEntry.value = false
+}
+
+const handleDocumentDownload = async (doc) => {
+  try {
+    const response = await api.get(doc.download_url, { responseType: 'blob' })
+    const url = window.URL.createObjectURL(response.data)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = doc.original_filename || 'download'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch {
+    notifyError('Failed to download document')
+  }
 }
 
 const handleFileUpload = async (event) => {
