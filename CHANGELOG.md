@@ -24,13 +24,29 @@
 - `app/Services/AccountDeletionService.php`
 - `app/Services/FamilyDeletionService.php`
 
+### Vault & Document Fixes
+- **Document downloads** — Fixed auth failure when opening vault documents in a new tab. Replaced `<a href>` links with axios blob download (bearer token auth). No more Google OAuth redirect loop on document download.
+- **Document delete UI** — Added delete button and confirmation modal to vault document list. Uses `DELETE /api/v1/vault/documents/{id}` endpoint with proper update authorization.
+- **Demo family vault guards** — Upload button hidden and delete button hidden for demo family members. Uploads/deletes return 403 for demo family to prevent abuse and storage bloat.
+- **Config fix** — Renamed `config/filesystem.php` → `config/filesystems.php` (Laravel convention). Private disk definition now loads correctly, fixing vault file storage.
+- **Review blockers fixed** — `deleteDocument` now requires `update` policy (not `view`). `cleanupOrphanedFamily` uses `Family::find()->delete()` (Eloquent, fires model events) instead of raw `DB::table()`. OAuth-only account holders get actionable error message directing them to set a password first.
+
+### Files Created
+- `app/Services/AccountDeletionService.php`
+- `app/Services/FamilyDeletionService.php`
+
 ### Files Modified
-- `app/Http/Controllers/Api/V1/AuthController.php` — self-hosted email verification skip
+- `app/Http/Controllers/Api/V1/AuthController.php` — self-hosted email verification skip, expose `slug` in `/user` family response
 - `app/Http/Controllers/Api/V1/FamilyController.php` — enhanced removeMember, deleteFamily endpoint
 - `app/Http/Controllers/Api/V1/SettingsController.php` — deleteAccount endpoint
+- `app/Http/Controllers/Api/V1/VaultController.php` — demo guard on upload, fix deleteDocument auth
+- `app/Http/Resources/DocumentResource.php` — relative download URL (no double /api/v1 prefix)
+- `config/filesystems.php` — added private disk definition (renamed from filesystem.php)
 - `resources/js/App.vue` — hide verification banner on self-hosted
-- `resources/js/stores/vault.js` — fix multipart upload Content-Type
-- `resources/js/views/settings/SettingsView.vue` — Danger Zone section with deletion modals
+- `resources/js/services/api.js` — interceptor to strip Content-Type for FormData (fixes multipart boundary)
+- `resources/js/stores/vault.js` — remove explicit Content-Type override
+- `resources/js/views/settings/SettingsView.vue` — Danger Zone section with deletion modals, demo popup
+- `resources/js/views/vault/VaultEntryView.vue` — blob download, delete button, demo family guards
 - `routes/api.php` — new DELETE routes with rate limiting
 
 ---
