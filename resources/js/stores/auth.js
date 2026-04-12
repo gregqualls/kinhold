@@ -70,7 +70,7 @@ export const useAuthStore = defineStore('auth', () => {
    * Returns a map of { moduleName: boolean } for the current user.
    */
   const enabledModules = computed(() => {
-    const modules = ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges']
+    const modules = ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges', 'food']
     const result = {}
     for (const mod of modules) {
       result[mod] = userCanAccessModule(mod)

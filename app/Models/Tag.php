@@ -28,4 +28,9 @@ class Tag extends Model
     {
         return $this->belongsToMany(Task::class, 'task_tag')->withTimestamps();
     }
+
+    public function recipes(): BelongsToMany
+    {
+        return $this->belongsToMany(Recipe::class, 'recipe_tag')->using(RecipeTag::class)->withTimestamps();
+    }
 }

@@ -281,14 +281,15 @@ chmod +x setup.sh && ./setup.sh
 - VaultEncryptionService uses a simple encrypt/decrypt — verify round-trip works on first real entry
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 
-**What's next (Phase A: Make It Solid):**
-- GDPR compliance: account deletion + data export (Issue #96) — critical before any marketing push
-- Separate landing page from SPA (Issue #134) — static site at kinhold.app, app at app.kinhold.app
-- Fix vault file uploads bug (Issue #121)
-- Versioning, GitHub Releases, self-hosted update notifications (Issue #117)
-- AI assistant usage limits for hosted version (Issue #137) — design needed before billing work
+**What's next (Phase F: Food & Meal Planning — in progress):**
+- Issue #148 (Step 1) ✅ Recipe backend + module gating — DONE (this session)
+- Issue #149+ (Steps 2–8) — Recipe import, frontend UI, meal planning, shopping lists, MCP tools, AI integrations
+- See `docs/FOOD-FEATURES-SPEC.md` and `docs/FOOD-IMPLEMENTATION-PLAN.md` for the 8-step plan
+
+**Remaining Phase A work:**
+- Separate landing page from SPA (Issue #134)
+- AI assistant usage limits for hosted version (Issue #137)
 - License enforcement: single-family limit for self-hosted (Issue #138)
-- Audit all controllers for family_id scoping before Corey's family signs up
 - See `docs/ROADMAP.md` for full phased approach
 
 ## Deployment Strategy (Upsun)
@@ -323,7 +324,7 @@ These are Greg's ideas. Don't build them unless Greg specifically asks. Capture 
 - ~~Gamification: Points on tasks, badges/achievements, leaderboard~~ — IMPLEMENTED (Session 5)
 - Real-money rewards for kids ($ values on tasks, track earnings)
 - Family budget and expense tracking with allowances
-- Meal planning, recipe storage, grocery lists
+- ~~Meal planning, recipe storage, grocery lists~~ — IN PROGRESS (Phase F, Step 1 done)
 - Family chat/messaging with polls
 - Activity feed and notifications (push + email)
 - Mobile app (React Native or PWA)
