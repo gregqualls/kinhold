@@ -5,6 +5,7 @@ namespace App\Http\Requests\Recipe;
 use App\Models\Recipe;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 
 class StoreRecipeRequest extends FormRequest
 {
@@ -24,6 +25,7 @@ class StoreRecipeRequest extends FormRequest
             'total_time_minutes' => ['nullable', 'integer', 'min:0'],
             'source_url' => ['nullable', 'url:http,https', 'max:2048'],
             'source_type' => ['nullable', 'in:manual,url,photo,social_media'],
+            'image_path' => ['nullable', 'string', 'max:512'],
             'instructions' => ['nullable', 'array'],
             'instructions.*.step' => ['required_with:instructions', 'integer'],
             'instructions.*.text' => ['required_with:instructions', 'string'],
@@ -37,7 +39,7 @@ class StoreRecipeRequest extends FormRequest
             'ingredients.*.group_name' => ['nullable', 'string', 'max:100'],
             'ingredients.*.is_optional' => ['nullable', 'boolean'],
             'tag_ids' => ['nullable', 'array'],
-            'tag_ids.*' => ['exists:tags,id'],
+            'tag_ids.*' => [Rule::exists('tags', 'id')->where('family_id', $this->user()->family_id)],
         ];
     }
 }

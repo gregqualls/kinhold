@@ -16,6 +16,8 @@ use App\Services\RecipeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class RecipeController extends Controller
 {
@@ -194,5 +196,22 @@ class RecipeController extends Controller
         return response()->json([
             'message' => 'Social media import coming soon',
         ], 501);
+    }
+
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $this->authorize('create', Recipe::class);
+
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpeg,jpg,png,webp,gif', 'max:10240'],
+        ]);
+
+        $file = $request->file('image');
+        $filename = Str::uuid()->toString().'.'.$file->guessExtension();
+        Storage::disk('public')->putFileAs('recipes', $file, $filename);
+
+        return response()->json([
+            'image_path' => 'recipes/'.$filename,
+        ], 201);
     }
 }

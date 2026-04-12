@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -9,6 +10,9 @@ class RecipeResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        /** @var Recipe $recipe */
+        $recipe = $this->resource;
+
         return [
             'id' => $this->id,
             'title' => $this->title,
@@ -23,8 +27,12 @@ class RecipeResource extends JsonResource
             'instructions' => $this->instructions,
             'notes' => $this->notes,
             'is_favorite' => $this->is_favorite,
-            'family_average_rating' => round((float) $this->familyAverageRating(), 1),
-            'user_rating' => $this->userRating($request->user())?->score,
+            'family_average_rating' => $recipe->relationLoaded('ratings')
+                ? round((float) $recipe->ratings->avg('score'), 1)
+                : round((float) $recipe->familyAverageRating(), 1),
+            'user_rating' => $recipe->relationLoaded('ratings')
+                ? $recipe->ratings->firstWhere('user_id', $request->user()?->id)?->score
+                : $recipe->userRating($request->user())?->score,
             'ingredients' => RecipeIngredientResource::collection($this->whenLoaded('ingredients')),
             'cook_logs' => RecipeCookLogResource::collection($this->whenLoaded('cookLogs')),
             'ratings' => RatingResource::collection($this->whenLoaded('ratings')),

@@ -28,6 +28,11 @@ const RewardsView = () => import('@/views/points/RewardsView.vue')
 const PointsHistoryView = () => import('@/views/points/PointsHistoryView.vue')
 const BadgesView = () => import('@/views/badges/BadgesView.vue')
 const OnboardingView = () => import('@/views/onboarding/OnboardingView.vue')
+
+// Food — lazy-loaded
+const FoodView = () => import('@/views/food/FoodView.vue')
+const RecipeDetailView = () => import('@/views/food/RecipeDetailView.vue')
+
 const NotFoundView = () => import('@/views/NotFoundView.vue')
 
 const routes = [
@@ -48,6 +53,8 @@ const routes = [
   { path: '/points/rewards', name: 'Rewards', component: RewardsView, meta: { requiresAuth: true, module: 'points' } },
   { path: '/points/history', name: 'PointsHistory', component: PointsHistoryView, meta: { requiresAuth: true, module: 'points' } },
   { path: '/badges', name: 'Badges', component: BadgesView, meta: { requiresAuth: true, module: 'badges' } },
+  { path: '/food', name: 'Food', component: FoodView, meta: { requiresAuth: true, module: 'food' } },
+  { path: '/food/recipes/:id', name: 'RecipeDetail', component: RecipeDetailView, meta: { requiresAuth: true, module: 'food' } },
   { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView, meta: { isOpen: true } },
 ]

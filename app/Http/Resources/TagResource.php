@@ -16,6 +16,7 @@ class TagResource extends JsonResource
             'sort_order' => $this->sort_order,
             'tasks_count' => $this->when(isset($this->tasks_count), $this->tasks_count),
             'incomplete_tasks_count' => $this->when(isset($this->incomplete_tasks_count), $this->incomplete_tasks_count),
+            'recipes_count' => $this->when(isset($this->recipes_count), $this->recipes_count),
         ];
     }
 }

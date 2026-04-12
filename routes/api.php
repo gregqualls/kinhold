@@ -196,6 +196,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('/import/social', [RecipeController::class, 'importFromSocialMedia']);
             });
 
+            Route::post('/upload-image', [RecipeController::class, 'uploadImage']);
+
             Route::get('/{recipe}', [RecipeController::class, 'show']);
             Route::put('/{recipe}', [RecipeController::class, 'update']);
             Route::delete('/{recipe}', [RecipeController::class, 'destroy']);
