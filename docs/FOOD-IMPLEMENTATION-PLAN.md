@@ -22,6 +22,8 @@ Errands List (standalone, always available)
 
 The central insight: the shopping list is a **live derivative** of the meal plan — not a one-time export. When a meal plan changes, only recipe-derived items update. Manual and staple items are untouched.
 
+**Design note (from Step 2 review):** `recipe_ingredients` is per-recipe and stays that way. Shopping lists must support manual items (e.g., "bread, peanut butter, jelly" — no recipe needed) alongside recipe-derived items. Cross-recipe ingredient aggregation ("flour" in 3 recipes → "6 cups flour" on the list) happens at shopping list generation time, not in the ingredient table. The `shopping_items.source` enum (manual/recipe/staple) covers this.
+
 ---
 
 ## Step 1: Recipe Backend + Module Gating

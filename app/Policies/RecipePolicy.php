@@ -19,7 +19,7 @@ class RecipePolicy
 
     public function create(User $user): bool
     {
-        return $user->isParent();
+        return $user->family->userCanCreateRecipes($user);
     }
 
     public function update(User $user, Recipe $recipe): bool

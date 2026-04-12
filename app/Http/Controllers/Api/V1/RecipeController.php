@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Recipe\ImportPhotoRequest;
+use App\Http\Requests\Recipe\ImportUrlRequest;
 use App\Http\Requests\Recipe\StoreRecipeRequest;
 use App\Http\Requests\Recipe\UpdateRecipeRequest;
 use App\Http\Resources\RatingResource;
 use App\Http\Resources\RecipeCookLogResource;
 use App\Http\Resources\RecipeResource;
 use App\Models\Recipe;
+use App\Services\RecipeImportService;
 use App\Services\RecipeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +19,10 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class RecipeController extends Controller
 {
-    public function __construct(private RecipeService $recipeService) {}
+    public function __construct(
+        private RecipeService $recipeService,
+        private RecipeImportService $recipeImportService,
+    ) {}
 
     public function index(Request $request): AnonymousResourceCollection
     {
@@ -139,5 +145,54 @@ class RecipeController extends Controller
         $ratings = $recipe->ratings()->with('user')->get();
 
         return RatingResource::collection($ratings);
+    }
+
+    public function importFromUrl(ImportUrlRequest $request): JsonResponse
+    {
+        $preview = $request->boolean('preview');
+        $family = $request->user()->family;
+        $user = $request->user();
+
+        $result = $this->recipeImportService->importFromUrl(
+            $request->validated('url'),
+            $family,
+            $user,
+            $preview,
+        );
+
+        if ($preview) {
+            return response()->json($result);
+        }
+
+        return response()->json(['recipe' => new RecipeResource($result['recipe'])], 201);
+    }
+
+    public function importFromPhoto(ImportPhotoRequest $request): JsonResponse
+    {
+        $preview = $request->boolean('preview');
+        $family = $request->user()->family;
+        $user = $request->user();
+
+        $result = $this->recipeImportService->importFromPhoto(
+            $request->file('photo'),
+            $family,
+            $user,
+            $preview,
+        );
+
+        if ($preview) {
+            return response()->json($result);
+        }
+
+        return response()->json(['recipe' => new RecipeResource($result['recipe'])], 201);
+    }
+
+    public function importFromSocialMedia(Request $request): JsonResponse
+    {
+        $this->authorize('create', Recipe::class);
+
+        return response()->json([
+            'message' => 'Social media import coming soon',
+        ], 501);
     }
 }

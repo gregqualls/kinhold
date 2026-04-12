@@ -188,6 +188,14 @@ Route::prefix('v1')->group(function () {
         Route::prefix('/recipes')->middleware('module:food')->group(function () {
             Route::get('/', [RecipeController::class, 'index']);
             Route::post('/', [RecipeController::class, 'store']);
+
+            // Import routes (rate-limited, parent-only via form request)
+            Route::middleware(['throttle:recipe-import'])->group(function () {
+                Route::post('/import/url', [RecipeController::class, 'importFromUrl']);
+                Route::post('/import/photo', [RecipeController::class, 'importFromPhoto']);
+                Route::post('/import/social', [RecipeController::class, 'importFromSocialMedia']);
+            });
+
             Route::get('/{recipe}', [RecipeController::class, 'show']);
             Route::put('/{recipe}', [RecipeController::class, 'update']);
             Route::delete('/{recipe}', [RecipeController::class, 'destroy']);

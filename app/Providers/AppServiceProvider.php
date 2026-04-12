@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
@@ -29,5 +31,10 @@ class AppServiceProvider extends ServiceProvider
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
         Passport::authorizationView('mcp.authorize');
+
+        // Recipe import: 20 requests per hour per family
+        RateLimiter::for('recipe-import', function ($request) {
+            return Limit::perHour(20)->by($request->user()?->family_id ?? $request->ip());
+        });
     }
 }
