@@ -90,6 +90,16 @@ PROMPT;
         $data['source_url'] = $url;
         $data['source_type'] = 'url';
 
+        // Extract and store the recipe image
+        $imageUrl = $data['image_url'] ?? $this->extractOgImage($html);
+        unset($data['image_url']);
+        if ($imageUrl) {
+            $storedPath = $this->downloadAndStoreImage($imageUrl);
+            if ($storedPath) {
+                $data['image_path'] = $storedPath;
+            }
+        }
+
         // Check for duplicate source_url within this family
         $existing = Recipe::where('family_id', $family->id)
             ->where('source_url', $url)
@@ -120,13 +130,14 @@ PROMPT;
 
         $data['source_type'] = 'photo';
 
+        // Store the image now — whether preview or not — so the form can display it
+        // and it gets included in the final save payload without re-uploading.
+        $imagePath = $this->storeRecipeImage($photo);
+        $data['image_path'] = $imagePath;
+
         if ($preview) {
             return $data;
         }
-
-        // Store the image before persisting
-        $imagePath = $this->storeRecipeImage($photo);
-        $data['image_path'] = $imagePath;
 
         return $this->persistImport($data, $family, $user);
     }
@@ -218,31 +229,34 @@ PROMPT;
     {
         $ingredients = [];
         foreach ($item['recipeIngredient'] ?? [] as $line) {
-            $ingredients[] = $this->parseIngredientString((string) $line);
+            $cleaned = $this->cleanText((string) $line);
+            if ($cleaned !== '') {
+                $ingredients[] = $this->parseIngredientString($cleaned);
+            }
         }
 
         $instructions = [];
         $rawInstructions = $item['recipeInstructions'] ?? [];
 
         if (is_string($rawInstructions)) {
-            $instructions = array_values(array_filter(array_map('trim', explode("\n", $rawInstructions))));
+            $instructions = array_values(array_filter(array_map(fn ($s) => $this->cleanText($s), explode("\n", $rawInstructions))));
         } elseif (is_array($rawInstructions)) {
             foreach ($rawInstructions as $step) {
                 if (is_string($step)) {
-                    $instructions[] = trim($step);
+                    $instructions[] = $this->cleanText($step);
                 } elseif (is_array($step)) {
                     // HowToStep or HowToSection
                     if (isset($step['itemListElement'])) {
                         foreach ($step['itemListElement'] as $subStep) {
                             $text = $subStep['text'] ?? $subStep['name'] ?? '';
                             if ($text !== '') {
-                                $instructions[] = trim((string) $text);
+                                $instructions[] = $this->cleanText((string) $text);
                             }
                         }
                     } else {
                         $text = $step['text'] ?? $step['name'] ?? '';
                         if ($text !== '') {
-                            $instructions[] = trim((string) $text);
+                            $instructions[] = $this->cleanText((string) $text);
                         }
                     }
                 }
@@ -251,13 +265,25 @@ PROMPT;
 
         return [
             'title' => $item['name'] ?? null,
-            'description' => isset($item['description']) ? strip_tags((string) $item['description']) : null,
+            'description' => isset($item['description']) ? html_entity_decode(strip_tags((string) $item['description']), ENT_QUOTES | ENT_HTML5, 'UTF-8') : null,
             'servings' => $this->parseServings($item['recipeYield'] ?? null),
             'prep_time' => $this->parseIsoDuration($item['prepTime'] ?? null),
             'cook_time' => $this->parseIsoDuration($item['cookTime'] ?? null),
             'ingredients' => $ingredients,
             'instructions' => array_values(array_filter($instructions)),
+            'image_url' => $this->extractJsonLdImageUrl($item['image'] ?? null),
         ];
+    }
+
+    /**
+     * Strip HTML tags, decode entities, and trim a string.
+     */
+    private function cleanText(string $text): string
+    {
+        $text = strip_tags($text);
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return trim(preg_replace('/\s+/', ' ', $text) ?? $text);
     }
 
     /**
@@ -482,6 +508,107 @@ PROMPT;
         $filename = Str::uuid()->toString().'.'.$photo->guessExtension();
 
         return Storage::disk('public')->putFileAs('recipes', $photo, $filename);
+    }
+
+    /**
+     * Extract the image URL from a JSON-LD image field.
+     * The field can be a string URL, an ImageObject array, or an array of either.
+     */
+    private function extractJsonLdImageUrl(mixed $image): ?string
+    {
+        if (empty($image)) {
+            return null;
+        }
+
+        if (is_string($image)) {
+            return $image;
+        }
+
+        if (is_array($image)) {
+            // Array of images — take the first usable one
+            $first = $image[0] ?? $image;
+
+            if (is_string($first)) {
+                return $first ?: null;
+            }
+
+            if (is_array($first)) {
+                return $first['url'] ?? null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract the og:image URL from HTML meta tags.
+     */
+    private function extractOgImage(string $html): ?string
+    {
+        if (preg_match('/<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\'][^>]*>/i', $html, $m)) {
+            return $m[1] ?: null;
+        }
+
+        // Also try reversed attribute order
+        if (preg_match('/<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\'][^>]*>/i', $html, $m)) {
+            return $m[1] ?: null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Download a remote image and store it to the public recipes disk.
+     * Returns the stored path, or null on failure.
+     */
+    private function downloadAndStoreImage(string $imageUrl): ?string
+    {
+        try {
+            $parsed = parse_url($imageUrl);
+            $host = $parsed['host'] ?? '';
+
+            if (empty($host)) {
+                return null;
+            }
+
+            $ip = gethostbyname($host);
+            if ($ip === $host || ! $this->isPublicIp($ip)) {
+                return null;
+            }
+
+            $response = Http::withOptions([
+                'resolve' => ["{$host}:443:{$ip}", "{$host}:80:{$ip}"],
+            ])->timeout(10)->get($imageUrl);
+
+            if ($response->failed()) {
+                return null;
+            }
+
+            // Refuse images over 5 MB to prevent disk exhaustion
+            if (strlen($response->body()) > 5_242_880) {
+                return null;
+            }
+
+            $contentType = $response->header('Content-Type') ?: 'image/jpeg';
+            $ext = match (true) {
+                str_contains($contentType, 'png') => 'png',
+                str_contains($contentType, 'gif') => 'gif',
+                str_contains($contentType, 'webp') => 'webp',
+                default => 'jpg',
+            };
+
+            $filename = Str::uuid()->toString().'.'.$ext;
+            Storage::disk('public')->put('recipes/'.$filename, $response->body());
+
+            return 'recipes/'.$filename;
+        } catch (\Throwable $e) {
+            Log::warning('RecipeImportService: Failed to download recipe image', [
+                'url' => $imageUrl,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     /**

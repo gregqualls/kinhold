@@ -164,6 +164,7 @@ class DatabaseSeeder extends Seeder
         // ─────────────────────────────────────────────
 
         $tagDefs = [
+            // Task tags
             ['name' => 'Chores',     'color' => '#10B981', 'sort_order' => 0],
             ['name' => 'School',     'color' => '#F59E0B', 'sort_order' => 1],
             ['name' => 'Sports',     'color' => '#EF4444', 'sort_order' => 2],
@@ -171,6 +172,12 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Family Fun', 'color' => '#EC4899', 'sort_order' => 4],
             ['name' => 'Yard Work',  'color' => '#059669', 'sort_order' => 5],
             ['name' => 'Pets',       'color' => '#D97706', 'sort_order' => 6],
+            // Recipe tags
+            ['name' => 'Breakfast',  'color' => '#F59E0B', 'sort_order' => 7],
+            ['name' => 'Lunch',      'color' => '#10B981', 'sort_order' => 8],
+            ['name' => 'Dinner',     'color' => '#3B82F6', 'sort_order' => 9],
+            ['name' => 'Dessert',    'color' => '#EC4899', 'sort_order' => 10],
+            ['name' => 'Snack',      'color' => '#8B5CF6', 'sort_order' => 11],
         ];
 
         foreach ($tagDefs as $td) {

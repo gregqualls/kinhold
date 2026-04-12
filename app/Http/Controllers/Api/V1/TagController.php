@@ -19,6 +19,7 @@ class TagController extends Controller
             ->withCount(['tasks as incomplete_tasks_count' => function ($query) {
                 $query->whereNull('completed_at');
             }])
+            ->withCount('recipes')
             ->orderBy('sort_order')
             ->get();
 

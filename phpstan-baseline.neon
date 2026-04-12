@@ -291,6 +291,11 @@ parameters:
 			path: app/Http/Resources/TagResource.php
 
 		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$recipes_count\\.$#"
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$assigned_to\\.$#"
 			count: 1
 			path: app/Http/Resources/TaskResource.php
@@ -802,16 +807,6 @@ parameters:
 
 		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$image_path\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Call to an undefined method App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:familyAverageRating\\(\\)\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Call to an undefined method App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:userRating\\(\\)\\.$#"
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 

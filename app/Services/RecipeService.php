@@ -142,9 +142,9 @@ class RecipeService
             default => $query->orderByDesc('created_at'),
         };
 
-        $perPage = (int) ($filters['per_page'] ?? 20);
+        $perPage = min((int) ($filters['per_page'] ?? 20), 100);
 
-        return $query->with(['ingredients', 'tags', 'creator'])->paginate($perPage);
+        return $query->with(['ingredients', 'tags', 'creator', 'ratings'])->paginate($perPage);
     }
 
     private function insertIngredients(Recipe $recipe, array $ingredients): void

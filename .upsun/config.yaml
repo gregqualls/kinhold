@@ -20,6 +20,9 @@ applications:
       "storage":
         source: "storage"
         source_path: "storage"
+      "public/storage":
+        source: "storage"
+        source_path: "storage/app/public"
     web:
       locations:
         "/":
