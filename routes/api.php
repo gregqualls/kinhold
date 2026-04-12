@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\McpTokenController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PointRequestController;
 use App\Http\Controllers\Api\V1\PointsController;
+use App\Http\Controllers\Api\V1\RecipeController;
 use App\Http\Controllers\Api\V1\RewardsController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\TagController;
@@ -181,6 +182,21 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{badge}/revoke/{user}', [BadgesController::class, 'revoke']);
             Route::get('/earned', [BadgesController::class, 'earned']);
             Route::post('/easter-egg', [BadgesController::class, 'easterEgg']);
+        });
+
+        // Recipes (module: food)
+        Route::prefix('/recipes')->middleware('module:food')->group(function () {
+            Route::get('/', [RecipeController::class, 'index']);
+            Route::post('/', [RecipeController::class, 'store']);
+            Route::get('/{recipe}', [RecipeController::class, 'show']);
+            Route::put('/{recipe}', [RecipeController::class, 'update']);
+            Route::delete('/{recipe}', [RecipeController::class, 'destroy']);
+            Route::post('/{recipe}/restore', [RecipeController::class, 'restore']);
+            Route::post('/{recipe}/favorite', [RecipeController::class, 'toggleFavorite']);
+            Route::get('/{recipe}/cook-logs', [RecipeController::class, 'cookLogs']);
+            Route::post('/{recipe}/cook-logs', [RecipeController::class, 'addCookLog']);
+            Route::post('/{recipe}/rate', [RecipeController::class, 'rate']);
+            Route::get('/{recipe}/ratings', [RecipeController::class, 'ratings']);
         });
 
         // Featured Events (unified — reads from family_events table)
