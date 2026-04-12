@@ -146,6 +146,41 @@ class Family extends Model
     }
 
     /**
+     * Get the recipe creation permission setting.
+     *
+     * Returns ['mode' => 'all'|'parents_only'|'users', 'users' => [...]]
+     */
+    public function getRecipeCreation(): array
+    {
+        return $this->settings['recipe_creation'] ?? [
+            'mode' => 'all',
+            'users' => [],
+        ];
+    }
+
+    /**
+     * Determine if a user is allowed to create/import recipes.
+     *
+     * Parents always return true. Children depend on the recipe_creation setting.
+     */
+    public function userCanCreateRecipes(User $user): bool
+    {
+        if ($user->isParent()) {
+            return true;
+        }
+
+        $setting = $this->getRecipeCreation();
+        $mode = $setting['mode'] ?? 'all';
+
+        return match ($mode) {
+            'all' => true,
+            'parents_only' => false,
+            'users' => in_array($user->id, $setting['users'] ?? []),
+            default => true,
+        };
+    }
+
+    /**
      * All module names the system supports.
      */
     public const MODULES = ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges', 'food'];

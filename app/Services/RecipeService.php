@@ -150,21 +150,39 @@ class RecipeService
     private function insertIngredients(Recipe $recipe, array $ingredients): void
     {
         $rows = [];
-        foreach ($ingredients as $index => $ingredient) {
+        $seen = [];
+        $sortOrder = 0;
+
+        foreach ($ingredients as $ingredient) {
+            $name = trim($ingredient['name'] ?? '');
+            if ($name === '') {
+                continue;
+            }
+
+            // Deduplicate by lowercase name + quantity + unit
+            $dedupeKey = mb_strtolower($name).'|'.($ingredient['quantity'] ?? '').'|'.($ingredient['unit'] ?? '');
+            if (isset($seen[$dedupeKey])) {
+                continue;
+            }
+            $seen[$dedupeKey] = true;
+
             $rows[] = [
                 'id' => Str::uuid()->toString(),
                 'recipe_id' => $recipe->id,
-                'name' => $ingredient['name'],
+                'name' => $name,
                 'quantity' => $ingredient['quantity'] ?? null,
                 'unit' => $ingredient['unit'] ?? null,
                 'preparation' => $ingredient['preparation'] ?? null,
                 'group_name' => $ingredient['group_name'] ?? null,
                 'is_optional' => $ingredient['is_optional'] ?? false,
-                'sort_order' => $ingredient['sort_order'] ?? $index,
+                'sort_order' => $ingredient['sort_order'] ?? $sortOrder++,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
-        $recipe->ingredients()->insert($rows);
+
+        if (! empty($rows)) {
+            $recipe->ingredients()->insert($rows);
+        }
     }
 }

@@ -2,13 +2,15 @@
 
 namespace App\Http\Requests\Recipe;
 
+use App\Models\Recipe;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class StoreRecipeRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->isParent();
+        return Gate::allows('create', Recipe::class);
     }
 
     public function rules(): array

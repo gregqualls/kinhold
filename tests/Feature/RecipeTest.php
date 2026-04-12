@@ -206,9 +206,14 @@ class RecipeTest extends TestCase
 
     // ── Permission Tests ──
 
-    public function test_child_cannot_create_recipe(): void
+    public function test_child_cannot_create_recipe_when_parents_only(): void
     {
         Sanctum::actingAs($this->child);
+
+        $settings = $this->family->settings ?? [];
+        $settings['recipe_creation'] = ['mode' => 'parents_only'];
+        $this->family->settings = $settings;
+        $this->family->save();
 
         $response = $this->postJson('/api/v1/recipes', [
             'title' => 'Child Recipe',
