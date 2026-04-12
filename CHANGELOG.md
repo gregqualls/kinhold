@@ -2,6 +2,44 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-12 — Session 29: Food Module Step 1 — Recipe Backend
+
+### What Was Done
+- **Food module gating** — Added `'food'` to `Family::MODULES`, `getEnabledModules()` defaults, and `auth.js` modules array. Food module is enabled by default for all families. Routes protected via existing `CheckModuleAccess` middleware.
+- **3 new enums** — `RecipeSourceType` (manual/url/photo/social_media), `MealSlot` (breakfast/lunch/dinner/snack), `ShoppingItemSource` (manual/recipe/staple) — future steps will consume the latter two.
+- **5 new migrations** — `recipes` (soft deletes), `recipe_ingredients`, `recipe_cook_logs`, `ratings` (polymorphic — shared with restaurants in Step 6), `recipe_tag` pivot.
+- **5 new models** — `Recipe` (HasUuids, SoftDeletes, scopes, computed totalTime/familyAverageRating/userRating), `RecipeIngredient`, `RecipeCookLog`, `Rating` (MorphTo), `RecipeTag` (Pivot). Tag model updated with `recipes()` BelongsToMany.
+- **RecipePolicy** — Parent-only create/update/delete/restore. Children can view, rate, and log cooks.
+- **RecipeService** — createRecipe, updateRecipe (replace-ingredients pattern), deleteRecipe, restoreRecipe, toggleFavorite, addCookLog, rateRecipe (upsert), searchRecipes (search/tag/favorite/sort, paginated).
+- **RecipeController** — 11 endpoints: full CRUD, restore, favorite toggle, cook logs, rate, ratings list. All methods authorized via Policy.
+- **4 API resources** — RecipeResource, RecipeIngredientResource, RecipeCookLogResource, RatingResource.
+- **11 routes** — `/api/v1/recipes` group, all behind `module:food` middleware.
+- **22 feature tests** — All passing. Covers CRUD, soft delete/restore, favorites, ratings (upsert + family average), cook logs, cross-family 403, parent/child permissions, search by title/ingredient, tag/favorite filtering, module-disabled 403.
+
+### Security Fixes Applied During Review
+- `restore()` now scopes `withTrashed()` by `family_id` to return 404 (not 403) for cross-family IDs
+- `updateRecipe` rewritten with `array_intersect_key` — nullable fields can now be explicitly cleared
+- `source_url` validation restricted to `url:http,https` (SSRF hardening)
+
+### Files Created
+- `app/Enums/RecipeSourceType.php`, `MealSlot.php`, `ShoppingItemSource.php`
+- `database/migrations/2026_04_12_000001–000005`
+- `app/Models/Recipe.php`, `RecipeIngredient.php`, `RecipeCookLog.php`, `Rating.php`, `RecipeTag.php`
+- `app/Policies/RecipePolicy.php`
+- `app/Http/Requests/Recipe/StoreRecipeRequest.php`, `UpdateRecipeRequest.php`
+- `app/Services/RecipeService.php`
+- `app/Http/Resources/RecipeResource.php`, `RecipeIngredientResource.php`, `RecipeCookLogResource.php`, `RatingResource.php`
+- `app/Http/Controllers/Api/V1/RecipeController.php`
+- `tests/Feature/RecipeTest.php`
+
+### Files Modified
+- `app/Models/Family.php` — food module added to MODULES + getEnabledModules()
+- `app/Models/Tag.php` — recipes() relationship added
+- `resources/js/stores/auth.js` — food added to modules array
+- `routes/api.php` — recipe route group added
+
+---
+
 ## 2026-04-10 — Session 28: GDPR, Vault Fix, Self-Hosted Polish
 
 ### What Was Done

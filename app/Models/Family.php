@@ -107,7 +107,7 @@ class Family extends Model
      */
     public function getEnabledModules(): array
     {
-        return $this->settings['enabled_modules'] ?? ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges'];
+        return $this->settings['enabled_modules'] ?? ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges', 'food'];
     }
 
     /**
@@ -148,7 +148,7 @@ class Family extends Model
     /**
      * All module names the system supports.
      */
-    public const MODULES = ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges'];
+    public const MODULES = ['calendar', 'tasks', 'vault', 'chat', 'points', 'badges', 'food'];
 
     /**
      * Get the module_access config for a given module.

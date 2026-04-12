@@ -135,11 +135,14 @@ These features are live and working:
 
 **Goal:** Shopping lists, meal planning, and grocery AI integrations. Multi-week effort — not blocking MVP or foundational work.
 
-| Issue | Title | Priority |
-|-------|-------|----------|
-| [#65](https://github.com/gregqualls/kinhold/issues/65) | Shopping & grocery lists | Very High |
-| [#66](https://github.com/gregqualls/kinhold/issues/66) | Meal planning | High |
-| [#67](https://github.com/gregqualls/kinhold/issues/67) | AI chatbot: meal and grocery integrations | Medium |
+**Spec:** [docs/FOOD-FEATURES-SPEC.md](FOOD-FEATURES-SPEC.md) · **Plan:** [docs/FOOD-IMPLEMENTATION-PLAN.md](FOOD-IMPLEMENTATION-PLAN.md)
+
+| Issue | Title | Priority | Status |
+|-------|-------|----------|--------|
+| [#148](https://github.com/gregqualls/kinhold/issues/148) | Food Step 1: Recipe backend + module gating | High | IN PROGRESS |
+| [#65](https://github.com/gregqualls/kinhold/issues/65) | Shopping & grocery lists | Very High | |
+| [#66](https://github.com/gregqualls/kinhold/issues/66) | Meal planning | High | |
+| [#67](https://github.com/gregqualls/kinhold/issues/67) | AI chatbot: meal and grocery integrations | Medium | |
 
 ---
 
