@@ -282,8 +282,10 @@ chmod +x setup.sh && ./setup.sh
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 
 **What's next (Phase F: Food & Meal Planning — in progress):**
-- Issue #148 (Step 1) ✅ Recipe backend + module gating — DONE (this session)
-- Issue #149+ (Steps 2–8) — Recipe import, frontend UI, meal planning, shopping lists, MCP tools, AI integrations
+- Issue #148 (Step 1) ✅ Recipe backend + module gating — DONE
+- Issue #149 (Step 2) ✅ Recipe import service (URL scraping + photo AI) — DONE
+- Issue #150 (Step 3) ✅ Recipe frontend UI (complete) — DONE (PR #158)
+- Issue #65+ (Steps 4–8) — Meal planning, shopping lists, MCP tools, AI integrations
 - See `docs/FOOD-FEATURES-SPEC.md` and `docs/FOOD-IMPLEMENTATION-PLAN.md` for the 8-step plan
 
 **Remaining Phase A work:**
@@ -324,7 +326,7 @@ These are Greg's ideas. Don't build them unless Greg specifically asks. Capture 
 - ~~Gamification: Points on tasks, badges/achievements, leaderboard~~ — IMPLEMENTED (Session 5)
 - Real-money rewards for kids ($ values on tasks, track earnings)
 - Family budget and expense tracking with allowances
-- ~~Meal planning, recipe storage, grocery lists~~ — IN PROGRESS (Phase F, Step 1 done)
+- ~~Meal planning, recipe storage, grocery lists~~ — IN PROGRESS (Phase F: Steps 1–3 done, shopping/meal planning next)
 - Family chat/messaging with polls
 - Activity feed and notifications (push + email)
 - Mobile app (React Native or PWA)

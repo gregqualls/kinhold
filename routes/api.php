@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\PointsController;
 use App\Http\Controllers\Api\V1\RecipeController;
 use App\Http\Controllers\Api\V1\RewardsController;
 use App\Http\Controllers\Api\V1\SettingsController;
+use App\Http\Controllers\Api\V1\ShoppingListController;
 use App\Http\Controllers\Api\V1\TagController;
 use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\VaultController;
@@ -207,6 +208,37 @@ Route::prefix('v1')->group(function () {
             Route::post('/{recipe}/cook-logs', [RecipeController::class, 'addCookLog']);
             Route::post('/{recipe}/rate', [RecipeController::class, 'rate']);
             Route::get('/{recipe}/ratings', [RecipeController::class, 'ratings']);
+        });
+
+        // Shopping (module: food)
+        Route::prefix('/shopping')->middleware('module:food')->group(function () {
+            // Product catalog autocomplete (read-only global data)
+            Route::get('/catalog/search', [ShoppingListController::class, 'searchCatalog']);
+
+            // Staples
+            Route::get('/staples', [ShoppingListController::class, 'listStaples']);
+            Route::post('/staples', [ShoppingListController::class, 'addStaple']);
+            Route::put('/staples/{staple}', [ShoppingListController::class, 'updateStaple']);
+            Route::delete('/staples/{staple}', [ShoppingListController::class, 'removeStaple']);
+            Route::patch('/staples/{staple}/toggle', [ShoppingListController::class, 'toggleStaple']);
+
+            // Shopping items (accessed directly by item ID)
+            Route::put('/items/{shoppingItem}', [ShoppingListController::class, 'updateItem']);
+            Route::delete('/items/{shoppingItem}', [ShoppingListController::class, 'removeItem']);
+            Route::patch('/items/{shoppingItem}/check', [ShoppingListController::class, 'checkItem']);
+            Route::patch('/items/{shoppingItem}/uncheck', [ShoppingListController::class, 'uncheckItem']);
+            Route::patch('/items/{shoppingItem}/on-hand', [ShoppingListController::class, 'markOnHand']);
+            Route::patch('/items/{shoppingItem}/need', [ShoppingListController::class, 'clearOnHand']);
+
+            // Shopping lists
+            Route::get('/lists', [ShoppingListController::class, 'index']);
+            Route::post('/lists', [ShoppingListController::class, 'store']);
+            Route::get('/lists/{shoppingList}', [ShoppingListController::class, 'show']);
+            Route::put('/lists/{shoppingList}', [ShoppingListController::class, 'update']);
+            Route::delete('/lists/{shoppingList}', [ShoppingListController::class, 'destroy']);
+            Route::post('/lists/{shoppingList}/complete', [ShoppingListController::class, 'completeTrip']);
+            Route::post('/lists/{shoppingList}/items', [ShoppingListController::class, 'addItem']);
+            Route::post('/lists/{shoppingList}/add-recipe', [ShoppingListController::class, 'addRecipeToList']);
         });
 
         // Featured Events (unified — reads from family_events table)

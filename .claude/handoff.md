@@ -1,32 +1,41 @@
 # Session Handoff
 
-**Date:** 2026-04-09
-**Branch:** feature/117-142-versioning-docker (PR #146 open)
-**Last commit:** `85366d5 feat: versioning, update notifications, Docker polish (#117, #142)`
+**Date:** 2026-04-13
+**Branch:** `feature/151-food-step-4-shopping-backend` (PR #159 open, all checks green — ready to merge)
+**Last commit:** `424a8a9 fix: ProductCatalog seeder fallback for constraint issues`
 
 ## What Was Done This Session
-- **Merged robots.txt fix** from previous session's stale branch into main, cleaned up stale worktree
-- **Versioning (#117):** `config/version.php` (v1.0.0 default, overridable via `APP_VERSION`). `UpdateCheckService` polls GitHub Releases API once/day (24h cache, 5s timeout, fail-safe null on errors, `DISABLE_UPDATE_CHECK=true` opt-out). Version + update status wired into `/api/v1/config` (public) and MCP `get-settings`. New "About Kinhold" section in Settings — parent view shows version, license, update banner (dismissible per-version via localStorage) + GitHub/releases/website links; child view shows version only.
-- **GitHub Actions release workflow (#117):** `.github/workflows/release.yml` triggers on `v*` tag push, auto-creates Release with `softprops/action-gh-release@v2` and `generate_release_notes: true`.
-- **Docker polish (#142):** `.env.docker-simple` now defaults to `APP_ENV=production`, `APP_DEBUG=false`, `SESSION_DRIVER=database`. Created `.dockerignore` (excludes .git, node_modules, vendor, tests, docs, dev tooling). Added `DISABLE_UPDATE_CHECK` to both env files.
-- **PR #146 open:** https://github.com/gregqualls/kinhold/pull/146 — CI running.
+
+- **Shopping list backend** — Full `ShoppingList` / `ShoppingItem` / `Staple` data layer: 4 migrations, 4 models, 1 service, 1 controller, 1 policy, 5 form requests, 3 API resources, 17 routes.
+- **Product catalog** — ~500 global items across 16 categories. `ShoppingListService::autoCategorize()` does exact-then-LIKE lookup to auto-assign category when items are added.
+- **Staple auto-population** — On list creation, all active staples batch-insert into the new list (one query, not N queries).
+- **Recipe → shopping** — `addRecipeIngredients()` extracts ingredients from a recipe into shopping items (quantity+unit combined, denormalized recipe name for soft-delete safety).
+- **Review fixes applied** — Batch insert for staples, unique constraint on product_catalog.name, validated() bag in controller, seeder registered in DatabaseSeeder.
+- **Upsun deploy fix** — `ProductCatalogSeeder` now falls back to `firstOrCreate` if `upsert()` ON CONFLICT fails (Upsun PostgreSQL edge case on first deploy).
+- **19 tests passing** — Full coverage: CRUD, family scoping, child permissions, auto-categorization, recipe integration, module gating.
 
 ## Quality State
-- **Tests:** 60 tests, 118 assertions — PASS (2 deprecations, not blocking)
-- **Pint:** PASS
-- **Larastan:** PASS (0 errors)
-- **ESLint:** PASS (0 issues)
-- **Build:** PASS (3198 modules, 2.79s)
+
+- **Tests:** 114 tests, 295 assertions — ✅ pass (2 deprecation notices, non-blocking)
+- **Pint:** ✅ pass
+- **Larastan:** ✅ pass (0 errors)
+- **ESLint:** ✅ pass (0 errors, 0 warnings)
+- **Build:** ✅ pass (3,211 modules)
+- **CI (GitHub Actions):** ✅ all 3 checks green
+- **Upsun preview:** ✅ deployed at https://pr-159-v7ocxmy-2rozcvqjtjdta.ch-1.platformsh.site/
 
 ## What's Next
-1. **Merge PR #146** — CI should be green. Run `/merge` to close out Day 2.
-2. **Tag v1.0.0** — After merge, run `git tag v1.0.0 && git push origin v1.0.0` to trigger the first GitHub Release via the new release workflow.
-3. **Day 3 — Demo experience (#124, #126, #143):** Refresh seed data (demo family outdated), fix demo email verification banner bug, add "Install on your server" CTA banner. All P1 for the v1.0.0 launch (deadline April 11).
+
+1. **Merge PR #159** — All checks green, QA ready. Run `/merge` to squash to main.
+2. **Food Step 5: Shopping Frontend (Issue #65)** — Build `ShoppingTab.vue` in FoodView with list/item management UI. Key components: list picker, item rows with check/on-hand toggles, add item form, staple manager, catalog search autocomplete.
+3. **Food Step 6: Meal Planning (Issue #66)** — After shopping UI is done. Weekly meal plan grid, drag-and-drop recipe assignment, auto-generate shopping list from the week's meals.
 
 ## Blockers or Gotchas
-- **v1.0.0 Launch deadline is April 11** — 2 days away. Day 3 issues (#124, #126, #143) need to ship tomorrow.
-- **Update check hits public config endpoint** — The `UpdateCheckService::getStatus()` is called on every `/api/v1/config` request (unauthenticated). Cache is 24h so it's only a real HTTP call once per day, but the first request of the day has a 5s timeout. Acceptable for now, could move to Settings-only if it becomes a problem.
-- **No `v1.0.0` tag exists yet** — The release workflow won't fire until someone pushes a tag. Do this right after merging PR #146.
+
+- **MCP tools not yet created** for shopping endpoints — deferred to a separate issue (not a blocker for merge). The API is fully functional without them.
+- **`ShoppingItem` policy registration** — non-standard: `ShoppingItem` maps to `ShoppingListPolicy` (not its own policy). Registered in `AppServiceProvider` via `Gate::policy()`. Don't create a separate `ShoppingItemPolicy` — it's intentionally consolidated.
+- **`needed_date` / `meal_plan_entry_id`** columns exist on shopping_items but aren't exposed yet — scaffolded for upcoming meal planning integration. Don't remove them.
 
 ## Open Questions
-- None — Day 2 fully executed. Just needs merge + tag.
+
+- None blocking the merge. After merge, Greg should decide: jump straight to shopping frontend (Step 5) or do a Phase A cleanup item first.
