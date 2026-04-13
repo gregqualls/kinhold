@@ -6,6 +6,8 @@ use App\Enums\FamilyRole;
 use App\Enums\ShoppingItemSource;
 use App\Models\Family;
 use App\Models\ProductCatalog;
+use App\Models\Recipe;
+use App\Models\RecipeIngredient;
 use App\Models\ShoppingItem;
 use App\Models\ShoppingList;
 use App\Models\Staple;
@@ -428,5 +430,72 @@ class ShoppingTest extends TestCase
 
         $this->patchJson("/api/v1/shopping/items/{$item->id}/check")->assertOk();
         $this->patchJson("/api/v1/shopping/items/{$item->id}/on-hand")->assertOk();
+    }
+
+    // -------------------------------------------------------------------------
+    // Add recipe ingredients to shopping list
+    // -------------------------------------------------------------------------
+
+    public function test_add_recipe_to_list_creates_items_from_ingredients(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $recipe = Recipe::create([
+            'family_id' => $this->family->id,
+            'created_by' => $this->parent->id,
+            'title' => 'Tacos',
+            'source_type' => 'manual',
+        ]);
+
+        RecipeIngredient::create(['recipe_id' => $recipe->id, 'name' => 'Ground Beef', 'quantity' => '1', 'unit' => 'lb', 'sort_order' => 0]);
+        RecipeIngredient::create(['recipe_id' => $recipe->id, 'name' => 'Shredded Cheese', 'quantity' => '2', 'unit' => 'cups', 'sort_order' => 1]);
+        RecipeIngredient::create(['recipe_id' => $recipe->id, 'name' => 'Tortillas', 'quantity' => '8', 'unit' => null, 'sort_order' => 2]);
+
+        $list = ShoppingList::create([
+            'family_id' => $this->family->id,
+            'created_by' => $this->parent->id,
+            'name' => 'Taco Night',
+        ]);
+
+        $response = $this->postJson("/api/v1/shopping/lists/{$list->id}/add-recipe", [
+            'recipe_id' => $recipe->id,
+        ]);
+
+        $response->assertStatus(201);
+        $items = ShoppingItem::where('shopping_list_id', $list->id)->get();
+
+        $this->assertCount(3, $items);
+        $this->assertEqualsCanonicalizing(['Ground Beef', 'Shredded Cheese', 'Tortillas'], $items->pluck('name')->toArray());
+        $this->assertTrue($items->every(fn ($i) => $i->source === ShoppingItemSource::Recipe));
+        $this->assertTrue($items->every(fn ($i) => $i->source_recipe_id === $recipe->id));
+        $this->assertTrue($items->every(fn ($i) => $i->source_recipe_name === 'Tacos'));
+
+        // Check quantity formatting
+        $beef = $items->firstWhere('name', 'Ground Beef');
+        $this->assertEquals('1.000 lb', $beef->quantity);
+    }
+
+    public function test_add_recipe_rejects_cross_family_recipe(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $otherRecipe = Recipe::create([
+            'family_id' => $this->otherFamily->id,
+            'created_by' => $this->otherParent->id,
+            'title' => 'Secret Recipe',
+            'source_type' => 'manual',
+        ]);
+
+        $list = ShoppingList::create([
+            'family_id' => $this->family->id,
+            'created_by' => $this->parent->id,
+            'name' => 'My List',
+        ]);
+
+        $response = $this->postJson("/api/v1/shopping/lists/{$list->id}/add-recipe", [
+            'recipe_id' => $otherRecipe->id,
+        ]);
+
+        $response->assertStatus(404);
     }
 }

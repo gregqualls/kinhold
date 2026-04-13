@@ -165,11 +165,11 @@ class ShoppingListController extends Controller
     {
         $this->authorize('addRecipeToList', $shoppingList);
 
-        $request->validate([
+        $validated = $request->validate([
             'recipe_id' => ['required', 'uuid', 'exists:recipes,id'],
         ]);
 
-        $recipe = Recipe::where('id', $request->recipe_id)
+        $recipe = Recipe::where('id', $validated['recipe_id'])
             ->where('family_id', $request->user()->family_id)
             ->firstOrFail();
 

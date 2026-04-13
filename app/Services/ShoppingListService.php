@@ -11,6 +11,7 @@ use App\Models\ShoppingList;
 use App\Models\Staple;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class ShoppingListService
 {
@@ -27,16 +28,23 @@ class ShoppingListService
             ->where('is_active', true)
             ->get();
 
-        foreach ($staples as $staple) {
-            ShoppingItem::create([
+        if ($staples->isNotEmpty()) {
+            $now = now();
+            ShoppingItem::insert($staples->map(fn (Staple $staple) => [
+                'id' => (string) Str::uuid(),
                 'shopping_list_id' => $list->id,
                 'family_id' => $family->id,
                 'added_by' => $user->id,
                 'name' => $staple->name,
                 'quantity' => $staple->default_quantity,
                 'category' => $staple->category,
-                'source' => ShoppingItemSource::Staple,
-            ]);
+                'source' => ShoppingItemSource::Staple->value,
+                'is_checked' => false,
+                'has_on_hand' => false,
+                'sort_order' => 0,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])->toArray());
         }
 
         return $list->load('items');

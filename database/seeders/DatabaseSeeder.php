@@ -160,6 +160,12 @@ class DatabaseSeeder extends Seeder
         $this->call(VaultCategorySeeder::class);
 
         // ─────────────────────────────────────────────
+        //  PRODUCT CATALOG (global, no family_id)
+        // ─────────────────────────────────────────────
+
+        $this->call(ProductCatalogSeeder::class);
+
+        // ─────────────────────────────────────────────
         //  TAGS
         // ─────────────────────────────────────────────
 

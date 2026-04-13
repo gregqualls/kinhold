@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('category', 100)->nullable();
             $table->timestamps();
 
-            $table->index('name');
+            $table->unique('name');
             $table->index('category');
         });
     }
