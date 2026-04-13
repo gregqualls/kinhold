@@ -75,7 +75,7 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps({
+defineProps({
   listId: {
     type: String,
     required: true,

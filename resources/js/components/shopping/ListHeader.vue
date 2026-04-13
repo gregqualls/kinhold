@@ -229,8 +229,4 @@ function confirmDelete() {
   showDeleteConfirm.value = false
 }
 
-// Close menu on click outside
-function closeMenu() {
-  showListMenu.value = false
-}
 </script>
