@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\ShoppingItem;
+use App\Policies\ShoppingListPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -36,5 +39,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('recipe-import', function ($request) {
             return Limit::perHour(20)->by($request->user()?->family_id ?? $request->ip());
         });
+
+        // ShoppingItem uses ShoppingListPolicy (non-standard naming)
+        Gate::policy(ShoppingItem::class, ShoppingListPolicy::class);
     }
 }

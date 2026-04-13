@@ -139,7 +139,10 @@ These features are live and working:
 
 | Issue | Title | Priority | Status |
 |-------|-------|----------|--------|
-| [#148](https://github.com/gregqualls/kinhold/issues/148) | Food Step 1: Recipe backend + module gating | High | IN PROGRESS |
+| [#148](https://github.com/gregqualls/kinhold/issues/148) | Food Step 1: Recipe backend + module gating | High | DONE |
+| [#149](https://github.com/gregqualls/kinhold/issues/149) | Food Step 2: Recipe import service (URL + photo) | High | DONE |
+| [#150](https://github.com/gregqualls/kinhold/issues/150) | Food Step 3: Recipe frontend UI | High | DONE |
+| [#151](https://github.com/gregqualls/kinhold/issues/151) | Food Step 4: Shopping backend + product catalog | High | DONE |
 | [#65](https://github.com/gregqualls/kinhold/issues/65) | Shopping & grocery lists | Very High | |
 | [#66](https://github.com/gregqualls/kinhold/issues/66) | Meal planning | High | |
 | [#67](https://github.com/gregqualls/kinhold/issues/67) | AI chatbot: meal and grocery integrations | Medium | |

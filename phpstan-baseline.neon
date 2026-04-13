@@ -261,6 +261,341 @@ parameters:
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/RatingResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/RatingResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$score\\.$#"
+			count: 1
+			path: app/Http/Resources/RatingResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/RatingResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$cooked_at\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeCookLogResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeCookLogResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeCookLogResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$notes\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeCookLogResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$servings_made\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeCookLogResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$group_name\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeIngredientResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeIngredientResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$is_optional\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeIngredientResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$name\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeIngredientResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$preparation\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeIngredientResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$quantity\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeIngredientResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$sort_order\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeIngredientResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$unit\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeIngredientResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$cook_time_minutes\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$deleted_at\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$description\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$image_path\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$instructions\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$is_favorite\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$notes\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$prep_time_minutes\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$servings\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$source_type\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$source_url\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$title\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$total_time_minutes\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$category\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$checked_at\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$checked_by\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$has_on_hand\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$is_checked\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$meal_plan_entry_id\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$name\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$needed_date\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$notes\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$quantity\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$shopping_list_id\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$sort_order\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$source\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$source_ingredient_id\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$source_recipe_id\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$source_recipe_name\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingItemResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$completed_at\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingListResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingListResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingListResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$is_active\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingListResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$name\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingListResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$store_name\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingListResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/ShoppingListResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$category\\.$#"
+			count: 1
+			path: app/Http/Resources/StapleResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/StapleResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$default_quantity\\.$#"
+			count: 1
+			path: app/Http/Resources/StapleResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/StapleResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$is_active\\.$#"
+			count: 1
+			path: app/Http/Resources/StapleResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$name\\.$#"
+			count: 1
+			path: app/Http/Resources/StapleResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$sort_order\\.$#"
+			count: 1
+			path: app/Http/Resources/StapleResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/StapleResource.php
+
+		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$color\\.$#"
 			count: 1
 			path: app/Http/Resources/TagResource.php
@@ -281,17 +616,17 @@ parameters:
 			path: app/Http/Resources/TagResource.php
 
 		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$recipes_count\\.$#"
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$sort_order\\.$#"
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
 		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$tasks_count\\.$#"
-			count: 1
-			path: app/Http/Resources/TagResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$recipes_count\\.$#"
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
@@ -769,168 +1104,3 @@ parameters:
 			message: "#^Access to an undefined property App\\\\Models\\\\PointTransaction\\:\\:\\$total_points\\.$#"
 			count: 1
 			path: app/Services/PointsService.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$id\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$title\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$description\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$servings\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$prep_time_minutes\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$cook_time_minutes\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$total_time_minutes\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$image_path\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$deleted_at\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$instructions\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$source_url\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$source_type\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$notes\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$is_favorite\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$created_at\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$updated_at\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$id\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeIngredientResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$name\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeIngredientResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$quantity\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeIngredientResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$unit\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeIngredientResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$preparation\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeIngredientResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$group_name\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeIngredientResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$is_optional\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeIngredientResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$sort_order\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeIngredientResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$id\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeCookLogResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$cooked_at\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeCookLogResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$servings_made\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeCookLogResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$notes\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeCookLogResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$created_at\\.$#"
-			count: 1
-			path: app/Http/Resources/RecipeCookLogResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$id\\.$#"
-			count: 1
-			path: app/Http/Resources/RatingResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$score\\.$#"
-			count: 1
-			path: app/Http/Resources/RatingResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$created_at\\.$#"
-			count: 1
-			path: app/Http/Resources/RatingResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$updated_at\\.$#"
-			count: 1
-			path: app/Http/Resources/RatingResource.php
