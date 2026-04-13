@@ -141,8 +141,8 @@ class ShoppingListService
             return null;
         }
 
-        $existingUnit = strtolower(trim($existingMatch[2] ?? ''));
-        $newUnit = strtolower(trim($newMatch[2] ?? ''));
+        $existingUnit = strtolower(trim($existingMatch[2]));
+        $newUnit = strtolower(trim($newMatch[2]));
 
         // Units must match to aggregate
         if ($existingUnit !== $newUnit) {
