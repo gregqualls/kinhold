@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
       <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Food</h1>
-      <p class="text-sm text-lavender-500 dark:text-lavender-400 mt-0.5">Recipes, meals, and shopping</p>
+      <p class="text-sm text-lavender-500 dark:text-lavender-400 mt-0.5">Recipes and meal planning</p>
     </div>
 
     <!-- Tab bar -->
@@ -31,7 +31,6 @@
     <div class="flex-1 overflow-hidden">
       <RecipesTab v-if="activeTab === 'recipes'" />
       <MealsPlaceholder v-else-if="activeTab === 'meals'" />
-      <ShoppingPlaceholder v-else-if="activeTab === 'shopping'" />
     </div>
   </div>
 </template>
@@ -40,12 +39,10 @@
 import { ref } from 'vue'
 import RecipesTab from './RecipesTab.vue'
 import MealsPlaceholder from './MealsPlaceholder.vue'
-import ShoppingPlaceholder from './ShoppingPlaceholder.vue'
 
 const tabs = [
   { key: 'recipes', label: 'Recipes' },
   { key: 'meals', label: 'Meals' },
-  { key: 'shopping', label: 'Shopping' },
 ]
 
 const activeTab = ref('recipes')

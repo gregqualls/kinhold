@@ -2,6 +2,72 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-13 — Session 32b: Shopping UX Fixes + CI Repair
+
+### What Was Done
+- **CI fixed** — Larastan was failing on PR #162 due to (1) `$this->is_recurring` / `$this->default_quantity` not resolved in `ShoppingItemResource` (fixed: use `$this->resource->`) and (2) redundant `??` null coalesce on a regex match group that always exists (fixed: removed).
+- **CreateListInline copy** — Headline changed to "Create your first list", subtitle clarified it's naming one list (not listing all stores), placeholder shows singular examples, button joined flush to input (no gap), bottom hint says "more lists" not "more stores".
+
+### Files Modified
+- `app/Http/Resources/ShoppingItemResource.php`
+- `app/Services/ShoppingListService.php`
+- `resources/js/components/shopping/CreateListInline.vue`
+
+---
+
+## 2026-04-13 — Session 32: Food Step 5 — Shopping Frontend + UX Rework
+
+### What Was Done
+- **Shopping UX rework** — Replaced trip-based model (create list → complete trip) with persistent store-based lists. Lists live forever — you add items all week, check them off at the store, and "Clear Bought" resets. No more "Complete Trip" flow.
+- **Recurring items** — Any item can be pinned as recurring (replaces separate Staples Manager). When you clear bought items, recurring ones auto-reappear with their default quantity. Pill-shaped toggle with "Recurring" label and golden sand active state.
+- **Shopping window filter** — "All", "Next 2d", "Next 3d", "This week" pills filter items by `needed_date`. Items with no date always show. Designed for frequent shoppers (UK/Europe every-other-day pattern).
+- **Ingredient picker** — "Add from Recipe" is now a two-step modal: pick recipe → select specific ingredients (all selected by default, with select/deselect all). Prevents dumping unwanted items on the list.
+- **Ingredient dedup** — Adding recipe ingredients checks for existing items on the list (case-insensitive). Matching items aggregate quantities (if same unit) and append recipe attribution instead of creating duplicates.
+- **List management** — Three-dot menu on list header: Rename + Delete list (with confirmation). Delete only shown when multiple lists exist.
+- **Shopping as standalone nav** — Shopping promoted from a tab inside Food to its own `/shopping` route with dedicated sidebar + bottom nav entry (gated behind food module).
+- **Errands eliminated** — Redundant with persistent store-based lists. All errands code removed: migration, model, controller, policy, store, views, components, routes, tests.
+- **Food tab simplified** — Now just "Recipes" and "Meals" tabs (no Shopping sub-tab).
+- **Migration** — Added `is_recurring` (boolean) and `default_quantity` (string) to `shopping_items` table.
+- **Backend** — 3 new service methods (`clearChecked`, `moveItem`, `toggleRecurring`), 3 new controller endpoints, updated policy with 3 new methods. `createList` no longer auto-populates staples. `addItem` accepts `is_recurring` param.
+- **6 new tests** — Clear checked (non-recurring deleted, recurring reset, unchecked preserved), move item, cross-family move rejection, toggle recurring with default quantity capture.
+- **Bug fixes** — Autocomplete dropdown no longer reopens after adding an item. Fixed by guarding `@focus` handler against empty input.
+
+### Files Created
+- `database/migrations/2026_04_13_000004_add_recurring_to_shopping_items.php`
+- `resources/js/components/shopping/ListHeader.vue`, `CreateListInline.vue`
+- `resources/js/views/food/ShoppingTab.vue` (rewritten)
+- `resources/js/stores/shopping.js` (rewritten)
+
+### Files Modified
+- `app/Services/ShoppingListService.php` — clearChecked, moveItem, toggleRecurring, ingredient dedup
+- `app/Http/Controllers/Api/V1/ShoppingListController.php` — 3 new endpoints
+- `app/Policies/ShoppingListPolicy.php` — 3 new policy methods
+- `app/Models/ShoppingItem.php` — is_recurring, default_quantity
+- `app/Http/Resources/ShoppingItemResource.php` — is_recurring, default_quantity
+- `app/Http/Requests/Shopping/AddShoppingItemRequest.php` — is_recurring, default_quantity
+- `routes/api.php` — clear-checked, move, toggle-recurring routes; errands routes removed
+- `resources/js/components/shopping/ShoppingListItem.vue` — recurring toggle, move-to menu
+- `resources/js/components/shopping/AddItemInput.vue` — recurring toggle, focus fix
+- `resources/js/components/shopping/PreShopChecklist.vue` — shopping window filter
+- `resources/js/components/layout/Sidebar.vue` — Errands → Shopping
+- `resources/js/components/layout/BottomNav.vue` — Errands → Shopping
+- `resources/js/router/index.js` — /shopping route added, /errands removed
+- `resources/js/views/food/FoodView.vue` — Shopping tab removed, just Recipes + Meals
+- `app/Providers/AppServiceProvider.php` — ErrandPolicy registration removed
+- `tests/Feature/ShoppingTest.php` — 6 new tests, updated staple auto-populate test
+
+### Files Deleted
+- `resources/js/components/shopping/TripControls.vue`, `StaplesManager.vue`
+- `resources/js/views/errands/ErrandsView.vue`, `resources/js/components/errands/*`
+- `resources/js/stores/errands.js`
+- `app/Http/Controllers/Api/V1/ErrandController.php`, `app/Models/ErrandItem.php`
+- `app/Policies/ErrandPolicy.php`, `app/Http/Resources/ErrandItemResource.php`
+- `app/Http/Requests/Errand/StoreErrandRequest.php`, `UpdateErrandRequest.php`
+- `database/migrations/2026_04_13_000001_create_errand_items_table.php`
+- `tests/Feature/ErrandTest.php`
+
+---
+
 ## 2026-04-13 — Session 31: Food Module Step 4 — Shopping Backend + Product Catalog
 
 ### What Was Done

@@ -137,16 +137,14 @@ class ShoppingTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Auto-populate staples
+    // Create list (no longer auto-populates staples)
     // -------------------------------------------------------------------------
 
-    public function test_create_list_auto_populates_active_staples(): void
+    public function test_create_list_starts_empty(): void
     {
         Sanctum::actingAs($this->parent);
 
         Staple::create(['family_id' => $this->family->id, 'created_by' => $this->parent->id, 'name' => 'Milk', 'default_quantity' => '1 gallon', 'is_active' => true]);
-        Staple::create(['family_id' => $this->family->id, 'created_by' => $this->parent->id, 'name' => 'Eggs', 'default_quantity' => '1 dozen', 'is_active' => true]);
-        Staple::create(['family_id' => $this->family->id, 'created_by' => $this->parent->id, 'name' => 'Bread', 'default_quantity' => null, 'is_active' => false]);
 
         $response = $this->postJson('/api/v1/shopping/lists', ['name' => 'Weekly']);
 
@@ -155,9 +153,7 @@ class ShoppingTest extends TestCase
         $listId = $response->json('list.id');
         $items = ShoppingItem::where('shopping_list_id', $listId)->get();
 
-        $this->assertCount(2, $items);
-        $this->assertEqualsCanonicalizing(['Milk', 'Eggs'], $items->pluck('name')->toArray());
-        $this->assertTrue($items->every(fn ($i) => $i->source === ShoppingItemSource::Staple));
+        $this->assertCount(0, $items);
     }
 
     // -------------------------------------------------------------------------
@@ -299,27 +295,226 @@ class ShoppingTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Complete trip
+    // Clear Checked
     // -------------------------------------------------------------------------
 
-    public function test_complete_trip_deactivates_list(): void
+    public function test_clear_checked_deletes_non_recurring_items(): void
     {
         Sanctum::actingAs($this->parent);
 
         $list = ShoppingList::create([
             'family_id' => $this->family->id,
             'created_by' => $this->parent->id,
-            'name' => 'Active List',
-            'is_active' => true,
+            'name' => 'Tesco',
         ]);
 
-        $response = $this->postJson("/api/v1/shopping/lists/{$list->id}/complete");
+        // Create 3 checked non-recurring items
+        foreach (['Bread', 'Butter', 'Cheese'] as $name) {
+            ShoppingItem::create([
+                'shopping_list_id' => $list->id,
+                'family_id' => $this->family->id,
+                'added_by' => $this->parent->id,
+                'name' => $name,
+                'source' => ShoppingItemSource::Manual,
+                'is_checked' => true,
+                'checked_by' => $this->parent->id,
+                'checked_at' => now(),
+            ]);
+        }
 
-        $response->assertOk()->assertJsonPath('list.is_active', false);
-        $fresh = $list->fresh();
-        $this->assertFalse($fresh->is_active);
-        $this->assertNotNull($fresh->completed_at);
-        $this->assertDatabaseHas('shopping_lists', ['id' => $list->id]);
+        $response = $this->postJson("/api/v1/shopping/lists/{$list->id}/clear-checked");
+
+        $response->assertOk()
+            ->assertJsonPath('cleared', 3)
+            ->assertJsonPath('recurring_reset', 0);
+
+        $this->assertCount(0, ShoppingItem::where('shopping_list_id', $list->id)->get());
+    }
+
+    public function test_clear_checked_resets_recurring_items(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $list = ShoppingList::create([
+            'family_id' => $this->family->id,
+            'created_by' => $this->parent->id,
+            'name' => 'Tesco',
+        ]);
+
+        // Create a checked recurring item
+        $milk = ShoppingItem::create([
+            'shopping_list_id' => $list->id,
+            'family_id' => $this->family->id,
+            'added_by' => $this->parent->id,
+            'name' => 'Milk',
+            'quantity' => '2 pints',
+            'source' => ShoppingItemSource::Manual,
+            'is_checked' => true,
+            'checked_by' => $this->parent->id,
+            'checked_at' => now(),
+            'is_recurring' => true,
+            'default_quantity' => '1 gallon',
+        ]);
+
+        // Create a checked non-recurring item
+        ShoppingItem::create([
+            'shopping_list_id' => $list->id,
+            'family_id' => $this->family->id,
+            'added_by' => $this->parent->id,
+            'name' => 'Special Cake',
+            'source' => ShoppingItemSource::Manual,
+            'is_checked' => true,
+            'checked_by' => $this->parent->id,
+            'checked_at' => now(),
+        ]);
+
+        $response = $this->postJson("/api/v1/shopping/lists/{$list->id}/clear-checked");
+
+        $response->assertOk()
+            ->assertJsonPath('cleared', 1)
+            ->assertJsonPath('recurring_reset', 1);
+
+        // Recurring item was reset, not deleted
+        $fresh = $milk->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertFalse($fresh->is_checked);
+        $this->assertNull($fresh->checked_by);
+        $this->assertNull($fresh->checked_at);
+        $this->assertEquals('1 gallon', $fresh->quantity);
+
+        // Non-recurring item was deleted
+        $this->assertCount(1, ShoppingItem::where('shopping_list_id', $list->id)->get());
+    }
+
+    public function test_clear_checked_ignores_unchecked_items(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $list = ShoppingList::create([
+            'family_id' => $this->family->id,
+            'created_by' => $this->parent->id,
+            'name' => 'Tesco',
+        ]);
+
+        ShoppingItem::create([
+            'shopping_list_id' => $list->id,
+            'family_id' => $this->family->id,
+            'added_by' => $this->parent->id,
+            'name' => 'Unchecked Item',
+            'source' => ShoppingItemSource::Manual,
+            'is_checked' => false,
+        ]);
+
+        ShoppingItem::create([
+            'shopping_list_id' => $list->id,
+            'family_id' => $this->family->id,
+            'added_by' => $this->parent->id,
+            'name' => 'Checked Item',
+            'source' => ShoppingItemSource::Manual,
+            'is_checked' => true,
+            'checked_by' => $this->parent->id,
+            'checked_at' => now(),
+        ]);
+
+        $response = $this->postJson("/api/v1/shopping/lists/{$list->id}/clear-checked");
+
+        $response->assertOk()->assertJsonPath('cleared', 1);
+        $this->assertCount(1, ShoppingItem::where('shopping_list_id', $list->id)->get());
+        $this->assertDatabaseHas('shopping_items', ['name' => 'Unchecked Item']);
+    }
+
+    public function test_child_cannot_clear_checked(): void
+    {
+        Sanctum::actingAs($this->child);
+
+        $list = ShoppingList::create([
+            'family_id' => $this->family->id,
+            'created_by' => $this->parent->id,
+            'name' => 'Family List',
+        ]);
+
+        $this->postJson("/api/v1/shopping/lists/{$list->id}/clear-checked")
+            ->assertStatus(403);
+    }
+
+    // -------------------------------------------------------------------------
+    // Move Item
+    // -------------------------------------------------------------------------
+
+    public function test_move_item_to_another_list(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $listA = ShoppingList::create(['family_id' => $this->family->id, 'created_by' => $this->parent->id, 'name' => 'Tesco']);
+        $listB = ShoppingList::create(['family_id' => $this->family->id, 'created_by' => $this->parent->id, 'name' => 'Costco']);
+
+        $item = ShoppingItem::create([
+            'shopping_list_id' => $listA->id,
+            'family_id' => $this->family->id,
+            'added_by' => $this->parent->id,
+            'name' => 'Chicken',
+            'source' => ShoppingItemSource::Manual,
+        ]);
+
+        $response = $this->postJson("/api/v1/shopping/items/{$item->id}/move", [
+            'target_list_id' => $listB->id,
+        ]);
+
+        $response->assertOk()->assertJsonPath('item.shopping_list_id', $listB->id);
+        $this->assertEquals($listB->id, $item->fresh()->shopping_list_id);
+    }
+
+    public function test_cannot_move_item_to_other_familys_list(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $list = ShoppingList::create(['family_id' => $this->family->id, 'created_by' => $this->parent->id, 'name' => 'My List']);
+        $otherList = ShoppingList::create(['family_id' => $this->otherFamily->id, 'created_by' => $this->otherParent->id, 'name' => 'Their List']);
+
+        $item = ShoppingItem::create([
+            'shopping_list_id' => $list->id,
+            'family_id' => $this->family->id,
+            'added_by' => $this->parent->id,
+            'name' => 'Secret Item',
+            'source' => ShoppingItemSource::Manual,
+        ]);
+
+        $response = $this->postJson("/api/v1/shopping/items/{$item->id}/move", [
+            'target_list_id' => $otherList->id,
+        ]);
+
+        $response->assertStatus(404);
+    }
+
+    // -------------------------------------------------------------------------
+    // Toggle Recurring
+    // -------------------------------------------------------------------------
+
+    public function test_toggle_recurring_sets_default_quantity(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $list = ShoppingList::create(['family_id' => $this->family->id, 'created_by' => $this->parent->id, 'name' => 'Tesco']);
+        $item = ShoppingItem::create([
+            'shopping_list_id' => $list->id,
+            'family_id' => $this->family->id,
+            'added_by' => $this->parent->id,
+            'name' => 'Milk',
+            'quantity' => '2 pints',
+            'source' => ShoppingItemSource::Manual,
+        ]);
+
+        // Toggle on
+        $response = $this->patchJson("/api/v1/shopping/items/{$item->id}/toggle-recurring");
+        $response->assertOk()
+            ->assertJsonPath('item.is_recurring', true)
+            ->assertJsonPath('item.default_quantity', '2 pints');
+
+        // Toggle off
+        $response = $this->patchJson("/api/v1/shopping/items/{$item->id}/toggle-recurring");
+        $response->assertOk()
+            ->assertJsonPath('item.is_recurring', false)
+            ->assertJsonPath('item.default_quantity', null);
     }
 
     // -------------------------------------------------------------------------

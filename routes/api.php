@@ -229,6 +229,8 @@ Route::prefix('v1')->group(function () {
             Route::patch('/items/{shoppingItem}/uncheck', [ShoppingListController::class, 'uncheckItem']);
             Route::patch('/items/{shoppingItem}/on-hand', [ShoppingListController::class, 'markOnHand']);
             Route::patch('/items/{shoppingItem}/need', [ShoppingListController::class, 'clearOnHand']);
+            Route::post('/items/{shoppingItem}/move', [ShoppingListController::class, 'moveItem']);
+            Route::patch('/items/{shoppingItem}/toggle-recurring', [ShoppingListController::class, 'toggleRecurring']);
 
             // Shopping lists
             Route::get('/lists', [ShoppingListController::class, 'index']);
@@ -236,7 +238,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/lists/{shoppingList}', [ShoppingListController::class, 'show']);
             Route::put('/lists/{shoppingList}', [ShoppingListController::class, 'update']);
             Route::delete('/lists/{shoppingList}', [ShoppingListController::class, 'destroy']);
-            Route::post('/lists/{shoppingList}/complete', [ShoppingListController::class, 'completeTrip']);
+            Route::post('/lists/{shoppingList}/clear-checked', [ShoppingListController::class, 'clearChecked']);
             Route::post('/lists/{shoppingList}/items', [ShoppingListController::class, 'addItem']);
             Route::post('/lists/{shoppingList}/add-recipe', [ShoppingListController::class, 'addRecipeToList']);
         });

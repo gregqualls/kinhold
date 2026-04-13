@@ -32,6 +32,7 @@ const OnboardingView = () => import('@/views/onboarding/OnboardingView.vue')
 // Food — lazy-loaded
 const FoodView = () => import('@/views/food/FoodView.vue')
 const RecipeDetailView = () => import('@/views/food/RecipeDetailView.vue')
+const ShoppingView = () => import('@/views/food/ShoppingTab.vue')
 
 const NotFoundView = () => import('@/views/NotFoundView.vue')
 
@@ -55,6 +56,7 @@ const routes = [
   { path: '/badges', name: 'Badges', component: BadgesView, meta: { requiresAuth: true, module: 'badges' } },
   { path: '/food', name: 'Food', component: FoodView, meta: { requiresAuth: true, module: 'food' } },
   { path: '/food/recipes/:id', name: 'RecipeDetail', component: RecipeDetailView, meta: { requiresAuth: true, module: 'food' } },
+  { path: '/shopping', name: 'Shopping', component: ShoppingView, meta: { requiresAuth: true, module: 'food' } },
   { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView, meta: { isOpen: true } },
 ]
