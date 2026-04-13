@@ -198,13 +198,23 @@ class ProductCatalogSeeder extends Seeder
             }
         }
 
-        // Insert in chunks for performance, skip duplicates
+        // Insert in chunks, gracefully handle constraint errors
         foreach (array_chunk($records, 100) as $chunk) {
-            ProductCatalog::upsert(
-                $chunk,
-                ['name'],
-                ['category', 'updated_at'],
-            );
+            try {
+                ProductCatalog::upsert(
+                    $chunk,
+                    ['name'],
+                    ['category', 'updated_at'],
+                );
+            } catch (\Exception $e) {
+                // If upsert fails (constraint not found), fall back to individual inserts
+                foreach ($chunk as $record) {
+                    ProductCatalog::firstOrCreate(
+                        ['name' => $record['name']],
+                        $record,
+                    );
+                }
+            }
         }
     }
 }

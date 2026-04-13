@@ -2,6 +2,43 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-12 — Session 30: Food Module Step 3 — Recipe Frontend UI
+
+### What Was Done
+- **Pinia recipes store** — Full data layer: CRUD, search/filter/sort, import (URL + photo), cook logs, ratings, favorites, tags, image upload. All actions return `{ success, error }`.
+- **FoodView + RecipesTab** — Tab container (Recipes / Meals / Shopping), recipe grid with search, tag filter chips, sort (Recent/A-Z/Rating), favorites toggle, and compact list view (localStorage persistence).
+- **RecipeCard + RecipeDetailView** — Cards with image, rating, time, tags, favorite toggle. Detail view with serving scaler, IngredientList, StepList, FamilyRating (5-star), and CookLog timeline.
+- **RecipeForm + RecipeImportModal** — Create/edit/import-preview form with image upload, dynamic ingredients, dynamic steps, tag multi-select. Import modal with URL and photo tabs — photo defaults to using the uploaded image.
+- **Navigation** — Food added to Sidebar and BottomNav, module-gated. Routes added to Vue Router.
+- **Bug fixes (from /review)** — HTML tag/entity stripping in imported recipe text, image extraction from JSON-LD + OpenGraph on URL import, `/storage/` prefix on all image paths, tag filter scoped to recipe tags only (not task tags), cross-family tag injection prevention via `Rule::exists` scoping, N+1 fix via eager-loaded ratings in RecipeService.
+- **Upsun fix** — Added `public/storage` mount to `.upsun/config.yaml` so uploaded images serve correctly on preview/production (symlink approach fails on Upsun's read-only build filesystem).
+- **Version bump** — 1.0.1 → 1.1.0 (minor, new Food module frontend).
+
+### Files Created
+- `resources/js/stores/recipes.js`
+- `resources/js/views/food/FoodView.vue`, `RecipesTab.vue`, `RecipeDetailView.vue`, `MealsPlaceholder.vue`, `ShoppingPlaceholder.vue`
+- `resources/js/components/recipes/RecipeCard.vue`, `RecipeForm.vue`, `RecipeImportModal.vue`, `IngredientList.vue`, `StepList.vue`, `FamilyRating.vue`, `CookLogEntry.vue`
+
+### Files Modified
+- `app/Http/Controllers/Api/V1/RecipeController.php` — image upload endpoint
+- `app/Http/Controllers/Api/V1/TagController.php` — `withCount('recipes')` added
+- `app/Http/Requests/Recipe/StoreRecipeRequest.php`, `UpdateRecipeRequest.php` — `Rule::exists` scoping, image_path field
+- `app/Http/Resources/RecipeResource.php` — N+1 fix via `$this->resource` cast
+- `app/Http/Resources/TagResource.php` — `recipes_count` field
+- `app/Services/RecipeImportService.php` — image extraction, HTML cleaning, photo defaults
+- `app/Services/RecipeService.php` — eager-load ratings, per_page cap
+- `database/seeders/DatabaseSeeder.php` — meal-category seed tags (Breakfast/Lunch/Dinner/Dessert/Snack)
+- `resources/js/components/layout/Sidebar.vue`, `BottomNav.vue` — Food nav item
+- `resources/js/router/index.js` — Food routes
+- `routes/api.php` — image upload route
+- `.upsun/config.yaml` — public/storage mount
+- `phpstan-baseline.neon` — removed stale ignores, added recipes_count
+
+### PR
+- [#158](https://github.com/gregqualls/kinhold/pull/158) — feat: Food Step 3: Recipe Frontend (Complete UI) (#150)
+
+---
+
 ## 2026-04-12 — Session 29: Food Module Step 1 — Recipe Backend
 
 ### What Was Done
