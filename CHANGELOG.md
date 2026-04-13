@@ -2,6 +2,19 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-13 — Session 32b: Shopping UX Fixes + CI Repair
+
+### What Was Done
+- **CI fixed** — Larastan was failing on PR #162 due to (1) `$this->is_recurring` / `$this->default_quantity` not resolved in `ShoppingItemResource` (fixed: use `$this->resource->`) and (2) redundant `??` null coalesce on a regex match group that always exists (fixed: removed).
+- **CreateListInline copy** — Headline changed to "Create your first list", subtitle clarified it's naming one list (not listing all stores), placeholder shows singular examples, button joined flush to input (no gap), bottom hint says "more lists" not "more stores".
+
+### Files Modified
+- `app/Http/Resources/ShoppingItemResource.php`
+- `app/Services/ShoppingListService.php`
+- `resources/js/components/shopping/CreateListInline.vue`
+
+---
+
 ## 2026-04-13 — Session 32: Food Step 5 — Shopping Frontend + UX Rework
 
 ### What Was Done
