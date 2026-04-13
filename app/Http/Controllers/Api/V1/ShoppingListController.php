@@ -32,8 +32,7 @@ class ShoppingListController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $lists = ShoppingList::where('family_id', $request->user()->family_id)
-            ->orderByDesc('is_active')
-            ->orderByDesc('created_at')
+            ->orderByDesc('updated_at')
             ->withCount('items')
             ->get();
 
@@ -167,6 +166,8 @@ class ShoppingListController extends Controller
 
         $validated = $request->validate([
             'recipe_id' => ['required', 'uuid', 'exists:recipes,id'],
+            'ingredient_ids' => ['nullable', 'array'],
+            'ingredient_ids.*' => ['uuid'],
         ]);
 
         $recipe = Recipe::where('id', $validated['recipe_id'])
@@ -177,13 +178,57 @@ class ShoppingListController extends Controller
             $shoppingList,
             $recipe,
             $request->user(),
+            ingredientIds: $validated['ingredient_ids'] ?? null,
         );
 
         return response()->json(['items' => ShoppingItemResource::collection($items)], 201);
     }
 
     // -------------------------------------------------------------------------
-    // Staples
+    // Clear Checked / Move / Recurring
+    // -------------------------------------------------------------------------
+
+    public function clearChecked(Request $request, ShoppingList $shoppingList): JsonResponse
+    {
+        $this->authorize('clearChecked', $shoppingList);
+
+        $result = $this->shoppingListService->clearChecked($shoppingList);
+
+        return response()->json([
+            'cleared' => $result['cleared'],
+            'recurring_reset' => $result['recurring_reset'],
+            'list' => new ShoppingListResource($shoppingList->fresh()->load(['items' => fn ($q) => $q->orderBy('category')->orderBy('sort_order')->orderBy('name')])),
+        ]);
+    }
+
+    public function moveItem(Request $request, ShoppingItem $shoppingItem): JsonResponse
+    {
+        $this->authorize('moveItem', $shoppingItem);
+
+        $validated = $request->validate([
+            'target_list_id' => ['required', 'uuid', 'exists:shopping_lists,id'],
+        ]);
+
+        $targetList = ShoppingList::where('id', $validated['target_list_id'])
+            ->where('family_id', $request->user()->family_id)
+            ->firstOrFail();
+
+        $item = $this->shoppingListService->moveItem($shoppingItem, $targetList);
+
+        return response()->json(['item' => new ShoppingItemResource($item)]);
+    }
+
+    public function toggleRecurring(Request $request, ShoppingItem $shoppingItem): JsonResponse
+    {
+        $this->authorize('toggleRecurring', $shoppingItem);
+
+        $item = $this->shoppingListService->toggleRecurring($shoppingItem);
+
+        return response()->json(['item' => new ShoppingItemResource($item)]);
+    }
+
+    // -------------------------------------------------------------------------
+    // Staples (deprecated — use recurring items instead)
     // -------------------------------------------------------------------------
 
     public function listStaples(Request $request): AnonymousResourceCollection

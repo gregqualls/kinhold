@@ -18,6 +18,8 @@ class AddShoppingItemRequest extends FormRequest
             'quantity' => ['nullable', 'string', 'max:100'],
             'category' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string', 'max:255'],
+            'is_recurring' => ['nullable', 'boolean'],
+            'default_quantity' => ['nullable', 'string', 'max:100'],
         ];
     }
 }
