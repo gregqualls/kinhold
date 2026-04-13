@@ -38,6 +38,21 @@ class ShoppingListPolicy
         return $user->family_id === $list->family_id && $user->isParent();
     }
 
+    public function clearChecked(User $user, ShoppingList $list): bool
+    {
+        return $user->family_id === $list->family_id && $user->isParent();
+    }
+
+    public function moveItem(User $user, ShoppingItem $item): bool
+    {
+        return $user->family_id === $item->family_id && $user->isParent();
+    }
+
+    public function toggleRecurring(User $user, ShoppingItem $item): bool
+    {
+        return $user->family_id === $item->family_id && $user->isParent();
+    }
+
     public function addItem(User $user, ShoppingList $list): bool
     {
         return $user->family_id === $list->family_id && $user->isParent();

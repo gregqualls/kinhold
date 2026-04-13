@@ -30,12 +30,15 @@ class ShoppingItem extends Model
         'meal_plan_entry_id',
         'needed_date',
         'notes',
+        'is_recurring',
+        'default_quantity',
         'sort_order',
     ];
 
     protected $casts = [
         'is_checked' => 'boolean',
         'has_on_hand' => 'boolean',
+        'is_recurring' => 'boolean',
         'checked_at' => 'datetime',
         'needed_date' => 'date',
         'source' => ShoppingItemSource::class,
