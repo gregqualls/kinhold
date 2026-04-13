@@ -2,6 +2,42 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-13 — Session 31: Food Module Step 4 — Shopping Backend + Product Catalog
+
+### What Was Done
+- **Shopping lists** — Full CRUD: create (auto-populates active staples), view, update, delete, complete trip (`is_active → false`). Route group under `/api/v1/shopping/lists`.
+- **Shopping items** — Add, update, remove, check/uncheck (records user + timestamp), mark/clear on-hand (pre-shop tracking). Source enum: `manual | recipe | staple`.
+- **Staples management** — Family-scoped recurring items. Auto-added on list creation via batch insert. Full CRUD + active toggle.
+- **Recipe → shopping** — `POST /lists/{id}/add-recipe` extracts all ingredients (quantity+unit concat, denormalized recipe name for soft-delete safety) into shopping items.
+- **Product catalog** — ~500 global items across 16 categories. `autoCategorize()` in `ShoppingListService` does exact-then-LIKE match for auto-assigning categories. Seeded via `ProductCatalogSeeder`.
+- **Auto-categorization** — `ShoppingListService::autoCategorize()` queries catalog on item add/recipe import.
+- **Policy + authorization** — `ShoppingListPolicy` covers all actions. Parents: full write. Children: check/uncheck + on-hand only. Policy registered for `ShoppingItem` via `Gate::policy()` in `AppServiceProvider`.
+- **Review fixes** — Batch insert (not N queries) for staple auto-population, unique constraint on `product_catalog.name`, `$request->validate()` bag used in `addRecipeToList`, `ProductCatalogSeeder` registered in `DatabaseSeeder`.
+- **Upsun fix** — `ProductCatalogSeeder` fallback to `firstOrCreate` when `upsert()` ON CONFLICT constraint isn't recognized on the preview environment.
+- **19 tests** — Covers all CRUD, module gating, family scoping, child permissions, auto-categorization, recipe integration, cross-family rejection.
+
+### Files Created
+- `database/migrations/2026_04_13_000001-000004` — product_catalog, shopping_lists, shopping_items, staples
+- `app/Models/ProductCatalog.php`, `ShoppingList.php`, `ShoppingItem.php`, `Staple.php`
+- `app/Services/ShoppingListService.php`
+- `app/Http/Controllers/Api/V1/ShoppingListController.php`
+- `app/Http/Requests/Shopping/` — 5 form request classes
+- `app/Http/Resources/ShoppingItemResource.php`, `ShoppingListResource.php`, `StapleResource.php`
+- `app/Policies/ShoppingListPolicy.php`
+- `app/Enums/ShoppingItemSource.php`
+- `database/seeders/ProductCatalogSeeder.php`
+- `tests/Feature/ShoppingTest.php` — 19 tests
+
+### Files Modified
+- `routes/api.php` — 17 new shopping routes
+- `app/Providers/AppServiceProvider.php` — `Gate::policy(ShoppingItem::class, ShoppingListPolicy::class)`
+- `database/seeders/DatabaseSeeder.php` — ProductCatalogSeeder registered
+
+### PR
+- [#159](https://github.com/gregqualls/kinhold/pull/159) — feat: Food Step 4 — Shopping Backend + Product Catalog (#151)
+
+---
+
 ## 2026-04-12 — Session 30: Food Module Step 3 — Recipe Frontend UI
 
 ### What Was Done
