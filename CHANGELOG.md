@@ -2,6 +2,33 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-14 — Session 33: Recipe Ingredient Bug Fixes (v1.2.1)
+
+### What Was Done
+- **Bug #160 fixed — ingredient parsing:** JSON-LD `recipeIngredient` strings (e.g. "2 cups flour") are now properly parsed into structured `quantity`/`unit`/`name`/`preparation` fields instead of dumping the whole string into `name`. Implemented `parseIngredientString()` with support for fractions, mixed numbers, unicode fractions, and a broad unit list. LLM prompts tightened with explicit CRITICAL rules and counter-examples. Added post-processing step in `parseLlmResponse()` that re-parses any ingredient where the LLM put the full string in `name` with no quantity/unit.
+- **Bug #161 fixed — fractional quantities:** Recipe ingredient quantities like `1/2`, `3/4`, `1 1/2`, `½`, `¾` no longer fail validation. Created `FractionalQuantity` rule with `parseToFloat()` static helper. Both `StoreRecipeRequest` and `UpdateRecipeRequest` use `prepareForValidation()` to normalise fractions to floats before the `numeric` rule runs. Frontend `RecipeForm.vue` converts fractions to floats on submit and displays stored decimals as human-readable fractions (0.5 → "1/2") when loading a recipe.
+- **Version bumped to 1.2.1**
+- **Issue #66 closed** — Meal planning marked complete (shipped in Steps 4 & 5).
+
+### Files Created
+- `app/Rules/FractionalQuantity.php` — validation rule + `parseToFloat()` + `floatToFraction()` helpers
+
+### Files Modified
+- `app/Services/RecipeImportService.php` — `parseIngredientString()`, `splitNamePrep()`, `parseFractionString()`, `normalizeLlmIngredients()`, tightened prompts
+- `app/Http/Requests/Recipe/StoreRecipeRequest.php` — `prepareForValidation()` fraction normalisation
+- `app/Http/Requests/Recipe/UpdateRecipeRequest.php` — `prepareForValidation()` fraction normalisation
+- `resources/js/components/recipes/RecipeForm.vue` — `decimalToFraction()` display helper, `parseFractionToFloat()` submit helper
+- `config/version.php` — 1.2.0 → 1.2.1
+- `tests/Feature/RecipeTest.php` — 3 new tests (slash fraction, unicode fraction, invalid quantity)
+- `tests/Feature/RecipeImportTest.php` — 2 new tests (JSON-LD ingredient parsing, LLM quantity-in-name recovery)
+
+### Test Results
+- 125 tests, 346 assertions — PASS
+- Pint: PASS
+- Larastan: 0 errors
+
+---
+
 ## 2026-04-13 — Session 32b: Shopping UX Fixes + CI Repair
 
 ### What Was Done
