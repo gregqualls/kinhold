@@ -2,25 +2,13 @@
 
 namespace App\Rules;
 
-use Closure;
-use Illuminate\Contracts\Validation\ValidationRule;
-
-class FractionalQuantity implements ValidationRule
+class FractionalQuantity
 {
-    public function validate(string $attribute, mixed $value, Closure $fail): void
-    {
-        if (is_null($value) || $value === '') {
-            return;
-        }
-
-        if (self::parseToFloat((string) $value) === null) {
-            $fail('The :attribute must be a valid number or fraction (e.g. 1/2, 1.5, ¾).');
-        }
-    }
-
     /**
      * Parse a quantity string (decimal, fraction, unicode fraction, mixed number) to float.
      * Returns null if the value cannot be parsed.
+     *
+     * Examples: "2" → 2.0, "1/2" → 0.5, "1 1/2" → 1.5, "½" → 0.5, "1¾" → 1.75
      */
     public static function parseToFloat(string $value): ?float
     {
@@ -88,46 +76,5 @@ class FractionalQuantity implements ValidationRule
         }
 
         return null;
-    }
-
-    /**
-     * Convert a float to a human-readable fraction string where applicable.
-     * e.g. 0.5 → "1/2", 1.5 → "1 1/2", 0.33... → "1/3", 2.0 → "2"
-     */
-    public static function floatToFraction(float $value): string
-    {
-        if ($value == floor($value)) {
-            return (string) (int) $value;
-        }
-
-        // Keys are strings to avoid PHP truncating float keys to int(0)
-        $commonFractions = [
-            '0.125' => '1/8',
-            '0.25' => '1/4',
-            '0.333' => '1/3',
-            '0.375' => '3/8',
-            '0.5' => '1/2',
-            '0.625' => '5/8',
-            '0.667' => '2/3',
-            '0.75' => '3/4',
-            '0.875' => '7/8',
-        ];
-
-        $whole = (int) floor($value);
-        $decimal = round($value - $whole, 3);
-
-        $fracStr = null;
-        foreach ($commonFractions as $dec => $frac) {
-            if (abs($decimal - $dec) < 0.005) {
-                $fracStr = $frac;
-                break;
-            }
-        }
-
-        if ($fracStr === null) {
-            return (string) $value;
-        }
-
-        return $whole > 0 ? "{$whole} {$fracStr}" : $fracStr;
     }
 }

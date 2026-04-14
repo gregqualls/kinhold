@@ -309,7 +309,7 @@ const parseFractionToFloat = (value) => {
   if (value === null || value === undefined || value === '') return null
   const str = String(value).trim()
   if (str === '') return null
-  if (!isNaN(parseFloat(str)) && isFinite(str)) return parseFloat(str)
+  if (Number.isFinite(Number(str))) return Number(str)
 
   const unicodeMap = { '½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1/3, '⅔': 2/3, '⅛': 0.125, '⅜': 0.375, '⅝': 0.625, '⅞': 0.875 }
   if (unicodeMap[str] !== undefined) return unicodeMap[str]
