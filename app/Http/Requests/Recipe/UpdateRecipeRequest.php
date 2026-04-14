@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Recipe;
 
+use App\Rules\FractionalQuantity;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -10,6 +11,30 @@ class UpdateRecipeRequest extends FormRequest
     public function authorize(): bool
     {
         return $this->user()->isParent();
+    }
+
+    /**
+     * Normalize fractional quantity strings (e.g. "1/2", "½") to floats
+     * before validation runs, so the `numeric` rule passes.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('ingredients')) {
+            $ingredients = collect($this->input('ingredients', []))
+                ->map(function (mixed $ing) {
+                    if (isset($ing['quantity']) && is_string($ing['quantity']) && $ing['quantity'] !== '') {
+                        $float = FractionalQuantity::parseToFloat($ing['quantity']);
+                        if ($float !== null) {
+                            $ing['quantity'] = $float;
+                        }
+                    }
+
+                    return $ing;
+                })
+                ->all();
+
+            $this->merge(['ingredients' => $ingredients]);
+        }
     }
 
     public function rules(): array

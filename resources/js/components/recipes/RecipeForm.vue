@@ -286,6 +286,53 @@ import { storeToRefs } from 'pinia'
 import { useRecipesStore } from '@/stores/recipes'
 import { XMarkIcon, CameraIcon } from '@heroicons/vue/24/outline'
 
+// Convert a decimal like 0.5 to a display string like "1/2" for common fractions.
+// Used when loading stored recipes into the form.
+const decimalToFraction = (value) => {
+  if (value === null || value === undefined || value === '') return ''
+  const num = parseFloat(value)
+  if (isNaN(num)) return String(value)
+  if (num === Math.floor(num)) return String(Math.floor(num))
+
+  const whole = Math.floor(num)
+  const dec = Math.round((num - whole) * 1000) / 1000
+  const map = { 0.125: '1/8', 0.25: '1/4', 0.333: '1/3', 0.375: '3/8', 0.5: '1/2', 0.625: '5/8', 0.667: '2/3', 0.75: '3/4', 0.875: '7/8' }
+
+  const frac = Object.entries(map).find(([d]) => Math.abs(dec - parseFloat(d)) < 0.005)?.[1]
+  if (!frac) return String(num)
+  return whole > 0 ? `${whole} ${frac}` : frac
+}
+
+// Parse a fraction/unicode/mixed-number string to a float for the API payload.
+// Returns the original string if it's already numeric, or null if empty.
+const parseFractionToFloat = (value) => {
+  if (value === null || value === undefined || value === '') return null
+  const str = String(value).trim()
+  if (str === '') return null
+  if (!isNaN(parseFloat(str)) && isFinite(str)) return parseFloat(str)
+
+  const unicodeMap = { '½': 0.5, '¼': 0.25, '¾': 0.75, '⅓': 1/3, '⅔': 2/3, '⅛': 0.125, '⅜': 0.375, '⅝': 0.625, '⅞': 0.875 }
+  if (unicodeMap[str] !== undefined) return unicodeMap[str]
+
+  // Integer + unicode: "1½"
+  for (const [ch, frac] of Object.entries(unicodeMap)) {
+    const m = str.match(new RegExp('^(\\d+)' + ch + '$'))
+    if (m) return parseInt(m[1]) + frac
+    const m2 = str.match(new RegExp('^(\\d+)\\s+' + ch + '$'))
+    if (m2) return parseInt(m2[1]) + frac
+  }
+
+  // Simple fraction: "1/2"
+  const sf = str.match(/^(\d+)\s*\/\s*(\d+)$/)
+  if (sf && parseInt(sf[2]) !== 0) return parseInt(sf[1]) / parseInt(sf[2])
+
+  // Mixed number: "1 1/2"
+  const mf = str.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/)
+  if (mf && parseInt(mf[3]) !== 0) return parseInt(mf[1]) + parseInt(mf[2]) / parseInt(mf[3])
+
+  return str // Return as-is; backend will reject if truly invalid
+}
+
 const props = defineProps({
   recipe: { type: Object, default: null },
   initialData: { type: Object, default: null },
@@ -340,7 +387,7 @@ const populateFromRecipe = (recipe) => {
   }
   form.ingredients = (recipe.ingredients || []).map((ing) => ({
     name: ing.name || '',
-    quantity: ing.quantity?.toString() || '',
+    quantity: decimalToFraction(ing.quantity),
     unit: ing.unit || '',
     preparation: ing.preparation || '',
     group_name: ing.group_name || '',
@@ -366,7 +413,7 @@ const populateFromImportPreview = (data) => {
   }
   form.ingredients = (data.ingredients || []).map((ing) => ({
     name: ing.name || '',
-    quantity: ing.quantity?.toString() || '',
+    quantity: decimalToFraction(ing.quantity),
     unit: ing.unit || '',
     preparation: ing.preparation || '',
     group_name: '',
@@ -451,7 +498,7 @@ const handleSubmit = () => {
       .filter((ing) => ing.name.trim())
       .map((ing, idx) => ({
         name: ing.name.trim(),
-        quantity: ing.quantity || null,
+        quantity: parseFractionToFloat(ing.quantity),
         unit: ing.unit || null,
         preparation: ing.preparation || null,
         group_name: ing.group_name || null,

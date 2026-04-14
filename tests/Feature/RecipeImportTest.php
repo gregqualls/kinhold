@@ -426,4 +426,111 @@ HTML;
         $response->assertStatus(501);
         $response->assertJsonPath('message', 'Social media import coming soon');
     }
+
+    // ── Ingredient parsing — JSON-LD path (#160) ──
+
+    public function test_json_ld_ingredient_strings_are_parsed_into_structured_fields(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $html = <<<'HTML'
+<!DOCTYPE html><html><head>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  "name": "Parsing Test",
+  "recipeIngredient": [
+    "2 cups flour",
+    "1/2 cup butter",
+    "3 large eggs",
+    "1 tsp vanilla extract, pure"
+  ],
+  "recipeInstructions": [{"@type": "HowToStep", "text": "Mix everything."}]
+}
+</script>
+</head><body></body></html>
+HTML;
+
+        Http::fake(['example.com/*' => Http::response($html, 200)]);
+
+        $response = $this->postJson('/api/v1/recipes/import/url?preview=1', [
+            'url' => 'https://example.com/recipe/parse-test',
+        ]);
+
+        $response->assertStatus(200);
+        $ingredients = $response->json('ingredients');
+
+        // "2 cups flour" — name must not contain the quantity
+        $flour = collect($ingredients)->firstWhere('name', 'flour');
+        $this->assertNotNull($flour, 'flour ingredient not found');
+        $this->assertEquals('2', $flour['quantity']);
+        $this->assertEquals('cups', $flour['unit']);
+
+        // "1/2 cup butter" — fraction parsed to decimal
+        $butter = collect($ingredients)->firstWhere('name', 'butter');
+        $this->assertNotNull($butter, 'butter ingredient not found');
+        $this->assertEquals('0.5', $butter['quantity']);
+        $this->assertEquals('cup', $butter['unit']);
+
+        // "3 large eggs" — no unit; "large" is an adjective bundled into the name
+        $eggs = collect($ingredients)->firstWhere('name', 'large eggs');
+        $this->assertNotNull($eggs, 'large eggs ingredient not found');
+        $this->assertEquals('3', $eggs['quantity']);
+        $this->assertNull($eggs['unit']);
+
+        // "1 tsp vanilla extract, pure" — preparation split on comma
+        $vanilla = collect($ingredients)->firstWhere('name', 'vanilla extract');
+        $this->assertNotNull($vanilla, 'vanilla extract ingredient not found');
+        $this->assertEquals('pure', $vanilla['preparation']);
+    }
+
+    // ── LLM quantity-in-name post-processing (#160) ──
+
+    public function test_llm_quantity_in_name_is_recovered_via_post_processing(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        // Simulate an LLM response where quantity ended up in the name field
+        $llmResponseBody = json_encode([
+            'content' => [[
+                'type' => 'text',
+                'text' => json_encode([
+                    'title' => 'Cheese Sauce',
+                    'description' => null,
+                    'servings' => 4,
+                    'prep_time' => 5,
+                    'cook_time' => 10,
+                    'ingredients' => [
+                        ['name' => '2 cups shredded cheese', 'quantity' => null, 'unit' => null, 'preparation' => null],
+                        ['name' => '1/2 cup milk', 'quantity' => null, 'unit' => null, 'preparation' => null],
+                    ],
+                    'instructions' => ['Melt cheese into milk.'],
+                ]),
+            ]],
+            'stop_reason' => 'end_turn',
+        ]);
+
+        Http::fake([
+            'example.com/*' => Http::response('<html><body>No JSON-LD here</body></html>', 200),
+            'api.anthropic.com/*' => Http::response($llmResponseBody, 200),
+        ]);
+
+        $response = $this->postJson('/api/v1/recipes/import/url?preview=1', [
+            'url' => 'https://example.com/cheese-sauce',
+        ]);
+
+        $response->assertStatus(200);
+        $ingredients = $response->json('ingredients');
+
+        $cheese = collect($ingredients)->firstWhere('name', 'shredded cheese');
+        $this->assertNotNull($cheese, 'shredded cheese ingredient not found after post-processing');
+        $this->assertEquals('2', $cheese['quantity']);
+        $this->assertEquals('cups', $cheese['unit']);
+
+        $milk = collect($ingredients)->firstWhere('name', 'milk');
+        $this->assertNotNull($milk, 'milk ingredient not found after post-processing');
+        $this->assertEquals('0.5', $milk['quantity']);
+        $this->assertEquals('cup', $milk['unit']);
+    }
 }
