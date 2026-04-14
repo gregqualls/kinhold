@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Family;
 use App\Models\Recipe;
 use App\Models\User;
+use App\Rules\FractionalQuantity;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
@@ -33,19 +34,26 @@ Return a JSON object with EXACTLY these fields:
   "cook_time": "Cook time in minutes (integer, optional)",
   "ingredients": [
     {
-      "name": "Ingredient name (string, required)",
-      "quantity": "Numeric amount as string (string, optional)",
-      "unit": "Unit of measure (string, optional)",
-      "preparation": "Prep instructions like 'diced' or 'minced' (string, optional)"
+      "name": "Ingredient name only — NO quantity or unit here (string, required)",
+      "quantity": "Numeric amount as decimal string, e.g. '2', '0.5', '1.5' (string, optional)",
+      "unit": "Unit of measure only, e.g. 'cups', 'tbsp', 'oz' (string, optional)",
+      "preparation": "Prep method only, e.g. 'diced', 'minced', 'melted' (string, optional)"
     }
   ],
   "instructions": ["Step 1 text", "Step 2 text", "..."]
 }
 
-Rules:
+CRITICAL ingredient rules — failure to follow these will break the app:
+- The `name` field must contain ONLY the ingredient name. Never put a quantity or unit in `name`.
+- CORRECT: "2 cups diced onion" → name: "onion", quantity: "2", unit: "cups", preparation: "diced"
+- WRONG:   "2 cups diced onion" → name: "2 cups diced onion", quantity: null, unit: null
+- CORRECT: "1/2 cup butter, melted" → name: "butter", quantity: "0.5", unit: "cup", preparation: "melted"
+- CORRECT: "3 large eggs" → name: "eggs", quantity: "3", unit: null, preparation: null
+- Convert fractions to decimals in the quantity field: 1/2 → "0.5", 1/4 → "0.25", 3/4 → "0.75"
+
+Other rules:
 - Extract ONLY recipe information. Ignore ads, navigation, comments.
 - If a field is not found, set it to null (except title and instructions which are required).
-- Separate ingredient preparation from the ingredient name (e.g., "2 cups diced onion" → name: "onion", quantity: "2", unit: "cups", preparation: "diced").
 - Instructions should be clean step strings without numbering prefixes.
 - Return valid JSON only. No markdown, no explanation.
 PROMPT;
@@ -59,12 +67,16 @@ Extract a structured recipe from this image. Return JSON with:
   "prep_time": 15,
   "cook_time": 30,
   "ingredients": [
-    {"name": "ingredient", "quantity": "2", "unit": "cups", "preparation": "diced"}
+    {"name": "ingredient name only", "quantity": "2", "unit": "cups", "preparation": "diced"}
   ],
   "instructions": ["Step 1", "Step 2"]
 }
 
-If any field cannot be determined from the image, set it to null.
+CRITICAL: The `name` field must contain ONLY the ingredient name — never the quantity or unit.
+- CORRECT: "2 cups flour" → name: "flour", quantity: "2", unit: "cups"
+- WRONG:   "2 cups flour" → name: "2 cups flour", quantity: null
+Convert fractions to decimals: 1/2 → "0.5", 1/4 → "0.25", 3/4 → "0.75".
+If any field cannot be determined, set it to null.
 Return valid JSON only.
 PROMPT;
 
@@ -287,18 +299,145 @@ PROMPT;
     }
 
     /**
-     * Parse a plain ingredient string into structured fields.
+     * Parse a plain ingredient string (from JSON-LD recipeIngredient lines) into
+     * structured quantity / unit / name / preparation fields.
+     *
+     * Handles: integers, decimals, fractions (1/2), mixed numbers (1 1/2),
+     * unicode fractions (½ ¼ ¾ ⅓ ⅔), and a broad list of common units.
      *
      * @return array<string, string|null>
      */
     private function parseIngredientString(string $line): array
     {
-        return [
-            'name' => $line,
-            'quantity' => null,
-            'unit' => null,
-            'preparation' => null,
+        // Unicode fraction → decimal replacements for regex matching
+        $unicodeReplace = ['½' => '0.5', '¼' => '0.25', '¾' => '0.75', '⅓' => '0.333', '⅔' => '0.667', '⅛' => '0.125', '⅜' => '0.375', '⅝' => '0.625', '⅞' => '0.875'];
+
+        // Quantity pattern: mixed number, fraction, integer+unicode, pure unicode, decimal, integer
+        $qtyPat = '(?:\d+\s+\d+\/\d+|\d+\/\d+|\d+[½¼¾⅓⅔⅛⅜⅝⅞]|[½¼¾⅓⅔⅛⅜⅝⅞]|\d+(?:\.\d+)?)';
+
+        $units = [
+            'cups?', 'c', 'tablespoons?', 'tbsps?', 'tbs?', 'T',
+            'teaspoons?', 'tsps?', 'ts?',
+            'pounds?', 'lbs?',
+            'ounces?', 'oz',
+            'grams?', 'g', 'kilograms?', 'kg',
+            'milliliters?', 'ml', 'mL', 'liters?', 'l', 'L',
+            'pints?', 'pt', 'quarts?', 'qt', 'gallons?', 'gal',
+            'cloves?', 'slices?', 'cans?', 'packages?', 'pkgs?',
+            'bunches?', 'stalks?', 'sprigs?', 'pinch(?:es)?', 'dash(?:es)?',
+            'handfuls?', 'pieces?', 'strips?', 'sticks?', 'heads?',
+            'inches?', 'in',
         ];
+        $unitPat = '(?:'.implode('|', $units).')';
+
+        // Try: [quantity] [unit] [rest]
+        if (preg_match("/^({$qtyPat})\s+({$unitPat})\.?\s+(.+)$/iu", $line, $m)) {
+            $rawQty = trim($m[1]);
+            $unit = rtrim(trim($m[2]), '.');
+            $rest = trim($m[3]);
+            [$name, $prep] = $this->splitNamePrep($rest);
+
+            return [
+                'name' => $name,
+                'quantity' => $this->parseFractionString($rawQty, $unicodeReplace),
+                'unit' => $unit,
+                'preparation' => $prep,
+            ];
+        }
+
+        // Try: [quantity] [rest] (no unit)
+        if (preg_match("/^({$qtyPat})\s+(.+)$/iu", $line, $m)) {
+            $rawQty = trim($m[1]);
+            $rest = trim($m[2]);
+            [$name, $prep] = $this->splitNamePrep($rest);
+
+            return [
+                'name' => $name,
+                'quantity' => $this->parseFractionString($rawQty, $unicodeReplace),
+                'unit' => null,
+                'preparation' => $prep,
+            ];
+        }
+
+        // No quantity — just the ingredient line
+        [$name, $prep] = $this->splitNamePrep($line);
+
+        return ['name' => $name, 'quantity' => null, 'unit' => null, 'preparation' => $prep];
+    }
+
+    /**
+     * Split "chicken breast, cubed" into ["chicken breast", "cubed"].
+     * If no comma, preparation is null.
+     *
+     * @return array{0: string, 1: string|null}
+     */
+    private function splitNamePrep(string $text): array
+    {
+        $parts = array_map('trim', explode(',', $text, 2));
+
+        return [$parts[0], $parts[1] ?? null];
+    }
+
+    /**
+     * Convert a raw quantity string (may contain unicode fractions or slash fractions)
+     * to a decimal string suitable for the quantity field.
+     *
+     * @param  array<string, string>  $unicodeReplace
+     */
+    private function parseFractionString(string $raw, array $unicodeReplace): string
+    {
+        // Replace unicode fractions with decimals first
+        $normalized = strtr($raw, $unicodeReplace);
+
+        $float = FractionalQuantity::parseToFloat($normalized);
+
+        if ($float === null) {
+            return $raw; // Return as-is if unparseable
+        }
+
+        // Return integer string if whole number, decimal otherwise
+        return $float == floor($float) ? (string) (int) $float : (string) $float;
+    }
+
+    /**
+     * Post-process LLM ingredient output: if the model put the full ingredient
+     * string in `name` with no quantity/unit, re-parse it.
+     *
+     * @param  array<string, mixed>  $parsed
+     * @return array<string, mixed>
+     */
+    private function normalizeLlmIngredients(array $parsed): array
+    {
+        if (empty($parsed['ingredients']) || ! is_array($parsed['ingredients'])) {
+            return $parsed;
+        }
+
+        $parsed['ingredients'] = array_map(function (mixed $ing) {
+            if (! is_array($ing)) {
+                return $ing;
+            }
+
+            // If quantity and unit are both absent but name looks like a full ingredient
+            // string (starts with a number or unicode fraction), re-parse it.
+            $hasQty = ! empty($ing['quantity']);
+            $hasUnit = ! empty($ing['unit']);
+            $name = trim((string) ($ing['name'] ?? ''));
+
+            if (! $hasQty && ! $hasUnit && $name !== '') {
+                $looksLikeFull = preg_match('/^[\d½¼¾⅓⅔⅛⅜⅝⅞]/u', $name);
+                if ($looksLikeFull) {
+                    $reparsed = $this->parseIngredientString($name);
+                    // Only apply if we actually extracted something
+                    if ($reparsed['quantity'] !== null || $reparsed['unit'] !== null) {
+                        return array_merge($ing, $reparsed);
+                    }
+                }
+            }
+
+            return $ing;
+        }, $parsed['ingredients']);
+
+        return $parsed;
     }
 
     /**
@@ -454,7 +593,7 @@ PROMPT;
             throw new HttpException(422, "Couldn't extract a recipe — try manual entry?");
         }
 
-        return $parsed;
+        return $this->normalizeLlmIngredients($parsed);
     }
 
     /**

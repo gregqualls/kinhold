@@ -65,6 +65,10 @@
           </div>
         </div>
 
+        <p class="text-xs text-lavender-400 dark:text-lavender-500">
+          Most recipe sites import for free. Pages without structured data use AI (counts toward API usage).
+        </p>
+
         <div class="flex gap-3">
           <button
             class="px-6 py-2.5 text-sm font-medium text-white bg-[#C4975A] hover:bg-[#D4A96A] rounded-[10px] transition-colors disabled:opacity-50"
@@ -90,7 +94,7 @@
             <p class="text-sm text-lavender-500 dark:text-lavender-400">
               {{ selectedFile ? selectedFile.name : 'Click to upload a photo of a recipe' }}
             </p>
-            <p class="text-xs text-lavender-400 dark:text-lavender-500 mt-1">JPEG, PNG, or HEIC. Max 10 MB.</p>
+            <p class="text-xs text-lavender-400 dark:text-lavender-500 mt-1">JPEG, PNG, or HEIC · Max 10 MB · Uses AI (counts toward API usage)</p>
           </div>
           <input
             ref="photoInput"

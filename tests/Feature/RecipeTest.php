@@ -472,4 +472,63 @@ class RecipeTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    // ── Fractional quantity validation (#161) ──
+
+    public function test_fractional_quantity_slash_fraction_is_accepted(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $response = $this->postJson('/api/v1/recipes', [
+            'title' => 'Fraction Test',
+            'instructions' => [['step' => 1, 'text' => 'Mix.']],
+            'ingredients' => [
+                ['name' => 'butter', 'quantity' => '1/2', 'unit' => 'cup'],
+                ['name' => 'sugar', 'quantity' => '3/4', 'unit' => 'cup'],
+                ['name' => 'flour', 'quantity' => '1 1/2', 'unit' => 'cups'],
+            ],
+        ]);
+
+        $response->assertStatus(201);
+        // Backend normalises fractions to floats before storing
+        $this->assertDatabaseHas('recipe_ingredients', ['name' => 'butter', 'quantity' => 0.5]);
+        $this->assertDatabaseHas('recipe_ingredients', ['name' => 'sugar', 'quantity' => 0.75]);
+        $this->assertDatabaseHas('recipe_ingredients', ['name' => 'flour', 'quantity' => 1.5]);
+    }
+
+    public function test_unicode_fractions_are_accepted(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $response = $this->postJson('/api/v1/recipes', [
+            'title' => 'Unicode Fraction Test',
+            'instructions' => [['step' => 1, 'text' => 'Mix.']],
+            'ingredients' => [
+                ['name' => 'milk', 'quantity' => '½', 'unit' => 'cup'],
+                ['name' => 'salt', 'quantity' => '¼', 'unit' => 'tsp'],
+                ['name' => 'cream', 'quantity' => '1½', 'unit' => 'cups'],
+            ],
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('recipe_ingredients', ['name' => 'milk', 'quantity' => 0.5]);
+        $this->assertDatabaseHas('recipe_ingredients', ['name' => 'salt', 'quantity' => 0.25]);
+        $this->assertDatabaseHas('recipe_ingredients', ['name' => 'cream', 'quantity' => 1.5]);
+    }
+
+    public function test_invalid_quantity_string_returns_422(): void
+    {
+        Sanctum::actingAs($this->parent);
+
+        $response = $this->postJson('/api/v1/recipes', [
+            'title' => 'Bad Quantity',
+            'instructions' => [['step' => 1, 'text' => 'Mix.']],
+            'ingredients' => [
+                ['name' => 'flour', 'quantity' => 'a lot', 'unit' => 'cups'],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['ingredients.0.quantity']);
+    }
 }
