@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Task extends Model
 {
@@ -45,6 +46,8 @@ class Task extends Model
         'recurrence_end',
         'allow_pileup',
         'parent_task_id',
+        'source_type',
+        'source_id',
     ];
 
     /**
@@ -189,6 +192,14 @@ class Task extends Model
     public function occurrences(): HasMany
     {
         return $this->hasMany(Task::class, 'parent_task_id');
+    }
+
+    /**
+     * Polymorphic source that generated this task (e.g. a MealPlanEntry).
+     */
+    public function sourceable(): MorphTo
+    {
+        return $this->morphTo('sourceable', 'source_type', 'source_id');
     }
 
     /**

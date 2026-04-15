@@ -1,41 +1,34 @@
 # Session Handoff
 
-**Date:** 2026-04-13
-**Branch:** `feature/151-food-step-4-shopping-backend` (PR #159 open, all checks green — ready to merge)
-**Last commit:** `424a8a9 fix: ProductCatalog seeder fallback for constraint issues`
+**Date:** 2026-04-15
+**Branch:** feature/153-meal-plan-backend
+**Last commit:** `c81e907 chore: revert version bump — save 1.3.0 for full food module`
 
 ## What Was Done This Session
-
-- **Shopping list backend** — Full `ShoppingList` / `ShoppingItem` / `Staple` data layer: 4 migrations, 4 models, 1 service, 1 controller, 1 policy, 5 form requests, 3 API resources, 17 routes.
-- **Product catalog** — ~500 global items across 16 categories. `ShoppingListService::autoCategorize()` does exact-then-LIKE lookup to auto-assign category when items are added.
-- **Staple auto-population** — On list creation, all active staples batch-insert into the new list (one query, not N queries).
-- **Recipe → shopping** — `addRecipeIngredients()` extracts ingredients from a recipe into shopping items (quantity+unit combined, denormalized recipe name for soft-delete safety).
-- **Review fixes applied** — Batch insert for staples, unique constraint on product_catalog.name, validated() bag in controller, seeder registered in DatabaseSeeder.
-- **Upsun deploy fix** — `ProductCatalogSeeder` now falls back to `firstOrCreate` if `upsert()` ON CONFLICT fails (Upsun PostgreSQL edge case on first deploy).
-- **19 tests passing** — Full coverage: CRUD, family scoping, child permissions, auto-categorization, recipe integration, module gating.
+- Built the full meal plan backend (issue #153) — 2 migrations, 5 models, `MealPlanService` (live pipeline), `RestaurantImportService`, `MealPlanPolicy`, 5 form requests, 5 API resources, 2 controllers, `DemoMealPlanSeeder`
+- Live pipeline: recipe entries → shopping list auto-populated; cook assignments → Task records with `source_type/source_id` morph; updateEntry is diff-based (only re-syncs what changed)
+- Fixed all `/review` blockers: family-scoped validation, missing `authorize()` on `rate()`, N+1 in restaurant index
+- PR #165 open and pushed — CI running
+- Version held at 1.2.1 (will bump to 1.3.0 when frontend step ships with #154)
 
 ## Quality State
-
-- **Tests:** 114 tests, 295 assertions — ✅ pass (2 deprecation notices, non-blocking)
-- **Pint:** ✅ pass
-- **Larastan:** ✅ pass (0 errors)
-- **ESLint:** ✅ pass (0 errors, 0 warnings)
-- **Build:** ✅ pass (3,211 modules)
-- **CI (GitHub Actions):** ✅ all 3 checks green
-- **Upsun preview:** ✅ deployed at https://pr-159-v7ocxmy-2rozcvqjtjdta.ch-1.platformsh.site/
+- Tests: 125 tests, 346 assertions — **PASS**
+- Pint: **FAIL** — line_ending issues across entire codebase (pre-existing Windows CRLF problem, not introduced this session; CI runs on Linux so it passes there)
+- Larastan: **PASS** — 0 errors
+- ESLint: **PASS** — 0 errors
+- Build: **PASS** — Vite built cleanly
 
 ## What's Next
-
-1. **Merge PR #159** — All checks green, QA ready. Run `/merge` to squash to main.
-2. **Food Step 5: Shopping Frontend (Issue #65)** — Build `ShoppingTab.vue` in FoodView with list/item management UI. Key components: list picker, item rows with check/on-hand toggles, add item form, staple manager, catalog search autocomplete.
-3. **Food Step 6: Meal Planning (Issue #66)** — After shopping UI is done. Weekly meal plan grid, drag-and-drop recipe assignment, auto-generate shopping list from the week's meals.
+1. **Merge PR #165** once CI is green — run `/qa` to get preview URL, then `/merge`
+2. **Food Step 7: Meal plan frontend (issue #154)** — Vue views + Pinia store for the weekly meal planner UI. Weekly grid, recipe/restaurant/preset picker drawer, cook assignment, drag-and-drop day/slot reordering
+3. **Food Step 8: Integration & polish (issue #155)** — MCP tools for meal planning, chatbot integration, dashboard widget, bump version to 1.3.0
 
 ## Blockers or Gotchas
-
-- **MCP tools not yet created** for shopping endpoints — deferred to a separate issue (not a blocker for merge). The API is fully functional without them.
-- **`ShoppingItem` policy registration** — non-standard: `ShoppingItem` maps to `ShoppingListPolicy` (not its own policy). Registered in `AppServiceProvider` via `Gate::policy()`. Don't create a separate `ShoppingItemPolicy` — it's intentionally consolidated.
-- **`needed_date` / `meal_plan_entry_id`** columns exist on shopping_items but aren't exposed yet — scaffolded for upcoming meal planning integration. Don't remove them.
+- `RestaurantImportService` does basic Google Maps URL parsing (extracts place name from URL path). Proper scraping/AI extraction is a future improvement — the current version creates a best-effort restaurant record.
+- `database/database.sqlite` shows as modified in working tree — local dev artifact, never commit it.
+- `MealPlanEntry` mutual exclusivity is enforced at BOTH the model boot level (saving hook) AND the form request level. This is intentional redundancy — the model-level check catches anything that bypasses validation.
+- Non-standard policy binding: `MealPlanEntry` maps to `MealPlanPolicy` (not its own policy). Registered in AppServiceProvider. Don't create a separate `MealPlanEntryPolicy`.
 
 ## Open Questions
-
-- None blocking the merge. After merge, Greg should decide: jump straight to shopping frontend (Step 5) or do a Phase A cleanup item first.
+- Step 7 frontend: drag-and-drop between day/slot cells — use `vue-draggable-plus` library or custom HTML5 drag API? Worth deciding before starting.
+- Should the meal plan week grid start on Sunday or Monday? Currently service uses `Carbon::MONDAY`. Greg may want to make this a family setting.

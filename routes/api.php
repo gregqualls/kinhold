@@ -9,10 +9,12 @@ use App\Http\Controllers\Api\V1\FamilyController;
 use App\Http\Controllers\Api\V1\FeaturedEventController;
 use App\Http\Controllers\Api\V1\GoogleAuthController;
 use App\Http\Controllers\Api\V1\McpTokenController;
+use App\Http\Controllers\Api\V1\MealPlanController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PointRequestController;
 use App\Http\Controllers\Api\V1\PointsController;
 use App\Http\Controllers\Api\V1\RecipeController;
+use App\Http\Controllers\Api\V1\RestaurantController;
 use App\Http\Controllers\Api\V1\RewardsController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\ShoppingListController;
@@ -241,6 +243,38 @@ Route::prefix('v1')->group(function () {
             Route::post('/lists/{shoppingList}/clear-checked', [ShoppingListController::class, 'clearChecked']);
             Route::post('/lists/{shoppingList}/items', [ShoppingListController::class, 'addItem']);
             Route::post('/lists/{shoppingList}/add-recipe', [ShoppingListController::class, 'addRecipeToList']);
+        });
+
+        // Meal Plans (module: food)
+        Route::prefix('/meal-plans')->middleware('module:food')->group(function () {
+            Route::get('/', [MealPlanController::class, 'index']);
+            Route::get('/current', [MealPlanController::class, 'current']);
+            Route::post('/', [MealPlanController::class, 'store']);
+            Route::get('/presets', [MealPlanController::class, 'presets']);
+            Route::post('/presets', [MealPlanController::class, 'storePreset']);
+            Route::put('/presets/{preset}', [MealPlanController::class, 'updatePreset']);
+            Route::delete('/presets/{preset}', [MealPlanController::class, 'deletePreset']);
+            Route::get('/{plan}', [MealPlanController::class, 'show']);
+            Route::post('/{plan}/entries', [MealPlanController::class, 'addEntry']);
+            Route::post('/{plan}/generate-shopping-list', [MealPlanController::class, 'generateShoppingList']);
+        });
+
+        // Meal Plan Entries (module: food) — top-level for entry-specific operations
+        Route::prefix('/meal-plan-entries')->middleware('module:food')->group(function () {
+            Route::put('/{entry}', [MealPlanController::class, 'updateEntry']);
+            Route::delete('/{entry}', [MealPlanController::class, 'removeEntry']);
+            Route::post('/{entry}/move', [MealPlanController::class, 'moveEntry']);
+        });
+
+        // Restaurants (module: food)
+        Route::prefix('/restaurants')->middleware('module:food')->group(function () {
+            Route::get('/', [RestaurantController::class, 'index']);
+            Route::post('/', [RestaurantController::class, 'store']);
+            Route::post('/import', [RestaurantController::class, 'import']);
+            Route::get('/{restaurant}', [RestaurantController::class, 'show']);
+            Route::put('/{restaurant}', [RestaurantController::class, 'update']);
+            Route::delete('/{restaurant}', [RestaurantController::class, 'destroy']);
+            Route::post('/{restaurant}/rate', [RestaurantController::class, 'rate']);
         });
 
         // Featured Events (unified — reads from family_events table)
