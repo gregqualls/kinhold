@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -92,6 +93,32 @@ class Family extends Model
     public function badges(): HasMany
     {
         return $this->hasMany(Badge::class);
+    }
+
+    /**
+     * Family has many MealPlans.
+     */
+    public function mealPlans(): HasMany
+    {
+        return $this->hasMany(MealPlan::class);
+    }
+
+    /**
+     * Family has many MealPresets.
+     */
+    public function mealPresets(): HasMany
+    {
+        return $this->hasMany(MealPreset::class);
+    }
+
+    /**
+     * Family belongs to many Restaurants (via family_restaurants pivot).
+     */
+    public function restaurants(): BelongsToMany
+    {
+        return $this->belongsToMany(Restaurant::class, 'family_restaurants')
+            ->withPivot('notes', 'is_favorite')
+            ->withTimestamps();
     }
 
     /**

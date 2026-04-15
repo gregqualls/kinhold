@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\MealPlanEntry;
 use App\Models\ShoppingItem;
+use App\Policies\MealPlanPolicy;
 use App\Policies\ShoppingListPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Gate;
@@ -42,5 +44,8 @@ class AppServiceProvider extends ServiceProvider
 
         // ShoppingItem uses ShoppingListPolicy (non-standard naming)
         Gate::policy(ShoppingItem::class, ShoppingListPolicy::class);
+
+        // MealPlanEntry uses MealPlanPolicy (entry-level checks live in the plan policy)
+        Gate::policy(MealPlanEntry::class, MealPlanPolicy::class);
     }
 }

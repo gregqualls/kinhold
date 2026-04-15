@@ -144,7 +144,7 @@ These features are live and working:
 | [#150](https://github.com/gregqualls/kinhold/issues/150) | Food Step 3: Recipe frontend UI | High | DONE |
 | [#151](https://github.com/gregqualls/kinhold/issues/151) | Food Step 4: Shopping backend + product catalog | High | DONE |
 | [#152](https://github.com/gregqualls/kinhold/issues/152) | Food Step 5: Shopping frontend + UX rework | High | DONE |
-| [#153](https://github.com/gregqualls/kinhold/issues/153) | Food Step 6: Meal plan backend | High | |
+| [#153](https://github.com/gregqualls/kinhold/issues/153) | Food Step 6: Meal plan backend | High | PR #165 open |
 | [#154](https://github.com/gregqualls/kinhold/issues/154) | Food Step 7: Meal plan frontend | High | |
 | [#155](https://github.com/gregqualls/kinhold/issues/155) | Food Step 8: Integration & polish (MCP, chatbot, dashboard, seeder) | Medium | |
 | [#65](https://github.com/gregqualls/kinhold/issues/65) | Shopping & grocery lists | Very High | DONE |
