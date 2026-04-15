@@ -106,6 +106,31 @@ parameters:
 			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
 
 		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$family_avg_rating\\.$#"
+			count: 2
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$is_favorite\\.$#"
+			count: 3
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$pivot\\.$#"
+			count: 3
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$pivot_notes\\.$#"
+			count: 3
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: "#^Parameter \\#1 \\$familyId of method App\\\\Models\\\\Restaurant\\:\\:familyAverageRating\\(\\) expects string, int given\\.$#"
+			count: 2
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: app/Http/Controllers/Api/V1/TaskController.php
@@ -191,6 +216,16 @@ parameters:
 			path: app/Http/Resources/FamilyResource.php
 
 		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyRestaurantResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/FamilyRestaurantResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyRestaurantResource\\:\\:\\$pivot\\.$#"
+			count: 2
+			path: app/Http/Resources/FamilyRestaurantResource.php
+
+		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$color\\.$#"
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
@@ -259,6 +294,136 @@ parameters:
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$updated_at\\.$#"
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$assigned_cooks\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$custom_title\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$date\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$display_title\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$effective_servings\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$meal_plan_id\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$meal_slot\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$notes\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$servings\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$sort_order\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanEntryResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$created_at\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$created_by\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$family_id\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$notes\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$shopping_list_id\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$week_start\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPlanResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$icon\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPresetResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPresetResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$is_system\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPresetResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$label\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPresetResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$sort_order\\.$#"
+			count: 1
+			path: app/Http/Resources/MealPresetResource.php
 
 		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$created_at\\.$#"
@@ -424,6 +589,46 @@ parameters:
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$updated_at\\.$#"
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$address\\.$#"
+			count: 1
+			path: app/Http/Resources/RestaurantResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$cuisine\\.$#"
+			count: 1
+			path: app/Http/Resources/RestaurantResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$google_maps_url\\.$#"
+			count: 1
+			path: app/Http/Resources/RestaurantResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$id\\.$#"
+			count: 1
+			path: app/Http/Resources/RestaurantResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$menu_url\\.$#"
+			count: 1
+			path: app/Http/Resources/RestaurantResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$name\\.$#"
+			count: 1
+			path: app/Http/Resources/RestaurantResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$notes\\.$#"
+			count: 1
+			path: app/Http/Resources/RestaurantResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$phone\\.$#"
+			count: 1
+			path: app/Http/Resources/RestaurantResource.php
 
 		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$category\\.$#"
@@ -991,6 +1196,16 @@ parameters:
 			path: app/Models/FeaturedEvent.php
 
 		-
+			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			count: 1
+			path: app/Models/MealPlan.php
+
+		-
+			message: "#^Instanceof between string and App\\\\Enums\\\\MealSlot will always evaluate to false\\.$#"
+			count: 1
+			path: app/Models/MealPlan.php
+
+		-
 			message: "#^Strict comparison using \\=\\=\\= between string and App\\\\Enums\\\\PointRequestStatus\\:\\:Pending will always evaluate to false\\.$#"
 			count: 1
 			path: app/Models/PointRequest.php
@@ -1099,6 +1314,26 @@ parameters:
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 2
 			path: app/Services/IcsCalendarService.php
+
+		-
+			message: "#^Argument of an invalid type string supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: app/Services/MealPlanService.php
+
+		-
+			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			count: 4
+			path: app/Services/MealPlanService.php
+
+		-
+			message: "#^Parameter \\#2 \\$mealPlanEntryId of method App\\\\Services\\\\ShoppingListService\\:\\:removeRecipeItems\\(\\) expects string, int given\\.$#"
+			count: 4
+			path: app/Services/MealPlanService.php
+
+		-
+			message: "#^Parameter \\#4 \\$mealPlanEntryId of method App\\\\Services\\\\ShoppingListService\\:\\:addRecipeIngredients\\(\\) expects string\\|null, int given\\.$#"
+			count: 4
+			path: app/Services/MealPlanService.php
 
 		-
 			message: "#^Access to an undefined property App\\\\Models\\\\PointTransaction\\:\\:\\$total_points\\.$#"
