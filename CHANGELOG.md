@@ -2,6 +2,45 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-15 — Session 34: Food Step 6 — Meal Plan Backend (PR #165)
+
+### What Was Done
+- **Meal plan backend (issue #153)** — Full "live pipeline" backend: 2 new migrations (source morphTo on tasks + 5 meal plan tables), 5 new models, `MealPlanService`, `RestaurantImportService`, `MealPlanPolicy`, 5 form requests, 5 API resources, 2 controllers, demo seeder
+- **Live pipeline:** Recipe entries auto-populate the shopping list via `ShoppingListService`; cook assignments cascade into `Task` records with `source_type/source_id` morph columns; updateEntry is diff-based (only re-syncs what changed)
+- **Restaurant management:** Global `restaurants` table + `family_restaurants` pivot; `RestaurantImportService` parses Google Maps URLs; per-family notes, favorites, and ratings
+- **MealPlanPolicy:** Scoped to family; parent-only for destructive/preset actions; registered non-standard binding in AppServiceProvider (`MealPlanEntry → MealPlanPolicy`)
+- **Review blockers fixed:** Family-scoped validation on all source exists rules, `authorize()` on `rate()`, N+1 eliminated in restaurant index
+- **Version held at 1.2.1** — will bump to 1.3.0 when full food module (backend + frontend) ships
+- **PR #165 open** — CI running, preview environment deploying
+
+### Files Created
+- `database/migrations/2026_04_15_000001_add_source_to_tasks_table.php`
+- `database/migrations/2026_04_15_000002_create_meal_plan_tables.php`
+- `app/Models/{MealPlan,MealPlanEntry,MealPreset,Restaurant,FamilyRestaurant}.php`
+- `app/Services/{MealPlanService,RestaurantImportService}.php`
+- `app/Policies/MealPlanPolicy.php`
+- `app/Http/Requests/MealPlan/{StoreMealPlanRequest,StoreMealPlanEntryRequest,UpdateMealPlanEntryRequest,StoreRestaurantRequest,StoreMealPresetRequest}.php`
+- `app/Http/Resources/{MealPlanResource,MealPlanEntryResource,MealPresetResource,RestaurantResource,FamilyRestaurantResource}.php`
+- `app/Http/Controllers/Api/V1/{MealPlanController,RestaurantController}.php`
+- `database/seeders/DemoMealPlanSeeder.php`
+
+### Files Modified
+- `app/Models/Task.php` — added `source_type`, `source_id` to `$fillable` + `sourceable()` morphTo
+- `app/Models/Family.php` — added `mealPlans()`, `mealPresets()`, `restaurants()` relationships
+- `app/Providers/AppServiceProvider.php` — registered `MealPlanEntry → MealPlanPolicy`
+- `database/seeders/DatabaseSeeder.php` — added `DemoMealPlanSeeder`
+- `routes/api.php` — added meal plan + restaurant routes under `module:food`
+- `phpstan-baseline.neon` — regenerated after new service/model additions
+
+### Test Results
+- 125 tests, 346 assertions — PASS
+- Pint: FAIL (line_ending across entire codebase — pre-existing Windows CRLF issue, not introduced this session)
+- Larastan: 0 errors
+- ESLint: PASS
+- Vite build: PASS
+
+---
+
 ## 2026-04-14 — Session 33: Recipe Ingredient Bug Fixes (v1.2.1)
 
 ### What Was Done
