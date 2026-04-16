@@ -2,6 +2,46 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-16 — Session 35: Food Step 7 — Meal Plan Frontend (Issue #154)
+
+### What Was Done
+- **Weekly meal planner UI (issue #154)** — Full frontend for the meal planning module shipped
+- **Root bug fix:** `vue-draggable-plus` uses the default slot with `v-for`, NOT a `#item` named slot (as in the older `vuedraggable`). Changed both `MealDayColumn` and `MealDayCard` — this was why all 19 seeded entries were invisible
+- **Additional backend fixes:**
+  - `MealPlanService::getOrCreatePlan()` — rewrote `firstOrCreate` to explicit find-then-create (SQLite throws raw `PDOException` not `UniqueConstraintViolationException`); used `whereDate()` for date comparison (SQLite stores date-cast as datetime string)
+  - `RestaurantController` — fixed `family_avg_rating` → `family_average_rating` in `index()` and `show()` to match `RestaurantResource` and frontend
+  - All Pinia store response keys fixed: `response.data.data` → named keys (`restaurants`, `restaurant`, `meal_plan`, `entry`, `presets`)
+- **3 tabs in FoodView** — Recipes | Restaurants | Meals all wired up
+- **Restaurants tab** — Card grid with search, favorite heart, star ratings, SlidePanel details, Add/Import modals
+- **Meals tab** — 7-column weekly grid (desktop), collapsible day cards (mobile), week nav prev/next/"This Week", entry cards with type icons, drag-and-drop via vue-draggable-plus
+- **MealEntryPicker** — SlidePanel with 4 source tabs (Recipe/Restaurant/Preset/Custom), cook assignment, servings, notes
+- **Settings > Food** — "Week Starts On" select (Monday/Sunday), wired to `PUT /settings` + `Family::getWeekStartDay()`
+- **All 125 tests passing**
+
+### Files Created
+- `resources/js/stores/meals.js`
+- `resources/js/stores/restaurants.js`
+- `resources/js/views/food/MealsTab.vue`
+- `resources/js/views/food/RestaurantsTab.vue`
+- `resources/js/components/meals/MealEntryCard.vue`
+- `resources/js/components/meals/MealDayColumn.vue`
+- `resources/js/components/meals/MealDayCard.vue`
+- `resources/js/components/meals/MealEntryPicker.vue`
+
+### Files Modified
+- `resources/js/views/food/FoodView.vue` — 3 tabs (Recipes/Restaurants/Meals)
+- `resources/js/views/settings/SettingsView.vue` — Food section with week_start_day
+- `app/Models/Family.php` — `getWeekStartDay()` method
+- `app/Http/Controllers/Api/V1/SettingsController.php` — week_start_day in GET/PUT
+- `app/Services/MealPlanService.php` — SQLite-safe getOrCreatePlan + whereDate fix
+- `app/Http/Controllers/Api/V1/RestaurantController.php` — family_average_rating fix
+- `package.json` — added vue-draggable-plus
+
+### Files Deleted
+- `resources/js/views/food/MealsPlaceholder.vue`
+
+---
+
 ## 2026-04-15 — Session 34: Food Step 6 — Meal Plan Backend (PR #165)
 
 ### What Was Done

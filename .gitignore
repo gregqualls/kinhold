@@ -34,6 +34,7 @@ Thumbs.db
 # Testing
 .phpunit.result.cache
 /coverage
+/storage/framework/testing/
 
 # Quality tools
 .eslintcache
@@ -44,6 +45,9 @@ Thumbs.db
 
 # Session captures
 *-session-capture.md
+
+# Plugin-generated skills
+.github/skills/
 
 # Misc
 *.log

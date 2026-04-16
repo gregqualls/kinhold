@@ -17,13 +17,13 @@ class MealPlanService
     ) {}
 
     /**
-     * Get or create the plan for the current week (Monday start).
+     * Get or create the plan for the current week (uses family's week_start_day setting).
      */
     public function getCurrentWeekPlan(Family $family, User $user): MealPlan
     {
-        $monday = Carbon::now()->startOfWeek(Carbon::MONDAY)->toDateString();
+        $weekStart = Carbon::now()->startOfWeek($family->getWeekStartDay())->toDateString();
 
-        return $this->getOrCreatePlan($family, $user, $monday);
+        return $this->getOrCreatePlan($family, $user, $weekStart);
     }
 
     /**
@@ -31,10 +31,19 @@ class MealPlanService
      */
     public function getOrCreatePlan(Family $family, User $user, string $weekStart): MealPlan
     {
-        return MealPlan::firstOrCreate(
-            ['family_id' => $family->id, 'week_start' => $weekStart],
-            ['created_by' => $user->id]
-        )->load(['entries.recipe', 'entries.restaurant', 'entries.preset', 'shoppingList']);
+        $plan = MealPlan::where('family_id', $family->id)
+            ->whereDate('week_start', $weekStart)
+            ->first();
+
+        if (! $plan) {
+            $plan = MealPlan::create([
+                'family_id' => $family->id,
+                'week_start' => $weekStart,
+                'created_by' => $user->id,
+            ]);
+        }
+
+        return $plan->load(['entries.recipe', 'entries.restaurant', 'entries.preset', 'shoppingList']);
     }
 
     /**
