@@ -96,15 +96,19 @@ const isToday = computed(() => dt.value.hasSame(DateTime.now(), 'day'))
 
 const isExpanded = ref(isToday.value)
 
-const slots = [
+const ALL_SLOTS = [
   { key: 'breakfast', label: 'Breakfast', icon: SunIcon },
   { key: 'lunch', label: 'Lunch', icon: CloudIcon },
   { key: 'dinner', label: 'Dinner', icon: MoonIcon },
   { key: 'snack', label: 'Snack', icon: CakeIcon },
 ]
 
+const slots = computed(() =>
+  ALL_SLOTS.filter(s => mealsStore.enabledMealSlots.includes(s.key))
+)
+
 const totalEntries = computed(() =>
-  slots.reduce((sum, s) => sum + (props.entries?.[s.key]?.length || 0), 0)
+  slots.value.reduce((sum, s) => sum + (props.entries?.[s.key]?.length || 0), 0)
 )
 
 const localEntries = ref({

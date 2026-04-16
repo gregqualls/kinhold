@@ -56,21 +56,25 @@
       @action="mealsStore.fetchCurrentWeekPlan"
     />
 
-    <!-- Desktop: 7-column grid -->
+    <!-- Desktop: 7-column grid with horizontal scroll fallback -->
     <div
       v-else
-      class="hidden md:grid flex-1 overflow-y-auto px-4 md:px-6 py-3 gap-2"
-      :style="{ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }"
+      class="hidden md:block flex-1 overflow-y-auto overflow-x-auto px-4 md:px-6 py-3"
     >
-      <MealDayColumn
-        v-for="date in mealsStore.weekDates"
-        :key="date"
-        :date="date"
-        :entries="mealsStore.entriesByDayAndSlot[date] || {}"
-        @add-entry="openEntryPicker"
-        @entry-click="openEntryEdit"
-        @entry-delete="deleteEntry"
-      />
+      <div
+        class="grid gap-3 min-w-max"
+        :style="{ gridTemplateColumns: 'repeat(7, minmax(160px, 1fr))' }"
+      >
+        <MealDayColumn
+          v-for="date in mealsStore.weekDates"
+          :key="date"
+          :date="date"
+          :entries="mealsStore.entriesByDayAndSlot[date] || {}"
+          @add-entry="openEntryPicker"
+          @entry-click="openEntryEdit"
+          @entry-delete="deleteEntry"
+        />
+      </div>
     </div>
 
     <!-- Mobile: vertical day cards -->

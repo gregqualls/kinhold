@@ -55,6 +55,11 @@ export const useMealsStore = defineStore('meals', () => {
     return map
   })
 
+  const enabledMealSlots = computed(() => {
+    const authStore = useAuthStore()
+    return authStore.family?.settings?.meal_slots || ['breakfast', 'lunch', 'dinner', 'snack']
+  })
+
   const isCurrentWeek = computed(() => {
     if (!weekStartDate.value) return false
     const thisWeekStart = computeWeekStart(DateTime.now())
@@ -221,6 +226,7 @@ export const useMealsStore = defineStore('meals', () => {
     // Computed
     weekDates,
     entriesByDayAndSlot,
+    enabledMealSlots,
     isCurrentWeek,
     // Actions
     fetchCurrentWeekPlan,

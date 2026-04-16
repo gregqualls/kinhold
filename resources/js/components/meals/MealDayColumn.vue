@@ -78,12 +78,16 @@ const emit = defineEmits(['add-entry', 'entry-click', 'entry-delete'])
 
 const mealsStore = useMealsStore()
 
-const slots = [
+const ALL_SLOTS = [
   { key: 'breakfast', label: 'Breakfast', icon: SunIcon },
   { key: 'lunch', label: 'Lunch', icon: CloudIcon },
   { key: 'dinner', label: 'Dinner', icon: MoonIcon },
   { key: 'snack', label: 'Snack', icon: CakeIcon },
 ]
+
+const slots = computed(() =>
+  ALL_SLOTS.filter(s => mealsStore.enabledMealSlots.includes(s.key))
+)
 
 const dt = computed(() => DateTime.fromISO(props.date))
 const dayLabel = computed(() => dt.value.toFormat('EEE'))
