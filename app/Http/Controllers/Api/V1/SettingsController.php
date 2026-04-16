@@ -52,6 +52,8 @@ class SettingsController extends Controller
                     'users' => [],
                 ],
                 'children_can_change_avatar' => $settings['children_can_change_avatar'] ?? true,
+                'week_start_day' => $settings['week_start_day'] ?? 'monday',
+                'meal_slots' => $settings['meal_slots'] ?? ['breakfast', 'lunch', 'dinner', 'snack'],
                 'services' => [
                     'google_oauth' => ! empty(config('services.google.client_id')),
                     'google_calendar' => ! empty(config('kinhold.google.client_id')),
@@ -105,6 +107,9 @@ class SettingsController extends Controller
             'task_assignment.users' => 'nullable|array',
             'task_assignment.users.*' => 'uuid|exists:users,id',
             'children_can_change_avatar' => 'nullable|boolean',
+            'week_start_day' => 'nullable|string|in:sunday,monday',
+            'meal_slots' => 'nullable|array|min:1',
+            'meal_slots.*' => 'string|in:breakfast,lunch,dinner,snack',
         ]);
 
         $settings = $family->settings ?? [];
@@ -182,6 +187,14 @@ class SettingsController extends Controller
             $settings['children_can_change_avatar'] = (bool) $validated['children_can_change_avatar'];
         }
 
+        if ($request->filled('week_start_day')) {
+            $settings['week_start_day'] = $validated['week_start_day'];
+        }
+
+        if ($request->has('meal_slots')) {
+            $settings['meal_slots'] = $validated['meal_slots'];
+        }
+
         // Encrypt the API key before storing. Only update if a non-empty value is sent.
         // Sending an empty string clears the key.
         if ($request->has('ai_api_key')) {
@@ -218,6 +231,8 @@ class SettingsController extends Controller
                     'users' => [],
                 ],
                 'children_can_change_avatar' => $settings['children_can_change_avatar'] ?? true,
+                'week_start_day' => $settings['week_start_day'] ?? 'monday',
+                'meal_slots' => $settings['meal_slots'] ?? ['breakfast', 'lunch', 'dinner', 'snack'],
             ],
         ], 200);
     }

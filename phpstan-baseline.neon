@@ -106,7 +106,7 @@ parameters:
 			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$family_avg_rating\\.$#"
+			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$family_average_rating\\.$#"
 			count: 2
 			path: app/Http/Controllers/Api/V1/RestaurantController.php
 

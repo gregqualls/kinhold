@@ -21,6 +21,7 @@
     "pinia": "^2.1.0",
     "sortablejs": "^1.15.7",
     "vue": "^3.4.0",
+    "vue-draggable-plus": "^0.6.1",
     "vue-router": "^4.2.0"
   },
   "devDependencies": {

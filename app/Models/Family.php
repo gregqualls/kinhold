@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -127,6 +128,16 @@ class Family extends Model
     public function getLeaderboardPeriod(): string
     {
         return $this->settings['leaderboard_period'] ?? 'weekly';
+    }
+
+    /**
+     * Get the week start day for meal planning (Carbon::MONDAY or Carbon::SUNDAY).
+     */
+    public function getWeekStartDay(): int
+    {
+        $day = $this->settings['week_start_day'] ?? 'monday';
+
+        return $day === 'sunday' ? Carbon::SUNDAY : Carbon::MONDAY;
     }
 
     /**

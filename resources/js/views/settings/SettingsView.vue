@@ -855,7 +855,55 @@
         </div>
       </SettingsSection>
 
-      <!-- Section 5: Appearance -->
+      <!-- Section 5: Food -->
+      <SettingsSection
+        id="food"
+        title="Food"
+        description="Meal planning preferences"
+        :icon="FireIcon"
+        :model-value="expandedSections.has('food')"
+        @update:model-value="val => toggleSection('food', val)"
+      >
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
+            Week Starts On
+          </label>
+          <select v-model="weekStartDay" class="input-base w-full max-w-xs">
+            <option value="monday">Monday</option>
+            <option value="sunday">Sunday</option>
+          </select>
+          <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+            Controls the meal planner calendar and weekly shopping list boundaries.
+          </p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
+            Visible Meal Slots
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="slot in allMealSlots"
+              :key="slot.key"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors"
+              :class="mealSlots.includes(slot.key)
+                ? 'bg-[#C4975A]/10 border-[#C4975A]/40 text-[#C4975A]'
+                : 'bg-lavender-50 dark:bg-prussian-700 border-lavender-200 dark:border-prussian-600 text-lavender-500 dark:text-lavender-400 hover:border-[#C4975A]/30'"
+              @click="toggleMealSlot(slot.key)"
+            >
+              <component :is="slot.icon" class="w-3.5 h-3.5" />
+              {{ slot.label }}
+            </button>
+          </div>
+          <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+            Choose which meals to show on your planner. Hidden slots keep their data.
+          </p>
+        </div>
+        <BaseButton variant="primary" size="sm" :loading="savingFood" @click="saveFoodSection">
+          Save
+        </BaseButton>
+      </SettingsSection>
+
+      <!-- Section 6: Appearance -->
       <SettingsSection
         id="appearance"
         title="Appearance"
@@ -1407,9 +1455,12 @@ import {
   UsersIcon,
   ClipboardDocumentListIcon,
   CpuChipIcon,
+  CloudIcon,
+  CakeIcon,
   ShieldCheckIcon,
   SwatchIcon,
   BellIcon,
+  FireIcon,
   InformationCircleIcon,
   ArrowTopRightOnSquareIcon,
   XMarkIcon,
@@ -1542,6 +1593,8 @@ const moduleToggles = computed(() => {
   return result
 })
 const leaderboardPeriod = ref('weekly')
+const weekStartDay = ref('monday')
+const mealSlots = ref(['breakfast', 'lunch', 'dinner', 'snack'])
 const kudosCostEnabled = ref(false)
 
 // Default task points
@@ -2125,6 +2178,36 @@ const saveTasksPointsSection = async () => {
 
 
 
+// ---- Food Settings ----
+const allMealSlots = [
+  { key: 'breakfast', label: 'Breakfast', icon: SunIcon },
+  { key: 'lunch', label: 'Lunch', icon: CloudIcon },
+  { key: 'dinner', label: 'Dinner', icon: MoonIcon },
+  { key: 'snack', label: 'Snack', icon: CakeIcon },
+]
+
+const toggleMealSlot = (key) => {
+  const idx = mealSlots.value.indexOf(key)
+  if (idx === -1) {
+    mealSlots.value.push(key)
+  } else if (mealSlots.value.length > 1) {
+    mealSlots.value.splice(idx, 1)
+  }
+}
+
+const savingFood = ref(false)
+const saveFoodSection = async () => {
+  savingFood.value = true
+  try {
+    await api.put('/settings', { week_start_day: weekStartDay.value, meal_slots: mealSlots.value })
+    await authStore.fetchUser()
+    success('Food settings saved!')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to save food settings')
+  }
+  savingFood.value = false
+}
+
 // ---- MCP Token ----
 const fetchMcpTokenStatus = async () => {
   mcpLoading.value = true
@@ -2275,6 +2358,8 @@ onMounted(async () => {
   }
   leaderboardPeriod.value = settings.leaderboard_period || 'weekly'
   kudosCostEnabled.value = settings.kudos_cost_enabled ?? false
+  weekStartDay.value = settings.week_start_day || 'monday'
+  mealSlots.value = settings.meal_slots || ['breakfast', 'lunch', 'dinner', 'snack']
 
   // Initialize default task points
   defaultPoints.low = settings.default_points_low ?? 5
