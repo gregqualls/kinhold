@@ -1,14 +1,14 @@
 <template>
-  <div class="flex flex-col gap-1 min-w-0">
+  <div class="flex flex-col gap-1.5 min-w-0">
     <!-- Day header -->
     <div
-      class="text-center py-1.5 px-1 rounded-lg mb-1"
+      class="text-center py-2 px-1 rounded-xl mb-0.5"
       :class="isToday ? 'bg-[#C4975A]/10' : ''"
     >
-      <p class="text-xs font-medium uppercase tracking-wide" :class="isToday ? 'text-[#C4975A]' : 'text-lavender-500 dark:text-lavender-400'">
+      <p class="text-[11px] font-semibold uppercase tracking-wider" :class="isToday ? 'text-[#C4975A]' : 'text-[#9C9895]'">
         {{ dayLabel }}
       </p>
-      <p class="text-base font-bold" :class="isToday ? 'text-[#C4975A]' : 'text-prussian-500 dark:text-lavender-200'">
+      <p class="text-lg font-bold leading-tight" :class="isToday ? 'text-[#C4975A]' : 'text-[#1C1C1E] dark:text-[#F0EDE9]'">
         {{ dayNumber }}
       </p>
     </div>
@@ -22,9 +22,9 @@
       :data-slot="slot.key"
     >
       <!-- Slot label -->
-      <div class="flex items-center gap-1 px-1">
-        <span class="text-sm">{{ slot.emoji }}</span>
-        <span class="text-xs text-lavender-400 dark:text-lavender-500 font-medium">{{ slot.label }}</span>
+      <div class="flex items-center gap-1.5 px-1 pt-1">
+        <component :is="slot.icon" class="w-3.5 h-3.5 text-[#9C9895]" />
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-[#9C9895]">{{ slot.label }}</span>
       </div>
 
       <!-- Drop zone + entries -->
@@ -36,7 +36,7 @@
         chosen-class="ring-2 ring-[#C4975A]/50"
         force-fallback
         fallback-class="shadow-xl opacity-90"
-        class="min-h-[40px] flex flex-col gap-1 rounded-lg border border-dashed border-lavender-200 dark:border-prussian-700 p-1 transition-colors"
+        class="min-h-[36px] flex flex-col gap-1 rounded-[10px] border border-dashed border-[#E8E4DF] dark:border-[#2E2E32] p-1 transition-colors"
         :class="{ 'border-[#C4975A]/40 bg-[#C4975A]/5': isDraggingOver }"
         @end="onDragEnd"
       >
@@ -51,7 +51,7 @@
 
       <!-- Add button -->
       <button
-        class="flex items-center justify-center gap-1 py-1 px-2 text-xs text-lavender-400 dark:text-lavender-500 hover:text-[#C4975A] hover:bg-[#C4975A]/5 rounded-lg transition-colors"
+        class="flex items-center justify-center gap-1 py-1 px-2 text-xs text-[#9C9895] hover:text-[#C4975A] hover:bg-[#C4975A]/5 rounded-lg transition-colors"
         @click="$emit('add-entry', date, slot.key)"
       >
         <PlusIcon class="w-3.5 h-3.5" />
@@ -65,7 +65,7 @@
 import { ref, computed, watch } from 'vue'
 import { DateTime } from 'luxon'
 import { VueDraggable } from 'vue-draggable-plus'
-import { PlusIcon } from '@heroicons/vue/24/outline'
+import { PlusIcon, SunIcon, CloudIcon, MoonIcon, CakeIcon } from '@heroicons/vue/24/outline'
 import MealEntryCard from './MealEntryCard.vue'
 import { useMealsStore } from '@/stores/meals'
 
@@ -79,10 +79,10 @@ const emit = defineEmits(['add-entry', 'entry-click', 'entry-delete'])
 const mealsStore = useMealsStore()
 
 const slots = [
-  { key: 'breakfast', label: 'Breakfast', emoji: '🌅' },
-  { key: 'lunch', label: 'Lunch', emoji: '☀️' },
-  { key: 'dinner', label: 'Dinner', emoji: '🌙' },
-  { key: 'snack', label: 'Snack', emoji: '🍎' },
+  { key: 'breakfast', label: 'Breakfast', icon: SunIcon },
+  { key: 'lunch', label: 'Lunch', icon: CloudIcon },
+  { key: 'dinner', label: 'Dinner', icon: MoonIcon },
+  { key: 'snack', label: 'Snack', icon: CakeIcon },
 ]
 
 const dt = computed(() => DateTime.fromISO(props.date))
