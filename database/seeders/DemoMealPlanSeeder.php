@@ -77,7 +77,7 @@ class DemoMealPlanSeeder extends Seeder
         //  CURRENT WEEK MEAL PLAN
         // ─────────────────────────────────────────────
 
-        $monday = $now->copy()->startOfWeek(Carbon::MONDAY)->toDateString();
+        $monday = $now->copy()->startOfWeek($family->getWeekStartDay())->toDateString();
 
         $plan = MealPlan::create([
             'family_id' => $family->id,

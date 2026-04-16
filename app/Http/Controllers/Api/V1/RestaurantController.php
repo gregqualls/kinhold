@@ -33,7 +33,7 @@ class RestaurantController extends Controller
             ->map(function (Restaurant $restaurant) use ($family) {
                 $restaurant->pivot_notes = $restaurant->pivot->notes;
                 $restaurant->is_favorite = $restaurant->pivot->is_favorite ?? false;
-                $restaurant->family_avg_rating = $restaurant->familyAverageRating($family->id);
+                $restaurant->family_average_rating = $restaurant->familyAverageRating($family->id);
 
                 return $restaurant;
             });
@@ -94,7 +94,7 @@ class RestaurantController extends Controller
 
         $rest->pivot_notes = $rest->pivot->notes;
         $rest->is_favorite = $rest->pivot->is_favorite ?? false;
-        $rest->family_avg_rating = $rest->familyAverageRating($family->id);
+        $rest->family_average_rating = $rest->familyAverageRating($family->id);
 
         return response()->json(['restaurant' => $rest]);
     }

@@ -205,6 +205,7 @@ All routes are prefixed with `/api/v1/`. Auth routes are public, everything else
 11. **Follow the pipeline.** Use `/playbook` if unsure what's next. The full flow is:
     `/kickoff` → code → `/review` → `/check` → `/pr` → `/qa` → `/handoff` → `/merge` → `/cleanup`
 12. **Quality gates are mandatory.** `/check` must pass before `/pr`. No exceptions.
+13. **Upsun CLI requires Greg to log in first.** The Upsun plugin is installed but the CLI needs an active auth session. If any `upsun` command fails with an auth error, ask Greg to run `upsun auth:browser-login` in his terminal before proceeding.
 
 ## Local Development Setup
 
@@ -232,7 +233,7 @@ php artisan db:seed
 chmod +x setup.sh && ./setup.sh
 ```
 
-## Current Status (Updated: 2026-04-01)
+## Current Status (Updated: 2026-04-16)
 
 **Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, MCP server, and profile pictures all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.** Security audit complete (PR #110). Self-hosting infrastructure shipped (PR #115). CI pipeline + open-source community docs in place (PR #116).
 
@@ -281,11 +282,15 @@ chmod +x setup.sh && ./setup.sh
 - VaultEncryptionService uses a simple encrypt/decrypt — verify round-trip works on first real entry
 - Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
 
-**What's next (Phase F: Food & Meal Planning — in progress):**
+**What's next (Phase F: Food & Meal Planning — Steps 1–7 done):**
 - Issue #148 (Step 1) ✅ Recipe backend + module gating — DONE
 - Issue #149 (Step 2) ✅ Recipe import service (URL scraping + photo AI) — DONE
 - Issue #150 (Step 3) ✅ Recipe frontend UI (complete) — DONE (PR #158)
-- Issue #65+ (Steps 4–8) — Meal planning, shopping lists, MCP tools, AI integrations
+- Issue #151 (Step 4) ✅ Shopping backend + product catalog — DONE (PR #159)
+- Issue #162 (Step 5) ✅ Shopping frontend + UX — DONE (PR #162)
+- Issue #153 (Step 6) ✅ Meal plan backend (live pipeline) — DONE (PR #165)
+- Issue #154 (Step 7) ✅ Meal plan frontend (weekly calendar, restaurants tab, settings) — DONE (Session 35)
+- Issue #65+ (Step 8) — MCP tools for food/meals, AI integrations
 - See `docs/FOOD-FEATURES-SPEC.md` and `docs/FOOD-IMPLEMENTATION-PLAN.md` for the 8-step plan
 
 **Remaining Phase A work:**
@@ -326,7 +331,7 @@ These are Greg's ideas. Don't build them unless Greg specifically asks. Capture 
 - ~~Gamification: Points on tasks, badges/achievements, leaderboard~~ — IMPLEMENTED (Session 5)
 - Real-money rewards for kids ($ values on tasks, track earnings)
 - Family budget and expense tracking with allowances
-- ~~Meal planning, recipe storage, grocery lists~~ — IN PROGRESS (Phase F: Steps 1–3 done, shopping/meal planning next)
+- ~~Meal planning, recipe storage, grocery lists~~ — Steps 1–7 DONE. Step 8 (MCP tools) remaining.
 - Family chat/messaging with polls
 - Activity feed and notifications (push + email)
 - Mobile app (React Native or PWA)

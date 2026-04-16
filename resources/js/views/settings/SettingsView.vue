@@ -855,7 +855,33 @@
         </div>
       </SettingsSection>
 
-      <!-- Section 5: Appearance -->
+      <!-- Section 5: Food -->
+      <SettingsSection
+        id="food"
+        title="Food"
+        description="Meal planning preferences"
+        :icon="FireIcon"
+        :model-value="expandedSections.has('food')"
+        @update:model-value="val => toggleSection('food', val)"
+      >
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
+            Week Starts On
+          </label>
+          <select v-model="weekStartDay" class="input-base w-full max-w-xs">
+            <option value="monday">Monday</option>
+            <option value="sunday">Sunday</option>
+          </select>
+          <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+            Controls the meal planner calendar and weekly shopping list boundaries.
+          </p>
+        </div>
+        <BaseButton variant="primary" size="sm" :loading="savingFood" @click="saveFoodSection">
+          Save
+        </BaseButton>
+      </SettingsSection>
+
+      <!-- Section 6: Appearance -->
       <SettingsSection
         id="appearance"
         title="Appearance"
@@ -1410,6 +1436,7 @@ import {
   ShieldCheckIcon,
   SwatchIcon,
   BellIcon,
+  FireIcon,
   InformationCircleIcon,
   ArrowTopRightOnSquareIcon,
   XMarkIcon,
@@ -1542,6 +1569,7 @@ const moduleToggles = computed(() => {
   return result
 })
 const leaderboardPeriod = ref('weekly')
+const weekStartDay = ref('monday')
 const kudosCostEnabled = ref(false)
 
 // Default task points
@@ -2125,6 +2153,20 @@ const saveTasksPointsSection = async () => {
 
 
 
+// ---- Food Settings save ----
+const savingFood = ref(false)
+const saveFoodSection = async () => {
+  savingFood.value = true
+  try {
+    await api.put('/settings', { week_start_day: weekStartDay.value })
+    await authStore.fetchUser()
+    success('Food settings saved!')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to save food settings')
+  }
+  savingFood.value = false
+}
+
 // ---- MCP Token ----
 const fetchMcpTokenStatus = async () => {
   mcpLoading.value = true
@@ -2275,6 +2317,7 @@ onMounted(async () => {
   }
   leaderboardPeriod.value = settings.leaderboard_period || 'weekly'
   kudosCostEnabled.value = settings.kudos_cost_enabled ?? false
+  weekStartDay.value = settings.week_start_day || 'monday'
 
   // Initialize default task points
   defaultPoints.low = settings.default_points_low ?? 5
