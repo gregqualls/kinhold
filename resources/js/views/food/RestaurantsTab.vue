@@ -118,15 +118,6 @@
             />
           </div>
           <div>
-            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Cuisine</label>
-            <input
-              v-model="editFields.cuisine"
-              type="text"
-              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
-              placeholder="e.g. Italian, Chinese, Mexican"
-            />
-          </div>
-          <div>
             <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Address</label>
             <input
               v-model="editFields.address"
@@ -315,7 +306,6 @@
         </div>
 
         <BaseInput v-model="form.name" label="Name *" placeholder="Restaurant name" :error="formErrors.name" />
-        <BaseInput v-model="form.cuisine" label="Cuisine" placeholder="e.g. Italian, Chinese..." />
         <BaseInput v-model="form.address" label="Address" placeholder="Street address" />
         <BaseInput v-model="form.phone" label="Phone" placeholder="Phone number" />
         <BaseInput v-model="form.menu_url" label="Website" placeholder="https://..." />
@@ -339,7 +329,6 @@
       <!-- Manual form -->
       <div v-if="addTab === 'manual' && !previewData" class="px-6 pb-6 space-y-4">
         <BaseInput v-model="form.name" label="Name *" placeholder="e.g. Gusto Pizzeria" :error="formErrors.name" />
-        <BaseInput v-model="form.cuisine" label="Cuisine" placeholder="e.g. Italian, Mexican..." />
         <BaseInput v-model="form.address" label="Address" placeholder="123 Main St" />
         <BaseInput v-model="form.phone" label="Phone" placeholder="+1 (555) 000-0000" />
         <BaseInput v-model="form.menu_url" label="Website" placeholder="https://..." />
@@ -431,11 +420,7 @@ const restaurantMeta = (r) => {
   return items
 }
 
-const restaurantCardTags = (r) => {
-  const tagNames = (r.tags || []).map(t => t.name)
-  if (r.cuisine && !tagNames.includes(r.cuisine)) tagNames.unshift(r.cuisine)
-  return tagNames
-}
+const restaurantCardTags = (r) => (r.tags || []).map(t => t.name)
 
 // Tag creation (shared with form + detail)
 const createTag = async ({ name, color }) => {
@@ -453,7 +438,7 @@ const createTag = async ({ name, color }) => {
 
 // Detail panel
 const selectedRestaurant = ref(null)
-const editFields = ref({ name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '', tag_ids: [] })
+const editFields = ref({ name: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '', tag_ids: [] })
 const editNotes = ref('')
 const pendingRating = ref(null)
 const isDetailSaving = ref(false)
@@ -462,7 +447,6 @@ const openDetail = (restaurant) => {
   selectedRestaurant.value = restaurant
   editFields.value = {
     name: restaurant.name || '',
-    cuisine: restaurant.cuisine || '',
     address: restaurant.address || '',
     phone: restaurant.phone || '',
     google_maps_url: restaurant.google_maps_url || '',
@@ -528,7 +512,7 @@ const addTabs = [
   { key: 'import', label: 'From URL' },
   { key: 'manual', label: 'Manual' },
 ]
-const emptyForm = () => ({ name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '', tag_ids: [] })
+const emptyForm = () => ({ name: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '', tag_ids: [] })
 
 const uploadRestaurantImage = async (file) => {
   return await restaurantsStore.uploadImage(file)
@@ -577,13 +561,28 @@ const previewImport = async () => {
     const data = result.preview
     form.value = {
       name: data.name || '',
-      cuisine: data.cuisine || '',
       address: data.address || '',
       phone: data.phone || '',
       google_maps_url: data.google_maps_url || '',
       menu_url: data.menu_url || '',
       image_url: data.image_url || '',
       tag_ids: [],
+    }
+    // Auto-create/attach food tags for any cuisines the importer picked up.
+    if (Array.isArray(data.cuisines) && data.cuisines.length) {
+      for (const name of data.cuisines) {
+        const existing = restaurantsStore.tags.find(
+          t => t.name.toLowerCase() === name.toLowerCase()
+        )
+        if (existing) {
+          form.value.tag_ids.push(existing.id)
+        } else {
+          const created = await createTag({ name, color: '#C4975A' })
+          if (created?.success && created.tag?.id) {
+            form.value.tag_ids.push(created.tag.id)
+          }
+        }
+      }
     }
     previewData.value = data
   } else {

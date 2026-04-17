@@ -21,7 +21,6 @@ class Restaurant extends Model
         'name',
         'google_maps_url',
         'menu_url',
-        'cuisine',
         'address',
         'phone',
         'image_url',

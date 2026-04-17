@@ -162,7 +162,6 @@ class RestaurantController extends Controller
         $data = $request->validate([
             // Core restaurant fields
             'name' => ['sometimes', 'required', 'string', 'max:255'],
-            'cuisine' => ['sometimes', 'nullable', 'string', 'max:100'],
             'address' => ['sometimes', 'nullable', 'string'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:50'],
             'google_maps_url' => ['sometimes', 'nullable', 'url', 'max:2048'],
@@ -177,7 +176,7 @@ class RestaurantController extends Controller
         ]);
 
         // Split into core vs pivot fields
-        $coreFields = ['name', 'cuisine', 'address', 'phone', 'google_maps_url', 'menu_url', 'image_url'];
+        $coreFields = ['name', 'address', 'phone', 'google_maps_url', 'menu_url', 'image_url'];
         $pivotFields = ['notes', 'is_favorite'];
 
         $coreData = array_intersect_key($data, array_flip($coreFields));

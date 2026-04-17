@@ -20,7 +20,6 @@ class StoreRestaurantRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'google_maps_url' => ['nullable', 'url:http,https', 'max:2048'],
             'menu_url' => ['nullable', 'url:http,https', 'max:2048'],
-            'cuisine' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string'],
             'phone' => ['nullable', 'string', 'max:50'],
             'image_url' => ['nullable', 'string', 'max:2048'],

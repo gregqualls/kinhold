@@ -23,8 +23,8 @@ export const useRestaurantsStore = defineStore('restaurants', () => {
       const q = searchQuery.value.toLowerCase()
       list = list.filter(r =>
         r.name?.toLowerCase().includes(q) ||
-        r.cuisine?.toLowerCase().includes(q) ||
-        r.address?.toLowerCase().includes(q)
+        r.address?.toLowerCase().includes(q) ||
+        (r.tags || []).some(t => t.name?.toLowerCase().includes(q))
       )
     }
 
