@@ -9,7 +9,7 @@
         v-for="member in members"
         :key="member.key"
         :disabled="loadingMember !== null"
-        class="relative flex flex-col items-center gap-2 p-4 rounded-xl border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-400 dark:hover:border-wisteria-500 hover:bg-lavender-50 dark:hover:bg-prussian-750 transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
+        class="relative flex flex-col items-center gap-2 p-4 rounded-xl border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-400 dark:hover:border-wisteria-500 hover:bg-lavender-50 dark:hover:bg-wisteria-500/10 transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
         @click="handleSelect(member.key)"
       >
         <!-- Loading overlay -->

@@ -21,7 +21,6 @@ class Restaurant extends Model
         'name',
         'google_maps_url',
         'menu_url',
-        'cuisine',
         'address',
         'phone',
         'image_url',
@@ -44,6 +43,14 @@ class Restaurant extends Model
     public function ratings(): MorphMany
     {
         return $this->morphMany(Rating::class, 'rateable');
+    }
+
+    /**
+     * Tags applied to this restaurant (shared pool with recipes/tasks).
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'restaurant_tag')->using(RestaurantTag::class)->withTimestamps();
     }
 
     /**

@@ -24,7 +24,7 @@ export const useRecipesStore = defineStore('recipes', () => {
 
   const fetchTags = async () => {
     try {
-      const response = await api.get('/tags')
+      const response = await api.get('/tags', { params: { scope: 'food' } })
       tags.value = response.data.tags
       return { success: true }
     } catch (err) {

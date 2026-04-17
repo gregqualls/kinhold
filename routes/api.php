@@ -256,6 +256,8 @@ Route::prefix('v1')->group(function () {
             Route::delete('/presets/{preset}', [MealPlanController::class, 'deletePreset']);
             Route::get('/{plan}', [MealPlanController::class, 'show']);
             Route::post('/{plan}/entries', [MealPlanController::class, 'addEntry']);
+            Route::get('/{plan}/shopping-preview', [MealPlanController::class, 'previewShoppingList']);
+            Route::post('/{plan}/add-to-shopping-list', [MealPlanController::class, 'addToShoppingList']);
             Route::post('/{plan}/generate-shopping-list', [MealPlanController::class, 'generateShoppingList']);
         });
 

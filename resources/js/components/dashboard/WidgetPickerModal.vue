@@ -223,7 +223,7 @@ async function fetchTags() {
   tagsLoading.value = true
   tagsError.value = false
   try {
-    const res = await api.get('/tags')
+    const res = await api.get('/tags', { params: { scope: 'task' } })
     availableTags.value = res.data.tags || res.data.data || res.data || []
   } catch {
     availableTags.value = []

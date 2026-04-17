@@ -1,34 +1,48 @@
 # Session Handoff
 
-**Date:** 2026-04-15
-**Branch:** feature/153-meal-plan-backend
-**Last commit:** `c81e907 chore: revert version bump — save 1.3.0 for full food module`
+**Date:** 2026-04-17
+**Branch:** `fix/dark-mode-polish-pass` (PR [#171](https://github.com/gregqualls/kinhold/pull/171) — open, all CI green, Upsun preview deployed)
+**Last commit:** `a6c3f83 refactor: drop cuisine field, use food tags instead`
 
 ## What Was Done This Session
-- Built the full meal plan backend (issue #153) — 2 migrations, 5 models, `MealPlanService` (live pipeline), `RestaurantImportService`, `MealPlanPolicy`, 5 form requests, 5 API resources, 2 controllers, `DemoMealPlanSeeder`
-- Live pipeline: recipe entries → shopping list auto-populated; cook assignments → Task records with `source_type/source_id` morph; updateEntry is diff-based (only re-syncs what changed)
-- Fixed all `/review` blockers: family-scoped validation, missing `authorize()` on `rate()`, N+1 in restaurant index
-- PR #165 open and pushed — CI running
-- Version held at 1.2.1 (will bump to 1.3.0 when frontend step ships with #154)
+
+Session 37 — polish + data-model cleanup. Five commits on the branch:
+
+1. **Tag scope system** — new `tags.scope` enum (`task` | `food`), `restaurant_tag` pivot, shared `TagPicker` + `RecipeIngredientPicker` components. Recipes and restaurants now share a food-tag pool cleanly separated from task tags. `ManageTags` MCP tool is scope-aware.
+2. **Meal-plan shopping preview** — cart icon opens a modal with days-ahead pill picker, per-entry ingredient checkboxes, shopping-list dropdown + inline create, and already-on-list awareness (amber "On list" pill + auto-deselect). New `GET /meal-plans/{plan}/shopping-preview` and `POST /meal-plans/{plan}/add-to-shopping-list` endpoints.
+3. **Responsive MealWeekGrid** — `ResizeObserver`-driven column count (1–7 days fit dynamically), intra-week pagination chevrons when fewer fit. No more horizontal clipping. Past days fade to ~55% opacity across calendar + meal plan.
+4. **Mobile nav redesign** — 5 grouped slots (Home / Schedule / Meals / Points / Assistant), elegant popover picker with Escape handler. `Food`→`Meals` label rename in nav/sidebar/FoodView, new `Plans` tab.
+5. **Cuisine → tags cutover** — dropped `restaurants.cuisine` column; migration backfills existing values as food tags; import service auto-attaches scraped `servesCuisine` as tags. CHANGELOG has the full list.
+
+Plus: `laravel/passport` bumped to 13.7.4 (CVE-2026-39976), PHPStan baseline updated, `v1.3.1 → v1.4.0` bump, CHANGELOG Session 37 entry.
 
 ## Quality State
-- Tests: 125 tests, 346 assertions — **PASS**
-- Pint: **FAIL** — line_ending issues across entire codebase (pre-existing Windows CRLF problem, not introduced this session; CI runs on Linux so it passes there)
-- Larastan: **PASS** — 0 errors
-- ESLint: **PASS** — 0 errors
-- Build: **PASS** — Vite built cleanly
+
+- **Tests:** 125 tests, 346 assertions — ✅ pass
+- **Pint:** ✅ pass on CI (Linux). Local Windows shows CRLF "failures" — known pre-existing issue, CI is source of truth.
+- **PHPStan:** ✅ 0 errors
+- **ESLint:** ✅ 0 errors, 0 warnings
+- **Build:** ✅ 533 kB app (170 kB gzipped), built in 5.6s
+- **CI:** ✅ all green (Tests, Lint & Static, Frontend build, Upsun preview deployed)
 
 ## What's Next
-1. **Merge PR #165** once CI is green — run `/qa` to get preview URL, then `/merge`
-2. **Food Step 7: Meal plan frontend (issue #154)** — Vue views + Pinia store for the weekly meal planner UI. Weekly grid, recipe/restaurant/preset picker drawer, cook assignment, drag-and-drop day/slot reordering
-3. **Food Step 8: Integration & polish (issue #155)** — MCP tools for meal planning, chatbot integration, dashboard widget, bump version to 1.3.0
+
+1. **Merge PR #171** — Greg QA's via the Upsun preview, then runs `/merge` to squash + tag `v1.4.0`. Everything is green.
+2. **Food Step 8 — Issue [#155](https://github.com/gregqualls/kinhold/issues/155)** (NEXT in roadmap) — four new MCP tools (`ManageRecipes`, `ManageShoppingLists`, `ManageErrands`, `ManageMealPlans`), chatbot food integrations, dashboard cards, `DemoFoodSeeder`, food badges. I commented additions onto #155 in Session 37: add `ManageRestaurants` tool (restaurants are now tagged but have no MCP coverage) + preview/add shopping actions on `ManageMealPlans`.
+3. **Follow-up polish/refactors filed during this session:**
+   - Issue [#170](https://github.com/gregqualls/kinhold/issues/170) — full end-to-end `Food` → `Meals` rename (route `/food`, module key, folder names — only labels changed this session)
+   - Issue [#167](https://github.com/gregqualls/kinhold/issues/167) — explore scraping options for JS-rendered sites (Google Maps)
+   - Issue [#168](https://github.com/gregqualls/kinhold/issues/168) — explore import options for bot-blocked recipe sites
 
 ## Blockers or Gotchas
-- `RestaurantImportService` does basic Google Maps URL parsing (extracts place name from URL path). Proper scraping/AI extraction is a future improvement — the current version creates a best-effort restaurant record.
-- `database/database.sqlite` shows as modified in working tree — local dev artifact, never commit it.
-- `MealPlanEntry` mutual exclusivity is enforced at BOTH the model boot level (saving hook) AND the form request level. This is intentional redundancy — the model-level check catches anything that bypasses validation.
-- Non-standard policy binding: `MealPlanEntry` maps to `MealPlanPolicy` (not its own policy). Registered in AppServiceProvider. Don't create a separate `MealPlanEntryPolicy`.
+
+- **PR #171 pending Greg QA** — Upsun preview at `https://pr-171-ipgt2lq-2rozcvqjtjdta.ch-1.platformsh.site/`. Key flows to verify: restaurant tag filter chips, meal-plan shopping modal (days picker + list picker + already-on-list), responsive grid resize, mobile bottom nav popovers (Schedule/Meals), past-day fading on calendar + meal plan.
+- **Windows CRLF Pint noise** — running Pint locally touches every file with line-ending changes. Only commit Pint edits on files you actually modified. CI Linux runs Pint cleanly.
+- **Personal recipe images scrubbed** — 5 test-upload PNGs removed via `git rm --cached` (now in `.gitignore`). They remain in git history; Greg accepted that (not his recipe, publicly available). No filter-repo scrub needed.
+- **`MealPlanController::previewShoppingList` + `addToShoppingList` have no MCP tool yet** — callable only via REST. Rolling into Issue #155 scope.
+- **Cuisine column migration is destructive** — on Upsun first deploy it will drop the column after backfilling. For any remote environment with existing restaurants, the migration reads `cuisine`, creates tags per family linked via `family_restaurants`, attaches them, then drops. Idempotent enough (`firstOrCreate` + `syncWithoutDetaching`) that a partial run and retry is safe.
 
 ## Open Questions
-- Step 7 frontend: drag-and-drop between day/slot cells — use `vue-draggable-plus` library or custom HTML5 drag API? Worth deciding before starting.
-- Should the meal plan week grid start on Sunday or Monday? Currently service uses `Carbon::MONDAY`. Greg may want to make this a family setting.
+
+- **What's the priority order after merge?** `/kickoff` will probably surface Food Step 8 (#155) as NEXT — but Phase A still has 5 open issues (landing page #134, AI usage limits #137, license enforcement #138, brand email #104, Claude Desktop icon #99). Greg may want to finish Phase A before opening the Step 8 box.
+- **Should `ManageRestaurants` MCP tool land as a standalone issue or just be folded into #155?** I commented it on #155; Greg to confirm scope.

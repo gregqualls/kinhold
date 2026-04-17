@@ -14,7 +14,6 @@ class RestaurantResource extends JsonResource
             'name' => $this->name,
             'google_maps_url' => $this->google_maps_url,
             'menu_url' => $this->menu_url,
-            'cuisine' => $this->cuisine,
             'address' => $this->address,
             'phone' => $this->phone,
             'image_url' => $this->image_url,

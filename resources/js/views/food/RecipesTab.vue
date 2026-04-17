@@ -329,9 +329,9 @@ const sortLabel = computed(() => {
   return opt?.label || 'Recent'
 })
 
-// Only show tags that have been applied to at least one recipe
-// Filter chips: show tags used on recipes, or with no tasks (recipe-specific tags like Breakfast/Dinner)
-const recipeTags = computed(() => tags.value.filter((t) => (t.recipes_count ?? 0) > 0 || (t.tasks_count ?? 0) === 0))
+// Server returns only food-scoped tags. Show all of them as filter chips so
+// the user can filter even before any recipe is tagged.
+const recipeTags = computed(() => tags.value)
 
 const isTagSelected = (tagId) => selectedTagIds.value.includes(tagId)
 

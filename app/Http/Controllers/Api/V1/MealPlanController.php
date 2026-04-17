@@ -15,6 +15,7 @@ use App\Models\MealPlan;
 use App\Models\MealPlanEntry;
 use App\Models\MealPreset;
 use App\Services\MealPlanService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -150,6 +151,100 @@ class MealPlanController extends Controller
         $updated = $this->mealPlanService->moveEntry($mealPlanEntry, $data['date'], $data['meal_slot']);
 
         return response()->json(['entry' => new MealPlanEntryResource($updated)]);
+    }
+
+    /**
+     * Preview recipe entries (with ingredients) scheduled within the next N days.
+     * Used by the meal-plan "Add to shopping list" flow so the user can pick which
+     * ingredients to add before committing.
+     */
+    public function previewShoppingList(Request $request, string $plan): JsonResponse
+    {
+        $mealPlan = MealPlan::where('family_id', $request->user()->family_id)->findOrFail($plan);
+
+        $this->authorize('view', $mealPlan);
+
+        $data = $request->validate([
+            'days' => ['nullable', 'integer', 'min:1', 'max:60'],
+            'start' => ['nullable', 'date'],
+            'shopping_list_id' => ['nullable', 'uuid'],
+        ]);
+
+        $days = $data['days'] ?? 7;
+        $start = isset($data['start']) ? Carbon::parse($data['start']) : Carbon::today();
+        $end = (clone $start)->addDays($days - 1);
+
+        $entries = $this->mealPlanService->entriesWithIngredientsInRange(
+            $mealPlan,
+            $start->toDateString(),
+            $end->toDateString(),
+        );
+
+        // Pre-build a case-insensitive name set for the chosen list (or the
+        // plan's auto-list) so the frontend can warn about already-listed items.
+        $existingNames = $this->mealPlanService->existingShoppingItemNames(
+            $mealPlan,
+            $data['shopping_list_id'] ?? null,
+        );
+
+        return response()->json([
+            'range' => [
+                'start' => $start->toDateString(),
+                'end' => $end->toDateString(),
+                'days' => $days,
+            ],
+            'entries' => $entries->map(fn (MealPlanEntry $entry) => [
+                'entry_id' => $entry->id,
+                'date' => $entry->date->toDateString(),
+                'meal_slot' => $entry->meal_slot?->value,
+                'recipe' => [
+                    'id' => $entry->recipe->id,
+                    'title' => $entry->recipe->title,
+                ],
+                'ingredients' => $entry->recipe->ingredients->map(fn ($i) => [
+                    'id' => $i->id,
+                    'name' => $i->name,
+                    'quantity' => $i->quantity,
+                    'unit' => $i->unit,
+                    'preparation' => $i->preparation,
+                    'is_optional' => (bool) $i->is_optional,
+                    'already_on_list' => in_array(strtolower(trim($i->name)), $existingNames, true),
+                ])->values(),
+            ])->values(),
+        ]);
+    }
+
+    /**
+     * Add a curated selection of recipe ingredients (across multiple entries) to
+     * the plan's shopping list. Body: { selections: [{ entry_id, ingredient_ids? }] }
+     */
+    public function addToShoppingList(Request $request, string $plan): JsonResponse
+    {
+        $mealPlan = MealPlan::where('family_id', $request->user()->family_id)->findOrFail($plan);
+
+        $this->authorize('update', $mealPlan);
+
+        $data = $request->validate([
+            'selections' => ['required', 'array', 'min:1'],
+            'selections.*.entry_id' => ['required', 'uuid'],
+            'selections.*.ingredient_ids' => ['nullable', 'array'],
+            'selections.*.ingredient_ids.*' => ['uuid'],
+            'shopping_list_id' => ['nullable', 'uuid'],
+        ]);
+
+        $added = $this->mealPlanService->addSelectionsToShoppingList(
+            $mealPlan,
+            $request->user(),
+            $data['selections'],
+            $data['shopping_list_id'] ?? null,
+        );
+
+        $mealPlan->load(['shoppingList.items']);
+
+        return response()->json([
+            'added_count' => $added,
+            'shopping_list' => $mealPlan->shoppingList,
+        ]);
     }
 
     /**
