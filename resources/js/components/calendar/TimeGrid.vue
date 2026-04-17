@@ -48,19 +48,30 @@
               v-for="(dayEvents, colIdx) in columnEvents"
               :key="colIdx"
               class="relative flex-1 min-w-0"
+              :class="dayLabels[colIdx]?.isPast && !dayLabels[colIdx]?.isToday ? 'bg-lavender-100/60 dark:bg-prussian-950/70 [&>*:not(:first-child)]:opacity-55 hover:[&>*:not(:first-child)]:opacity-100' : ''"
             >
               <!-- Day header for week view -->
               <div
                 v-if="columns > 1"
                 class="sticky top-0 z-10 bg-white dark:bg-prussian-800 text-center py-1 border-b border-lavender-100 dark:border-prussian-700/50"
+                :class="dayLabels[colIdx]?.isPast && !dayLabels[colIdx]?.isToday ? 'bg-lavender-50 dark:bg-prussian-900/60' : ''"
               >
-                <p class="text-[10px] font-semibold text-lavender-500 dark:text-lavender-400 uppercase">
+                <p
+                  class="text-[10px] font-semibold uppercase"
+                  :class="dayLabels[colIdx]?.isPast && !dayLabels[colIdx]?.isToday
+                    ? 'text-lavender-400/70 dark:text-lavender-500/70'
+                    : 'text-lavender-500 dark:text-lavender-400'"
+                >
                   {{ dayLabels[colIdx]?.weekday }}
                 </p>
                 <p
                   :class="[
                     'text-sm font-bold',
-                    dayLabels[colIdx]?.isToday ? 'text-wisteria-600 dark:text-wisteria-400' : 'text-prussian-500 dark:text-lavender-200',
+                    dayLabels[colIdx]?.isToday
+                      ? 'text-wisteria-600 dark:text-wisteria-400'
+                      : dayLabels[colIdx]?.isPast
+                        ? 'text-lavender-400 dark:text-lavender-500'
+                        : 'text-prussian-500 dark:text-lavender-200',
                   ]"
                 >
                   <span
@@ -180,10 +191,12 @@ const columnEvents = computed(() => {
 })
 
 const dayLabels = computed(() => {
+  const todayStart = DateTime.now().startOf('day')
   return props.days.map((day) => ({
     weekday: day.toFormat('EEE'),
     day: day.day,
     isToday: day.hasSame(DateTime.now(), 'day'),
+    isPast: day.startOf('day') < todayStart,
   }))
 })
 

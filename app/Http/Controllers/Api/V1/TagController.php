@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\TagScope;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TagResource;
 use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TagController extends Controller
 {
@@ -14,17 +16,22 @@ class TagController extends Controller
     {
         $family = $request->user()->currentFamily()->firstOrFail();
 
-        $tags = Tag::where('family_id', $family->id)
+        $query = Tag::where('family_id', $family->id)
             ->withCount('tasks')
             ->withCount(['tasks as incomplete_tasks_count' => function ($query) {
                 $query->whereNull('completed_at');
             }])
             ->withCount('recipes')
-            ->orderBy('sort_order')
-            ->get();
+            ->withCount('restaurants')
+            ->orderBy('sort_order');
+
+        $scope = $request->query('scope');
+        if ($scope && in_array($scope, ['task', 'food'], true)) {
+            $query->where('scope', $scope);
+        }
 
         return response()->json([
-            'tags' => TagResource::collection($tags),
+            'tags' => TagResource::collection($query->get()),
         ]);
     }
 
@@ -37,12 +44,16 @@ class TagController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'color' => 'nullable|string|max:20',
+            'scope' => ['nullable', Rule::in(['task', 'food'])],
         ]);
+
+        $scope = $validated['scope'] ?? TagScope::Task->value;
 
         $tag = Tag::firstOrCreate(
             [
                 'family_id' => $family->id,
                 'name' => $validated['name'],
+                'scope' => $scope,
             ],
             [
                 'color' => $validated['color'] ?? null,
@@ -65,6 +76,7 @@ class TagController extends Controller
             'name' => 'sometimes|string|max:255',
             'color' => 'nullable|string|max:20',
             'sort_order' => 'sometimes|integer',
+            'scope' => ['sometimes', Rule::in(['task', 'food'])],
         ]);
 
         $tag->update($validated);

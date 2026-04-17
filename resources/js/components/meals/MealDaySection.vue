@@ -1,15 +1,28 @@
 <template>
   <div
     class="bg-white dark:bg-[#1C1C20] border rounded-xl overflow-hidden"
-    :class="isToday ? 'border-[#C4975A]/40' : 'border-[#E8E4DF] dark:border-[#2E2E32]'"
+    :class="[
+      isToday ? 'border-[#C4975A]/40' : 'border-[#E8E4DF] dark:border-[#2E2E32]',
+      isPast && !isToday ? 'opacity-55 hover:opacity-100 transition-opacity' : '',
+    ]"
   >
     <!-- Day header -->
     <div
       class="flex items-center justify-between px-4 py-3"
-      :class="isToday ? 'bg-[#C4975A]/5' : ''"
+      :class="[
+        isToday ? 'bg-[#C4975A]/5' : '',
+        isPast && !isToday ? 'bg-[#F5F2EE]/40 dark:bg-[#252528]/40' : '',
+      ]"
     >
       <div class="flex items-center gap-2">
-        <p class="text-sm font-semibold" :class="isToday ? 'text-[#C4975A]' : 'text-[#1C1C1E] dark:text-[#F0EDE9]'">
+        <p
+          class="text-sm font-semibold"
+          :class="isToday
+            ? 'text-[#C4975A]'
+            : isPast
+              ? 'text-[#9C9895]'
+              : 'text-[#1C1C1E] dark:text-[#F0EDE9]'"
+        >
           {{ dayLabel }}
         </p>
         <span
@@ -90,6 +103,7 @@ const mealsStore = useMealsStore()
 const dt = computed(() => DateTime.fromISO(props.date))
 const dayLabel = computed(() => dt.value.toFormat('EEEE, MMM d'))
 const isToday = computed(() => dt.value.hasSame(DateTime.now(), 'day'))
+const isPast = computed(() => dt.value.startOf('day') < DateTime.now().startOf('day'))
 
 const ALL_SLOTS = [
   { key: 'breakfast', label: 'Breakfast', icon: SunIcon },

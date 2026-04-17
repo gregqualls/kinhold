@@ -6,24 +6,72 @@ export const useRestaurantsStore = defineStore('restaurants', () => {
   // State
   const restaurants = ref([])
   const currentRestaurant = ref(null)
+  const tags = ref([])
   const isLoading = ref(false)
   const error = ref(null)
+
+  // Filters
   const searchQuery = ref('')
+  const selectedTagIds = ref([])
+  const showFavoritesOnly = ref(false)
 
   // Computed
   const filteredRestaurants = computed(() => {
-    if (!searchQuery.value) return restaurants.value
-    const q = searchQuery.value.toLowerCase()
-    return restaurants.value.filter(r =>
-      r.name?.toLowerCase().includes(q) ||
-      r.cuisine?.toLowerCase().includes(q) ||
-      r.address?.toLowerCase().includes(q)
-    )
+    let list = restaurants.value
+
+    if (searchQuery.value) {
+      const q = searchQuery.value.toLowerCase()
+      list = list.filter(r =>
+        r.name?.toLowerCase().includes(q) ||
+        r.cuisine?.toLowerCase().includes(q) ||
+        r.address?.toLowerCase().includes(q)
+      )
+    }
+
+    if (showFavoritesOnly.value) {
+      list = list.filter(r => r.is_favorite)
+    }
+
+    // Tag filter is applied server-side when a single tag is selected, so this
+    // client-side narrowing only kicks in for multi-tag (AND) selections.
+    if (selectedTagIds.value.length > 1) {
+      list = list.filter(r => {
+        const ids = (r.tags || []).map(t => t.id)
+        return selectedTagIds.value.every(id => ids.includes(id))
+      })
+    }
+
+    return list
   })
 
   const favoriteRestaurants = computed(() =>
     restaurants.value.filter(r => r.is_favorite)
   )
+
+  // ── Tag actions ──
+
+  const fetchTags = async () => {
+    try {
+      const response = await api.get('/tags', { params: { scope: 'food' } })
+      tags.value = response.data.tags
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to fetch tags' }
+    }
+  }
+
+  const toggleTagFilter = (tagId) => {
+    const idx = selectedTagIds.value.indexOf(tagId)
+    if (idx === -1) {
+      selectedTagIds.value.push(tagId)
+    } else {
+      selectedTagIds.value.splice(idx, 1)
+    }
+  }
+
+  const clearTagFilter = () => {
+    selectedTagIds.value = []
+  }
 
   // ── CRUD ──
 
@@ -31,7 +79,11 @@ export const useRestaurantsStore = defineStore('restaurants', () => {
     isLoading.value = true
     error.value = null
     try {
-      const response = await api.get('/restaurants')
+      const params = {}
+      // Server-side filter only when exactly one tag is selected.
+      if (selectedTagIds.value.length === 1) params.tag = selectedTagIds.value[0]
+
+      const response = await api.get('/restaurants', { params })
       restaurants.value = response.data.restaurants ?? []
       return { success: true }
     } catch (err) {
@@ -165,12 +217,20 @@ export const useRestaurantsStore = defineStore('restaurants', () => {
     // State
     restaurants,
     currentRestaurant,
+    tags,
     isLoading,
     error,
+    // Filters
     searchQuery,
+    selectedTagIds,
+    showFavoritesOnly,
     // Computed
     filteredRestaurants,
     favoriteRestaurants,
+    // Tag actions
+    fetchTags,
+    toggleTagFilter,
+    clearTagFilter,
     // Actions
     fetchRestaurants,
     fetchRestaurant,

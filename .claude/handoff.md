@@ -1,34 +1,43 @@
 # Session Handoff
 
-**Date:** 2026-04-15
-**Branch:** feature/153-meal-plan-backend
-**Last commit:** `c81e907 chore: revert version bump — save 1.3.0 for full food module`
+**Date:** 2026-04-17
+**Branch:** feature/meal-planner-ux-fixes (PR #169 — open, all CI green)
+**Last commit:** `50e1346 style: apply Pint formatting to import services`
 
 ## What Was Done This Session
-- Built the full meal plan backend (issue #153) — 2 migrations, 5 models, `MealPlanService` (live pipeline), `RestaurantImportService`, `MealPlanPolicy`, 5 form requests, 5 API resources, 2 controllers, `DemoMealPlanSeeder`
-- Live pipeline: recipe entries → shopping list auto-populated; cook assignments → Task records with `source_type/source_id` morph; updateEntry is diff-based (only re-syncs what changed)
-- Fixed all `/review` blockers: family-scoped validation, missing `authorize()` on `rate()`, N+1 in restaurant index
-- PR #165 open and pushed — CI running
-- Version held at 1.2.1 (will bump to 1.3.0 when frontend step ships with #154)
+
+- **Drag-and-drop fixed** — Root cause: `chosen-class` had space-separated tokens (`ring-2 ring-[#C4975A]/50`) which broke `DOMTokenList.add()`. Fixed to single `meal-drag-chosen` class. Also fixed `evt.item` entryId lookup (querySelector fallback), removed `force-fallback`, and made watcher mutate arrays in-place so vue-draggable-plus doesn't lose its refs.
+- **Desktop transposed grid + mobile continuous scroll** — New `MealWeekGrid.vue` (slot rows × day columns, sticky labels, today highlighted). New `MealDaySection.vue` (non-collapsible, auto-scroll to today, infinite-loads next weeks on scroll down).
+- **Meal card images + cook avatars** — `image_url` added to restaurants table. `MealPlanEntryResource` resolves recipe `image_path` → `/storage/...` or restaurant URL. `MealEntryCard` redesigned with 16:9 thumbnail + overlapping `UserAvatar` cook stack.
+- **Restaurant import rewrite** — `RestaurantImportService` now uses JSON-LD → OG tags → Twitter Card fallback chain + SSRF protection. Preview-then-edit-then-save flow matching recipe UX. Upload endpoint `POST /restaurants/upload-image`.
+- **DRY shared components** — New `FoodCard.vue` (used by RecipeCard + RestaurantsTab + visually by meal cards). New `PhotoUpload.vue` (used by RecipeForm + RestaurantsTab). Preset icons now render via `IconRenderer` + 13 food icons added to `presetIcons.js`.
+- **Issues filed** — #167 (explore JS-rendered site scraping options e.g. headless browser for Google Maps), #168 (explore bot-blocked recipe site import options).
 
 ## Quality State
-- Tests: 125 tests, 346 assertions — **PASS**
-- Pint: **FAIL** — line_ending issues across entire codebase (pre-existing Windows CRLF problem, not introduced this session; CI runs on Linux so it passes there)
-- Larastan: **PASS** — 0 errors
-- ESLint: **PASS** — 0 errors
-- Build: **PASS** — Vite built cleanly
+
+- **Tests:** 125 tests, 346 assertions — ✅ pass
+- **Pint:** ✅ pass (CI/Linux). Local shows LF→CRLF warnings on Windows — not a real failure, CI is green.
+- **PHPStan:** ✅ 0 errors
+- **ESLint:** ✅ 0 errors
+- **Build:** ✅ 3228 modules, built in ~5s
 
 ## What's Next
-1. **Merge PR #165** once CI is green — run `/qa` to get preview URL, then `/merge`
-2. **Food Step 7: Meal plan frontend (issue #154)** — Vue views + Pinia store for the weekly meal planner UI. Weekly grid, recipe/restaurant/preset picker drawer, cook assignment, drag-and-drop day/slot reordering
-3. **Food Step 8: Integration & polish (issue #155)** — MCP tools for meal planning, chatbot integration, dashboard widget, bump version to 1.3.0
+
+1. **Merge PR #169** — CI green, Upsun preview live. Greg needs to QA, then run `/merge` to squash + tag v1.3.1.
+2. **🔥 NEXT SESSION — Regression polish pass** — Greg identified a batch of small issues in the final QA test that weren't present before this session. Start the next session by asking Greg to enumerate each regression, then fix them one-by-one (following the "test each fix before moving on" rule from `feedback_incremental_testing.md`). These are regressions introduced by the layout/component overhaul — likely candidates: dark mode gaps on new components, mobile sizing on the new grid, `FoodCard` edge cases, restaurant detail panel interactions, meal entry picker flow with the new presets. Do NOT batch-write multiple fixes without testing each.
+3. **Food Step 8 — Issue #155** — MCP tools for food/meals (recipes, shopping, meal plan), AI chatbot integrations, dashboard widgets, demo food seeder. Blocked on regression pass above.
+4. **Explore JS-rendered scraping — Issue #167** — Research headless browser, Google Places API, AI extraction options for Google Maps + bot-blocked recipe sites. Decide approach before building.
 
 ## Blockers or Gotchas
-- `RestaurantImportService` does basic Google Maps URL parsing (extracts place name from URL path). Proper scraping/AI extraction is a future improvement — the current version creates a best-effort restaurant record.
-- `database/database.sqlite` shows as modified in working tree — local dev artifact, never commit it.
-- `MealPlanEntry` mutual exclusivity is enforced at BOTH the model boot level (saving hook) AND the form request level. This is intentional redundancy — the model-level check catches anything that bypasses validation.
-- Non-standard policy binding: `MealPlanEntry` maps to `MealPlanPolicy` (not its own policy). Registered in AppServiceProvider. Don't create a separate `MealPlanEntryPolicy`.
+
+- **Google Maps import still doesn't work** — Google Maps serves minimal HTML to scrapers. Issue #167 filed. Don't promise it until a solution is chosen.
+- **allrecipes / seriouseats block scrapers** — Returns 403/429. Issue #168 filed.
+- **`php artisan storage:link` must be run after fresh installs** — Otherwise recipe/restaurant images won't serve locally. One-time setup.
+- **Windows CRLF** — Pint will always show LF→CRLF "failures" locally. Ignore; CI (Linux) is the source of truth. Only run Pint on files you actually modify.
+- **PR #169 pending QA** — All CI green, Upsun preview at `https://pr-169-gqwfbgy-2rozcvqjtjdta.ch-1.platformsh.site/`. Greg needs to manually test drag-and-drop, restaurant import, and new grid layout before merging.
 
 ## Open Questions
-- Step 7 frontend: drag-and-drop between day/slot cells — use `vue-draggable-plus` library or custom HTML5 drag API? Worth deciding before starting.
-- Should the meal plan week grid start on Sunday or Monday? Currently service uses `Carbon::MONDAY`. Greg may want to make this a family setting.
+
+- **What are the specific regressions Greg found?** Start next session by asking him to list each one before touching any code. Likely surface areas from this session's changes: FoodCard edge cases (missing images, long titles), MealEntryCard image sizing, MealWeekGrid on narrow viewports, MealDaySection mobile scroll behavior, RestaurantsTab detail panel, PhotoUpload interactions, preset icon picker in MealEntryPicker.
+- Greg should decide approach for Issue #167 (Google Maps/allrecipes scraping) — Places API costs money, headless browser is complex, AI extraction is interesting but slow. Worth a spike before committing to an approach.
+- Does Food Step 8 (MCP tools) take priority after regression polish, or does Greg want to tackle Phase A remaining work (landing page, usage limits, license enforcement) first?

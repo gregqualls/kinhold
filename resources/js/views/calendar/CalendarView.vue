@@ -75,8 +75,9 @@
           v-for="day in calendarDays"
           :key="`${day.year}-${day.month}-${day.day}`"
           :class="[
-            'min-h-24 p-2 bg-white dark:bg-prussian-800 cursor-pointer hover:bg-lavender-50 dark:hover:bg-prussian-750 transition-colors',
+            'min-h-24 p-2 bg-white dark:bg-prussian-800 cursor-pointer hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors',
             !day.isCurrentMonth && 'bg-lavender-50 dark:bg-prussian-900',
+            day.isPast && !day.isToday && 'bg-lavender-100/60 dark:bg-prussian-950/70 opacity-55 hover:opacity-100',
             day.isToday && 'ring-2 ring-wisteria-400 ring-inset',
           ]"
           @click="openCreateModal(day.date.toISODate())"
@@ -84,7 +85,13 @@
           <p
             :class="[
               'text-xs font-semibold mb-1',
-              day.isToday ? 'text-wisteria-600' : !day.isCurrentMonth ? 'text-lavender-400 dark:text-lavender-500' : 'text-prussian-500 dark:text-lavender-200',
+              day.isToday
+                ? 'text-wisteria-600'
+                : !day.isCurrentMonth
+                  ? 'text-lavender-400 dark:text-lavender-500'
+                  : day.isPast
+                    ? 'text-lavender-400 dark:text-lavender-500'
+                    : 'text-prussian-500 dark:text-lavender-200',
             ]"
           >
             <span
@@ -347,9 +354,12 @@ const calendarDays = computed(() => {
   const days = []
   let current = startDate
 
+  const todayStart = DateTime.now().startOf('day')
+
   while (current <= endDate) {
     const isCurrentMonth = current.month === currentMonth.value.month
     const today = current.hasSame(DateTime.now(), 'day')
+    const isPast = current.startOf('day') < todayStart
 
     days.push({
       date: current,
@@ -358,6 +368,7 @@ const calendarDays = computed(() => {
       year: current.year,
       isCurrentMonth,
       isToday: today,
+      isPast,
     })
 
     current = current.plus({ days: 1 })
