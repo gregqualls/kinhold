@@ -572,14 +572,14 @@ class RestaurantImportService
     {
         $escaped = preg_quote($property, '/');
         if (preg_match(
-            '/<meta\s+(?:[^>]*?)(?:property|name)=["\']' . $escaped . '["\']\s+content=["\']([^"\']+)["\']/i',
+            '/<meta\s+(?:[^>]*?)(?:property|name)=["\']'.$escaped.'["\']\s+content=["\']([^"\']+)["\']/i',
             $html,
             $m
         )) {
             return html_entity_decode($m[1], ENT_QUOTES, 'UTF-8');
         }
         if (preg_match(
-            '/<meta\s+content=["\']([^"\']+)["\']\s+(?:property|name)=["\']' . $escaped . '["\']/i',
+            '/<meta\s+content=["\']([^"\']+)["\']\s+(?:property|name)=["\']'.$escaped.'["\']/i',
             $html,
             $m
         )) {
