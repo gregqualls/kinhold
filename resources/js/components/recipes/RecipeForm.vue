@@ -72,41 +72,7 @@
       </div>
 
       <!-- Photo -->
-      <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1">Photo</label>
-        <div
-          class="relative border-2 border-dashed border-lavender-300 dark:border-prussian-600 rounded-xl overflow-hidden cursor-pointer hover:border-[#C4975A] transition-colors"
-          :class="imageDisplayUrl ? 'h-40' : 'p-6'"
-          @click="$refs.imageInput.click()"
-        >
-          <img
-            v-if="imageDisplayUrl"
-            :src="imageDisplayUrl"
-            class="w-full h-full object-cover"
-            alt="Recipe photo"
-          />
-          <div v-else class="flex flex-col items-center gap-1 text-center">
-            <CameraIcon class="w-7 h-7 text-lavender-400 dark:text-lavender-500" />
-            <p class="text-sm text-lavender-500 dark:text-lavender-400">
-              {{ uploadingImage ? 'Uploading...' : 'Click to add a photo' }}
-            </p>
-          </div>
-          <!-- Replace overlay -->
-          <div
-            v-if="imageDisplayUrl"
-            class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
-          >
-            <span class="text-white text-sm font-medium">Change photo</span>
-          </div>
-        </div>
-        <input
-          ref="imageInput"
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/heic"
-          class="hidden"
-          @change="handleImageSelect"
-        />
-      </div>
+      <PhotoUpload v-model="imageDisplayUrl" label="Photo" :uploader="uploadRecipeImage" />
     </div>
 
     <!-- Ingredients -->
@@ -284,7 +250,8 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRecipesStore } from '@/stores/recipes'
-import { XMarkIcon, CameraIcon } from '@heroicons/vue/24/outline'
+import { XMarkIcon } from '@heroicons/vue/24/outline'
+import PhotoUpload from '@/components/food/PhotoUpload.vue'
 
 // Convert a decimal like 0.5 to a display string like "1/2" for common fractions.
 // Used when loading stored recipes into the form.
@@ -352,7 +319,6 @@ const recipeTags = computed(() => {
 })
 
 const saving = ref(false)
-const uploadingImage = ref(false)
 const imageDisplayUrl = ref(null)
 
 const createEmptyForm = () => ({
@@ -445,25 +411,16 @@ const removeInstruction = (index) => {
   form.instructions.splice(index, 1)
 }
 
-// ── Image upload ──
+// ── Image upload (used by PhotoUpload component) ──
 
-const handleImageSelect = async (event) => {
-  const file = event.target.files?.[0]
-  if (!file) return
-
-  // Show local preview immediately
-  imageDisplayUrl.value = URL.createObjectURL(file)
-  uploadingImage.value = true
-
+const uploadRecipeImage = async (file) => {
   const result = await recipesStore.uploadImage(file)
-  uploadingImage.value = false
-
   if (result.success) {
     form.image_path = result.imagePath
-  } else {
-    // Revert preview on failure
-    imageDisplayUrl.value = form.image_path ? `/storage/${form.image_path}` : null
+    imageDisplayUrl.value = `/storage/${result.imagePath}`
+    return { success: true, url: imageDisplayUrl.value }
   }
+  return { success: false }
 }
 
 // ── Tag toggle ──

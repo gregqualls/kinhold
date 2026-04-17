@@ -106,6 +106,10 @@
 }
 
 @layer components {
+  .meal-drag-chosen {
+    box-shadow: 0 0 0 2px rgba(196, 151, 90, 0.5) !important;
+  }
+
   .card {
     @apply bg-white shadow-card p-4;
     border-radius: 12px;

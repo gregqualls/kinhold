@@ -24,6 +24,7 @@ class Restaurant extends Model
         'cuisine',
         'address',
         'phone',
+        'image_url',
         'notes',
     ];
 

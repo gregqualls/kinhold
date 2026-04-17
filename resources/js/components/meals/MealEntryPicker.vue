@@ -114,8 +114,8 @@
               : 'bg-lavender-50 dark:bg-prussian-700 border-lavender-200 dark:border-prussian-600 text-prussian-500 dark:text-lavender-200 hover:border-[#C4975A]/30'"
             @click="selectedSource = preset"
           >
-            <span v-if="preset.icon" class="text-base">{{ preset.icon }}</span>
-            <SparklesIcon v-else class="w-4 h-4 text-purple-400" />
+            <IconRenderer v-if="preset.icon" :icon="preset.icon" :size="18" class="text-[#7B6B9C] flex-shrink-0" />
+            <SparklesIcon v-else class="w-4 h-4 text-purple-400 flex-shrink-0" />
             <span class="text-sm font-medium truncate">{{ preset.label }}</span>
           </button>
         </div>
@@ -213,6 +213,7 @@ import BaseInput from '@/components/common/BaseInput.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
+import IconRenderer from '@/components/common/IconRenderer.vue'
 
 const props = defineProps({
   show: Boolean,
@@ -247,10 +248,10 @@ const panelTitle = computed(() => {
 })
 
 const sourceTabs = [
-  { key: 'recipe', label: '🍳 Recipe' },
-  { key: 'restaurant', label: '🏢 Restaurant' },
-  { key: 'preset', label: '✨ Preset' },
-  { key: 'custom', label: '✏️ Custom' },
+  { key: 'recipe', label: 'Recipe' },
+  { key: 'restaurant', label: 'Restaurant' },
+  { key: 'preset', label: 'Preset' },
+  { key: 'custom', label: 'Custom' },
 ]
 
 const activeSource = ref('recipe')

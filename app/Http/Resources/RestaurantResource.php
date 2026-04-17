@@ -17,6 +17,7 @@ class RestaurantResource extends JsonResource
             'cuisine' => $this->cuisine,
             'address' => $this->address,
             'phone' => $this->phone,
+            'image_url' => $this->image_url,
             'notes' => $this->notes,
             // Pivot fields are present when the restaurant is loaded via
             // the family_restaurants relationship (BelongsToMany with pivot).

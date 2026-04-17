@@ -62,6 +62,28 @@ export const useRestaurantsStore = defineStore('restaurants', () => {
     }
   }
 
+  const uploadImage = async (file) => {
+    try {
+      const formData = new FormData()
+      formData.append('photo', file)
+      const response = await api.post('/restaurants/upload-image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      return { success: true, url: response.data.url, path: response.data.path }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to upload image' }
+    }
+  }
+
+  const previewImport = async (url) => {
+    try {
+      const response = await api.post('/restaurants/import?preview=1', { url })
+      return { success: true, preview: response.data.preview }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to extract restaurant data' }
+    }
+  }
+
   const importRestaurant = async (url) => {
     try {
       const response = await api.post('/restaurants/import', { url })
@@ -153,6 +175,8 @@ export const useRestaurantsStore = defineStore('restaurants', () => {
     fetchRestaurants,
     fetchRestaurant,
     createRestaurant,
+    uploadImage,
+    previewImport,
     importRestaurant,
     updateRestaurant,
     deleteRestaurant,

@@ -62,20 +62,50 @@ class RestaurantController extends Controller
 
     /**
      * Import a restaurant from a URL and link it to the family.
+     *
+     * With ?preview=1, returns extracted data without saving (for edit-before-save flow).
+     * Without preview, saves directly (backwards compatible).
      */
     public function import(Request $request): JsonResponse
     {
         $this->authorize('manageRestaurants', MealPlan::class);
 
         $data = $request->validate([
-            'url' => ['required', 'url', 'max:2048'],
+            'url' => ['required', 'url:http,https', 'max:2048'],
         ]);
 
         $family = $request->user()->family;
 
+        // Preview mode: extract data but don't save
+        if ($request->boolean('preview')) {
+            $extracted = $this->importService->extractFromUrl($data['url']);
+
+            return response()->json(['preview' => $extracted]);
+        }
+
+        // Direct save mode
         $restaurant = $this->importService->importFromUrl($data['url'], $family);
 
         return response()->json(['restaurant' => $restaurant], 201);
+    }
+
+    /**
+     * Upload a restaurant photo. Returns the public URL.
+     */
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $this->authorize('manageRestaurants', MealPlan::class);
+
+        $request->validate([
+            'photo' => ['required', 'file', 'mimes:jpeg,png,webp,heic,heif', 'max:10240'],
+        ]);
+
+        $path = $this->importService->storeUploadedImage($request->file('photo'));
+
+        return response()->json([
+            'path' => $path,
+            'url' => '/storage/'.$path,
+        ]);
     }
 
     /**
@@ -100,7 +130,7 @@ class RestaurantController extends Controller
     }
 
     /**
-     * Update the family-specific notes and favorite status for a restaurant.
+     * Update a restaurant's details and/or family-specific notes.
      */
     public function update(Request $request, string $restaurant): JsonResponse
     {
@@ -111,18 +141,41 @@ class RestaurantController extends Controller
         $rest = $family->restaurants()->findOrFail($restaurant);
 
         $data = $request->validate([
+            // Core restaurant fields
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'cuisine' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'address' => ['sometimes', 'nullable', 'string'],
+            'phone' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'google_maps_url' => ['sometimes', 'nullable', 'url', 'max:2048'],
+            'menu_url' => ['sometimes', 'nullable', 'url', 'max:2048'],
+            'image_url' => ['sometimes', 'nullable', 'string', 'max:2048'],
+            // Family-specific pivot fields
             'notes' => ['sometimes', 'nullable', 'string'],
             'is_favorite' => ['sometimes', 'boolean'],
         ]);
 
-        FamilyRestaurant::where('family_id', $family->id)
-            ->where('restaurant_id', $rest->id)
-            ->update($data);
+        // Split into core vs pivot fields
+        $coreFields = ['name', 'cuisine', 'address', 'phone', 'google_maps_url', 'menu_url', 'image_url'];
+        $pivotFields = ['notes', 'is_favorite'];
 
-        // Reload to get fresh pivot data
+        $coreData = array_intersect_key($data, array_flip($coreFields));
+        $pivotData = array_intersect_key($data, array_flip($pivotFields));
+
+        if ($coreData) {
+            $rest->update($coreData);
+        }
+
+        if ($pivotData) {
+            FamilyRestaurant::where('family_id', $family->id)
+                ->where('restaurant_id', $rest->id)
+                ->update($pivotData);
+        }
+
+        // Reload to get fresh data
         $rest = $family->restaurants()->findOrFail($restaurant);
         $rest->pivot_notes = $rest->pivot->notes;
         $rest->is_favorite = $rest->pivot->is_favorite ?? false;
+        $rest->family_average_rating = $rest->familyAverageRating($family->id);
 
         return response()->json(['restaurant' => $rest]);
     }
