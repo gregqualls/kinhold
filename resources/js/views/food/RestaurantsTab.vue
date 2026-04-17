@@ -235,7 +235,7 @@
             rows="3"
             class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors resize-none"
             placeholder="Add notes about this restaurant..."
-          />
+          ></textarea>
         </div>
 
         <!-- Save all -->
@@ -270,7 +270,7 @@
           @click="addTab = tab.key"
         >
           {{ tab.label }}
-          <span v-if="addTab === tab.key" class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4975A] rounded-full" />
+          <span v-if="addTab === tab.key" class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4975A] rounded-full"></span>
         </button>
       </div>
 

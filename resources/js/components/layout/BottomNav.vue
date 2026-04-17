@@ -82,7 +82,7 @@
         v-if="openSlotIdx !== null"
         class="fixed inset-0 z-30 md:hidden"
         @click="openSlotIdx = null"
-      />
+      ></div>
     </Transition>
   </Teleport>
 </template>
