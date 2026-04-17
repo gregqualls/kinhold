@@ -20,6 +20,7 @@ class StoreRestaurantRequest extends FormRequest
             'cuisine' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string'],
             'phone' => ['nullable', 'string', 'max:50'],
+            'image_url' => ['nullable', 'string', 'max:2048'],
             'notes' => ['nullable', 'string'],
         ];
     }

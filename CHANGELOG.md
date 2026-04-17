@@ -2,6 +2,62 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-17 — Session 36: Meal Planner UX Overhaul + Restaurant Import
+
+### What Was Done
+- **Phase 1 — Drag-and-drop fix (critical)** — `chosen-class` had space-separated classes which broke `DOMTokenList.add()` causing the "can drag but won't drop, stuck" state. Replaced with single CSS class `meal-drag-chosen`. Also fixed `evt.item` entryId extraction to query descendants (wrapper vs card root). Removed `force-fallback` (blocked native drop events). Watcher now mutates `localEntries` in place so vue-draggable-plus keeps its array refs.
+- **Phase 2 — Images + cook avatars on meal cards** — New `image_url` column on `restaurants` table. MealPlanEntryResource adds convenience `image_url` resolving recipe `image_path` → `/storage/...` or restaurant URL. MealEntryCard redesigned with 16:9 thumbnail, overlapping `UserAvatar` stack for assigned cooks, map-pin overlay for restaurant entries.
+- **Phase 3 — Restaurant import from any URL** — Rewrote `RestaurantImportService` with full HTTP scraping: follows redirects, parses JSON-LD (`Restaurant`/`LocalBusiness`/`@graph`), falls back through OG tags → `og:image:secure_url` → Twitter Card → embedded photo URLs → HTML title → domain name. Handles both Google Maps and restaurant websites. Generic title filter (strips "Home", "Welcome", "Google Maps" etc). `tel:` link + structured-data regex for phones. Downloads scraped images locally to `storage/app/public/restaurants/`.
+- **Phase 4 — Preview-then-edit-then-save import flow** — Matches the recipe import UX. New `POST /restaurants/import?preview=1` endpoint returns extracted data without saving. Form populates with extracted values, user edits, clicks Save. Green "Details extracted!" banner.
+- **Phase 5 — Layout overhaul** — New `MealWeekGrid.vue` for desktop (transposed: slot rows × day columns, sticky slot labels, today highlighted). New `MealDaySection.vue` for mobile (continuous scroll from today, infinite-loads next weeks, auto-scroll-to-today on mount). Retired `MealDayColumn` and `MealDayCard` from MealsTab.
+- **Shared `FoodCard.vue` component (DRY)** — Used by recipes, restaurants, and mirrored visually by meal entries. Same 4:3 image, favorite heart overlay, meta row, tag pills.
+- **Shared `PhotoUpload.vue` component (DRY)** — Used by RecipeForm and RestaurantsTab. Click-to-upload + drag-over + preview + keyboard accessible (role=button, tabindex, enter/space).
+- **Restaurant editing** — Controller `update()` now handles core fields (name, cuisine, address, phone, URLs, image). Detail panel fully editable. `StoreRestaurantRequest` validates `image_url`.
+- **Preset icons** — MealEntryPicker now uses `IconRenderer` (shared with rewards). Expanded `presetIcons.js` with 13 food icons: `utensils-crossed`, `store`, `package`, `truck`, `fork-knife`, `bowl-food`, `coffee`, `hamburger`, `egg`, `carrot`, `fish`, `cooking-pot`, `pepper`, `apple`.
+- **Restaurant upload endpoint** — `POST /api/v1/restaurants/upload-image` with file-type/size validation.
+- **SSL cert globally fixed** — Downloaded Mozilla CA bundle to `C:\php-8.4.20\extras\ssl\cacert.pem` and configured `curl.cainfo` + `openssl.cafile` in `php.ini`. Recipe imports on Windows dev now work.
+- **Better import error messages** — Recipe service distinguishes 402/403/429 (site blocks scrapers) from 404 (not found), recommends "From Photo" as fallback.
+- **Brand guide compliance** — Removed emoji from MealEntryPicker source tabs (`🍳 Recipe` → `Recipe`).
+
+### Security hardening (from `/review`)
+- **SSRF protection** — `RestaurantImportService::fetchWithRedirects` and `downloadAndStoreImage` now validate scheme (http/https only), resolve DNS, verify public IP range, pin DNS via Guzzle `resolve` option, and manually walk redirects (re-validating each hop). Matches the existing pattern in `RecipeImportService`.
+- **URL scheme validation** — `POST /restaurants/import` now enforces `url:http,https` (was accepting `file://`, `gopher://` etc).
+- **Gitignore** — Added runtime uploads (`/storage/app/public/recipes/`, `/restaurants/`, `/avatars/`), dev SQLite, and dev-artifact patterns. Untracked `database/database.sqlite` from the repo.
+
+### Accessibility
+- `FoodCard` image now falls back to placeholder on load error (not just missing URL).
+- `PhotoUpload` clickable div has `role=button`, `tabindex`, keyboard handlers, focus ring, aria-label.
+- `MealEntryCard` icon-only buttons (delete, maps link) have descriptive aria-labels.
+
+### Issues filed for future sessions
+- **#167** — Explore scraping options for JS-rendered sites (Google Maps) — headless browser, Places API, AI extraction, browser extension.
+- **#168** — Explore import options for bot-blocked recipe sites (allrecipes, seriouseats) — same menu of options.
+
+### Files Created
+- `database/migrations/2026_04_16_200407_add_image_url_to_restaurants_table.php`
+- `resources/js/components/food/FoodCard.vue`
+- `resources/js/components/food/PhotoUpload.vue`
+- `resources/js/components/meals/MealWeekGrid.vue`
+- `resources/js/components/meals/MealDaySection.vue`
+
+### Files Modified
+Backend: `RestaurantController`, `StoreRestaurantRequest`, `RestaurantResource`, `MealPlanEntryResource`, `Restaurant` model, `RecipeImportService` (error messages), `RestaurantImportService` (full rewrite), `routes/api.php`, `phpstan-baseline.neon`.
+Frontend: `MealEntryCard`, `MealEntryPicker`, `RecipeCard`, `RecipeForm`, `RestaurantsTab`, `MealsTab`, `meals` + `restaurants` stores, `presetIcons`, `app.css`.
+
+---
+
+## 2026-04-16 — Session 35 (cont.): Meal Planner UX Polish
+
+### What Was Done
+- **Brand guide compliance** — Replaced emoji slot labels (🌅☀️🌙🍎) with Heroicons (`SunIcon`, `CloudIcon`, `MoonIcon`, `CakeIcon`). Updated all colors to brand hex values.
+- **Configurable meal slots** — Added `meal_slots` family setting. Settings > Food now has toggle-chip UI (Breakfast/Lunch/Dinner/Snack). Components filter slots reactively. Hidden slots preserve their data.
+- **Improved desktop grid layout** — Columns now have `minmax(160px, 1fr)` preventing title truncation. Horizontal scroll fallback on narrower screens.
+- **CI fix** — Updated `phpstan-baseline.neon` stale `family_avg_rating` pattern to `family_average_rating`.
+- **Post-mortem + feedback memories saved** — Incremental testing rules and brand guide compliance saved to session memory.
+- **PR #166** — All fixes committed and pushed to `feature/154-meal-plan-frontend`.
+
+---
+
 ## 2026-04-16 — Session 35: Food Step 7 — Meal Plan Frontend (Issue #154)
 
 ### What Was Done

@@ -1,32 +1,31 @@
 <template>
   <div
-    class="bg-white dark:bg-[#1C1C20] border rounded-xl overflow-hidden transition-colors"
+    class="bg-white dark:bg-[#1C1C20] border rounded-xl overflow-hidden"
     :class="isToday ? 'border-[#C4975A]/40' : 'border-[#E8E4DF] dark:border-[#2E2E32]'"
   >
-    <!-- Day header (toggle) -->
-    <button
-      class="w-full flex items-center justify-between px-4 py-3"
-      :class="isToday ? 'bg-[#C4975A]/5' : 'hover:bg-[#F5F2EE] dark:hover:bg-[#252528]'"
-      @click="isExpanded = !isExpanded"
+    <!-- Day header -->
+    <div
+      class="flex items-center justify-between px-4 py-3"
+      :class="isToday ? 'bg-[#C4975A]/5' : ''"
     >
-      <div class="flex items-center gap-3">
-        <div class="text-left">
-          <p class="text-[11px] font-semibold uppercase tracking-wider" :class="isToday ? 'text-[#C4975A]' : 'text-[#9C9895]'">
-            {{ dayLabel }}
-          </p>
-        </div>
-        <span v-if="totalEntries > 0" class="text-xs bg-[#F5F2EE] dark:bg-[#252528] text-[#6B6966] dark:text-[#9C9895] px-2 py-0.5 rounded-full">
-          {{ totalEntries }} meal{{ totalEntries !== 1 ? 's' : '' }}
+      <div class="flex items-center gap-2">
+        <p class="text-sm font-semibold" :class="isToday ? 'text-[#C4975A]' : 'text-[#1C1C1E] dark:text-[#F0EDE9]'">
+          {{ dayLabel }}
+        </p>
+        <span
+          v-if="isToday"
+          class="text-[10px] font-bold uppercase tracking-wider bg-[#C4975A] text-white px-1.5 py-0.5 rounded-full"
+        >
+          Today
         </span>
       </div>
-      <ChevronDownIcon
-        class="w-4 h-4 text-[#9C9895] transition-transform"
-        :class="{ 'rotate-180': isExpanded }"
-      />
-    </button>
+      <span v-if="totalEntries > 0" class="text-xs bg-[#F5F2EE] dark:bg-[#252528] text-[#6B6966] dark:text-[#9C9895] px-2 py-0.5 rounded-full">
+        {{ totalEntries }} meal{{ totalEntries !== 1 ? 's' : '' }}
+      </span>
+    </div>
 
-    <!-- Expanded content -->
-    <div v-if="isExpanded" class="px-4 pb-4 space-y-3">
+    <!-- Meal slots (always expanded) -->
+    <div class="px-4 pb-4 space-y-3">
       <div
         v-for="slot in slots"
         :key="slot.key"
@@ -45,8 +44,7 @@
           group="meal-entries"
           :animation="200"
           ghost-class="opacity-20"
-          chosen-class="ring-2 ring-[#C4975A]/50"
-          force-fallback
+          chosen-class="meal-drag-chosen"
           class="min-h-[36px] flex flex-col gap-1 rounded-[10px] border border-dashed border-[#E8E4DF] dark:border-[#2E2E32] p-1"
           @end="onDragEnd"
         >
@@ -76,7 +74,7 @@
 import { ref, computed, watch } from 'vue'
 import { DateTime } from 'luxon'
 import { VueDraggable } from 'vue-draggable-plus'
-import { ChevronDownIcon, PlusIcon, SunIcon, CloudIcon, MoonIcon, CakeIcon } from '@heroicons/vue/24/outline'
+import { PlusIcon, SunIcon, CloudIcon, MoonIcon, CakeIcon } from '@heroicons/vue/24/outline'
 import MealEntryCard from './MealEntryCard.vue'
 import { useMealsStore } from '@/stores/meals'
 
@@ -90,11 +88,8 @@ const emit = defineEmits(['add-entry', 'entry-click', 'entry-delete'])
 const mealsStore = useMealsStore()
 
 const dt = computed(() => DateTime.fromISO(props.date))
-const dayLabel = computed(() => dt.value.toFormat('EEE, MMM d'))
-const dayNumber = computed(() => dt.value.toFormat('d'))
+const dayLabel = computed(() => dt.value.toFormat('EEEE, MMM d'))
 const isToday = computed(() => dt.value.hasSame(DateTime.now(), 'day'))
-
-const isExpanded = ref(isToday.value)
 
 const ALL_SLOTS = [
   { key: 'breakfast', label: 'Breakfast', icon: SunIcon },
@@ -128,9 +123,9 @@ watch(() => props.entries, (val) => {
 }, { immediate: true, deep: true })
 
 const onDragEnd = (evt) => {
-  // evt.item is the vue-draggable-plus wrapper; the MealEntryCard is the first child
-  const cardEl = evt.item?.firstElementChild || evt.item
-  const entryId = cardEl?.dataset?.entryId
+  // data-entry-id may be on evt.item directly, or on a descendant
+  const entryId = evt.item?.dataset?.entryId
+    || evt.item?.querySelector?.('[data-entry-id]')?.dataset?.entryId
 
   const targetDate = evt.to?.closest('[data-date]')?.dataset?.date
   const targetSlot = evt.to?.closest('[data-slot]')?.dataset?.slot

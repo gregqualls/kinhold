@@ -44,6 +44,11 @@ class MealPlanEntryResource extends JsonResource
                 $entry->meal_preset_id !== null,
                 fn () => new MealPresetResource($this->whenLoaded('preset'))
             ),
+            'image_url' => match ($type) {
+                'recipe' => $entry->recipe?->image_path ? '/storage/'.$entry->recipe->image_path : null,
+                'restaurant' => $entry->restaurant?->image_url,
+                default => null,
+            },
             'custom_title' => $this->custom_title,
             'servings' => $this->servings,
             'effective_servings' => $this->effective_servings,

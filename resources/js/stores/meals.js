@@ -121,6 +121,21 @@ export const useMealsStore = defineStore('meals', () => {
     return fetchCurrentWeekPlan()
   }
 
+  /**
+   * Fetch a week plan without overwriting currentPlan state.
+   * Used by mobile infinite scroll to load additional weeks.
+   */
+  const fetchWeekPlanRaw = async (weekStartStr) => {
+    try {
+      const response = await api.post('/meal-plans', { week_start: weekStartStr })
+      const plan = response.data.meal_plan
+      if (plan?.entries?.data) plan.entries = plan.entries.data
+      return { success: true, plan }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to load meal plan' }
+    }
+  }
+
   // ── Presets ──
 
   const fetchPresets = async () => {
@@ -231,6 +246,7 @@ export const useMealsStore = defineStore('meals', () => {
     // Actions
     fetchCurrentWeekPlan,
     fetchWeekPlan,
+    fetchWeekPlanRaw,
     goToPreviousWeek,
     goToNextWeek,
     goToCurrentWeek,
