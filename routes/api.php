@@ -271,6 +271,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/', [RestaurantController::class, 'index']);
             Route::post('/', [RestaurantController::class, 'store']);
             Route::post('/import', [RestaurantController::class, 'import']);
+            Route::post('/upload-image', [RestaurantController::class, 'uploadImage']);
             Route::get('/{restaurant}', [RestaurantController::class, 'show']);
             Route::put('/{restaurant}', [RestaurantController::class, 'update']);
             Route::delete('/{restaurant}', [RestaurantController::class, 'destroy']);

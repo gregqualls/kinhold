@@ -191,7 +191,16 @@ PROMPT;
         }
 
         if ($response->failed()) {
-            throw new HttpException(422, "Couldn't fetch that URL. Check the link and try again.");
+            $status = $response->status();
+            // 402 / 403 / 429 typically mean the site is blocking scrapers
+            if (in_array($status, [401, 402, 403, 429], true)) {
+                throw new HttpException(422, "This site blocks automated imports (HTTP {$status}). Try a different recipe site, or use \"From Photo\" with a screenshot.");
+            }
+            if ($status === 404) {
+                throw new HttpException(422, 'Recipe page not found (404). Double-check the URL.');
+            }
+
+            throw new HttpException(422, "Couldn't fetch that URL (HTTP {$status}). Try a different recipe site, or use \"From Photo\".");
         }
 
         return $response->body();

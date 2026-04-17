@@ -43,6 +43,20 @@ import {
   PhCamera,
   PhCar,
   PhFlag,
+  // Food & Meals
+  PhForkKnife,
+  PhBowlFood,
+  PhCoffee,
+  PhHamburger,
+  PhEgg,
+  PhCarrot,
+  PhFish,
+  PhStorefront,
+  PhPackage,
+  PhTruck,
+  PhCookingPot,
+  PhPepper,
+  PhAppleLogo,
 } from '@phosphor-icons/vue'
 
 /**
@@ -106,6 +120,23 @@ export const presetIconMap = {
   // Misc
   camera: PhCamera,
   flag: PhFlag,
+
+  // Food & Meals
+  'utensils-crossed': PhForkKnife,
+  'fork-knife': PhForkKnife,
+  'bowl-food': PhBowlFood,
+  coffee: PhCoffee,
+  hamburger: PhHamburger,
+  egg: PhEgg,
+  carrot: PhCarrot,
+  fish: PhFish,
+  store: PhStorefront,
+  storefront: PhStorefront,
+  package: PhPackage,
+  truck: PhTruck,
+  'cooking-pot': PhCookingPot,
+  pepper: PhPepper,
+  apple: PhAppleLogo,
 }
 
 export const presetIconKeys = Object.keys(presetIconMap)

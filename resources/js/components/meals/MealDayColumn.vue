@@ -37,7 +37,7 @@
         force-fallback
         fallback-class="shadow-xl opacity-90"
         class="min-h-[36px] flex flex-col gap-1 rounded-[10px] border border-dashed border-[#E8E4DF] dark:border-[#2E2E32] p-1 transition-colors"
-        :class="{ 'border-[#C4975A]/40 bg-[#C4975A]/5': isDraggingOver }"
+
         @end="onDragEnd"
       >
         <MealEntryCard
@@ -93,7 +93,6 @@ const dt = computed(() => DateTime.fromISO(props.date))
 const dayLabel = computed(() => dt.value.toFormat('EEE'))
 const dayNumber = computed(() => dt.value.toFormat('d'))
 const isToday = computed(() => dt.value.hasSame(DateTime.now(), 'day'))
-const isDraggingOver = ref(false)
 
 // Local copies of entries per slot for VueDraggable v-model
 const localEntries = ref({
@@ -114,13 +113,18 @@ watch(() => props.entries, (val) => {
 }, { immediate: true, deep: true })
 
 const onDragEnd = (evt) => {
-  const toEl = evt.to
-  const targetDate = toEl.closest('[data-date]')?.dataset?.date
-  const targetSlot = toEl.closest('[data-slot]')?.dataset?.slot
-  const entryId = evt.item?.dataset?.entryId
+  // evt.item is the vue-draggable-plus wrapper; the MealEntryCard is the first child
+  const cardEl = evt.item?.firstElementChild || evt.item
+  const entryId = cardEl?.dataset?.entryId
+
+  const targetDate = evt.to?.closest('[data-date]')?.dataset?.date
+  const targetSlot = evt.to?.closest('[data-slot]')?.dataset?.slot
 
   if (!entryId || !targetDate || !targetSlot) return
-  if (targetDate === props.date && targetSlot === evt.from?.closest('[data-slot]')?.dataset?.slot) return
+
+  const fromDate = evt.from?.closest('[data-date]')?.dataset?.date
+  const fromSlot = evt.from?.closest('[data-slot]')?.dataset?.slot
+  if (targetDate === fromDate && targetSlot === fromSlot) return
 
   mealsStore.moveEntry(entryId, targetDate, targetSlot)
 }

@@ -21,6 +21,21 @@
 /storage/logs/*.log
 /bootstrap/cache/*
 
+# Runtime-uploaded content (user images shouldn't be in the repo)
+/storage/app/public/recipes/
+/storage/app/public/restaurants/
+/storage/app/public/avatars/
+
+# Dev SQLite databases
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# Dev artifacts / temp files
+.playwright-mcp/
+cookies.txt
+gaal.yaml
+php-*cacert.pem
+
 # IDE
 .vscode/
 .idea/

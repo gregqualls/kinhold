@@ -52,46 +52,19 @@
       />
 
       <!-- Grid -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-        <div
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
+        <FoodCard
           v-for="restaurant in displayedRestaurants"
           :key="restaurant.id"
-          class="bg-white dark:bg-prussian-800 border border-lavender-200 dark:border-prussian-700 rounded-xl p-4 cursor-pointer hover:border-[#C4975A]/50 hover:shadow-sm transition-all"
+          :title="restaurant.name"
+          :image-url="restaurant.image_url"
+          :placeholder-icon="BuildingStorefrontIcon"
+          :is-favorite="!!restaurant.is_favorite"
+          :meta-items="restaurantMeta(restaurant)"
+          :tags="restaurant.cuisine ? [restaurant.cuisine] : []"
           @click="openDetail(restaurant)"
-        >
-          <!-- Name + favorite -->
-          <div class="flex items-start justify-between gap-2 mb-1">
-            <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 text-sm leading-tight">{{ restaurant.name }}</h3>
-            <button
-              class="flex-shrink-0 p-1 rounded-full transition-colors"
-              :class="restaurant.is_favorite ? 'text-red-500' : 'text-lavender-300 dark:text-prussian-500 hover:text-red-400'"
-              @click.stop="restaurantsStore.toggleFavorite(restaurant.id)"
-            >
-              <HeartIcon class="w-4 h-4" :class="{ 'fill-current': restaurant.is_favorite }" />
-            </button>
-          </div>
-
-          <!-- Cuisine tag -->
-          <p v-if="restaurant.cuisine" class="text-xs text-lavender-500 dark:text-lavender-400 mb-2">{{ restaurant.cuisine }}</p>
-
-          <!-- Address -->
-          <p v-if="restaurant.address" class="text-xs text-lavender-400 dark:text-lavender-500 truncate mb-2">{{ restaurant.address }}</p>
-
-          <!-- Star rating -->
-          <div class="flex items-center gap-1">
-            <template v-for="n in 5" :key="n">
-              <StarIcon
-                class="w-3.5 h-3.5"
-                :class="n <= Math.round(restaurant.family_average_rating || 0)
-                  ? 'text-[#C4975A] fill-current'
-                  : 'text-lavender-200 dark:text-prussian-600'"
-              />
-            </template>
-            <span v-if="restaurant.family_average_rating" class="text-xs text-lavender-400 dark:text-lavender-500 ml-1">
-              {{ Number(restaurant.family_average_rating).toFixed(1) }}
-            </span>
-          </div>
-        </div>
+          @toggle-favorite="restaurantsStore.toggleFavorite(restaurant.id)"
+        />
       </div>
     </div>
 
@@ -99,20 +72,72 @@
     <FloatingActionButton @click="openAddModal" />
 
     <!-- Detail slide panel -->
-    <SlidePanel :show="!!selectedRestaurant" :title="selectedRestaurant?.name || ''" @close="selectedRestaurant = null">
+    <SlidePanel :show="!!selectedRestaurant" title="Restaurant Details" @close="selectedRestaurant = null">
       <div v-if="selectedRestaurant" class="p-6 space-y-5">
-        <!-- Meta -->
-        <div class="space-y-1">
-          <p v-if="selectedRestaurant.cuisine" class="text-sm text-lavender-500 dark:text-lavender-400">{{ selectedRestaurant.cuisine }}</p>
-          <p v-if="selectedRestaurant.address" class="text-sm text-prussian-400 dark:text-lavender-300">{{ selectedRestaurant.address }}</p>
-          <p v-if="selectedRestaurant.phone" class="text-sm text-prussian-400 dark:text-lavender-300">{{ selectedRestaurant.phone }}</p>
+        <!-- Editable fields -->
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Name</label>
+            <input
+              v-model="editFields.name"
+              type="text"
+              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+              placeholder="Restaurant name"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Cuisine</label>
+            <input
+              v-model="editFields.cuisine"
+              type="text"
+              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+              placeholder="e.g. Italian, Chinese, Mexican"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Address</label>
+            <input
+              v-model="editFields.address"
+              type="text"
+              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+              placeholder="Street address"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Phone</label>
+            <input
+              v-model="editFields.phone"
+              type="tel"
+              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+              placeholder="Phone number"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Website / Menu URL</label>
+            <input
+              v-model="editFields.menu_url"
+              type="url"
+              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+              placeholder="https://..."
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Google Maps URL</label>
+            <input
+              v-model="editFields.google_maps_url"
+              type="url"
+              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+              placeholder="https://maps.google.com/..."
+            />
+          </div>
+          <PhotoUpload v-model="editFields.image_url" label="Photo" :uploader="uploadRestaurantImage" />
         </div>
 
-        <!-- Links -->
+        <!-- Quick links -->
         <div class="flex flex-wrap gap-2">
           <a
-            v-if="selectedRestaurant.google_maps_url"
-            :href="selectedRestaurant.google_maps_url"
+            v-if="editFields.google_maps_url"
+            :href="editFields.google_maps_url"
             target="_blank"
             rel="noopener noreferrer"
             class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-lavender-100 dark:bg-prussian-700 text-prussian-500 dark:text-lavender-300 rounded-full hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
@@ -122,15 +147,24 @@
             Maps
           </a>
           <a
-            v-if="selectedRestaurant.menu_url"
-            :href="selectedRestaurant.menu_url"
+            v-if="editFields.menu_url"
+            :href="editFields.menu_url"
             target="_blank"
             rel="noopener noreferrer"
             class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-lavender-100 dark:bg-prussian-700 text-prussian-500 dark:text-lavender-300 rounded-full hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
             @click.stop
           >
             <DocumentTextIcon class="w-3.5 h-3.5" />
-            Menu
+            Website
+          </a>
+          <a
+            v-if="editFields.phone"
+            :href="'tel:' + editFields.phone"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-lavender-100 dark:bg-prussian-700 text-prussian-500 dark:text-lavender-300 rounded-full hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
+            @click.stop
+          >
+            <PhoneIcon class="w-3.5 h-3.5" />
+            Call
           </a>
         </div>
 
@@ -154,7 +188,7 @@
           </div>
         </div>
 
-        <!-- Notes -->
+        <!-- Family notes -->
         <div>
           <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Family Notes</label>
           <textarea
@@ -163,13 +197,12 @@
             class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors resize-none"
             placeholder="Add notes about this restaurant..."
           />
-          <button
-            class="mt-2 px-4 py-2 text-sm font-medium text-white bg-[#C4975A] hover:bg-[#D4A96A] rounded-[10px] transition-colors"
-            @click="saveNotes"
-          >
-            Save Notes
-          </button>
         </div>
+
+        <!-- Save all -->
+        <BaseButton variant="primary" :loading="isDetailSaving" class="w-full" @click="saveDetail">
+          Save Changes
+        </BaseButton>
 
         <!-- Actions -->
         <div v-if="isParent" class="pt-2 border-t border-lavender-200 dark:border-prussian-700">
@@ -186,8 +219,8 @@
 
     <!-- Add/Import modal -->
     <BaseModal :show="showAddModal" title="Add Restaurant" size="md" @close="closeAddModal">
-      <!-- Source tabs -->
-      <div class="flex border-b border-lavender-200 dark:border-prussian-700 mb-5">
+      <!-- Tab switcher (only before preview) -->
+      <div v-if="!previewData" class="flex border-b border-lavender-200 dark:border-prussian-700 mb-5">
         <button
           v-for="tab in addTabs"
           :key="tab.key"
@@ -202,35 +235,77 @@
         </button>
       </div>
 
+      <!-- Import: URL input -->
+      <div v-if="addTab === 'import' && !previewData" class="px-6 pb-6 space-y-4">
+        <BaseInput v-model="importUrl" label="Restaurant URL" placeholder="https://www.restaurant-website.com" :error="formErrors.url" @keydown.enter.prevent="previewImport" />
+
+        <!-- Error -->
+        <div
+          v-if="saveError"
+          class="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-xl"
+        >
+          <ExclamationCircleIcon class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <div class="text-sm">
+            <p class="font-medium text-red-600 dark:text-red-400">Import failed</p>
+            <p class="text-lavender-600 dark:text-lavender-400">{{ saveError }}</p>
+          </div>
+        </div>
+
+        <p class="text-xs text-lavender-400 dark:text-lavender-500">
+          Paste the restaurant's website URL. You can edit all details before saving.
+        </p>
+
+        <BaseButton variant="primary" :loading="isImporting" :disabled="!importUrl" class="w-full" @click="previewImport">
+          {{ isImporting ? 'Extracting...' : 'Preview Restaurant' }}
+        </BaseButton>
+      </div>
+
+      <!-- Import: loading spinner -->
+      <div v-if="isImporting" class="flex flex-col items-center justify-center py-8">
+        <LoadingSpinner size="lg" />
+        <p class="mt-3 text-sm text-lavender-500 dark:text-lavender-400">Extracting restaurant details...</p>
+      </div>
+
+      <!-- Import: preview form (edit before save) -->
+      <div v-if="previewData && !isImporting" class="px-6 pb-6 space-y-4">
+        <div class="flex items-center gap-2 p-3 bg-[#5B8C6A]/10 border border-[#5B8C6A]/20 rounded-xl">
+          <CheckCircleIcon class="w-5 h-5 text-[#5B8C6A] flex-shrink-0" />
+          <p class="text-sm text-[#5B8C6A]">
+            Details extracted! Review and edit below, then save.
+          </p>
+        </div>
+
+        <BaseInput v-model="form.name" label="Name *" placeholder="Restaurant name" :error="formErrors.name" />
+        <BaseInput v-model="form.cuisine" label="Cuisine" placeholder="e.g. Italian, Chinese..." />
+        <BaseInput v-model="form.address" label="Address" placeholder="Street address" />
+        <BaseInput v-model="form.phone" label="Phone" placeholder="Phone number" />
+        <BaseInput v-model="form.menu_url" label="Website" placeholder="https://..." />
+        <PhotoUpload v-model="form.image_url" label="Photo" :uploader="uploadRestaurantImage" />
+
+        <div class="flex gap-3">
+          <BaseButton variant="primary" :loading="isSaving" class="flex-1" @click="saveFromPreview">
+            Save Restaurant
+          </BaseButton>
+          <button
+            class="px-4 py-2 text-sm text-lavender-500 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors"
+            @click="resetPreview"
+          >
+            Back
+          </button>
+        </div>
+        <p v-if="saveError" class="text-xs text-red-500">{{ saveError }}</p>
+      </div>
+
       <!-- Manual form -->
-      <div v-if="addTab === 'manual'" class="px-6 pb-6 space-y-4">
+      <div v-if="addTab === 'manual' && !previewData" class="px-6 pb-6 space-y-4">
         <BaseInput v-model="form.name" label="Name *" placeholder="e.g. Gusto Pizzeria" :error="formErrors.name" />
         <BaseInput v-model="form.cuisine" label="Cuisine" placeholder="e.g. Italian, Mexican..." />
         <BaseInput v-model="form.address" label="Address" placeholder="123 Main St" />
         <BaseInput v-model="form.phone" label="Phone" placeholder="+1 (555) 000-0000" />
-        <BaseInput v-model="form.google_maps_url" label="Google Maps URL" placeholder="https://maps.google.com/..." />
-        <BaseInput v-model="form.menu_url" label="Menu URL" placeholder="https://..." />
-        <div>
-          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1">Notes</label>
-          <textarea
-            v-model="form.notes"
-            rows="2"
-            class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors resize-none"
-            placeholder="Any notes..."
-          />
-        </div>
+        <BaseInput v-model="form.menu_url" label="Website" placeholder="https://..." />
+        <PhotoUpload v-model="form.image_url" label="Photo" :uploader="uploadRestaurantImage" />
         <BaseButton variant="primary" :loading="isSaving" class="w-full" @click="saveManual">
           Add Restaurant
-        </BaseButton>
-        <p v-if="saveError" class="text-xs text-red-500">{{ saveError }}</p>
-      </div>
-
-      <!-- Import form -->
-      <div v-else class="px-6 pb-6 space-y-4">
-        <p class="text-sm text-lavender-500 dark:text-lavender-400">Paste a Google Maps URL to auto-import restaurant details.</p>
-        <BaseInput v-model="importUrl" label="Google Maps URL" placeholder="https://maps.google.com/..." :error="formErrors.url" />
-        <BaseButton variant="primary" :loading="isSaving" class="w-full" @click="saveImport">
-          Import Restaurant
         </BaseButton>
         <p v-if="saveError" class="text-xs text-red-500">{{ saveError }}</p>
       </div>
@@ -260,10 +335,15 @@ import {
   MapPinIcon,
   DocumentTextIcon,
   TrashIcon,
+  PhoneIcon,
+  ExclamationCircleIcon,
+  CheckCircleIcon,
 } from '@heroicons/vue/24/outline'
 import { useRestaurantsStore } from '@/stores/restaurants'
 import { useAuthStore } from '@/stores/auth'
 import { useNotification } from '@/composables/useNotification'
+import FoodCard from '@/components/food/FoodCard.vue'
+import PhotoUpload from '@/components/food/PhotoUpload.vue'
 import SlidePanel from '@/components/common/SlidePanel.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import BaseInput from '@/components/common/BaseInput.vue'
@@ -286,13 +366,32 @@ const displayedRestaurants = computed(() => {
   return showFavoritesOnly.value ? list.filter(r => r.is_favorite) : list
 })
 
+const restaurantMeta = (r) => {
+  const items = []
+  if (r.address) items.push({ icon: MapPinIcon, text: r.address.length > 30 ? r.address.slice(0, 30) + '...' : r.address })
+  if (r.family_average_rating > 0) items.push({ icon: StarIcon, text: Number(r.family_average_rating).toFixed(1), iconClass: 'text-[#C4975A]' })
+  if (r.phone) items.push({ icon: PhoneIcon, text: r.phone })
+  return items
+}
+
 // Detail panel
 const selectedRestaurant = ref(null)
+const editFields = ref({ name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '' })
 const editNotes = ref('')
 const pendingRating = ref(null)
+const isDetailSaving = ref(false)
 
 const openDetail = (restaurant) => {
   selectedRestaurant.value = restaurant
+  editFields.value = {
+    name: restaurant.name || '',
+    cuisine: restaurant.cuisine || '',
+    address: restaurant.address || '',
+    phone: restaurant.phone || '',
+    google_maps_url: restaurant.google_maps_url || '',
+    menu_url: restaurant.menu_url || '',
+    image_url: restaurant.image_url || '',
+  }
   editNotes.value = restaurant.family_notes || restaurant.notes || ''
   pendingRating.value = null
 }
@@ -311,13 +410,19 @@ const rateRestaurant = async (score) => {
   }
 }
 
-const saveNotes = async () => {
-  const result = await restaurantsStore.updateRestaurant(selectedRestaurant.value.id, { notes: editNotes.value })
+const saveDetail = async () => {
+  isDetailSaving.value = true
+  const payload = {
+    ...editFields.value,
+    notes: editNotes.value,
+  }
+  const result = await restaurantsStore.updateRestaurant(selectedRestaurant.value.id, payload)
+  isDetailSaving.value = false
   if (result.success) {
     selectedRestaurant.value = result.data
-    notifySuccess('Notes saved', 3000)
+    notifySuccess('Restaurant saved', 3000)
   } else {
-    notifyError(result.error || 'Failed to save notes', 4000)
+    notifyError(result.error || 'Failed to save', 4000)
   }
 }
 
@@ -340,28 +445,90 @@ const doDelete = async () => {
 
 // Add/Import modal
 const showAddModal = ref(false)
-const addTab = ref('manual')
+const addTab = ref('import')
 const addTabs = [
+  { key: 'import', label: 'From URL' },
   { key: 'manual', label: 'Manual' },
-  { key: 'import', label: 'Import from URL' },
 ]
-const form = ref({ name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', notes: '' })
+const emptyForm = () => ({ name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '' })
+
+const uploadRestaurantImage = async (file) => {
+  return await restaurantsStore.uploadImage(file)
+}
+const form = ref(emptyForm())
 const importUrl = ref('')
 const formErrors = ref({})
 const saveError = ref('')
 const isSaving = ref(false)
+const isImporting = ref(false)
+const previewData = ref(null)
 
 const openAddModal = () => {
-  form.value = { name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', notes: '' }
+  form.value = emptyForm()
   importUrl.value = ''
   formErrors.value = {}
   saveError.value = ''
-  addTab.value = 'manual'
+  previewData.value = null
+  addTab.value = 'import'
   showAddModal.value = true
 }
 
 const closeAddModal = () => {
   showAddModal.value = false
+  previewData.value = null
+}
+
+const resetPreview = () => {
+  previewData.value = null
+  saveError.value = ''
+}
+
+const previewImport = async () => {
+  if (!importUrl.value.trim()) {
+    formErrors.value.url = 'URL is required'
+    return
+  }
+  formErrors.value = {}
+  saveError.value = ''
+  isImporting.value = true
+
+  const result = await restaurantsStore.previewImport(importUrl.value)
+  isImporting.value = false
+
+  if (result.success) {
+    const data = result.preview
+    // Populate form with extracted data for editing
+    form.value = {
+      name: data.name || '',
+      cuisine: data.cuisine || '',
+      address: data.address || '',
+      phone: data.phone || '',
+      google_maps_url: data.google_maps_url || '',
+      menu_url: data.menu_url || '',
+      image_url: data.image_url || '',
+    }
+    previewData.value = data
+  } else {
+    saveError.value = result.error || 'Failed to extract restaurant data'
+  }
+}
+
+const saveFromPreview = async () => {
+  formErrors.value = {}
+  saveError.value = ''
+  if (!form.value.name.trim()) {
+    formErrors.value.name = 'Name is required'
+    return
+  }
+  isSaving.value = true
+  const result = await restaurantsStore.createRestaurant(form.value)
+  isSaving.value = false
+  if (result.success) {
+    closeAddModal()
+    notifySuccess('Restaurant added', 3000)
+  } else {
+    saveError.value = result.error || 'Failed to save restaurant'
+  }
 }
 
 const saveManual = async () => {
@@ -379,24 +546,6 @@ const saveManual = async () => {
     notifySuccess('Restaurant added', 3000)
   } else {
     saveError.value = result.error || 'Failed to add restaurant'
-  }
-}
-
-const saveImport = async () => {
-  formErrors.value = {}
-  saveError.value = ''
-  if (!importUrl.value.trim()) {
-    formErrors.value.url = 'URL is required'
-    return
-  }
-  isSaving.value = true
-  const result = await restaurantsStore.importRestaurant(importUrl.value)
-  isSaving.value = false
-  if (result.success) {
-    closeAddModal()
-    notifySuccess('Restaurant imported', 3000)
-  } else {
-    saveError.value = result.error || 'Failed to import restaurant'
   }
 }
 

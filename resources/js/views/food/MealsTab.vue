@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col overflow-hidden">
-    <!-- Week navigation header -->
-    <div class="px-4 md:px-6 pt-4 pb-3 flex items-center gap-2 border-b border-lavender-200 dark:border-prussian-700">
+    <!-- Week navigation header (desktop only — mobile has infinite scroll) -->
+    <div class="hidden md:flex px-4 md:px-6 pt-4 pb-3 items-center gap-2 border-b border-lavender-200 dark:border-prussian-700">
       <button
         class="p-2 rounded-[10px] bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
         @click="mealsStore.goToPreviousWeek"
@@ -42,13 +42,13 @@
     </div>
 
     <!-- Loading state -->
-    <div v-if="mealsStore.isLoading" class="flex-1 flex items-center justify-center">
+    <div v-if="mealsStore.isLoading && !mobileEntries.size" class="flex-1 flex items-center justify-center">
       <LoadingSpinner size="lg" />
     </div>
 
     <!-- No plan yet -->
     <EmptyState
-      v-else-if="!mealsStore.currentPlan"
+      v-else-if="!mealsStore.currentPlan && !mobileEntries.size"
       :icon="CalendarDaysIcon"
       title="No meal plan yet"
       description="Start planning your week by adding meals to each day."
@@ -56,39 +56,39 @@
       @action="mealsStore.fetchCurrentWeekPlan"
     />
 
-    <!-- Desktop: 7-column grid with horizontal scroll fallback -->
-    <div
-      v-else
-      class="hidden md:block flex-1 overflow-y-auto overflow-x-auto px-4 md:px-6 py-3"
-    >
-      <div
-        class="grid gap-3 min-w-max"
-        :style="{ gridTemplateColumns: 'repeat(7, minmax(160px, 1fr))' }"
-      >
-        <MealDayColumn
-          v-for="date in mealsStore.weekDates"
-          :key="date"
-          :date="date"
-          :entries="mealsStore.entriesByDayAndSlot[date] || {}"
+    <template v-else>
+      <!-- Desktop: transposed grid (slots = rows, days = columns) -->
+      <div class="hidden md:block flex-1 overflow-y-auto overflow-x-auto px-4 md:px-6 py-3">
+        <MealWeekGrid
+          :dates="mealsStore.weekDates"
+          :entries-by-day="mealsStore.entriesByDayAndSlot"
           @add-entry="openEntryPicker"
           @entry-click="openEntryEdit"
           @entry-delete="deleteEntry"
         />
       </div>
-    </div>
 
-    <!-- Mobile: vertical day cards -->
-    <div class="md:hidden flex-1 overflow-y-auto px-4 py-3 space-y-2 pb-24">
-      <MealDayCard
-        v-for="date in mealsStore.weekDates"
-        :key="date"
-        :date="date"
-        :entries="mealsStore.entriesByDayAndSlot[date] || {}"
-        @add-entry="openEntryPicker"
-        @entry-click="openEntryEdit"
-        @entry-delete="deleteEntry"
-      />
-    </div>
+      <!-- Mobile: continuous scroll from today -->
+      <div
+        ref="mobileScrollContainer"
+        class="md:hidden flex-1 overflow-y-auto px-4 py-3 space-y-3 pb-24"
+        @scroll="onMobileScroll"
+      >
+        <MealDaySection
+          v-for="date in mobileDates"
+          :key="date"
+          :ref="el => setDayRef(date, el)"
+          :date="date"
+          :entries="getMobileEntries(date)"
+          @add-entry="openEntryPicker"
+          @entry-click="openEntryEdit"
+          @entry-delete="deleteEntry"
+        />
+        <div v-if="isLoadingMore" class="flex justify-center py-4">
+          <LoadingSpinner size="sm" />
+        </div>
+      </div>
+    </template>
 
     <!-- Entry picker (add) -->
     <MealEntryPicker
@@ -117,6 +117,29 @@
           <span class="text-sm text-lavender-500 dark:text-lavender-400">
             {{ slotLabel(editEntry.meal_slot) }} · {{ formatDate(editEntry.date) }}
           </span>
+        </div>
+
+        <!-- Restaurant links -->
+        <div v-if="editEntry.type === 'restaurant' && editEntry.restaurant" class="space-y-2">
+          <a
+            v-if="editEntry.restaurant.google_maps_url"
+            :href="editEntry.restaurant.google_maps_url"
+            target="_blank"
+            rel="noopener"
+            class="flex items-center gap-2 px-3 py-2.5 rounded-[10px] bg-lavender-50 dark:bg-prussian-700 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+          >
+            <MapPinIcon class="w-4 h-4 text-[#5B7B9C] flex-shrink-0" />
+            <span class="flex-1 truncate">Open in Google Maps</span>
+            <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5 text-[#9C9895] flex-shrink-0" />
+          </a>
+          <a
+            v-if="editEntry.restaurant.phone"
+            :href="'tel:' + editEntry.restaurant.phone"
+            class="flex items-center gap-2 px-3 py-2.5 rounded-[10px] bg-lavender-50 dark:bg-prussian-700 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+          >
+            <PhoneIcon class="w-4 h-4 text-[#5B7B9C] flex-shrink-0" />
+            <span>{{ editEntry.restaurant.phone }}</span>
+          </a>
         </div>
 
         <!-- Servings -->
@@ -180,7 +203,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { DateTime } from 'luxon'
 import {
   ChevronLeftIcon,
@@ -188,12 +211,15 @@ import {
   CalendarDaysIcon,
   ShoppingCartIcon,
   TrashIcon,
+  MapPinIcon,
+  PhoneIcon,
+  ArrowTopRightOnSquareIcon,
 } from '@heroicons/vue/24/outline'
 import { useMealsStore } from '@/stores/meals'
 import { useAuthStore } from '@/stores/auth'
 import { useNotification } from '@/composables/useNotification'
-import MealDayColumn from '@/components/meals/MealDayColumn.vue'
-import MealDayCard from '@/components/meals/MealDayCard.vue'
+import MealWeekGrid from '@/components/meals/MealWeekGrid.vue'
+import MealDaySection from '@/components/meals/MealDaySection.vue'
 import MealEntryPicker from '@/components/meals/MealEntryPicker.vue'
 import SlidePanel from '@/components/common/SlidePanel.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
@@ -207,7 +233,7 @@ const { success: notifySuccess, error: notifyError } = useNotification()
 
 const familyMembers = computed(() => authStore.familyMembers || [])
 
-// Week range label
+// ── Week range label (desktop) ──
 const weekRangeLabel = computed(() => {
   const dates = mealsStore.weekDates
   if (!dates.length) return ''
@@ -219,7 +245,101 @@ const weekRangeLabel = computed(() => {
   return `${start.toFormat('MMM d, yyyy')} – ${end.toFormat('MMM d, yyyy')}`
 })
 
-// Entry picker
+// ── Mobile: continuous scroll ──
+const mobileScrollContainer = ref(null)
+const dayRefs = ref({})
+const mobileEntries = ref(new Map()) // Map<weekStart, plan>
+const mobileDates = ref([])
+const isLoadingMore = ref(false)
+const loadedWeekStarts = ref(new Set())
+const todayStr = DateTime.now().toISODate()
+
+const setDayRef = (date, el) => {
+  if (el) dayRefs.value[date] = el
+}
+
+const getMobileEntries = (date) => {
+  // Search all loaded plans for entries on this date
+  for (const plan of mobileEntries.value.values()) {
+    if (plan.entries) {
+      const dayEntries = { breakfast: [], lunch: [], dinner: [], snack: [] }
+      for (const entry of plan.entries) {
+        if (entry.date === date && dayEntries[entry.meal_slot]) {
+          dayEntries[entry.meal_slot].push(entry)
+        }
+      }
+      // Return if this plan has any entries for this date
+      if (Object.values(dayEntries).some(arr => arr.length > 0)) return dayEntries
+    }
+  }
+  return { breakfast: [], lunch: [], dinner: [], snack: [] }
+}
+
+const getWeekStartForDate = (dateStr) => {
+  const dt = DateTime.fromISO(dateStr)
+  const weekStartDay = authStore.family?.settings?.week_start_day || 'monday'
+  if (weekStartDay === 'sunday') {
+    const weekday = dt.weekday
+    return dt.minus({ days: weekday % 7 }).startOf('day')
+  }
+  return dt.startOf('week')
+}
+
+const loadWeek = async (weekStart) => {
+  const key = weekStart.toISODate()
+  if (loadedWeekStarts.value.has(key)) return
+  loadedWeekStarts.value.add(key)
+
+  const result = await mealsStore.fetchWeekPlanRaw(key)
+  if (result.success && result.plan) {
+    mobileEntries.value.set(key, result.plan)
+  }
+}
+
+const buildMobileDates = () => {
+  // Sort all loaded week starts and build a flat date list
+  const sortedWeeks = Array.from(loadedWeekStarts.value).sort()
+  const dates = []
+  for (const weekStart of sortedWeeks) {
+    const start = DateTime.fromISO(weekStart)
+    for (let i = 0; i < 7; i++) {
+      dates.push(start.plus({ days: i }).toISODate())
+    }
+  }
+  mobileDates.value = dates
+}
+
+const loadNextWeek = async () => {
+  if (isLoadingMore.value) return
+  isLoadingMore.value = true
+
+  const lastDate = mobileDates.value[mobileDates.value.length - 1]
+  const nextWeekStart = lastDate
+    ? getWeekStartForDate(DateTime.fromISO(lastDate).plus({ days: 1 }).toISODate())
+    : getWeekStartForDate(todayStr)
+
+  await loadWeek(nextWeekStart)
+  buildMobileDates()
+  isLoadingMore.value = false
+}
+
+const onMobileScroll = (e) => {
+  const el = e.target
+  if (el.scrollHeight - el.scrollTop - el.clientHeight < 300) {
+    loadNextWeek()
+  }
+}
+
+const scrollToToday = () => {
+  nextTick(() => {
+    const todayEl = dayRefs.value[todayStr]
+    if (todayEl?.$el) {
+      todayEl.$el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  })
+}
+
+// ── Entry picker ──
 const showPicker = ref(false)
 const pickerDate = ref(null)
 const pickerSlot = ref(null)
@@ -234,7 +354,7 @@ const onEntryAdded = () => {
   notifySuccess('Meal added to plan', 3000)
 }
 
-// Entry edit
+// ── Entry edit ──
 const editEntry = ref(null)
 const editServings = ref(null)
 const editCooks = ref([])
@@ -284,7 +404,7 @@ const deleteEntry = async (entry) => {
   }
 }
 
-// Shopping list
+// ── Shopping list ──
 const generateShoppingList = async () => {
   const result = await mealsStore.generateShoppingList(mealsStore.currentPlan.id)
   if (result.success) {
@@ -294,7 +414,7 @@ const generateShoppingList = async () => {
   }
 }
 
-// Helpers
+// ── Helpers ──
 const slotLabel = (slot) => {
   const map = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' }
   return map[slot] || slot
@@ -319,8 +439,20 @@ const typeClasses = (type) => {
   }
 }
 
+// ── Init ──
 onMounted(async () => {
   await mealsStore.fetchCurrentWeekPlan()
   mealsStore.fetchPresets()
+
+  // Initialize mobile scroll with current week + next week
+  if (mealsStore.currentPlan) {
+    const currentWeekStart = getWeekStartForDate(todayStr)
+    mobileEntries.value.set(currentWeekStart.toISODate(), mealsStore.currentPlan)
+    loadedWeekStarts.value.add(currentWeekStart.toISODate())
+    buildMobileDates()
+
+    // Auto-scroll to today
+    scrollToToday()
+  }
 })
 </script>
