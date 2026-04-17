@@ -9,6 +9,7 @@ use App\Models\ShoppingList;
 use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class MealPlanService
 {
@@ -214,7 +215,7 @@ class MealPlanService
      * eagerly loading the recipe + its ingredients. Used by the
      * "preview before adding to shopping list" flow on the meal-plan page.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, MealPlanEntry>
+     * @return Collection<int, MealPlanEntry>
      */
     public function entriesWithIngredientsInRange(MealPlan $plan, string $from, string $to)
     {

@@ -8,6 +8,7 @@ use App\Models\FamilyRestaurant;
 use App\Models\MealPlan;
 use App\Models\Rating;
 use App\Models\Restaurant;
+use App\Models\Tag;
 use App\Services\RestaurantImportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -260,13 +261,13 @@ class RestaurantController extends Controller
      * Filter the given tag IDs down to ones that belong to the given family.
      * Prevents cross-family tag attachment via spoofed IDs.
      */
-    private function scopedTagIds(string $familyId, array $tagIds): array
+    private function scopedTagIds(int|string $familyId, array $tagIds): array
     {
         if (empty($tagIds)) {
             return [];
         }
 
-        return \App\Models\Tag::whereIn('id', $tagIds)
+        return Tag::whereIn('id', $tagIds)
             ->where('family_id', $familyId)
             ->pluck('id')
             ->all();
