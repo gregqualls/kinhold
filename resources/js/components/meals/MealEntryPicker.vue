@@ -92,7 +92,7 @@
             <BuildingStorefrontIcon class="w-5 h-5 text-blue-400 flex-shrink-0" />
             <div class="min-w-0">
               <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ restaurant.name }}</p>
-              <p v-if="restaurant.cuisine" class="text-xs text-lavender-400">{{ restaurant.cuisine }}</p>
+              <p v-if="restaurant.tags?.length" class="text-xs text-lavender-400 truncate">{{ restaurant.tags.map(t => t.name).join(', ') }}</p>
             </div>
             <CheckCircleIcon v-if="selectedSource?.id === restaurant.id" class="w-4 h-4 text-[#C4975A] flex-shrink-0 ml-auto" />
           </button>
