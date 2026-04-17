@@ -57,7 +57,7 @@ class ManageTags extends Tool
                 'id' => $t->id,
                 'name' => $t->name,
                 'color' => $t->color,
-                'scope' => $t->scope?->value ?? 'task',
+                'scope' => $t->scope->value,
                 'task_count' => $t->tasks_count,
                 'recipe_count' => $t->recipes_count,
                 'restaurant_count' => $t->restaurants_count,

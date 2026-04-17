@@ -15,6 +15,7 @@ use App\Models\MealPlan;
 use App\Models\MealPlanEntry;
 use App\Models\MealPreset;
 use App\Services\MealPlanService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -170,7 +171,7 @@ class MealPlanController extends Controller
         ]);
 
         $days = $data['days'] ?? 7;
-        $start = isset($data['start']) ? \Carbon\Carbon::parse($data['start']) : \Carbon\Carbon::today();
+        $start = isset($data['start']) ? Carbon::parse($data['start']) : Carbon::today();
         $end = (clone $start)->addDays($days - 1);
 
         $entries = $this->mealPlanService->entriesWithIngredientsInRange(
