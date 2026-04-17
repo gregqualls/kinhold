@@ -45,6 +45,16 @@
 **Mobile meals scroll**
 - `MealsTab` mobile section now opens at today by default (was scrolling past prior days). New "Show earlier days" pill at top exposes the previous 7 days per tap (loads the prior week's plan if needed) while preserving scroll position.
 
+**Cuisine → tags cleanup**
+- Dropped the `cuisine` string column on `restaurants`. Migration backfills existing values as food-scoped tags per linked family, then drops the column.
+- `RestaurantImportService.extractFromUrl` now returns `cuisines: []` (comma/semicolon-split). Import auto-attaches them as food tags via a new `attachCuisineTags()` helper.
+- Preview flow auto-resolves scraped cuisines to tag IDs client-side so they show up as pre-selected (deselectable) chips in the form.
+- Restaurant model/Request/Controller/Resource scrubbed of cuisine. Search matches name/address/tags.
+- Demo seeder now attaches `Italian`/`Mexican` food tags instead of setting cuisine.
+
+**ESLint cleanup**
+- Zero errors, zero warnings. Deleted `MealDayCard.vue` + `MealDayColumn.vue` (unimported dead code from pre-grid layout). Dropped unused `emit` const assignments + dev `console.warn` from drag handler.
+
 **Polish + DX**
 - DemoModal dark hover bug fixed (`prussian-750` → wisteria-tinted).
 - `scripts/dev-laravel.sh` added — idempotent SQLite create + migrate + seed-if-needed wrapper for `php artisan serve`. Wired into `.claude/launch.json`.
