@@ -76,6 +76,21 @@ parameters:
 			path: app/Http/Controllers/Api/V1/CalendarController.php
 
 		-
+			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/MealPlanController.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/MealPlanController.php
+
+		-
+			message: "#^Using nullsafe property access on non-nullable type string\\. Use -\\> instead\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/MealPlanController.php
+
+		-
 			message: "#^Access to an undefined property App\\\\Models\\\\FamilyEvent\\:\\:\\$computed_next_date\\.$#"
 			count: 4
 			path: app/Http/Controllers/Api/V1/FeaturedEventController.php
@@ -596,11 +611,6 @@ parameters:
 			path: app/Http/Resources/RestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$cuisine\\.$#"
-			count: 1
-			path: app/Http/Resources/RestaurantResource.php
-
-		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$google_maps_url\\.$#"
 			count: 1
 			path: app/Http/Resources/RestaurantResource.php
@@ -827,6 +837,11 @@ parameters:
 
 		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$recipes_count\\.$#"
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$restaurants_count\\.$#"
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
@@ -1327,7 +1342,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
-			count: 4
+			count: 5
 			path: app/Services/MealPlanService.php
 
 		-
@@ -1337,7 +1352,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#4 \\$mealPlanEntryId of method App\\\\Services\\\\ShoppingListService\\:\\:addRecipeIngredients\\(\\) expects string\\|null, int given\\.$#"
-			count: 4
+			count: 5
 			path: app/Services/MealPlanService.php
 
 		-

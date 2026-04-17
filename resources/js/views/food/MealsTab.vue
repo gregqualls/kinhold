@@ -30,12 +30,12 @@
         This Week
       </button>
 
-      <!-- Generate shopping list -->
+      <!-- Add to shopping list (preview + select ingredients) -->
       <button
         v-if="mealsStore.currentPlan"
         class="p-2 rounded-[10px] bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
-        title="Regenerate shopping list from meal plan"
-        @click="generateShoppingList"
+        title="Add ingredients to shopping list"
+        @click="showShoppingModal = true"
       >
         <ShoppingCartIcon class="w-4 h-4" />
       </button>
@@ -58,7 +58,7 @@
 
     <template v-else>
       <!-- Desktop: transposed grid (slots = rows, days = columns) -->
-      <div class="hidden md:block flex-1 overflow-y-auto overflow-x-auto px-4 md:px-6 py-3">
+      <div class="hidden md:block flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-6 py-3">
         <MealWeekGrid
           :dates="mealsStore.weekDates"
           :entries-by-day="mealsStore.entriesByDayAndSlot"
@@ -74,6 +74,16 @@
         class="md:hidden flex-1 overflow-y-auto px-4 py-3 space-y-3 pb-24"
         @scroll="onMobileScroll"
       >
+        <!-- Load previous days -->
+        <button
+          class="w-full py-2 px-3 text-xs font-medium text-[#9C9895] hover:text-[#C4975A] bg-[#F5F2EE] dark:bg-[#252528] hover:bg-[#C4975A]/10 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+          :disabled="isLoadingPrevious"
+          @click="loadPreviousDays"
+        >
+          <ChevronUpIcon class="w-3.5 h-3.5" />
+          {{ isLoadingPrevious ? 'Loading...' : 'Show earlier days' }}
+        </button>
+
         <MealDaySection
           v-for="date in mobileDates"
           :key="date"
@@ -97,6 +107,13 @@
       :target-slot="pickerSlot"
       @close="showPicker = false"
       @added="onEntryAdded"
+    />
+
+    <!-- Shopping list builder (preview + select ingredients) -->
+    <MealPlanShoppingModal
+      :show="showShoppingModal"
+      :plan-id="mealsStore.currentPlan?.id"
+      @close="showShoppingModal = false"
     />
 
     <!-- Entry edit panel -->
@@ -181,7 +198,7 @@
             rows="2"
             class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors resize-none"
             placeholder="Any notes..."
-          />
+          ></textarea>
         </div>
 
         <!-- Save -->
@@ -208,6 +225,7 @@ import { DateTime } from 'luxon'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
   CalendarDaysIcon,
   ShoppingCartIcon,
   TrashIcon,
@@ -221,6 +239,7 @@ import { useNotification } from '@/composables/useNotification'
 import MealWeekGrid from '@/components/meals/MealWeekGrid.vue'
 import MealDaySection from '@/components/meals/MealDaySection.vue'
 import MealEntryPicker from '@/components/meals/MealEntryPicker.vue'
+import MealPlanShoppingModal from '@/components/meals/MealPlanShoppingModal.vue'
 import SlidePanel from '@/components/common/SlidePanel.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
@@ -296,17 +315,49 @@ const loadWeek = async (weekStart) => {
   }
 }
 
+// Earliest date the user wants visible. Defaults to today so past days from the
+// current week are hidden until they tap "Show earlier days".
+const mobileStartDate = ref(todayStr)
+const isLoadingPrevious = ref(false)
+
 const buildMobileDates = () => {
-  // Sort all loaded week starts and build a flat date list
+  // Sort all loaded week starts and build a flat date list, filtering out
+  // anything before mobileStartDate so we don't render past days by default.
   const sortedWeeks = Array.from(loadedWeekStarts.value).sort()
   const dates = []
   for (const weekStart of sortedWeeks) {
     const start = DateTime.fromISO(weekStart)
     for (let i = 0; i < 7; i++) {
-      dates.push(start.plus({ days: i }).toISODate())
+      const d = start.plus({ days: i }).toISODate()
+      if (d >= mobileStartDate.value) dates.push(d)
     }
   }
   mobileDates.value = dates
+}
+
+// Reveal the previous 7 days. If those days fall in a week we haven't fetched
+// yet, load it first. Preserves scroll position so today doesn't jump.
+const loadPreviousDays = async () => {
+  if (isLoadingPrevious.value) return
+  isLoadingPrevious.value = true
+
+  const newStart = DateTime.fromISO(mobileStartDate.value).minus({ days: 7 }).toISODate()
+  const neededWeekStart = getWeekStartForDate(newStart)
+  await loadWeek(neededWeekStart)
+
+  // Capture scroll height before mutating dates so we can compensate.
+  const el = mobileScrollContainer.value
+  const prevHeight = el?.scrollHeight ?? 0
+
+  mobileStartDate.value = newStart
+  buildMobileDates()
+
+  await nextTick()
+  if (el) {
+    const delta = el.scrollHeight - prevHeight
+    el.scrollTop += delta
+  }
+  isLoadingPrevious.value = false
 }
 
 const loadNextWeek = async () => {
@@ -405,14 +456,7 @@ const deleteEntry = async (entry) => {
 }
 
 // ── Shopping list ──
-const generateShoppingList = async () => {
-  const result = await mealsStore.generateShoppingList(mealsStore.currentPlan.id)
-  if (result.success) {
-    notifySuccess('Shopping list updated', 3000)
-  } else {
-    notifyError(result.error || 'Failed to update shopping list', 4000)
-  }
-}
+const showShoppingModal = ref(false)
 
 // ── Helpers ──
 const slotLabel = (slot) => {

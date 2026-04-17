@@ -2,6 +2,83 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-17 — Session 37: Tag Scopes, Meal Plan Shopping Flow, Responsive Grid, Mobile Nav Redesign
+
+### What Was Done
+
+**Tag system overhaul (data model)**
+- New `tags.scope` enum column (`task` | `food`) backed by `App\Enums\TagScope`. Added composite index `(family_id, scope)`. Migration backfills existing tags by recipe/restaurant attachment + name (`Breakfast/Lunch/Dinner/Dessert/Snack` → food).
+- New `restaurant_tag` pivot table + `RestaurantTag` Eloquent pivot model. `Restaurant->tags()` and `Tag->restaurants()` relations.
+- `TagController` accepts `?scope=` query filter and `scope` param on create. `TagResource` exposes `scope` + `restaurants_count`.
+- All Pinia stores fetch with the right scope: `tasks.js` → `?scope=task`, `recipes.js` + `restaurants.js` → `?scope=food`. Dashboard widgets that filter by tags now request task-scoped tags.
+- Onboarding `TagsStep` and demo seeder set scope explicitly on creation.
+- Removed legacy `recipes_count > 0 || tasks_count == 0` workarounds in RecipeForm/RecipesTab/RestaurantsTab — replaced with the server-side scope filter.
+- `ManageTags` MCP tool updated: `scope` filter on list, scope param on create (defaults to task), surfaces `restaurant_count` in list output.
+
+**Restaurant tag UI**
+- `RestaurantsTab` gained a tag filter chip row matching the recipes tab, plus tag chips inline on cards.
+- New shared `TagPicker.vue` component with toggleable chips + inline "Add tag" creator. Used in restaurant detail panel + both add modals (manual/import).
+- `RestaurantController` accepts/returns `tag_ids`; supports `?tag=<uuid>` filter on index. Tag IDs validated against the user's family at the request level (defense in depth + cleaner 422s).
+
+**Meal-plan shopping flow (preview before adding)**
+- New `GET /meal-plans/{plan}/shopping-preview?days=N&shopping_list_id=…` returns recipe entries in range with their ingredients, each annotated with `already_on_list: bool` against the chosen list.
+- New `POST /meal-plans/{plan}/add-to-shopping-list` accepts `{ selections: [{ entry_id, ingredient_ids? }], shopping_list_id? }`.
+- New `MealPlanShoppingModal.vue` opened by the cart icon: days-ahead pill picker (Today/3/5/7/14/30), shopping-list dropdown with inline "+ New list" creator, per-entry collapsible ingredient pickers, footer total + global Select/Deselect all.
+- Shared `RecipeIngredientPicker.vue` now drives both the Shopping tab single-recipe flow and the meal-plan modal (DRY). Already-on-list ingredients render strikethrough with an "On list" pill and are unchecked by default.
+- `ShoppingTab` annotates the recipe-picker against the active list's items so duplicates aren't auto-selected.
+- `MealPlanService` gained `entriesWithIngredientsInRange()`, `existingShoppingItemNames()`, and `addSelectionsToShoppingList()` reusing the existing `ShoppingListService::addRecipeIngredients` (so dedup, attribution, and quantity aggregation match the Shopping tab path).
+
+**Responsive meal-plan week grid**
+- `MealWeekGrid` measures its container with `ResizeObserver` and shows `floor((width - 120) / 140)` day columns clamped to 1–7 — no more horizontal scroll/clipping. When fewer than 7 fit, intra-week pagination chevrons appear; today auto-anchors into view on resize/week-change.
+- Parent overflow changed from `overflow-x-auto` → `overflow-x-hidden`.
+
+**Past-day fading (Google Calendar–style)**
+- `CalendarView` month grid, `TimeGrid` (week/day), `MealWeekGrid` (desktop), and `MealDaySection` (mobile) all dim past days to ~55% opacity with darker dark-mode backgrounds and muted day labels. Hover restores full opacity.
+
+**Mobile nav redesign**
+- `BottomNav` rebuilt with grouped slots. Five primary slots: Home / Schedule (Calendar+Tasks) / Meals (Meals+Shopping) / Points / Assistant.
+- Tapping a grouped slot opens a small popover above the bar with its children (smooth fade+slide, blurred backdrop). Active group glows wisteria when inside any child route. Closes on route change, click-outside, or **Escape**.
+- "Meals" group uses Phosphor's fork-and-knife icon (regular/fill weights for inactive/active).
+- Fixed: `md:hidden` is now baked into the `<nav>` root so it stays mobile-only regardless of attribute inheritance with multi-root components.
+- Sidebar + FoodView heading + first food tab renamed: `Food` → `Meals`, first tab `Meals` → `Plans`.
+
+**Mobile meals scroll**
+- `MealsTab` mobile section now opens at today by default (was scrolling past prior days). New "Show earlier days" pill at top exposes the previous 7 days per tap (loads the prior week's plan if needed) while preserving scroll position.
+
+**Cuisine → tags cleanup**
+- Dropped the `cuisine` string column on `restaurants`. Migration backfills existing values as food-scoped tags per linked family, then drops the column.
+- `RestaurantImportService.extractFromUrl` now returns `cuisines: []` (comma/semicolon-split). Import auto-attaches them as food tags via a new `attachCuisineTags()` helper.
+- Preview flow auto-resolves scraped cuisines to tag IDs client-side so they show up as pre-selected (deselectable) chips in the form.
+- Restaurant model/Request/Controller/Resource scrubbed of cuisine. Search matches name/address/tags.
+- Demo seeder now attaches `Italian`/`Mexican` food tags instead of setting cuisine.
+
+**ESLint cleanup**
+- Zero errors, zero warnings. Deleted `MealDayCard.vue` + `MealDayColumn.vue` (unimported dead code from pre-grid layout). Dropped unused `emit` const assignments + dev `console.warn` from drag handler.
+
+**Polish + DX**
+- DemoModal dark hover bug fixed (`prussian-750` → wisteria-tinted).
+- `scripts/dev-laravel.sh` added — idempotent SQLite create + migrate + seed-if-needed wrapper for `php artisan serve`. Wired into `.claude/launch.json`.
+- DemoModal/login flow exposed: launch.json now uses the wrapper so a fresh checkout self-bootstraps.
+
+### Files Created
+- `app/Enums/TagScope.php`
+- `app/Models/RestaurantTag.php`
+- `database/migrations/2026_04_17_120000_create_restaurant_tag_table.php`
+- `database/migrations/2026_04_17_130000_add_scope_to_tags_table.php`
+- `resources/js/components/food/TagPicker.vue`
+- `resources/js/components/food/RecipeIngredientPicker.vue`
+- `resources/js/components/meals/MealPlanShoppingModal.vue`
+- `scripts/dev-laravel.sh`
+- `.claude/launch.json`
+
+### Known follow-ups (deferred)
+- **`ManageRestaurants` MCP tool** — restaurants are now tagged + filterable but not exposed via MCP. Belongs in #155 scope.
+- **Tests** for the new endpoints (`shopping-preview`, `add-to-shopping-list`, restaurant tag attach, `?scope=` filter) — should land alongside #155's MCP tool tests.
+- **Demo seed** of food-tag attachments on recipes/restaurants — covered by #155's `DemoFoodSeeder`.
+- **Full `Food` → `Meals` rename** (route `/food`, module key `food`, `/api/v1/recipes` etc.) — bigger refactor, deferred. Nav labels are renamed; URLs/keys still say `food`.
+
+---
+
 ## 2026-04-17 — Session 36: Meal Planner UX Overhaul + Restaurant Import
 
 ### What Was Done

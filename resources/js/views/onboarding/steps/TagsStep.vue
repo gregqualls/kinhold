@@ -85,6 +85,7 @@ registerContinue(async () => {
         await api.post('/tags', {
           name: preset.name,
           color: preset.color,
+          scope: 'task',
         })
       }
     }

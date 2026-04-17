@@ -3,12 +3,14 @@
 namespace Database\Seeders;
 
 use App\Enums\MealSlot;
+use App\Enums\TagScope;
 use App\Models\FamilyRestaurant;
 use App\Models\MealPlan;
 use App\Models\MealPlanEntry;
 use App\Models\MealPreset;
 use App\Models\Recipe;
 use App\Models\Restaurant;
+use App\Models\Tag;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
@@ -46,7 +48,6 @@ class DemoMealPlanSeeder extends Seeder
 
         $pizzeria = Restaurant::create([
             'name' => 'Gusto Pizzeria',
-            'cuisine' => 'Italian',
             'address' => '123 Elm Street',
             'phone' => '555-0101',
         ]);
@@ -55,10 +56,10 @@ class DemoMealPlanSeeder extends Seeder
             'restaurant_id' => $pizzeria->id,
             'is_favorite' => true,
         ]);
+        $pizzeria->tags()->syncWithoutDetaching([$this->ensureFoodTag($family->id, 'Italian')->id]);
 
         $tacos = Restaurant::create([
             'name' => 'Taco Fiesta',
-            'cuisine' => 'Mexican',
             'address' => '456 Oak Avenue',
             'phone' => '555-0202',
         ]);
@@ -66,6 +67,7 @@ class DemoMealPlanSeeder extends Seeder
             'family_id' => $family->id,
             'restaurant_id' => $tacos->id,
         ]);
+        $tacos->tags()->syncWithoutDetaching([$this->ensureFoodTag($family->id, 'Mexican')->id]);
 
         // ─────────────────────────────────────────────
         //  LOOK UP DEMO RECIPES (created by DemoRecipeSeeder if it exists)
@@ -176,5 +178,19 @@ class DemoMealPlanSeeder extends Seeder
 
             MealPlanEntry::create($entryData);
         }
+    }
+
+    private function ensureFoodTag(string $familyId, string $name): Tag
+    {
+        return Tag::firstOrCreate(
+            [
+                'family_id' => $familyId,
+                'name' => $name,
+                'scope' => TagScope::Food->value,
+            ],
+            [
+                'sort_order' => (Tag::where('family_id', $familyId)->max('sort_order') ?? 0) + 1,
+            ]
+        );
     }
 }

@@ -16,7 +16,7 @@
         @click="activeSource = tab.key; selectedSource = null"
       >
         {{ tab.label }}
-        <span v-if="activeSource === tab.key" class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4975A] rounded-full" />
+        <span v-if="activeSource === tab.key" class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4975A] rounded-full"></span>
       </button>
     </div>
 
@@ -92,7 +92,7 @@
             <BuildingStorefrontIcon class="w-5 h-5 text-blue-400 flex-shrink-0" />
             <div class="min-w-0">
               <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200 truncate">{{ restaurant.name }}</p>
-              <p v-if="restaurant.cuisine" class="text-xs text-lavender-400">{{ restaurant.cuisine }}</p>
+              <p v-if="restaurant.tags?.length" class="text-xs text-lavender-400 truncate">{{ restaurant.tags.map(t => t.name).join(', ') }}</p>
             </div>
             <CheckCircleIcon v-if="selectedSource?.id === restaurant.id" class="w-4 h-4 text-[#C4975A] flex-shrink-0 ml-auto" />
           </button>
@@ -136,7 +136,7 @@
     </div>
 
     <!-- Divider -->
-    <div class="mx-4 border-t border-lavender-200 dark:border-prussian-700 my-2" />
+    <div class="mx-4 border-t border-lavender-200 dark:border-prussian-700 my-2"></div>
 
     <!-- Entry details -->
     <div class="px-4 pb-4 space-y-4">
@@ -180,7 +180,7 @@
           rows="2"
           class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors resize-none"
           placeholder="Any notes..."
-        />
+        ></textarea>
       </div>
     </div>
 

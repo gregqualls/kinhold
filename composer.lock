@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "032f3b7d3ae1be69e9836093de91548f",
+    "content-hash": "6149e32bb9b2c23a6b23f8dd766c4201",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1847,16 +1847,16 @@
         },
         {
             "name": "laravel/passport",
-            "version": "v13.7.3",
+            "version": "v13.7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/passport.git",
-                "reference": "f4f85e3122c7c6ef375f8bd5395bc7c88801fcc5"
+                "reference": "16c45794c6a6176792fdf555f986aa1b944d9081"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/passport/zipball/f4f85e3122c7c6ef375f8bd5395bc7c88801fcc5",
-                "reference": "f4f85e3122c7c6ef375f8bd5395bc7c88801fcc5",
+                "url": "https://api.github.com/repos/laravel/passport/zipball/16c45794c6a6176792fdf555f986aa1b944d9081",
+                "reference": "16c45794c6a6176792fdf555f986aa1b944d9081",
                 "shasum": ""
             },
             "require": {
@@ -1918,7 +1918,7 @@
                 "issues": "https://github.com/laravel/passport/issues",
                 "source": "https://github.com/laravel/passport"
             },
-            "time": "2026-04-07T13:08:13+00:00"
+            "time": "2026-04-09T13:39:45+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -10206,12 +10206,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

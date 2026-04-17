@@ -136,7 +136,7 @@ const navItems = [
   { label: 'Assistant', path: '/chat', icon: CpuChipIcon, name: 'Chat', module: 'chat' },
   { label: 'Calendar', path: '/calendar', icon: CalendarIcon, name: 'Calendar', module: 'calendar' },
   { label: 'Tasks', path: '/tasks', icon: CheckCircleIcon, name: 'Tasks', module: 'tasks' },
-  { label: 'Food', path: '/food', icon: FireIcon, name: 'Food', module: 'food' },
+  { label: 'Meals', path: '/food', icon: FireIcon, name: 'Food', module: 'food' },
   { label: 'Shopping', path: '/shopping', icon: ClipboardDocumentListIcon, name: 'Shopping', module: 'food' },
   { label: 'Points', path: '/points', icon: TrophyIcon, name: 'Points', module: 'points' },
   { label: 'Rewards', path: '/points/rewards', icon: GiftIcon, name: 'Rewards', module: 'points' },

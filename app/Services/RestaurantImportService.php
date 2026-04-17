@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\TagScope;
 use App\Models\Family;
 use App\Models\FamilyRestaurant;
 use App\Models\Restaurant;
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
@@ -42,7 +44,6 @@ class RestaurantImportService
                 'name' => $data['name'] ?? $this->extractNameFromUrl($googleMapsUrl ?? $menuUrl ?? $url),
                 'google_maps_url' => $googleMapsUrl,
                 'menu_url' => $menuUrl,
-                'cuisine' => $data['cuisine'] ?? null,
                 'address' => $data['address'] ?? null,
                 'phone' => $data['phone'] ?? null,
                 'image_url' => $data['image_url'] ?? null,
@@ -51,7 +52,7 @@ class RestaurantImportService
 
         // Update fields if the restaurant existed but had missing data
         $updates = [];
-        foreach (['image_url', 'address', 'phone', 'cuisine'] as $field) {
+        foreach (['image_url', 'address', 'phone'] as $field) {
             if (! $restaurant->$field && ! empty($data[$field])) {
                 $updates[$field] = $data[$field];
             }
@@ -65,7 +66,44 @@ class RestaurantImportService
             ['family_id' => $family->id, 'restaurant_id' => $restaurant->id]
         );
 
+        // Attach cuisine tags (scoped to this family) to the restaurant.
+        if (! empty($data['cuisines'])) {
+            $this->attachCuisineTags($restaurant, $family, $data['cuisines']);
+        }
+
         return $restaurant;
+    }
+
+    /**
+     * Find-or-create a food-scoped tag per cuisine name for the family and
+     * attach them to the restaurant. Idempotent.
+     *
+     * @param  array<int, string>  $cuisines
+     */
+    public function attachCuisineTags(Restaurant $restaurant, Family $family, array $cuisines): void
+    {
+        $tagIds = [];
+        foreach ($cuisines as $name) {
+            $trimmed = trim($name);
+            if ($trimmed === '') {
+                continue;
+            }
+            $tag = Tag::firstOrCreate(
+                [
+                    'family_id' => $family->id,
+                    'name' => $trimmed,
+                    'scope' => TagScope::Food->value,
+                ],
+                [
+                    'sort_order' => (Tag::where('family_id', $family->id)->max('sort_order') ?? 0) + 1,
+                ]
+            );
+            $tagIds[] = $tag->id;
+        }
+
+        if ($tagIds) {
+            $restaurant->tags()->syncWithoutDetaching($tagIds);
+        }
     }
 
     /**
@@ -312,9 +350,10 @@ class RestaurantImportService
                     }
                 }
                 if (! empty($jsonLd['servesCuisine'])) {
-                    $data['cuisine'] = is_array($jsonLd['servesCuisine'])
-                        ? implode(', ', $jsonLd['servesCuisine'])
-                        : $jsonLd['servesCuisine'];
+                    $raw = is_array($jsonLd['servesCuisine'])
+                        ? $jsonLd['servesCuisine']
+                        : preg_split('/[,;]+/', (string) $jsonLd['servesCuisine']);
+                    $data['cuisines'] = array_values(array_filter(array_map('trim', $raw)));
                 }
             }
 

@@ -182,40 +182,12 @@
 
               <!-- Ingredient list with checkboxes -->
               <template v-else>
-                <div class="flex items-center justify-between mb-3">
-                  <button
-                    class="text-xs text-[#C4975A] hover:underline"
-                    @click="toggleAllIngredients"
-                  >
-                    {{ allIngredientsSelected ? 'Deselect all' : 'Select all' }}
-                  </button>
-                  <span class="text-xs text-lavender-400 dark:text-lavender-500">
-                    {{ selectedIngredientIds.length }} of {{ recipeIngredients.length }} selected
-                  </span>
-                </div>
-
-                <div class="flex-1 overflow-y-auto space-y-1 mb-4">
-                  <label
-                    v-for="ingredient in recipeIngredients"
-                    :key="ingredient.id"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors"
-                    :class="selectedIngredientIds.includes(ingredient.id)
-                      ? 'bg-[#C4975A]/5 dark:bg-[#C4975A]/10'
-                      : 'hover:bg-lavender-50 dark:hover:bg-prussian-700'"
-                  >
-                    <input
-                      type="checkbox"
-                      :checked="selectedIngredientIds.includes(ingredient.id)"
-                      class="w-4 h-4 rounded border-lavender-300 dark:border-prussian-600 text-[#C4975A] focus:ring-[#C4975A]"
-                      @change="toggleIngredient(ingredient.id)"
-                    />
-                    <div class="flex-1 min-w-0">
-                      <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ ingredient.name }}</span>
-                      <span v-if="ingredient.quantity || ingredient.unit" class="text-xs text-lavender-400 dark:text-lavender-500 ml-1.5">
-                        {{ [ingredient.quantity, ingredient.unit].filter(Boolean).join(' ') }}
-                      </span>
-                    </div>
-                  </label>
+                <div class="flex-1 overflow-y-auto mb-4">
+                  <RecipeIngredientPicker
+                    v-model="selectedIngredientIds"
+                    :ingredients="recipeIngredients"
+                    default-select-all
+                  />
                 </div>
 
                 <div class="flex gap-2">
@@ -248,6 +220,7 @@ import CreateListInline from '@/components/shopping/CreateListInline.vue'
 import AddItemInput from '@/components/shopping/AddItemInput.vue'
 import ShoppingListItem from '@/components/shopping/ShoppingListItem.vue'
 import PreShopChecklist from '@/components/shopping/PreShopChecklist.vue'
+import RecipeIngredientPicker from '@/components/food/RecipeIngredientPicker.vue'
 
 const shoppingStore = useShoppingStore()
 const authStore = useAuthStore()
@@ -389,32 +362,25 @@ async function selectRecipeForIngredients(recipe) {
 
   const result = await recipesStore.fetchRecipe(recipe.id)
   if (result.success && result.recipe?.ingredients) {
-    recipeIngredients.value = result.recipe.ingredients
-    // Select all by default
-    selectedIngredientIds.value = result.recipe.ingredients.map((i) => i.id)
+    // Annotate each ingredient with already_on_list (case-insensitive name match
+    // against the active list's items) so the picker can de-emphasize duplicates.
+    const existing = new Set(
+      (activeList.value?.items || []).map(item => (item.name || '').trim().toLowerCase())
+    )
+    recipeIngredients.value = result.recipe.ingredients.map(i => ({
+      ...i,
+      already_on_list: existing.has((i.name || '').trim().toLowerCase()),
+    }))
+    // Default-select only ingredients that aren't already on the list.
+    selectedIngredientIds.value = recipeIngredients.value
+      .filter(i => !i.already_on_list)
+      .map(i => i.id)
   } else {
     recipeIngredients.value = []
     selectedIngredientIds.value = []
   }
 
   loadingIngredients.value = false
-}
-
-function toggleIngredient(id) {
-  const idx = selectedIngredientIds.value.indexOf(id)
-  if (idx === -1) {
-    selectedIngredientIds.value.push(id)
-  } else {
-    selectedIngredientIds.value.splice(idx, 1)
-  }
-}
-
-function toggleAllIngredients() {
-  if (allIngredientsSelected.value) {
-    selectedIngredientIds.value = []
-  } else {
-    selectedIngredientIds.value = recipeIngredients.value.map((i) => i.id)
-  }
 }
 
 function closeRecipePicker() {

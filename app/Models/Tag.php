@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TagScope;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,11 @@ class Tag extends Model
         'name',
         'color',
         'sort_order',
+        'scope',
+    ];
+
+    protected $casts = [
+        'scope' => TagScope::class,
     ];
 
     public function family(): BelongsTo
@@ -32,5 +38,10 @@ class Tag extends Model
     public function recipes(): BelongsToMany
     {
         return $this->belongsToMany(Recipe::class, 'recipe_tag')->using(RecipeTag::class)->withTimestamps();
+    }
+
+    public function restaurants(): BelongsToMany
+    {
+        return $this->belongsToMany(Restaurant::class, 'restaurant_tag')->using(RestaurantTag::class)->withTimestamps();
     }
 }

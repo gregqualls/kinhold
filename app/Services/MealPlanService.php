@@ -9,6 +9,7 @@ use App\Models\ShoppingList;
 use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class MealPlanService
 {
@@ -207,6 +208,116 @@ class MealPlanService
         }
 
         return $entry->fresh()->load(['recipe', 'restaurant', 'preset']);
+    }
+
+    /**
+     * Return recipe-bearing entries scheduled within [from, to] (inclusive),
+     * eagerly loading the recipe + its ingredients. Used by the
+     * "preview before adding to shopping list" flow on the meal-plan page.
+     *
+     * @return Collection<int, MealPlanEntry>
+     */
+    public function entriesWithIngredientsInRange(MealPlan $plan, string $from, string $to)
+    {
+        return $plan->entries()
+            ->whereNotNull('recipe_id')
+            ->whereBetween('date', [$from, $to])
+            ->with(['recipe.ingredients' => fn ($q) => $q->orderBy('sort_order')])
+            ->orderBy('date')
+            ->orderBy('meal_slot')
+            ->get();
+    }
+
+    /**
+     * Lowercase, trimmed names of every item already on the shopping list the
+     * user is targeting (or the plan's auto-list if none specified). Used to
+     * flag duplicates in the preview UI.
+     *
+     * @return array<int, string>
+     */
+    public function existingShoppingItemNames(MealPlan $plan, ?string $shoppingListId = null): array
+    {
+        $list = $this->resolveTargetList($plan, $shoppingListId);
+
+        if (! $list) {
+            return [];
+        }
+
+        return $list->items()
+            ->pluck('name')
+            ->map(fn ($name) => strtolower(trim($name)))
+            ->all();
+    }
+
+    /**
+     * Resolve which shopping list a "target" (preview/add) operation should use.
+     * Falls back to the plan's auto-linked list. Returns null if neither exists
+     * (e.g. preview before any list is created).
+     */
+    private function resolveTargetList(MealPlan $plan, ?string $shoppingListId = null): ?ShoppingList
+    {
+        if ($shoppingListId) {
+            return ShoppingList::where('family_id', $plan->family_id)->find($shoppingListId);
+        }
+
+        return $plan->shoppingList;
+    }
+
+    /**
+     * Add a user-curated selection of recipe ingredients to a shopping list.
+     * `selections` is a list of { entry_id, ingredient_ids: array<string>|null } —
+     * null/missing ingredient_ids means "all ingredients on this entry".
+     *
+     * If `$shoppingListId` is provided and belongs to the plan's family, items
+     * are added to that list. Otherwise the plan's auto-linked list is used
+     * (created on demand).
+     *
+     * Returns the count of (entry, ingredient) pairs actually added.
+     */
+    public function addSelectionsToShoppingList(MealPlan $plan, User $user, array $selections, ?string $shoppingListId = null): int
+    {
+        $list = $shoppingListId
+            ? (ShoppingList::where('family_id', $plan->family_id)->find($shoppingListId) ?? $this->ensureShoppingList($plan, $user))
+            : $this->ensureShoppingList($plan, $user);
+
+        $added = 0;
+
+        $entryIds = array_filter(array_column($selections, 'entry_id'));
+        if (empty($entryIds)) {
+            return 0;
+        }
+
+        $entries = $plan->entries()
+            ->whereIn('id', $entryIds)
+            ->whereNotNull('recipe_id')
+            ->with('recipe')
+            ->get()
+            ->keyBy('id');
+
+        foreach ($selections as $selection) {
+            $entry = $entries->get($selection['entry_id'] ?? null);
+            if (! $entry || ! $entry->recipe) {
+                continue;
+            }
+
+            $ingredientIds = $selection['ingredient_ids'] ?? null;
+            // Skip if explicitly empty (user deselected everything for this entry).
+            if (is_array($ingredientIds) && empty($ingredientIds)) {
+                continue;
+            }
+
+            $items = $this->shoppingListService->addRecipeIngredients(
+                $list,
+                $entry->recipe,
+                $user,
+                $entry->id,
+                $entry->date->toDateString(),
+                $ingredientIds,
+            );
+            $added += $items->count();
+        }
+
+        return $added;
     }
 
     /**

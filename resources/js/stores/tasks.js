@@ -50,10 +50,10 @@ export const useTasksStore = defineStore('tasks', () => {
     filteredTasks.value.filter((t) => !!t.completed_at)
   )
 
-  // Tag actions
+  // Tag actions (task-scoped)
   const fetchTags = async () => {
     try {
-      const response = await api.get('/tags')
+      const response = await api.get('/tags', { params: { scope: 'task' } })
       tags.value = response.data.tags
       return { success: true }
     } catch (err) {
@@ -63,7 +63,7 @@ export const useTasksStore = defineStore('tasks', () => {
 
   const createTag = async (data) => {
     try {
-      const response = await api.post('/tags', data)
+      const response = await api.post('/tags', { ...data, scope: data.scope ?? 'task' })
       tags.value.push(response.data.tag)
       return { success: true, tag: response.data.tag }
     } catch (err) {
