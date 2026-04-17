@@ -198,7 +198,7 @@
             rows="2"
             class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors resize-none"
             placeholder="Any notes..."
-          />
+          ></textarea>
         </div>
 
         <!-- Save -->

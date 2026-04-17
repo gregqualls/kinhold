@@ -31,7 +31,7 @@
       :style="gridStyle"
     >
       <!-- Header row: corner cell + day headers -->
-      <div class="bg-white dark:bg-[#1C1C20] p-2" />
+      <div class="bg-white dark:bg-[#1C1C20] p-2"></div>
       <div
         v-for="date in visibleDates"
         :key="'h-' + date"
@@ -127,7 +127,7 @@ const props = defineProps({
   entriesByDay: { type: Object, required: true },
 })
 
-const emit = defineEmits(['add-entry', 'entry-click', 'entry-delete'])
+defineEmits(['add-entry', 'entry-click', 'entry-delete'])
 
 const mealsStore = useMealsStore()
 
@@ -270,10 +270,7 @@ const onDragEnd = (evt) => {
   const targetDate = evt.to?.closest('[data-date]')?.dataset?.date
   const targetSlot = evt.to?.closest('[data-slot]')?.dataset?.slot
 
-  if (!entryId || !targetDate || !targetSlot) {
-    console.warn('Drag cancelled: missing data', { entryId, targetDate, targetSlot, item: evt.item })
-    return
-  }
+  if (!entryId || !targetDate || !targetSlot) return
 
   const fromDate = evt.from?.closest('[data-date]')?.dataset?.date
   const fromSlot = evt.from?.closest('[data-slot]')?.dataset?.slot

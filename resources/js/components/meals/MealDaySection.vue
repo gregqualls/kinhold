@@ -96,7 +96,7 @@ const props = defineProps({
   entries: { type: Object, default: () => ({ breakfast: [], lunch: [], dinner: [], snack: [] }) },
 })
 
-const emit = defineEmits(['add-entry', 'entry-click', 'entry-delete'])
+defineEmits(['add-entry', 'entry-click', 'entry-delete'])
 
 const mealsStore = useMealsStore()
 

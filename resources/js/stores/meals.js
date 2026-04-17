@@ -30,8 +30,6 @@ export const useMealsStore = defineStore('meals', () => {
     return dt.startOf('week')
   }
 
-  const isoWeekStart = (dt) => dt.toISODate()
-
   // ── Computed ──
 
   const weekDates = computed(() => {
