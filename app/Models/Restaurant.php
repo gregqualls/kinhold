@@ -47,6 +47,14 @@ class Restaurant extends Model
     }
 
     /**
+     * Tags applied to this restaurant (shared pool with recipes/tasks).
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, 'restaurant_tag')->using(RestaurantTag::class)->withTimestamps();
+    }
+
+    /**
      * Calculate average rating for users belonging to a specific family.
      */
     public function familyAverageRating(string $familyId): ?float

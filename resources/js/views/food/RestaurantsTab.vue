@@ -13,18 +13,6 @@
           />
         </div>
         <button
-          class="flex-shrink-0 px-3 py-2.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
-          :class="showFavoritesOnly
-            ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-700'
-            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
-          @click="showFavoritesOnly = !showFavoritesOnly"
-        >
-          <span class="flex items-center gap-1">
-            <HeartIcon class="w-3.5 h-3.5" />
-            Favorites
-          </span>
-        </button>
-        <button
           class="hidden md:flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#C4975A] hover:bg-[#D4A96A] rounded-[10px] transition-colors whitespace-nowrap"
           @click="openAddModal"
         >
@@ -32,6 +20,50 @@
           Add Restaurant
         </button>
       </div>
+
+      <!-- Filter row -->
+      <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+        <!-- Favorites chip -->
+        <button
+          class="flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
+          :class="showFavoritesOnly
+            ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-700'
+            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+          @click="showFavoritesOnly = !showFavoritesOnly"
+        >
+          <span class="flex items-center gap-1">
+            <HeartIcon class="w-3 h-3" />
+            Favorites
+          </span>
+        </button>
+
+        <!-- Divider -->
+        <div v-if="restaurantTags.length" class="w-px h-4 bg-lavender-200 dark:bg-prussian-700 flex-shrink-0"></div>
+
+        <!-- Tag chips -->
+        <button
+          v-for="tag in restaurantTags"
+          :key="tag.id"
+          class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
+          :class="isTagSelected(tag.id)
+            ? 'text-white'
+            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+          :style="isTagSelected(tag.id) ? { backgroundColor: tag.color || '#C4975A' } : {}"
+          @click="toggleTagFilter(tag.id)"
+        >
+          <span
+            v-if="!isTagSelected(tag.id)"
+            class="w-2 h-2 rounded-full flex-shrink-0"
+            :style="{ backgroundColor: tag.color || '#C4975A' }"
+          ></span>
+          {{ tag.name }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="px-4 md:px-6">
+      <div class="border-t border-lavender-200 dark:border-prussian-700"></div>
     </div>
 
     <!-- Content -->
@@ -61,7 +93,7 @@
           :placeholder-icon="BuildingStorefrontIcon"
           :is-favorite="!!restaurant.is_favorite"
           :meta-items="restaurantMeta(restaurant)"
-          :tags="restaurant.cuisine ? [restaurant.cuisine] : []"
+          :tags="restaurantCardTags(restaurant)"
           @click="openDetail(restaurant)"
           @toggle-favorite="restaurantsStore.toggleFavorite(restaurant.id)"
         />
@@ -132,6 +164,13 @@
           </div>
           <PhotoUpload v-model="editFields.image_url" label="Photo" :uploader="uploadRestaurantImage" />
         </div>
+
+        <!-- Tags -->
+        <TagPicker
+          v-model="editFields.tag_ids"
+          :tags="foodTags"
+          :on-create="createTag"
+        />
 
         <!-- Quick links -->
         <div class="flex flex-wrap gap-2">
@@ -281,6 +320,7 @@
         <BaseInput v-model="form.phone" label="Phone" placeholder="Phone number" />
         <BaseInput v-model="form.menu_url" label="Website" placeholder="https://..." />
         <PhotoUpload v-model="form.image_url" label="Photo" :uploader="uploadRestaurantImage" />
+        <TagPicker v-model="form.tag_ids" :tags="foodTags" :on-create="createTag" />
 
         <div class="flex gap-3">
           <BaseButton variant="primary" :loading="isSaving" class="flex-1" @click="saveFromPreview">
@@ -304,6 +344,7 @@
         <BaseInput v-model="form.phone" label="Phone" placeholder="+1 (555) 000-0000" />
         <BaseInput v-model="form.menu_url" label="Website" placeholder="https://..." />
         <PhotoUpload v-model="form.image_url" label="Photo" :uploader="uploadRestaurantImage" />
+        <TagPicker v-model="form.tag_ids" :tags="foodTags" :on-create="createTag" />
         <BaseButton variant="primary" :loading="isSaving" class="w-full" @click="saveManual">
           Add Restaurant
         </BaseButton>
@@ -325,7 +366,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -339,11 +381,13 @@ import {
   ExclamationCircleIcon,
   CheckCircleIcon,
 } from '@heroicons/vue/24/outline'
+import api from '@/services/api'
 import { useRestaurantsStore } from '@/stores/restaurants'
 import { useAuthStore } from '@/stores/auth'
 import { useNotification } from '@/composables/useNotification'
 import FoodCard from '@/components/food/FoodCard.vue'
 import PhotoUpload from '@/components/food/PhotoUpload.vue'
+import TagPicker from '@/components/food/TagPicker.vue'
 import SlidePanel from '@/components/common/SlidePanel.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import BaseInput from '@/components/common/BaseInput.vue'
@@ -354,6 +398,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const restaurantsStore = useRestaurantsStore()
+const { tags, selectedTagIds } = storeToRefs(restaurantsStore)
 const authStore = useAuthStore()
 const { success: notifySuccess, error: notifyError } = useNotification()
 
@@ -366,6 +411,18 @@ const displayedRestaurants = computed(() => {
   return showFavoritesOnly.value ? list.filter(r => r.is_favorite) : list
 })
 
+// All food-scoped tags (server filters by scope=food).
+const foodTags = computed(() => tags.value)
+// Filter chips: show every food tag so the user can filter by any of them,
+// even if nothing is applied yet.
+const restaurantTags = computed(() => foodTags.value)
+const isTagSelected = (tagId) => selectedTagIds.value.includes(tagId)
+const toggleTagFilter = (tagId) => restaurantsStore.toggleTagFilter(tagId)
+
+watch(selectedTagIds, () => {
+  restaurantsStore.fetchRestaurants()
+}, { deep: true })
+
 const restaurantMeta = (r) => {
   const items = []
   if (r.address) items.push({ icon: MapPinIcon, text: r.address.length > 30 ? r.address.slice(0, 30) + '...' : r.address })
@@ -374,9 +431,29 @@ const restaurantMeta = (r) => {
   return items
 }
 
+const restaurantCardTags = (r) => {
+  const tagNames = (r.tags || []).map(t => t.name)
+  if (r.cuisine && !tagNames.includes(r.cuisine)) tagNames.unshift(r.cuisine)
+  return tagNames
+}
+
+// Tag creation (shared with form + detail)
+const createTag = async ({ name, color }) => {
+  try {
+    const response = await api.post('/tags', { name, color, scope: 'food' })
+    const newTag = response.data.tag
+    // Refresh tag list so counts update.
+    await restaurantsStore.fetchTags()
+    return { success: true, tag: newTag }
+  } catch (err) {
+    notifyError(err.response?.data?.message || 'Failed to create tag', 4000)
+    return { success: false }
+  }
+}
+
 // Detail panel
 const selectedRestaurant = ref(null)
-const editFields = ref({ name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '' })
+const editFields = ref({ name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '', tag_ids: [] })
 const editNotes = ref('')
 const pendingRating = ref(null)
 const isDetailSaving = ref(false)
@@ -391,6 +468,7 @@ const openDetail = (restaurant) => {
     google_maps_url: restaurant.google_maps_url || '',
     menu_url: restaurant.menu_url || '',
     image_url: restaurant.image_url || '',
+    tag_ids: (restaurant.tags || []).map(t => t.id),
   }
   editNotes.value = restaurant.family_notes || restaurant.notes || ''
   pendingRating.value = null
@@ -400,7 +478,6 @@ const rateRestaurant = async (score) => {
   pendingRating.value = score
   const result = await restaurantsStore.rateRestaurant(selectedRestaurant.value.id, score)
   if (result.success) {
-    // Refresh the selected restaurant from the store
     const updated = restaurantsStore.restaurants.find(r => r.id === selectedRestaurant.value.id)
     if (updated) selectedRestaurant.value = updated
     notifySuccess('Rating saved', 3000)
@@ -420,6 +497,7 @@ const saveDetail = async () => {
   isDetailSaving.value = false
   if (result.success) {
     selectedRestaurant.value = result.data
+    await restaurantsStore.fetchTags()
     notifySuccess('Restaurant saved', 3000)
   } else {
     notifyError(result.error || 'Failed to save', 4000)
@@ -450,7 +528,7 @@ const addTabs = [
   { key: 'import', label: 'From URL' },
   { key: 'manual', label: 'Manual' },
 ]
-const emptyForm = () => ({ name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '' })
+const emptyForm = () => ({ name: '', cuisine: '', address: '', phone: '', google_maps_url: '', menu_url: '', image_url: '', tag_ids: [] })
 
 const uploadRestaurantImage = async (file) => {
   return await restaurantsStore.uploadImage(file)
@@ -497,7 +575,6 @@ const previewImport = async () => {
 
   if (result.success) {
     const data = result.preview
-    // Populate form with extracted data for editing
     form.value = {
       name: data.name || '',
       cuisine: data.cuisine || '',
@@ -506,6 +583,7 @@ const previewImport = async () => {
       google_maps_url: data.google_maps_url || '',
       menu_url: data.menu_url || '',
       image_url: data.image_url || '',
+      tag_ids: [],
     }
     previewData.value = data
   } else {
@@ -525,6 +603,7 @@ const saveFromPreview = async () => {
   isSaving.value = false
   if (result.success) {
     closeAddModal()
+    await restaurantsStore.fetchTags()
     notifySuccess('Restaurant added', 3000)
   } else {
     saveError.value = result.error || 'Failed to save restaurant'
@@ -543,6 +622,7 @@ const saveManual = async () => {
   isSaving.value = false
   if (result.success) {
     closeAddModal()
+    await restaurantsStore.fetchTags()
     notifySuccess('Restaurant added', 3000)
   } else {
     saveError.value = result.error || 'Failed to add restaurant'
@@ -551,5 +631,6 @@ const saveManual = async () => {
 
 onMounted(() => {
   restaurantsStore.fetchRestaurants()
+  restaurantsStore.fetchTags()
 })
 </script>

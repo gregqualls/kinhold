@@ -2,7 +2,7 @@
   <div class="h-full flex flex-col">
     <!-- Header -->
     <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
-      <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Food</h1>
+      <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Meals</h1>
       <p class="text-sm text-lavender-500 dark:text-lavender-400 mt-0.5">Recipes, restaurants &amp; meal planning</p>
     </div>
 
@@ -43,10 +43,10 @@ import RestaurantsTab from './RestaurantsTab.vue'
 import MealsTab from './MealsTab.vue'
 
 const tabs = [
+  { key: 'meals', label: 'Plans' },
   { key: 'recipes', label: 'Recipes' },
   { key: 'restaurants', label: 'Restaurants' },
-  { key: 'meals', label: 'Meals' },
 ]
 
-const activeTab = ref('recipes')
+const activeTab = ref('meals')
 </script>

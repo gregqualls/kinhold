@@ -125,7 +125,7 @@ const { data, loading, refresh } = useWidgetData('/api/v1/tasks', queryParams.va
 const allTags = ref([])
 onMounted(async () => {
   try {
-    const res = await api.get('/tags')
+    const res = await api.get('/tags', { params: { scope: 'task' } })
     allTags.value = res.data.tags || res.data.data || res.data || []
   } catch (e) {
     // eslint-disable-next-line no-console

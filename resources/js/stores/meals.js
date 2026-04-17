@@ -231,6 +231,37 @@ export const useMealsStore = defineStore('meals', () => {
     }
   }
 
+  const previewShoppingList = async (planId, { days = 7, start = null, shoppingListId = null } = {}) => {
+    try {
+      const params = { days }
+      if (start) params.start = start
+      if (shoppingListId) params.shopping_list_id = shoppingListId
+      const response = await api.get(`/meal-plans/${planId}/shopping-preview`, { params })
+      return {
+        success: true,
+        entries: response.data.entries ?? [],
+        range: response.data.range ?? null,
+      }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to preview shopping list' }
+    }
+  }
+
+  const addSelectionsToShoppingList = async (planId, selections, shoppingListId = null) => {
+    try {
+      const body = { selections }
+      if (shoppingListId) body.shopping_list_id = shoppingListId
+      const response = await api.post(`/meal-plans/${planId}/add-to-shopping-list`, body)
+      return {
+        success: true,
+        added_count: response.data.added_count ?? 0,
+        shopping_list: response.data.shopping_list,
+      }
+    } catch (err) {
+      return { success: false, error: err.response?.data?.message || 'Failed to add to shopping list' }
+    }
+  }
+
   return {
     // State
     currentPlan,
@@ -256,5 +287,7 @@ export const useMealsStore = defineStore('meals', () => {
     removeEntry,
     moveEntry,
     generateShoppingList,
+    previewShoppingList,
+    addSelectionsToShoppingList,
   }
 })

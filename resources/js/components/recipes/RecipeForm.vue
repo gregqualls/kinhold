@@ -310,13 +310,8 @@ const emit = defineEmits(['save', 'cancel'])
 const recipesStore = useRecipesStore()
 const { tags: allTags } = storeToRefs(recipesStore)
 
-// Show tags that have been used on a recipe, have no tasks (recipe-specific),
-// or are already applied to this recipe (edit mode). Hides task-only tags.
-const recipeTags = computed(() => {
-  return allTags.value.filter(
-    (t) => (t.recipes_count ?? 0) > 0 || (t.tasks_count ?? 0) === 0 || form.tag_ids.includes(t.id)
-  )
-})
+// Server returns only food-scoped tags via the recipes store.
+const recipeTags = computed(() => allTags.value)
 
 const saving = ref(false)
 const imageDisplayUrl = ref(null)
