@@ -67,11 +67,11 @@ export const REGISTRY = [
   { slug: 'form-group', tier: 'compounds', title: '4.10 FormGroup', description: 'Label + field + error + helper text.', pagePath: './pages/compounds/FormGroupPage.vue', scaffolded: true, chosen: false },
 
   // Tier 5 — Feature-specific
-  { slug: 'stat-tile', tier: 'feature', title: '5.1 StatTile', description: 'Hero-number widget with delta and micro chart.', pagePath: './pages/feature/StatTilePage.vue', scaffolded: false, chosen: false },
-  { slug: 'hero-metric-card', tier: 'feature', title: '5.2 HeroMetricCard', description: 'Featured metric card — gradient / iridescent / photo.', pagePath: './pages/feature/HeroMetricCardPage.vue', scaffolded: false, chosen: false },
-  { slug: 'event-tile', tier: 'feature', title: '5.3 EventTile', description: 'Calendar event card — light and dark variants.', pagePath: './pages/feature/EventTilePage.vue', scaffolded: false, chosen: false },
-  { slug: 'week-strip', tier: 'feature', title: '5.4 WeekStrip', description: 'Horizontal day selector.', pagePath: './pages/feature/WeekStripPage.vue', scaffolded: false, chosen: false },
-  { slug: 'month-grid', tier: 'feature', title: '5.5 MonthGrid', description: 'Month calendar with colored event dots.', pagePath: './pages/feature/MonthGridPage.vue', scaffolded: false, chosen: false },
+  { slug: 'stat-tile', tier: 'feature', title: '5.1 StatTile', description: 'Hero-number widget with delta and micro chart.', pagePath: './pages/feature/StatTilePage.vue', scaffolded: true, chosen: false },
+  { slug: 'hero-metric-card', tier: 'feature', title: '5.2 HeroMetricCard', description: 'Featured metric card — gradient / iridescent / photo.', pagePath: './pages/feature/HeroMetricCardPage.vue', scaffolded: true, chosen: false },
+  { slug: 'event-tile', tier: 'feature', title: '5.3 EventTile', description: 'Calendar event card — light and dark variants.', pagePath: './pages/feature/EventTilePage.vue', scaffolded: true, chosen: false },
+  { slug: 'week-strip', tier: 'feature', title: '5.4 WeekStrip', description: 'Horizontal day selector.', pagePath: './pages/feature/WeekStripPage.vue', scaffolded: true, chosen: false },
+  { slug: 'month-grid', tier: 'feature', title: '5.5 MonthGrid', description: 'Month calendar with colored event dots.', pagePath: './pages/feature/MonthGridPage.vue', scaffolded: true, chosen: false },
   { slug: 'day-header', tier: 'feature', title: '5.6 DayHeader', description: 'Editorial-scale day number.', pagePath: './pages/feature/DayHeaderPage.vue', scaffolded: false, chosen: false },
   { slug: 'timeline-row', tier: 'feature', title: '5.7 TimelineRow', description: 'Pill bar spanning dates with avatars.', pagePath: './pages/feature/TimelineRowPage.vue', scaffolded: false, chosen: false },
   { slug: 'achievement-tile', tier: 'feature', title: '5.8 AchievementTile', description: 'Locked / in-progress / earned states.', pagePath: './pages/feature/AchievementTilePage.vue', scaffolded: false, chosen: false },
