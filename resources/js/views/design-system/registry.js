@@ -60,11 +60,11 @@ export const REGISTRY = [
   { slug: 'category-chip-row', tier: 'compounds', title: '4.3 CategoryChipRow', description: 'Horizontal chip row with active state.', pagePath: './pages/compounds/CategoryChipRowPage.vue', scaffolded: true, chosen: false },
   { slug: 'action-pair', tier: 'compounds', title: '4.4 ActionPair', description: 'Paired [outline] [filled] buttons for list rows.', pagePath: './pages/compounds/ActionPairPage.vue', scaffolded: true, chosen: false },
   { slug: 'quick-actions', tier: 'compounds', title: '4.5 QuickActions', description: 'Grid of square icon buttons.', pagePath: './pages/compounds/QuickActionsPage.vue', scaffolded: true, chosen: false },
-  { slug: 'avatar-picker', tier: 'compounds', title: '4.6 AvatarPicker', description: 'Horizontal avatar row for family member selection.', pagePath: './pages/compounds/AvatarPickerPage.vue', scaffolded: false, chosen: false },
-  { slug: 'modal-sheet', tier: 'compounds', title: '4.7 Modal · Sheet · Drawer', description: 'One direction per breakpoint — solves the "3-direction" problem.', pagePath: './pages/compounds/ModalSheetPage.vue', scaffolded: false, chosen: false },
-  { slug: 'toast', tier: 'compounds', title: '4.8 Toast', description: 'Notification toasts with semantic variants.', pagePath: './pages/compounds/ToastPage.vue', scaffolded: false, chosen: false },
-  { slug: 'empty-state', tier: 'compounds', title: '4.9 EmptyState', description: 'Placeholder for empty lists and onboarding moments.', pagePath: './pages/compounds/EmptyStatePage.vue', scaffolded: false, chosen: false },
-  { slug: 'form-group', tier: 'compounds', title: '4.10 FormGroup', description: 'Label + field + error + helper text.', pagePath: './pages/compounds/FormGroupPage.vue', scaffolded: false, chosen: false },
+  { slug: 'avatar-picker', tier: 'compounds', title: '4.6 AvatarPicker', description: 'Horizontal avatar row for family member selection.', pagePath: './pages/compounds/AvatarPickerPage.vue', scaffolded: true, chosen: false },
+  { slug: 'modal-sheet', tier: 'compounds', title: '4.7 Modal · Sheet · Drawer', description: 'One direction per breakpoint — solves the "3-direction" problem.', pagePath: './pages/compounds/ModalSheetPage.vue', scaffolded: true, chosen: false },
+  { slug: 'toast', tier: 'compounds', title: '4.8 Toast', description: 'Notification toasts with semantic variants.', pagePath: './pages/compounds/ToastPage.vue', scaffolded: true, chosen: false },
+  { slug: 'empty-state', tier: 'compounds', title: '4.9 EmptyState', description: 'Placeholder for empty lists and onboarding moments.', pagePath: './pages/compounds/EmptyStatePage.vue', scaffolded: true, chosen: false },
+  { slug: 'form-group', tier: 'compounds', title: '4.10 FormGroup', description: 'Label + field + error + helper text.', pagePath: './pages/compounds/FormGroupPage.vue', scaffolded: true, chosen: false },
 
   // Tier 5 — Feature-specific
   { slug: 'stat-tile', tier: 'feature', title: '5.1 StatTile', description: 'Hero-number widget with delta and micro chart.', pagePath: './pages/feature/StatTilePage.vue', scaffolded: false, chosen: false },
