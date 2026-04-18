@@ -49,10 +49,10 @@ export const REGISTRY = [
   { slug: 'gradient-card', tier: 'cards', title: '2.3 GradientCard', description: 'Radial gradient anchored upper-left + positioned glyph + diagonal content layout.', pagePath: './pages/cards/GradientCardPage.vue', scaffolded: true, chosen: true },
 
   // Tier 3 — Navigation
-  { slug: 'top-nav', tier: 'navigation', title: '3.1 Top nav (desktop)', description: 'Pill-nav bar with light/dark toggle.', pagePath: './pages/navigation/TopNavPage.vue', scaffolded: false, chosen: false },
-  { slug: 'bottom-nav', tier: 'navigation', title: '3.2 Bottom nav (mobile)', description: 'Floating pill with elevated Ask-Assistant FAB.', pagePath: './pages/navigation/BottomNavPage.vue', scaffolded: false, chosen: false },
-  { slug: 'sidebar', tier: 'navigation', title: '3.3 Sidebar', description: 'Data-heavy page nav with morph-out active state.', pagePath: './pages/navigation/SidebarPage.vue', scaffolded: false, chosen: false },
-  { slug: 'utility-rail', tier: 'navigation', title: '3.4 Right utility rail', description: 'Secondary rail for calendar, tasks, vault, food.', pagePath: './pages/navigation/UtilityRailPage.vue', scaffolded: false, chosen: false },
+  { slug: 'top-nav', tier: 'navigation', title: '3.1 Top nav (desktop)', description: 'Glass pill nav: brand left + nav pills + search mid + utility right. Backdrop-blur surface.', pagePath: './pages/navigation/TopNavPage.vue', scaffolded: true, chosen: true },
+  { slug: 'bottom-nav', tier: 'navigation', title: '3.2 Bottom nav (mobile)', description: 'Glass pill with 4 icons-only slots + elevated Ask-Assistant FAB.', pagePath: './pages/navigation/BottomNavPage.vue', scaffolded: true, chosen: true },
+  { slug: 'sidebar', tier: 'navigation', title: '3.3 Sidebar', description: 'Accent-pill active item. Collapsible to 72px icons-only via bottom toggle.', pagePath: './pages/navigation/SidebarPage.vue', scaffolded: true, chosen: true },
+  { slug: 'utility-rail', tier: 'navigation', title: '3.4 Right utility rail', description: 'Locked single treatment. Mini-month + filters + presence + saved views + actions. Collapses to mobile slide-up sheet.', pagePath: './pages/navigation/UtilityRailPage.vue', scaffolded: true, chosen: true },
 
   // Tier 4 — Compound patterns
   { slug: 'tab-pill-group', tier: 'compounds', title: '4.1 TabPillGroup', description: 'Pill-row tabs for in-page sections.', pagePath: './pages/compounds/TabPillGroupPage.vue', scaffolded: false, chosen: false },
