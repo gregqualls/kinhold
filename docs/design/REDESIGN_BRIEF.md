@@ -112,6 +112,19 @@ Current brand guide is close but needs these updates as the library lands:
 6. **Glass/backdrop-blur tokens:** new addition for the 4 allowed surfaces.
 7. **Gradient tokens:** new addition for the iridescent card fills and ambient background.
 
+## Open-source positioning (why this workflow matters beyond the redesign)
+
+The component library isn't just scaffolding for our own redesign — it's a **first-class contributor asset for the open-source project**. Every component exposed in the `/design-system` workspace is code a community developer can copy, compose, or extend without having to reverse-engineer our conventions from the app.
+
+Rules this imposes on the library:
+1. **`/design-system` stays available in local development forever.** It is not a throwaway tool that gets removed after the redesign lands. Post-launch, it remains the canonical reference for contributors.
+2. **Each component's page is self-documenting.** Title, description, usage rules, and variants are all on the page. A developer landing cold should understand what the component does and when to use it without reading other files.
+3. **Chosen variants live in `resources/js/components/design-system/`** with a short header comment explaining purpose, props, and which `/design-system/:slug` page owns them.
+4. **Gating in production is conservative:** the route stays open on local dev by default. Any production gating (env flag, parent-only, logged-in only) gets added deliberately when we merge the redesign to `main`. A good default is "open on localhost, gated on prod" — contributors running `./setup-simple.sh` should see the library without any extra config.
+5. **The roadmap file doubles as an RFC-style contribution guide.** When someone wants to add a new component, they PR a roadmap entry first, then build variants on a new page, then promote to the library — same workflow we use internally.
+
+This is listed as decision #7 in the implicit brief and should be surfaced in CONTRIBUTING.md once the library has a few components shipped.
+
 ## Workflow for building the library
 
 1. **Scaffold infrastructure (one session, smaller model):** create a `/design-system` route in the SPA with a sidebar listing every component. Each component page shows its variants side-by-side in light and dark mode at 375px / 768px / 1280px widths. This is the shared workspace.

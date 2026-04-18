@@ -11,6 +11,8 @@
 
 **Branch:** `redesign/visual-overhaul`
 
+**Why this library exists (beyond the redesign):** `/design-system` is a permanent fixture of local development, designed to double as a community contribution reference. Every component page is self-documenting so a fork-and-hack developer can compose new features against the real library. See "Open-source positioning" in `REDESIGN_BRIEF.md`.
+
 ---
 
 ## Step 0 — Scaffold the design-system workspace
@@ -32,6 +34,8 @@
 5. Placeholder pages for every component in the roadmap below (empty variants — they'll be filled in per-session)
 
 **Deliverable:** a working `/design-system` route with empty component pages, ready to receive variants.
+
+**Gating policy:** open by default (no auth, no role gate) so contributors cloning the repo and running `./setup-simple.sh` or `npm run dev` see the library immediately. Revisit gating when the redesign merges to `main` — at that point, consider an env flag for production builds but keep it fully open on localhost.
 
 ---
 

@@ -36,6 +36,11 @@ const ShoppingView = () => import('@/views/food/ShoppingTab.vue')
 
 const NotFoundView = () => import('@/views/NotFoundView.vue')
 
+// Design System — always open, accessible as a community reference for
+// contributors. Lives outside auth so the component library can be linked to
+// from docs, PRs, and local dev without needing a logged-in session.
+const DesignSystemView = () => import('@/views/design-system/DesignSystemView.vue')
+
 const routes = [
   { path: '/', name: 'Landing', component: LandingView, meta: { isPublic: true } },
   { path: '/privacy', name: 'Privacy', component: PrivacyPolicyView, meta: { isOpen: true } },
@@ -58,6 +63,7 @@ const routes = [
   { path: '/food/recipes/:id', name: 'RecipeDetail', component: RecipeDetailView, meta: { requiresAuth: true, module: 'food' } },
   { path: '/shopping', name: 'Shopping', component: ShoppingView, meta: { requiresAuth: true, module: 'food' } },
   { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true } },
+  { path: '/design-system/:slug?', name: 'DesignSystem', component: DesignSystemView, meta: { isOpen: true, isDesignSystem: true } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundView, meta: { isOpen: true } },
 ]
 
