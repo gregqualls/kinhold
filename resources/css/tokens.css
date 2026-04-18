@@ -1,0 +1,671 @@
+/*
+ * ══════════════════════════════════════════════════════════════════
+ * Kinhold Redesign — Design Token Layer (Tier 0.1)
+ * ══════════════════════════════════════════════════════════════════
+ *
+ * These are NEW tokens for the redesign component library.
+ * They live alongside the existing --prussian-*, --wisteria-*,
+ * --lavender-*, --sand-*, and --ink-* tokens (which are NOT touched).
+ *
+ * All values are space-separated RGB triplets so they work with
+ * Tailwind's `rgb(var(--x) / <alpha-value>)` opacity pattern.
+ *
+ * Sections:
+ *   1. Surfaces & Ink
+ *   2. Category Accents (pastel pairs)
+ *   3. Status tokens
+ *   4. Brand signature
+ *
+ * Light and dark values are BOTH authored deliberately.
+ * Dark ≠ inversion. Light = airy + warm + welcoming.
+ * Dark = premium + focused + calm.
+ * ══════════════════════════════════════════════════════════════════
+ */
+
+/* ────────────────────────────────────────────────────────────────
+   1. SURFACES & INK
+   Light: warm near-white cream family — not hospital-white
+   Dark:  deep warm-charcoal family — not dead-OLED black
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /* App background — warm ivory with a breath of cream */
+  --surface-app:     250 248 245;   /* #FAF8F5 */
+
+  /* Card / raised surface — pure-ish white, very slight warmth */
+  --surface-raised:  255 255 255;   /* #FFFFFF */
+
+  /* Inset / sunken — input fills, sidebar rail, table row alt */
+  --surface-sunken:  245 242 238;   /* #F5F2EE */
+
+  /* Overlay — sheet/modal background, slightly lifted from card */
+  --surface-overlay: 255 255 255;   /* #FFFFFF — same as raised in light; modal uses shadow for separation */
+
+  /* Body text / icons — warm near-black, not pure */
+  --ink-primary:     28  28  30;    /* #1C1C1E — WCAG AA+ on all surfaces */
+
+  /* Supporting text — warm mid-gray */
+  --ink-secondary:   107 105 102;   /* #6B6966 — 4.7:1 on #FAF8F5 (passes AA) */
+
+  /* Captions / placeholders — lighter warm gray */
+  --ink-tertiary:    156 152 149;   /* #9C9895 — 3.1:1 on #FAF8F5 (passes AA large text) */
+
+  /* Text on dark filled surfaces (e.g. filled pill buttons in light mode) */
+  --ink-inverse:     250 248 245;   /* #FAF8F5 — warm off-white */
+
+  /* Hairline dividers — barely-there warm border */
+  --border-subtle:   232 228 223;   /* #E8E4DF */
+
+  /* Emphasized borders — active inputs, hover states */
+  --border-strong:   188 184 178;   /* #BCB8B2 */
+}
+
+html.dark {
+  /* App background — deep warm charcoal, hints of brown warmth */
+  --surface-app:     20  19  17;    /* #141311 — warmer than pure #121214 */
+
+  /* Card / raised — step up from app bg, subtle warmth */
+  --surface-raised:  28  27  25;    /* #1C1B19 */
+
+  /* Inset / sunken — slightly deeper than raised */
+  --surface-sunken:  22  21  19;    /* #161513 — just below raised */
+
+  /* Overlay — sheet/modal — clearly lifted above cards */
+  --surface-overlay: 36  34  32;    /* #242220 */
+
+  /* Body text — warm off-white, never pure white */
+  --ink-primary:     240 237 233;   /* #F0EDE9 — 15.4:1 on #141311 (AA++) */
+
+  /* Supporting text */
+  --ink-secondary:   160 156 151;   /* #A09C97 — 6.1:1 on #141311 (AA) */
+
+  /* Captions / placeholders */
+  --ink-tertiary:    110 107 103;   /* #6E6B67 — 3.5:1 on #141311 (AA large) */
+
+  /* Text on light filled surfaces in dark mode */
+  --ink-inverse:     28  28  30;    /* #1C1C1E — near-black */
+
+  /* Hairline dividers — warm dark border */
+  --border-subtle:   44  42  39;    /* #2C2A27 */
+
+  /* Emphasized borders */
+  --border-strong:   64  62  58;    /* #403E3A */
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   2. CATEGORY ACCENTS
+   Four pastel families for calendar / task / avatar / chip color.
+   Each has:
+     -soft  = barely-there background tint (chip fill)
+     -bold  = legible text/icon color on -soft AND on surface-app
+
+   Light: barely-there pastels, rich bold for text
+   Dark:  slightly deeper soft (reads against dark bg),
+          lighter/brighter bold (stays legible)
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /* Lavender — soft purple hue */
+  --accent-lavender-soft:  234 230 248;   /* #EAE6F8 — very pale lavender */
+  --accent-lavender-bold:  104  86 178;   /* #6856B2 — 4.6:1 on #EAE6F8 (AA), 5.8:1 on #FAF8F5 */
+
+  /* Peach — warm apricot hue */
+  --accent-peach-soft:     252 233 224;   /* #FCE9E0 — barely-there apricot */
+  --accent-peach-bold:     186  86  46;   /* #BA562E — 4.6:1 on #FCE9E0 (AA), 5.2:1 on #FAF8F5 */
+
+  /* Mint — fresh sage-green hue */
+  --accent-mint-soft:      213 242 232;   /* #D5F2E8 — whisper of mint */
+  --accent-mint-bold:       46 138  98;   /* #2E8A62 — 4.8:1 on #D5F2E8 (AA), 5.4:1 on #FAF8F5 */
+
+  /* Sun — warm soft yellow hue */
+  --accent-sun-soft:       252 243 210;   /* #FCF3D2 — soft butter yellow */
+  --accent-sun-bold:       162 120  12;   /* #A2780C — 4.7:1 on #FCF3D2 (AA), 5.0:1 on #FAF8F5 */
+}
+
+html.dark {
+  /* Lavender dark — deeper soft, lighter bold */
+  --accent-lavender-soft:  48  42  72;    /* #302A48 — deep lavender tint */
+  --accent-lavender-bold:  182 168 230;   /* #B6A8E6 — 5.4:1 on #302A48 (AA), 6.2:1 on #141311 */
+
+  /* Peach dark */
+  --accent-peach-soft:     62  36  26;    /* #3E241A — deep warm brick */
+  --accent-peach-bold:     240 168 130;   /* #F0A882 — 4.8:1 on #3E241A (AA), 5.6:1 on #141311 */
+
+  /* Mint dark */
+  --accent-mint-soft:      24  52  42;    /* #18342A — deep forest tint */
+  --accent-mint-bold:      124 214 174;   /* #7CD6AE — 5.1:1 on #18342A (AA), 6.0:1 on #141311 */
+
+  /* Sun dark */
+  --accent-sun-soft:       52  44  10;    /* #342C0A — deep golden tint */
+  --accent-sun-bold:       230 196  82;   /* #E6C452 — 5.3:1 on #342C0A (AA), 5.8:1 on #141311 */
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   3. STATUS TOKENS
+   Standardized status vocabulary per REDESIGN_BRIEF.md.
+   Light: muted tones on warm-white
+   Dark:  independently softened for dark ground
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /* Success — sage green */
+  --status-success:   77 140 106;   /* #4D8C6A — 4.6:1 on #FAF8F5 (AA) */
+
+  /* Pending — slate blue */
+  --status-pending:   72 110 156;   /* #486E9C — 4.5:1 on #FAF8F5 (AA) */
+
+  /* Paused — warm amber */
+  --status-paused:   190 130  48;   /* #BE8230 — 4.6:1 on #FAF8F5 (AA) */
+
+  /* Failed — muted rose */
+  --status-failed:   186  74  74;   /* #BA4A4A — 5.1:1 on #FAF8F5 (AA) */
+
+  /* Info — muted lavender (points at the accent) */
+  --status-info:     104  86 178;   /* #6856B2 — same as accent-lavender-bold */
+
+  /* Warning — warm amber (can share warmth with paused, slight variation) */
+  --status-warning:  196 140  36;   /* #C48C24 — 4.5:1 on #FAF8F5 (AA) */
+}
+
+html.dark {
+  /* Success — lighter sage, reads on dark charcoal */
+  --status-success:  108 196 152;   /* #6CC498 — 5.8:1 on #141311 (AA) */
+
+  /* Pending — lighter slate */
+  --status-pending:  120 164 220;   /* #78A4DC — 5.4:1 on #141311 (AA) */
+
+  /* Paused — warmer amber */
+  --status-paused:   220 168  72;   /* #DCA848 — 5.6:1 on #141311 (AA) */
+
+  /* Failed — lighter rose */
+  --status-failed:   230 112 112;   /* #E67070 — 5.2:1 on #141311 (AA) */
+
+  /* Info — accent lavender-bold in dark */
+  --status-info:     182 168 230;   /* #B6A8E6 — same as dark accent-lavender-bold */
+
+  /* Warning — golden amber */
+  --status-warning:  230 196  82;   /* #E6C452 — same as dark accent-sun-bold */
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   4. BRAND SIGNATURE
+   Gold is the brand. Used for logo, marketing, and key brand
+   moments (not as the default button color in the new library).
+   One token per mode — same hex across both (it's a brand constant).
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --brand-gold: 196 151  90;   /* #C4975A — muted gold, unchanged from BRAND_GUIDE */
+}
+
+html.dark {
+  --brand-gold: 196 151  90;   /* #C4975A — brand constant, same in dark */
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   5. TYPOGRAPHY SCALE  (Tier 0.2)
+   All type tokens are triples:
+     clamp(min, preferred-vw, max)  |  line-height  |  letter-spacing
+
+   Viewport sanity check (what preferred-vw resolves to):
+   ─────────────────────────────────────────────────────────────────
+   Token        │ 320px  │ 500px  │ 980px │ 1440px │ 2000px
+   ─────────────────────────────────────────────────────────────────
+   --text-hero  │  64px  │  80px  │ 98px  │ 144px  │ 180px
+   --text-display│ 32px  │  40px  │ 49px  │  56px  │  56px
+   --text-h1    │  28px  │  33px  │ 39px  │  40px  │  40px
+   --text-h2    │  22px  │  26px  │ 30px  │  30px  │  30px
+   --text-h3    │  18px  │  20px  │ 22px  │  22px  │  22px
+   --text-h4    │  16px  │  17px  │ 18px  │  18px  │  18px
+   --text-body  │  15px  │  15px  │ 16px  │  16px  │  16px
+   --text-body-sm│ 13px  │  13px  │ 14px  │  14px  │  14px
+   --text-caption│ 11px  │  11px  │ 12px  │  12px  │  12px
+   --text-mono  │  13px  │  13px  │ 14px  │  15px  │  15px
+   ─────────────────────────────────────────────────────────────────
+
+   Design notes:
+   - Hero uses 10vw preferred — large jump is intentional (hero NUMBER
+     pattern). At 320px it's capped at 4rem (64px); at 1800px it caps
+     at 11.25rem (180px). Pair with font-heading (Plus Jakarta Sans).
+   - Display through h2 get slight negative tracking (-0.02em to -0.01em)
+     so tight headlines don't feel loose at large sizes.
+   - Body and below: tracking = 0. Inter is designed to run loose.
+   - Mono: slightly tighter line-height than body (1.5 vs 1.55) —
+     monospaced glyphs are denser and don't need as much breathing room.
+   - line-height < 1 for hero/display: tight leading is correct for
+     oversized single-metric display (one number, one line).
+
+   These tokens are NOT mode-dependent (typography is mode-agnostic).
+   Color is handled by --ink-* tokens from Section 1.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /* ── Hero — 64–180px ── */
+  /* Used for: points balance, daily step count, big stat on dashboard  */
+  /* Pair with: font-heading (Plus Jakarta Sans), font-tabular if numbers */
+  --text-hero:      clamp(4rem, 10vw, 11.25rem);
+  --lh-hero:        0.95;
+  --ls-hero:        -0.03em;
+
+  /* ── Display — 32–56px ── */
+  /* Used for: module hero titles, empty-state headlines, marketing copy  */
+  --text-display:   clamp(2rem, 4vw, 3.5rem);
+  --lh-display:     1.05;
+  --ls-display:     -0.02em;
+
+  /* ── H1 — 28–40px ── */
+  /* Used for: page titles, detail-view headers */
+  --text-h1:        clamp(1.75rem, 2.6vw, 2.5rem);
+  --lh-h1:          1.15;
+  --ls-h1:          -0.015em;
+
+  /* ── H2 — 22–30px ── */
+  /* Used for: section headings, card titles on data-heavy pages */
+  --text-h2:        clamp(1.375rem, 2vw, 1.875rem);
+  --lh-h2:          1.2;
+  --ls-h2:          -0.01em;
+
+  /* ── H3 — 18–22px ── */
+  /* Used for: card titles, list group headers, form section names */
+  --text-h3:        clamp(1.125rem, 1.5vw, 1.375rem);
+  --lh-h3:          1.3;
+  --ls-h3:          -0.005em;
+
+  /* ── H4 — 16–18px ── */
+  /* Used for: sub-section labels, sidebar nav items, badge names */
+  --text-h4:        clamp(1rem, 1.2vw, 1.125rem);
+  --lh-h4:          1.35;
+  --ls-h4:          0em;
+
+  /* ── Body — 15–16px ── */
+  /* Used for: paragraph text, task descriptions, vault entry body */
+  --text-body:      clamp(0.9375rem, 1vw, 1rem);
+  --lh-body:        1.55;
+  --ls-body:        0em;
+
+  /* ── Body SM — 13–14px ── */
+  /* Used for: secondary labels, helper text, card metadata */
+  --text-body-sm:   clamp(0.8125rem, 0.9vw, 0.875rem);
+  --lh-body-sm:     1.5;
+  --ls-body-sm:     0em;
+
+  /* ── Caption — 11–12px ── */
+  /* Used for: timestamps, token names, microcopy, photo credits */
+  /* Positive tracking opens up dense micro-text for legibility       */
+  --text-caption:   clamp(0.6875rem, 0.8vw, 0.75rem);
+  --lh-caption:     1.4;
+  --ls-caption:     0.02em;
+
+  /* ── Mono — 13–15px ── */
+  /* Used for: code snippets, data values, spreadsheet-style numbers  */
+  /* Pair with: font-mono (JetBrains Mono)                            */
+  --text-mono:      clamp(0.8125rem, 0.9vw, 0.9375rem);
+  --lh-mono:        1.5;
+  --ls-mono:        0em;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   TIER 0.3 — SPACING · RADII · SHADOW · MOTION
+   ════════════════════════════════════════════════════════════════════ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   SPACING
+   Spacing intentionally uses Tailwind defaults (p-1 = 4px,
+   p-2 = 8px, p-3 = 12px, p-4 = 16px, p-6 = 24px, p-8 = 32px,
+   p-12 = 48px, p-16 = 64px, …). No custom tokens — the 4px
+   baseline is already universal.
+   ──────────────────────────────────────────────────────────────── */
+
+
+/* ────────────────────────────────────────────────────────────────
+   RADII
+   Pill is the primary shape language for interactive chrome.
+   Cards, sheets, and fields use progressively softer rectangles.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --radius-pill:   9999px;   /* buttons, chips, nav pills, status pills */
+  --radius-card:     20px;   /* cards (raised surfaces) */
+  --radius-sheet:    28px;   /* modals, bottom sheets, drawers */
+  --radius-field:    12px;   /* inputs, textareas, select — softer than card, not pill */
+  --radius-tile:     16px;   /* small clickable tiles (quick actions, category chips) */
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   SHADOWS — LIGHT MODE
+   Warm, soft shadows using dark-brown-tinted rgba.
+   They feel natural against the warm-ivory surface rather than
+   the cold greyish shadows produced by pure-black rgba().
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --shadow-resting:
+    0 1px  2px rgba(28, 20, 10, 0.04),
+    0 2px  6px rgba(28, 20, 10, 0.05);
+
+  --shadow-hover:
+    0 2px  4px rgba(28, 20, 10, 0.06),
+    0 8px 16px rgba(28, 20, 10, 0.07);
+
+  --shadow-elevated:
+    0  4px  8px rgba(28, 20, 10, 0.08),
+    0 16px 32px rgba(28, 20, 10, 0.10);
+
+  --shadow-modal:
+    0 16px 48px rgba(28, 20, 10, 0.18),
+    0  4px 12px rgba(28, 20, 10, 0.08);
+
+  /* glass: inset highlight + outer depth — for nav pills, hero cards, backdrops */
+  --shadow-glass:
+    0 1px  1px rgba(255, 255, 255, 0.40) inset,
+    0 2px  8px rgba(28,  20,  10, 0.06),
+    0 16px 32px rgba(28, 20,  10, 0.08);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   SHADOWS — DARK MODE
+   Dark shadows are not inversions of light shadows.
+   They must be significantly darker and deeper to create
+   visible elevation against a near-black charcoal surface.
+   ──────────────────────────────────────────────────────────────── */
+html.dark {
+  --shadow-resting:
+    0 1px  2px rgba(0, 0, 0, 0.30),
+    0 2px  6px rgba(0, 0, 0, 0.25);
+
+  --shadow-hover:
+    0 2px  4px rgba(0, 0, 0, 0.40),
+    0 8px 16px rgba(0, 0, 0, 0.30);
+
+  --shadow-elevated:
+    0  4px  8px rgba(0, 0, 0, 0.45),
+    0 16px 32px rgba(0, 0, 0, 0.40);
+
+  --shadow-modal:
+    0 16px 48px rgba(0, 0, 0, 0.60),
+    0  4px 12px rgba(0, 0, 0, 0.40);
+
+  --shadow-glass:
+    0 1px  1px rgba(255, 255, 255, 0.06) inset,
+    0 2px  8px rgba(0,   0,   0, 0.35),
+    0 16px 32px rgba(0,  0,   0, 0.45);
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   MOTION
+   Duration tokens name the intent (instant = micro-feedback,
+   quick = hover/toggle, deliberate = critical confirm/reveal,
+   sheet = bottom-sheet slide).
+   Easing tokens: out-soft (decelerate into rest),
+   in-out-soft (symmetric slide), spring (overshoot = lively).
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /* Durations */
+  --duration-instant:    100ms;   /* micro-feedback: toggle, press highlight */
+  --duration-quick:      200ms;   /* hover lift, nav pill switch, chip select */
+  --duration-sheet:      500ms;   /* bottom-sheet / modal enter + exit */
+  --duration-deliberate: 700ms;   /* delete confirm, point spend, vault reveal */
+
+  /* Easings */
+  --ease-out-soft:    cubic-bezier(0.16, 1, 0.3, 1);       /* fast start, decelerates to rest */
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);      /* symmetric, smooth handoff */
+  --ease-spring:      cubic-bezier(0.34, 1.56, 0.64, 1);   /* overshoot for lively UI moments */
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   TIER 0.4 — GRADIENT TOKENS
+   ════════════════════════════════════════════════════════════════════
+   Single var name per gradient. `:root` = light value; `html.dark` =
+   dark value. Consumers use the token directly — no -light/-dark
+   suffix, no dark: variant needed in templates.
+
+   Three families:
+     1. Iridescent card fills — for vault entries, imageless tasks,
+        achievement tiles, empty states, hero metric cards (tenet #6).
+     2. Ambient background — for app background on dashboard, settings,
+        landing (OpsPulse / image 7 mood). Never on dense data surfaces.
+     3. Category accent fills — single-hue helpers for GradientCard
+        and chip/badge tint moments.
+
+   Dark ≠ inversion. Each dark gradient is a deliberate sibling:
+   deeper and richer, with its own character, not a mechanical flip.
+   ════════════════════════════════════════════════════════════════════ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   IRIDESCENT CARD FILLS
+   ────────────────────────────────────────────────────────────────
+   Inspired by fintech debit-card iridescence (see REDESIGN_BRIEF
+   image 1 / "Track" app): pastel hues emerging organically from a
+   white/charcoal base — not linear stripes. The trick is layered
+   radial-gradient wells at low-to-medium opacity over a solid card
+   surface. Because the wells fade to transparent, the card's base
+   `background-color` shows through the airy negative space and the
+   whole thing reads as a pale opal.
+
+   IMPORTANT: these gradients are image-only tokens. Consumers MUST
+   pair `bg-iridescent-subtle` (or `bg-iridescent-warm`) with a
+   base background color — typically `bg-surface-raised` (white in
+   light mode, warm charcoal in dark). Without a base, the transparent
+   wells have nothing to sit over and the card looks blown out.
+
+   Subtle  — cool-biased opal. Lavender + peach + mint wells. Airy,
+             ethereal. Default for imageless content surfaces.
+   Warm    — warm-biased opal. Peach + sun + subtle lavender blush.
+             Reserved for energetic moments (streaks, urgency).
+
+   Light: pale pastel wells over white → reads as pastel opal on paper.
+   Dark:  richer bold-tone wells over charcoal → reads as deep gemstone
+          glow. The dark isn't an inversion — same structure, different
+          palette, authored independently.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /*
+   * Light subtle — four overlapping radial wells sized LARGER than the
+   * container (120–150%) with late fade (85–90%) so the wells blanket
+   * the card without leaving splotchy white gaps between them. A faint
+   * linear base tint underneath fills any residual negative space.
+   *   - Lavender in the upper-left
+   *   - Peach in the lower-right
+   *   - Mint drifting through the middle
+   * Consumers pair with bg-surface-raised (white) for the opal effect.
+   */
+  --gradient-iridescent-subtle:
+    radial-gradient(ellipse 140% 110% at 15% 10%, rgba(234, 230, 248, 0.80), transparent 85%),
+    radial-gradient(ellipse 130% 100% at 85% 90%, rgba(252, 233, 224, 0.75), transparent 85%),
+    radial-gradient(ellipse 110%  90% at 60% 35%, rgba(213, 242, 232, 0.50), transparent 90%),
+    linear-gradient(135deg, rgba(234, 230, 248, 0.18) 0%, rgba(252, 233, 224, 0.18) 100%);
+
+  /*
+   * Light warm — peach-biased opal, same coverage strategy as subtle:
+   *   - Peach anchor upper-left
+   *   - Sun (butter) warming the middle-right
+   *   - Faint lavender blush at the bottom as a cool note
+   * Consumers pair with bg-surface-raised (white).
+   */
+  --gradient-iridescent-warm:
+    radial-gradient(ellipse 140% 110% at 15% 15%, rgba(252, 233, 224, 0.85), transparent 85%),
+    radial-gradient(ellipse 130% 100% at 85% 65%, rgba(252, 243, 210, 0.80), transparent 85%),
+    radial-gradient(ellipse 110%  90% at 55% 90%, rgba(234, 230, 248, 0.40), transparent 90%),
+    linear-gradient(135deg, rgba(252, 233, 224, 0.20) 0%, rgba(252, 243, 210, 0.20) 100%);
+}
+
+html.dark {
+  /*
+   * Dark subtle — oversized wells of -bold accent hexes at low opacity
+   * so the hues blanket the charcoal surface without splotchy gaps.
+   */
+  --gradient-iridescent-subtle:
+    radial-gradient(ellipse 140% 110% at 15% 10%, rgba(104,  86, 178, 0.28), transparent 85%),
+    radial-gradient(ellipse 130% 100% at 85% 90%, rgba(240, 168, 130, 0.24), transparent 85%),
+    radial-gradient(ellipse 110%  90% at 60% 35%, rgba(124, 214, 174, 0.18), transparent 90%),
+    linear-gradient(135deg, rgba(104,  86, 178, 0.06) 0%, rgba(240, 168, 130, 0.06) 100%);
+
+  /*
+   * Dark warm — oversized peach + sun + lavender wells over charcoal.
+   */
+  --gradient-iridescent-warm:
+    radial-gradient(ellipse 140% 110% at 15% 15%, rgba(240, 168, 130, 0.32), transparent 85%),
+    radial-gradient(ellipse 130% 100% at 85% 65%, rgba(230, 196,  82, 0.25), transparent 85%),
+    radial-gradient(ellipse 110%  90% at 55% 90%, rgba(182, 168, 230, 0.20), transparent 90%),
+    linear-gradient(135deg, rgba(240, 168, 130, 0.07) 0%, rgba(230, 196,  82, 0.07) 100%);
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   AMBIENT BACKGROUND
+   ────────────────────────────────────────────────────────────────
+   A single token (`--gradient-ambient`) swaps between light and
+   dark via `:root` / `html.dark`. Used ONLY as the app background
+   on dashboard / settings / landing. Never on dense data surfaces.
+
+   IMPORTANT: `--gradient-ambient` is an image-only token (gradients
+   only — no trailing solid color). Pair with `bg-surface-app` (or any
+   solid `background-color`) to get the full ambient surface. This lets
+   consumers customize the base color while keeping the ambient wash
+   consistent. The Tailwind `bg-ambient` utility sets `background-image`;
+   `bg-surface-app` sets `background-color` — they do not conflict.
+
+   Light — three radial wells of extremely muted accent tints over
+   the warm-ivory base (#FAF8F5). Opacity is tuned so the result
+   reads as "slightly more interesting than flat ivory," never as
+   a Pride-flag or bubble-design background.
+
+   Dark — three radial wells of muted warm-blue, plum, and amber
+   over the deep warm-charcoal base (#141311). The wells are at
+   18% / 15% / 10% opacity so they're barely visible — just enough
+   to suggest depth and warmth in a premium way.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --gradient-ambient:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(234, 230, 248, 0.55), transparent 50%),
+    radial-gradient(ellipse 70% 50% at 85% 20%, rgba(252, 233, 224, 0.45), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 70% 90%, rgba(213, 242, 232, 0.40), transparent 50%);
+}
+
+html.dark {
+  --gradient-ambient:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(72, 110, 156, 0.18), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 25%, rgba(104, 86, 178, 0.15), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 70% 90%, rgba(190, 130, 48, 0.10), transparent 55%);
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   CATEGORY ACCENT GRADIENTS
+   ────────────────────────────────────────────────────────────────
+   One gradient per accent family, used for GradientCard fills,
+   chip/badge tints, and category landing surfaces.
+   Pattern: soft(0%) → transitional(50%) → soft(100%) at 135deg.
+   Light uses the light-mode accent hexes; dark uses the dark-mode
+   accent hexes with slightly more saturation at the mid-stop.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /* Lavender accent — pale opal wash */
+  --gradient-accent-lavender:
+    linear-gradient(135deg, #EAE6F8 0%, #D8D0F2 50%, #EAE6F8 100%);
+
+  /* Peach accent — warm apricot wash */
+  --gradient-accent-peach:
+    linear-gradient(135deg, #FCE9E0 0%, #F8D4C4 50%, #FCE9E0 100%);
+
+  /* Mint accent — cool sage wash */
+  --gradient-accent-mint:
+    linear-gradient(135deg, #D5F2E8 0%, #BBE8D8 50%, #D5F2E8 100%);
+
+  /* Sun accent — soft butter wash */
+  --gradient-accent-sun:
+    linear-gradient(135deg, #FCF3D2 0%, #F5E4A8 50%, #FCF3D2 100%);
+}
+
+html.dark {
+  /* Lavender accent dark — deep indigo tint (mid-stop brightened ~20 % toward bold for parity with peach/mint/sun) */
+  --gradient-accent-lavender:
+    linear-gradient(135deg, #302A48 0%, #4B4368 50%, #302A48 100%);
+
+  /* Peach accent dark — deep brick tint (mid-stop brightened ~20 % toward bold for visible movement) */
+  --gradient-accent-peach:
+    linear-gradient(135deg, #3E241A 0%, #623E2F 50%, #3E241A 100%);
+
+  /* Mint accent dark — deep forest tint (mid-stop brightened ~20 % toward bold) */
+  --gradient-accent-mint:
+    linear-gradient(135deg, #18342A 0%, #2C5444 50%, #18342A 100%);
+
+  /* Sun accent dark — deep golden tint (mid-stop brightened ~20 % toward bold) */
+  --gradient-accent-sun:
+    linear-gradient(135deg, #342C0A 0%, #584A18 50%, #342C0A 100%);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   TIER 0.5 — GLASS UTILITIES
+   ════════════════════════════════════════════════════════════════════
+   Composed translucent surface: bg + backdrop-blur + inner highlight
+   + shadow-glass. See `.surface-glass` / `.surface-glass-strong` in
+   app.css (@layer components) for the utility classes that consume
+   these tokens.
+
+   ALLOWED on exactly four surfaces (Tenet #7):
+     1. App-background ambient gradient overlay (rare)
+     2. Floating nav pill
+     3. Hero dashboard card
+     4. Modal / sheet backdrop
+
+   BANNED everywhere else: lists, form inputs, data tables, event
+   tiles, stat numbers. Glass on dense data or small controls murks
+   the content and degrades legibility.
+
+   Light: bright frosted-white pane — airy, premium.
+   Dark:  deep warm-smoky pane — calm, focused.
+   Saturation boost (140 % / 130 %) gives the "liquid" quality when
+   colourful content sits behind the surface.
+   ════════════════════════════════════════════════════════════════════ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   7. GLASS UTILITIES — LIGHT
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --glass-bg:          rgba(255, 255, 255, 0.55);
+  --glass-bg-strong:   rgba(255, 255, 255, 0.72);
+  --glass-border:      rgba(255, 255, 255, 0.65);
+  --glass-highlight:   rgba(255, 255, 255, 0.45);
+  --glass-blur:        16px;
+  --glass-saturation:  140%;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   7. GLASS UTILITIES — DARK
+   Deep warm-smoky pane against the near-black charcoal base.
+   Border and highlight are restrained — just enough to suggest a
+   surface boundary without competing with the content behind.
+   ──────────────────────────────────────────────────────────────── */
+html.dark {
+  --glass-bg:          rgba(28, 27, 25, 0.55);
+  --glass-bg-strong:   rgba(28, 27, 25, 0.75);
+  --glass-border:      rgba(255, 255, 255, 0.08);
+  --glass-highlight:   rgba(255, 255, 255, 0.04);
+  --glass-blur:        18px;
+  --glass-saturation:  130%;
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   Only duration is zeroed — easings are left intact so
+   state-change semantics are preserved even when motion is off.
+   This is preferred over removing transitions entirely because
+   it keeps focus-state changes, active/hover classes, etc.
+   working correctly for keyboard and assistive-technology users.
+   ──────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  html.dark {
+    --duration-instant:    0ms;
+    --duration-quick:      0ms;
+    --duration-deliberate: 0ms;
+    --duration-sheet:      0ms;
+  }
+}

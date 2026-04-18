@@ -1,3 +1,5 @@
+@import './tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -742,6 +744,77 @@ nav[class*="bg-prussian-500"] {
   }
   .dark .kin-muted {
     color: #9C9895;
+  }
+
+  /* ─── Tier 0.5 — Glass surface utilities ───────────────────────────────────
+     Composed glass effect: translucent bg + backdrop-blur + inner top highlight
+     + shadow-glass.
+
+     Use ONLY on the four allowed surfaces (tenet #7):
+       1. App-background ambient gradient overlay
+       2. Floating nav pill
+       3. Hero dashboard card
+       4. Modal / sheet backdrop
+
+     Banned everywhere else (lists, forms, data tables, event tiles, stat numbers).
+
+     Usage: class="surface-glass rounded-card"  — border-radius is INHERITED by
+     the ::before highlight via `border-radius: inherit`, so any rounded-* class
+     works naturally. The `isolation: isolate` + z-index trick prevents child
+     blend-mode bleed.
+  ─────────────────────────────────────────────────────────────────────────── */
+  .surface-glass {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
+    position: relative;
+    isolation: isolate;
+  }
+
+  .surface-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, var(--glass-highlight) 0%, transparent 50%);
+    opacity: 0.6;
+    z-index: 0;
+  }
+
+  .surface-glass > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Strong variant — slightly more opaque. Use when content needs high
+     legibility: nav pill text, hero card numbers, modal dialog body. */
+  .surface-glass-strong {
+    background-color: var(--glass-bg-strong);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-glass);
+    position: relative;
+    isolation: isolate;
+  }
+
+  .surface-glass-strong::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, var(--glass-highlight) 0%, transparent 55%);
+    opacity: 0.7;
+    z-index: 0;
+  }
+
+  .surface-glass-strong > * {
+    position: relative;
+    z-index: 1;
   }
 
   /* Icon container — gold tinted background for feature icons */

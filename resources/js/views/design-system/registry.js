@@ -28,16 +28,16 @@ export const REGISTRY = [
   { slug: 'overview', tier: 'overview', title: 'Overview', description: 'Library progress and how this works.', pagePath: './pages/OverviewPage.vue', scaffolded: true, chosen: false },
 
   // Tier 0 — Tokens (no variants; reference-only once defined)
-  { slug: 'colors', tier: 'tokens', title: '0.1 Color tokens', description: 'Light + dark palettes, category accents, status colors.', pagePath: './pages/tokens/ColorsPage.vue', scaffolded: true, chosen: false },
-  { slug: 'typography', tier: 'tokens', title: '0.2 Typography scale', description: 'Fluid type scale via clamp() — hero through caption.', pagePath: './pages/tokens/TypographyPage.vue', scaffolded: false, chosen: false },
-  { slug: 'spacing', tier: 'tokens', title: '0.3 Spacing · radii · shadow · motion', description: 'Layout primitives and motion tokens.', pagePath: './pages/tokens/SpacingPage.vue', scaffolded: false, chosen: false },
-  { slug: 'gradients', tier: 'tokens', title: '0.4 Gradient tokens', description: 'Iridescent card fills and ambient backgrounds.', pagePath: './pages/tokens/GradientsPage.vue', scaffolded: false, chosen: false },
-  { slug: 'glass', tier: 'tokens', title: '0.5 Glass utilities', description: 'The four allowed glass surfaces.', pagePath: './pages/tokens/GlassPage.vue', scaffolded: false, chosen: false },
+  { slug: 'colors', tier: 'tokens', title: '0.1 Color tokens', description: 'Light + dark palettes, category accents, status colors.', pagePath: './pages/tokens/ColorsPage.vue', scaffolded: true, chosen: true },
+  { slug: 'typography', tier: 'tokens', title: '0.2 Typography scale', description: 'Fluid type scale via clamp() — hero through caption.', pagePath: './pages/tokens/TypographyPage.vue', scaffolded: true, chosen: true },
+  { slug: 'spacing', tier: 'tokens', title: '0.3 Spacing · radii · shadow · motion', description: 'Layout primitives and motion tokens.', pagePath: './pages/tokens/SpacingPage.vue', scaffolded: true, chosen: true },
+  { slug: 'gradients', tier: 'tokens', title: '0.4 Gradient tokens', description: 'Iridescent card fills and ambient backgrounds.', pagePath: './pages/tokens/GradientsPage.vue', scaffolded: true, chosen: true },
+  { slug: 'glass', tier: 'tokens', title: '0.5 Glass utilities', description: 'The four allowed glass surfaces.', pagePath: './pages/tokens/GlassPage.vue', scaffolded: true, chosen: true },
 
   // Tier 1 — Primitives
-  { slug: 'button', tier: 'primitives', title: '1.1 Button', description: 'Filled, outline, ghost, danger. Pill-shaped.', pagePath: './pages/primitives/ButtonPage.vue', scaffolded: true, chosen: false },
-  { slug: 'input', tier: 'primitives', title: '1.2 Input · Textarea · Search', description: 'Form fields with states and affordances.', pagePath: './pages/primitives/InputPage.vue', scaffolded: false, chosen: false },
-  { slug: 'chip', tier: 'primitives', title: '1.3 Chip · Tag · Status pill', description: 'Pill-shaped labels for categories, tags, and status.', pagePath: './pages/primitives/ChipPage.vue', scaffolded: false, chosen: false },
+  { slug: 'button', tier: 'primitives', title: '1.1 Button', description: 'Lifted pill — gradient fill, resting shadow, 3px lift on hover, press-in on active.', pagePath: './pages/primitives/ButtonPage.vue', scaffolded: true, chosen: true },
+  { slug: 'input', tier: 'primitives', title: '1.2 Input · Textarea · Search', description: 'Borderless inset fields + pill search. Dark inputs sit raised above the page for legibility.', pagePath: './pages/primitives/InputPage.vue', scaffolded: true, chosen: true },
+  { slug: 'chip', tier: 'primitives', title: '1.3 Chip · Tag · Status pill', description: 'Outlined + soft-tint chip (categories / filters) + inline status indicator (dense rows).', pagePath: './pages/primitives/ChipPage.vue', scaffolded: true, chosen: true },
   { slug: 'avatar', tier: 'primitives', title: '1.4 Avatar', description: 'Photo, preset, initials — with rings and progress arcs.', pagePath: './pages/primitives/AvatarPage.vue', scaffolded: false, chosen: false },
   { slug: 'selection', tier: 'primitives', title: '1.5 Checkbox · Radio · Switch', description: 'Selection controls.', pagePath: './pages/primitives/SelectionPage.vue', scaffolded: false, chosen: false },
   { slug: 'progress', tier: 'primitives', title: '1.6 Progress bar', description: 'Horizontal bars and arc rings.', pagePath: './pages/primitives/ProgressPage.vue', scaffolded: false, chosen: false },

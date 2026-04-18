@@ -13,7 +13,7 @@ defineProps({
   >
     <header class="flex items-center justify-between px-4 py-3 border-b border-kin-gray-100 dark:border-kin-gray-800 bg-kin-gray-50/50 dark:bg-kin-gray-900/50">
       <div class="flex items-center gap-2">
-        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold bg-kin-black text-white dark:bg-kin-off-white dark:text-kin-black">{{ label }}</span>
+        <span class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold bg-kin-black text-white dark:bg-kin-off-white dark:text-kin-black whitespace-nowrap">{{ label }}</span>
         <p v-if="caption" class="text-sm text-kin-gray-500 dark:text-kin-gray-300">{{ caption }}</p>
       </div>
       <span v-if="chosen" class="text-xs font-medium text-emerald-600 dark:text-emerald-300">Chosen</span>
