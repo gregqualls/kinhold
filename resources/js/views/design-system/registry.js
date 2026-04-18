@@ -38,10 +38,10 @@ export const REGISTRY = [
   { slug: 'button', tier: 'primitives', title: '1.1 Button', description: 'Lifted pill — gradient fill, resting shadow, 3px lift on hover, press-in on active.', pagePath: './pages/primitives/ButtonPage.vue', scaffolded: true, chosen: true },
   { slug: 'input', tier: 'primitives', title: '1.2 Input · Textarea · Search', description: 'Borderless inset fields + pill search. Dark inputs sit raised above the page for legibility.', pagePath: './pages/primitives/InputPage.vue', scaffolded: true, chosen: true },
   { slug: 'chip', tier: 'primitives', title: '1.3 Chip · Tag · Status pill', description: 'Outlined + soft-tint chip (categories / filters) + inline status indicator (dense rows).', pagePath: './pages/primitives/ChipPage.vue', scaffolded: true, chosen: true },
-  { slug: 'avatar', tier: 'primitives', title: '1.4 Avatar', description: 'Photo, preset, initials — with rings and progress arcs.', pagePath: './pages/primitives/AvatarPage.vue', scaffolded: false, chosen: false },
-  { slug: 'selection', tier: 'primitives', title: '1.5 Checkbox · Radio · Switch', description: 'Selection controls.', pagePath: './pages/primitives/SelectionPage.vue', scaffolded: false, chosen: false },
-  { slug: 'progress', tier: 'primitives', title: '1.6 Progress bar', description: 'Horizontal bars and arc rings.', pagePath: './pages/primitives/ProgressPage.vue', scaffolded: false, chosen: false },
-  { slug: 'skeleton', tier: 'primitives', title: '1.7 Skeleton loader', description: 'Shimmer placeholders with reduced-motion fallback.', pagePath: './pages/primitives/SkeletonPage.vue', scaffolded: false, chosen: false },
+  { slug: 'avatar', tier: 'primitives', title: '1.4 Avatar', description: 'Clean circle default + arc progress overlay for achievement/progress state.', pagePath: './pages/primitives/AvatarPage.vue', scaffolded: true, chosen: true },
+  { slug: 'selection', tier: 'primitives', title: '1.5 Checkbox · Radio · Switch', description: 'Minimal neutral fill for checkbox + radio; Apple-style pastel-accent toggle for switch.', pagePath: './pages/primitives/SelectionPage.vue', scaffolded: true, chosen: true },
+  { slug: 'progress', tier: 'primitives', title: '1.6 Progress bar', description: 'Horizontal solid-fill bars + standalone arc gauge for hero moments.', pagePath: './pages/primitives/ProgressPage.vue', scaffolded: true, chosen: true },
+  { slug: 'skeleton', tier: 'primitives', title: '1.7 Skeleton loader', description: 'Shimmer placeholders (text line, circle, pill, field, card block) with 1.8s linear shimmer and prefers-reduced-motion static fallback.', pagePath: './pages/primitives/SkeletonPage.vue', scaffolded: true, chosen: true },
 
   // Tier 2 — Cards
   { slug: 'flat-card', tier: 'cards', title: '2.1 FlatCard', description: 'Standard rounded-corner card with subtle border.', pagePath: './pages/cards/FlatCardPage.vue', scaffolded: false, chosen: false },
