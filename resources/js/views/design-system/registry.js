@@ -55,11 +55,11 @@ export const REGISTRY = [
   { slug: 'utility-rail', tier: 'navigation', title: '3.4 Right utility rail', description: 'Locked single treatment. Mini-month + filters + presence + saved views + actions. Collapses to mobile slide-up sheet.', pagePath: './pages/navigation/UtilityRailPage.vue', scaffolded: true, chosen: true },
 
   // Tier 4 — Compound patterns
-  { slug: 'tab-pill-group', tier: 'compounds', title: '4.1 TabPillGroup', description: 'Pill-row tabs for in-page sections.', pagePath: './pages/compounds/TabPillGroupPage.vue', scaffolded: false, chosen: false },
-  { slug: 'segmented-filter', tier: 'compounds', title: '4.2 SegmentedFilter', description: 'Segmented pill control for filters.', pagePath: './pages/compounds/SegmentedFilterPage.vue', scaffolded: false, chosen: false },
-  { slug: 'category-chip-row', tier: 'compounds', title: '4.3 CategoryChipRow', description: 'Horizontal chip row with active state.', pagePath: './pages/compounds/CategoryChipRowPage.vue', scaffolded: false, chosen: false },
-  { slug: 'action-pair', tier: 'compounds', title: '4.4 ActionPair', description: 'Paired [outline] [filled] buttons for list rows.', pagePath: './pages/compounds/ActionPairPage.vue', scaffolded: false, chosen: false },
-  { slug: 'quick-actions', tier: 'compounds', title: '4.5 QuickActions', description: 'Grid of square icon buttons.', pagePath: './pages/compounds/QuickActionsPage.vue', scaffolded: false, chosen: false },
+  { slug: 'tab-pill-group', tier: 'compounds', title: '4.1 TabPillGroup', description: 'Pill-row tabs for in-page sections.', pagePath: './pages/compounds/TabPillGroupPage.vue', scaffolded: true, chosen: false },
+  { slug: 'segmented-filter', tier: 'compounds', title: '4.2 SegmentedFilter', description: 'Segmented pill control for filters.', pagePath: './pages/compounds/SegmentedFilterPage.vue', scaffolded: true, chosen: false },
+  { slug: 'category-chip-row', tier: 'compounds', title: '4.3 CategoryChipRow', description: 'Horizontal chip row with active state.', pagePath: './pages/compounds/CategoryChipRowPage.vue', scaffolded: true, chosen: false },
+  { slug: 'action-pair', tier: 'compounds', title: '4.4 ActionPair', description: 'Paired [outline] [filled] buttons for list rows.', pagePath: './pages/compounds/ActionPairPage.vue', scaffolded: true, chosen: false },
+  { slug: 'quick-actions', tier: 'compounds', title: '4.5 QuickActions', description: 'Grid of square icon buttons.', pagePath: './pages/compounds/QuickActionsPage.vue', scaffolded: true, chosen: false },
   { slug: 'avatar-picker', tier: 'compounds', title: '4.6 AvatarPicker', description: 'Horizontal avatar row for family member selection.', pagePath: './pages/compounds/AvatarPickerPage.vue', scaffolded: false, chosen: false },
   { slug: 'modal-sheet', tier: 'compounds', title: '4.7 Modal · Sheet · Drawer', description: 'One direction per breakpoint — solves the "3-direction" problem.', pagePath: './pages/compounds/ModalSheetPage.vue', scaffolded: false, chosen: false },
   { slug: 'toast', tier: 'compounds', title: '4.8 Toast', description: 'Notification toasts with semantic variants.', pagePath: './pages/compounds/ToastPage.vue', scaffolded: false, chosen: false },
