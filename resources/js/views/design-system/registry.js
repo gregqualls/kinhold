@@ -45,8 +45,8 @@ export const REGISTRY = [
 
   // Tier 2 — Cards
   { slug: 'flat-card', tier: 'cards', title: '2.1 FlatCard', description: 'Standard rounded-corner card with subtle border.', pagePath: './pages/cards/FlatCardPage.vue', scaffolded: true, chosen: true },
-  { slug: 'photo-card', tier: 'cards', title: '2.2 PhotoCard', description: 'Image-led card. Overlay vs. stacked vs. chip-badge.', pagePath: './pages/cards/PhotoCardPage.vue', scaffolded: true, chosen: false },
-  { slug: 'gradient-card', tier: 'cards', title: '2.3 GradientCard', description: 'Iridescent fill for imageless content.', pagePath: './pages/cards/GradientCardPage.vue', scaffolded: true, chosen: false },
+  { slug: 'photo-card', tier: 'cards', title: '2.2 PhotoCard', description: 'Edge-to-edge photo + gradient scrim (always on) + optional translucent chip badges.', pagePath: './pages/cards/PhotoCardPage.vue', scaffolded: true, chosen: true },
+  { slug: 'gradient-card', tier: 'cards', title: '2.3 GradientCard', description: 'Radial gradient anchored upper-left + positioned glyph + diagonal content layout.', pagePath: './pages/cards/GradientCardPage.vue', scaffolded: true, chosen: true },
 
   // Tier 3 — Navigation
   { slug: 'top-nav', tier: 'navigation', title: '3.1 Top nav (desktop)', description: 'Pill-nav bar with light/dark toggle.', pagePath: './pages/navigation/TopNavPage.vue', scaffolded: false, chosen: false },
