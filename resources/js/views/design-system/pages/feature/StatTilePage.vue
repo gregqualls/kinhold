@@ -86,543 +86,16 @@ function toBars(data) {
     status="chosen"
   >
 
-    <!-- ═══════════════════════════════════════════════════════════════
-         VARIANT A — Pure hero: number + label + delta chip
-         ════════════════════════════════════════════════════════════════ -->
-    <section class="mb-20">
-      <VariantFrame label="A" caption="Pure hero — number, label, delta chip. No chart, no filter.">
-        <div class="w-full space-y-10">
-
-          <!-- ── LIGHT PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
-
-            <!-- mobile + desktop grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-              <!-- Points bank — sun accent -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: L.surfaceRaised,
-                  borderColor: L.borderSubtle,
-                  boxShadow: SHADOW_RESTING_LT,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p
-                    class="text-[11px] font-semibold uppercase tracking-widest"
-                    :style="{ color: L.inkTertiary }"
-                  >Points Earned</p>
-                  <!-- delta chip — positive -->
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +86 this week
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.sun.bold }"
-                >1,248</p>
-              </div>
-
-              <!-- Task completion — mint accent -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: L.surfaceRaised,
-                  borderColor: L.borderSubtle,
-                  boxShadow: SHADOW_RESTING_LT,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p
-                    class="text-[11px] font-semibold uppercase tracking-widest"
-                    :style="{ color: L.inkTertiary }"
-                  >Tasks Done</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +12% vs last week
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.mint.bold }"
-                >84%</p>
-              </div>
-
-              <!-- Day streak — peach accent + fire icon -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: L.surfaceRaised,
-                  borderColor: L.borderSubtle,
-                  boxShadow: SHADOW_RESTING_LT,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p
-                    class="text-[11px] font-semibold uppercase tracking-widest"
-                    :style="{ color: L.inkTertiary }"
-                  >Day Streak</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: L.accents.peach.soft, color: L.accents.peach.bold }"
-                  >
-                    <FireIcon class="w-3 h-3" />
-                    Personal best
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.peach.bold }"
-                >12</p>
-              </div>
-
-              <!-- Currency — lavender accent, decimal at 60% scale -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: L.surfaceRaised,
-                  borderColor: L.borderSubtle,
-                  boxShadow: SHADOW_RESTING_LT,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p
-                    class="text-[11px] font-semibold uppercase tracking-widest"
-                    :style="{ color: L.inkTertiary }"
-                  >Rewards Budget</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: L.status.failed.soft, color: L.status.failed.bold }"
-                  >
-                    <ArrowDownRightIcon class="w-3 h-3" />
-                    -$120 this month
-                  </span>
-                </div>
-                <!-- Currency: integer full-size, decimal ~60% scale -->
-                <p
-                  class="leading-none font-semibold tracking-tighter flex items-baseline"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.lavender.bold }"
-                >
-                  $2,400
-                  <span style="font-size: 0.6em; letter-spacing: -0.01em; opacity: 0.85;">.56</span>
-                </p>
-              </div>
-            </div>
-
-            <!-- Mobile mock callout -->
-            <div class="pt-2">
-              <p class="text-[11px]" :style="{ color: L.inkTertiary }">
-                375px — hero number clamps to 4rem at phone width; tile stays single-column at full stretch.
-              </p>
-            </div>
-          </div>
-
-          <!-- ── DARK PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-              <!-- Points bank -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: D.surfaceRaised,
-                  borderColor: D.borderSubtle,
-                  boxShadow: SHADOW_RESTING_DK,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +86 this week
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.sun.bold }"
-                >1,248</p>
-              </div>
-
-              <!-- Task completion -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: D.surfaceRaised,
-                  borderColor: D.borderSubtle,
-                  boxShadow: SHADOW_RESTING_DK,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Tasks Done</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +12% vs last week
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.mint.bold }"
-                >84%</p>
-              </div>
-
-              <!-- Day streak -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: D.surfaceRaised,
-                  borderColor: D.borderSubtle,
-                  boxShadow: SHADOW_RESTING_DK,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Day Streak</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: D.accents.peach.soft, color: D.accents.peach.bold }"
-                  >
-                    <FireIcon class="w-3 h-3" />
-                    Personal best
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.peach.bold }"
-                >12</p>
-              </div>
-
-              <!-- Currency -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: D.surfaceRaised,
-                  borderColor: D.borderSubtle,
-                  boxShadow: SHADOW_RESTING_DK,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Rewards Budget</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: D.status.failed.soft, color: D.status.failed.bold }"
-                  >
-                    <ArrowDownRightIcon class="w-3 h-3" />
-                    -$120 this month
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter flex items-baseline"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.lavender.bold }"
-                >
-                  $2,400
-                  <span style="font-size: 0.6em; letter-spacing: -0.01em; opacity: 0.85;">.56</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </VariantFrame>
-    </section>
 
     <!-- ═══════════════════════════════════════════════════════════════
-         VARIANT B — Hero + micro chart (sparkline / bars)
+         LOCKED — Full StatTile with all layers
+         Hero number + delta chip + label + optional chart + optional
+         time-range filter. Every layer below the hero number is an
+         opt-in prop — see "Prop configurations" section further down
+         for the same component with layers removed.
          ════════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
-      <VariantFrame label="B" caption="Hero + micro chart — 7-point trend rendered as SVG polyline (points) or bars (tasks, streak). No axis labels.">
-        <div class="w-full space-y-10">
-
-          <!-- ── LIGHT PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-              <!-- Points bank — polyline sparkline -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: L.surfaceRaised,
-                  borderColor: L.borderSubtle,
-                  boxShadow: SHADOW_RESTING_LT,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Points Earned</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +86 this week
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.sun.bold }"
-                >1,248</p>
-                <!-- Sparkline -->
-                <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" fill="none" aria-hidden="true">
-                  <!-- faint area fill -->
-                  <polyline
-                    :points="toPolyline(chartPoints) + ' 140,40 0,40'"
-                    :fill="L.accents.sun.soft"
-                    stroke="none"
-                    opacity="0.7"
-                  />
-                  <!-- line -->
-                  <polyline
-                    :points="toPolyline(chartPoints)"
-                    :stroke="L.accents.sun.bold"
-                    stroke-width="2"
-                    stroke-linejoin="round"
-                    stroke-linecap="round"
-                    fill="none"
-                  />
-                  <!-- latest point dot -->
-                  <circle cx="140" :cy="40 - chartPoints[6] * 40" r="3" :fill="L.accents.sun.bold" />
-                </svg>
-              </div>
-
-              <!-- Task completion — bar chart -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: L.surfaceRaised,
-                  borderColor: L.borderSubtle,
-                  boxShadow: SHADOW_RESTING_LT,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Tasks Done</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +12% vs last week
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.mint.bold }"
-                >84%</p>
-                <!-- Bar chart -->
-                <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
-                  <rect
-                    v-for="(bar, i) in toBars(chartTasks)"
-                    :key="i"
-                    :x="bar.x"
-                    :y="bar.y"
-                    :width="bar.width"
-                    :height="bar.height"
-                    rx="2"
-                    :fill="i === chartTasks.length - 1 ? L.accents.mint.bold : L.accents.mint.soft"
-                  />
-                </svg>
-              </div>
-
-              <!-- Day streak — bar chart, peach -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: L.surfaceRaised,
-                  borderColor: L.borderSubtle,
-                  boxShadow: SHADOW_RESTING_LT,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Day Streak</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: L.accents.peach.soft, color: L.accents.peach.bold }"
-                  >
-                    <FireIcon class="w-3 h-3" />
-                    Personal best
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.peach.bold }"
-                >12</p>
-                <!-- Bar chart - climbing streak -->
-                <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
-                  <rect
-                    v-for="(bar, i) in toBars(chartStreak)"
-                    :key="i"
-                    :x="bar.x"
-                    :y="bar.y"
-                    :width="bar.width"
-                    :height="bar.height"
-                    rx="2"
-                    :fill="i === chartStreak.length - 1 ? L.accents.peach.bold : L.accents.peach.soft"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- ── DARK PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-              <!-- Points bank -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: D.surfaceRaised,
-                  borderColor: D.borderSubtle,
-                  boxShadow: SHADOW_RESTING_DK,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +86 this week
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.sun.bold }"
-                >1,248</p>
-                <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" fill="none" aria-hidden="true">
-                  <polyline
-                    :points="toPolyline(chartPoints) + ' 140,40 0,40'"
-                    :fill="D.accents.sun.soft"
-                    stroke="none"
-                    opacity="0.5"
-                  />
-                  <polyline
-                    :points="toPolyline(chartPoints)"
-                    :stroke="D.accents.sun.bold"
-                    stroke-width="2"
-                    stroke-linejoin="round"
-                    stroke-linecap="round"
-                    fill="none"
-                  />
-                  <circle cx="140" :cy="40 - chartPoints[6] * 40" r="3" :fill="D.accents.sun.bold" />
-                </svg>
-              </div>
-
-              <!-- Task completion -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: D.surfaceRaised,
-                  borderColor: D.borderSubtle,
-                  boxShadow: SHADOW_RESTING_DK,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Tasks Done</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +12% vs last week
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.mint.bold }"
-                >84%</p>
-                <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
-                  <rect
-                    v-for="(bar, i) in toBars(chartTasks)"
-                    :key="i"
-                    :x="bar.x"
-                    :y="bar.y"
-                    :width="bar.width"
-                    :height="bar.height"
-                    rx="2"
-                    :fill="i === chartTasks.length - 1 ? D.accents.mint.bold : D.accents.mint.soft"
-                  />
-                </svg>
-              </div>
-
-              <!-- Day streak -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{
-                  background: D.surfaceRaised,
-                  borderColor: D.borderSubtle,
-                  boxShadow: SHADOW_RESTING_DK,
-                }"
-              >
-                <div class="flex items-start justify-between">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Day Streak</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
-                    :style="{ background: D.accents.peach.soft, color: D.accents.peach.bold }"
-                  >
-                    <FireIcon class="w-3 h-3" />
-                    Personal best
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.peach.bold }"
-                >12</p>
-                <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
-                  <rect
-                    v-for="(bar, i) in toBars(chartStreak)"
-                    :key="i"
-                    :x="bar.x"
-                    :y="bar.y"
-                    :width="bar.width"
-                    :height="bar.height"
-                    rx="2"
-                    :fill="i === chartStreak.length - 1 ? D.accents.peach.bold : D.accents.peach.soft"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </VariantFrame>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════
-         VARIANT C — Hero + chart + time-range filter
-         ════════════════════════════════════════════════════════════════ -->
-    <section class="mb-20">
-      <VariantFrame label="C" caption="Full dashboard widget — hero number, micro chart, and time-range segmented filter in the top-right corner.">
+      <VariantFrame label="Full" caption="All layers — hero number + label + delta chip + micro chart + D/W/M/Y time-range filter.">
         <div class="w-full space-y-10">
 
           <!-- ── LIGHT PANEL ── -->
@@ -666,7 +139,7 @@ function toBars(data) {
                     :style="{ background: L.status.success.soft, color: L.status.success.bold }"
                   >
                     <ArrowUpRightIcon class="w-3 h-3" />
-                    +86 this {{ rangePointsL.toLowerCase() }}
+                    +86
                   </span>
                 </div>
                 <p
@@ -725,7 +198,7 @@ function toBars(data) {
                     :style="{ background: L.status.success.soft, color: L.status.success.bold }"
                   >
                     <ArrowUpRightIcon class="w-3 h-3" />
-                    +12% this {{ rangeTasksL.toLowerCase() }}
+                    +12%
                   </span>
                 </div>
                 <p
@@ -841,7 +314,7 @@ function toBars(data) {
                     :style="{ background: D.status.success.soft, color: D.status.success.bold }"
                   >
                     <ArrowUpRightIcon class="w-3 h-3" />
-                    +86 this {{ rangePointsD.toLowerCase() }}
+                    +86
                   </span>
                 </div>
                 <p
@@ -900,7 +373,7 @@ function toBars(data) {
                     :style="{ background: D.status.success.soft, color: D.status.success.bold }"
                   >
                     <ArrowUpRightIcon class="w-3 h-3" />
-                    +12% this {{ rangeTasksD.toLowerCase() }}
+                    +12%
                   </span>
                 </div>
                 <p
@@ -987,6 +460,244 @@ function toBars(data) {
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════════
+         PROP CONFIGURATIONS — same component, layers toggled off
+         Demonstrates the opt-in-prop model. The full-featured tile
+         above is the canonical shape; the tiles below are what you
+         get by passing chart={false} and/or filter={false}.
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="mb-20">
+      <VariantFrame label="Configs" caption="Same component · prop combinations — chart and filter are opt-in. Three configurations cover dashboard tiles, leaderboard rows, and analytics widgets.">
+        <div class="w-full space-y-10">
+
+          <!-- ── LIGHT PANEL ── -->
+          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+              <!-- CONFIG 1: Minimal — no chart, no filter -->
+              <div
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SHADOW_RESTING_LT }"
+              >
+                <div class="flex items-start justify-between gap-2">
+                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Points Earned</p>
+                  <span
+                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
+                    :style="{ background: L.status.success.soft, color: L.status.success.bold }"
+                  >
+                    <ArrowUpRightIcon class="w-3 h-3" />
+                    +86
+                  </span>
+                </div>
+                <p
+                  class="leading-none font-semibold tracking-tighter"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                  :style="{ color: L.accents.sun.bold }"
+                >1,248</p>
+                <p class="text-[10px] font-mono pt-2" :style="{ color: L.inkTertiary }">chart={{ '{' }}false{{ '}' }} · filter={{ '{' }}false{{ '}' }}</p>
+              </div>
+
+              <!-- CONFIG 2: With chart, no filter -->
+              <div
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SHADOW_RESTING_LT }"
+              >
+                <div class="flex items-start justify-between gap-2">
+                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Points Earned</p>
+                  <span
+                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
+                    :style="{ background: L.status.success.soft, color: L.status.success.bold }"
+                  >
+                    <ArrowUpRightIcon class="w-3 h-3" />
+                    +86
+                  </span>
+                </div>
+                <p
+                  class="leading-none font-semibold tracking-tighter"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                  :style="{ color: L.accents.sun.bold }"
+                >1,248</p>
+                <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
+                  <polyline
+                    :points="toPolyline(chartPoints)"
+                    fill="none"
+                    :stroke="L.accents.sun.bold"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="L.accents.sun.bold" />
+                </svg>
+                <p class="text-[10px] font-mono" :style="{ color: L.inkTertiary }">chart · filter={{ '{' }}false{{ '}' }}</p>
+              </div>
+
+              <!-- CONFIG 3: Full (chart + filter) -->
+              <div
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SHADOW_RESTING_LT }"
+              >
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Points Earned</p>
+                    <span
+                      class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium mt-1"
+                      :style="{ background: L.status.success.soft, color: L.status.success.bold }"
+                    >
+                      <ArrowUpRightIcon class="w-3 h-3" />
+                      +86
+                    </span>
+                  </div>
+                  <div class="inline-flex rounded-full p-0.5 flex-shrink-0" :style="{ border: `1px solid ${L.borderStrong}`, background: L.surfaceRaised }">
+                    <button
+                      v-for="r in RANGES"
+                      :key="r"
+                      class="text-[10px] font-semibold w-6 h-5 rounded-full transition-all"
+                      :style="rangePointsL === r
+                        ? { background: L.inkPrimary, color: L.inkInverse }
+                        : { background: 'transparent', color: L.inkSecondary }"
+                      @click="rangePointsL = r"
+                    >{{ r }}</button>
+                  </div>
+                </div>
+                <p
+                  class="leading-none font-semibold tracking-tighter"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                  :style="{ color: L.accents.sun.bold }"
+                >1,248</p>
+                <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
+                  <polyline
+                    :points="toPolyline(chartPoints)"
+                    fill="none"
+                    :stroke="L.accents.sun.bold"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="L.accents.sun.bold" />
+                </svg>
+                <p class="text-[10px] font-mono" :style="{ color: L.inkTertiary }">chart · filter — full (locked)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── DARK PANEL ── -->
+          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+              <!-- CONFIG 1: Minimal -->
+              <div
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SHADOW_RESTING_DK }"
+              >
+                <div class="flex items-start justify-between gap-2">
+                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
+                  <span
+                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
+                    :style="{ background: D.status.success.soft, color: D.status.success.bold }"
+                  >
+                    <ArrowUpRightIcon class="w-3 h-3" />
+                    +86
+                  </span>
+                </div>
+                <p
+                  class="leading-none font-semibold tracking-tighter"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                  :style="{ color: D.accents.sun.bold }"
+                >1,248</p>
+                <p class="text-[10px] font-mono pt-2" :style="{ color: D.inkTertiary }">chart={{ '{' }}false{{ '}' }} · filter={{ '{' }}false{{ '}' }}</p>
+              </div>
+
+              <!-- CONFIG 2: With chart -->
+              <div
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SHADOW_RESTING_DK }"
+              >
+                <div class="flex items-start justify-between gap-2">
+                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
+                  <span
+                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
+                    :style="{ background: D.status.success.soft, color: D.status.success.bold }"
+                  >
+                    <ArrowUpRightIcon class="w-3 h-3" />
+                    +86
+                  </span>
+                </div>
+                <p
+                  class="leading-none font-semibold tracking-tighter"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                  :style="{ color: D.accents.sun.bold }"
+                >1,248</p>
+                <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
+                  <polyline
+                    :points="toPolyline(chartPoints)"
+                    fill="none"
+                    :stroke="D.accents.sun.bold"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="D.accents.sun.bold" />
+                </svg>
+                <p class="text-[10px] font-mono" :style="{ color: D.inkTertiary }">chart · filter={{ '{' }}false{{ '}' }}</p>
+              </div>
+
+              <!-- CONFIG 3: Full -->
+              <div
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SHADOW_RESTING_DK }"
+              >
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
+                    <span
+                      class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium mt-1"
+                      :style="{ background: D.status.success.soft, color: D.status.success.bold }"
+                    >
+                      <ArrowUpRightIcon class="w-3 h-3" />
+                      +86
+                    </span>
+                  </div>
+                  <div class="inline-flex rounded-full p-0.5 flex-shrink-0" :style="{ border: `1px solid ${D.borderStrong}`, background: D.surfaceRaised }">
+                    <button
+                      v-for="r in RANGES"
+                      :key="r"
+                      class="text-[10px] font-semibold w-6 h-5 rounded-full transition-all"
+                      :style="rangePointsD === r
+                        ? { background: D.inkPrimary, color: D.inkInverse }
+                        : { background: 'transparent', color: D.inkSecondary }"
+                      @click="rangePointsD = r"
+                    >{{ r }}</button>
+                  </div>
+                </div>
+                <p
+                  class="leading-none font-semibold tracking-tighter"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                  :style="{ color: D.accents.sun.bold }"
+                >1,248</p>
+                <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
+                  <polyline
+                    :points="toPolyline(chartPoints)"
+                    fill="none"
+                    :stroke="D.accents.sun.bold"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="D.accents.sun.bold" />
+                </svg>
+                <p class="text-[10px] font-mono" :style="{ color: D.inkTertiary }">chart · filter — full (locked)</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
          CLAUDE'S PICK CALLOUT
          ════════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
@@ -1000,16 +711,16 @@ function toBars(data) {
         <SparklesIcon class="w-5 h-5 flex-shrink-0 mt-0.5" :style="{ color: L.accents.lavender.bold }" />
         <div>
           <p class="text-sm font-semibold mb-1" :style="{ color: L.accents.lavender.bold }">
-            LOCKED — Variant C (all layers · chart and filter are opt-in props)
+            LOCKED — single component with opt-in layers
           </p>
           <p class="text-sm leading-relaxed mb-2" :style="{ color: L.inkPrimary }">
-            <strong>"Numbers are heroes" brief, fully realised.</strong> The hero number dominates every tile at every breakpoint via container queries (<code class="text-xs font-mono bg-white/60 px-1 rounded">font-size: clamp(2rem, 30cqw, 6.5rem)</code>) — sized to its own card, not the viewport. Hero stays hero even in a 4-up desktop row or a phone column.
+            <strong>"Numbers are heroes" brief, fully realised.</strong> The hero number dominates every tile at every breakpoint via container queries (<code class="text-xs font-mono bg-white/60 px-1 rounded">font-size: clamp(2rem, 30cqw, 6.5rem)</code>) — sized to its own card, not the viewport. Hero stays hero in a 4-up desktop row or a phone column.
           </p>
           <p class="text-sm leading-relaxed" :style="{ color: L.inkPrimary }">
-            <strong>Layers are opt-in props — same component does all three jobs.</strong>
-            Pass no chart + no filter → you get Variant A (pure hero) for dashboard tiles.
-            Pass chart, no filter → Variant B for leaderboard rows and side-by-side grids.
-            Pass both → Variant C for full analytics widgets. The time-range filter uses compact <code class="text-xs font-mono bg-white/60 px-1 rounded">D / W / M / Y</code> labels so it fits cleanly inside the card's top-right corner at every width.
+            <strong>One component covers three jobs via opt-in props.</strong>
+            Pass no chart + no filter → compact dashboard tile.
+            Pass chart, skip filter → leaderboard row / comparison grid.
+            Pass both → full analytics widget. See the "Configs" section above for all three rendered side-by-side. Time-range filter uses compact <code class="text-xs font-mono bg-white/60 px-1 rounded">D / W / M / Y</code> labels so it fits cleanly in the card's top-right at every width.
           </p>
         </div>
       </div>
@@ -1025,53 +736,53 @@ function toBars(data) {
       >
         <div class="px-6 py-4">
           <h2 class="text-base font-semibold" :style="{ color: L.inkPrimary }">Usage guide</h2>
-          <p class="text-sm mt-1" :style="{ color: L.inkSecondary }">Map context to variant. Always choose the leanest variant that serves the information need.</p>
+          <p class="text-sm mt-1" :style="{ color: L.inkSecondary }">Map context to prop configuration. Always choose the leanest set of props that serves the information need.</p>
         </div>
 
-        <!-- Variant A row -->
-        <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-3">
+        <!-- Config 1: Minimal -->
+        <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-3">
           <div>
             <span
-              class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold"
+              class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold font-mono"
               :style="{ background: L.inkPrimary, color: L.inkInverse }"
-            >A — Pure hero</span>
+            >no chart, no filter</span>
           </div>
           <div class="space-y-1">
             <p class="text-sm font-medium" :style="{ color: L.inkPrimary }">Dashboard hero widget, above-the-fold spotlights</p>
             <p class="text-sm" :style="{ color: L.inkSecondary }">
-              Use when the number alone tells the story and historical trend is not needed — e.g. today's points balance, current streak count, or the currency tile in a rewards summary. The currency variant (integer + decimals at 60% scale) lives here only.
+              Use when the number alone tells the story and historical trend is not needed — e.g. today's points balance, current streak count, or the currency tile in a rewards summary. The currency variant (integer + decimals at 60% scale) lives here.
             </p>
           </div>
         </div>
 
-        <!-- Variant B row -->
-        <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-3">
+        <!-- Config 2: Chart only -->
+        <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-3">
           <div>
             <span
-              class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold"
+              class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold font-mono"
               :style="{ background: L.inkPrimary, color: L.inkInverse }"
-            >B — Hero + chart</span>
+            >chart, no filter</span>
           </div>
           <div class="space-y-1">
             <p class="text-sm font-medium" :style="{ color: L.inkPrimary }">Leaderboard rows, side-by-side comparison grids</p>
             <p class="text-sm" :style="{ color: L.inkSecondary }">
-              Add when trend reinforces the number — e.g. a leaderboard row showing a member's points alongside their weekly trajectory, or a 3-up completion grid on the tasks summary page. The micro chart is decorative-informational: no axes, no interaction, just direction.
+              Add the chart when trend reinforces the number — e.g. a leaderboard row showing a member's points alongside their weekly trajectory, or a 3-up completion grid on the tasks summary page. The micro chart is decorative-informational: no axes, no interaction, just direction.
             </p>
           </div>
         </div>
 
-        <!-- Variant C row -->
-        <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-3">
+        <!-- Config 3: Full -->
+        <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-3">
           <div>
             <span
-              class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold"
+              class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold font-mono"
               :style="{ background: L.inkPrimary, color: L.inkInverse }"
-            >C — Full widget</span>
+            >chart + filter</span>
           </div>
           <div class="space-y-1">
             <p class="text-sm font-medium" :style="{ color: L.inkPrimary }">Points analytics page, family stats dashboard, admin widgets</p>
             <p class="text-sm" :style="{ color: L.inkSecondary }">
-              Use on dedicated data pages where the user explicitly wants to explore over time — points earned this month vs this year, task completion rate by period, streak history. The range filter must be wired to real data in production; the micro chart should re-render to match the selected period. This is the form that powers the gamification analytics section.
+              Use on dedicated data pages where the user explicitly wants to explore over time — points earned this month vs this year, task completion rate by period, streak history. The filter must be wired to real data in production; the micro chart re-renders to match the selected period.
             </p>
           </div>
         </div>
