@@ -77,11 +77,11 @@ export const REGISTRY = [
   { slug: 'achievement-tile', tier: 'feature', title: '5.8 AchievementTile', description: 'Locked / in-progress / earned states.', pagePath: './pages/feature/AchievementTilePage.vue', scaffolded: true, chosen: false },
   { slug: 'activity-row', tier: 'feature', title: '5.9 ActivityRow', description: 'Feed row for points, tasks, history.', pagePath: './pages/feature/ActivityRowPage.vue', scaffolded: true, chosen: false },
   { slug: 'ai-activity-card', tier: 'feature', title: '5.10 AIActivityCard', description: 'Expandable AI run card with tool steps and preview.', pagePath: './pages/feature/AIActivityCardPage.vue', scaffolded: true, chosen: false },
-  { slug: 'step-card', tier: 'feature', title: '5.11 StepCard', description: 'Numbered collapsible step — recipes, onboarding, playbooks.', pagePath: './pages/feature/StepCardPage.vue', scaffolded: false, chosen: false },
-  { slug: 'receipt-card', tier: 'feature', title: '5.12 ReceiptCard', description: 'Icon-checklist card with inline actions.', pagePath: './pages/feature/ReceiptCardPage.vue', scaffolded: false, chosen: false },
-  { slug: 'meta-triplet', tier: 'feature', title: '5.13 MetaTriplet', description: 'Icon + value × 3 row.', pagePath: './pages/feature/MetaTripletPage.vue', scaffolded: false, chosen: false },
-  { slug: 'author-strip', tier: 'feature', title: '5.14 AuthorStrip', description: 'Avatar + name + role + action.', pagePath: './pages/feature/AuthorStripPage.vue', scaffolded: false, chosen: false },
-  { slug: 'hero-photo-sheet', tier: 'feature', title: '5.15 HeroPhotoSheet', description: 'Edge-to-edge photo + sliding content sheet.', pagePath: './pages/feature/HeroPhotoSheetPage.vue', scaffolded: false, chosen: false },
+  { slug: 'step-card', tier: 'feature', title: '5.11 StepCard', description: 'Numbered collapsible step — recipes, onboarding, playbooks.', pagePath: './pages/feature/StepCardPage.vue', scaffolded: true, chosen: false },
+  { slug: 'receipt-card', tier: 'feature', title: '5.12 ReceiptCard', description: 'Icon-checklist card with inline actions.', pagePath: './pages/feature/ReceiptCardPage.vue', scaffolded: true, chosen: false },
+  { slug: 'meta-triplet', tier: 'feature', title: '5.13 MetaTriplet', description: 'Icon + value × 3 row.', pagePath: './pages/feature/MetaTripletPage.vue', scaffolded: true, chosen: false },
+  { slug: 'author-strip', tier: 'feature', title: '5.14 AuthorStrip', description: 'Avatar + name + role + action.', pagePath: './pages/feature/AuthorStripPage.vue', scaffolded: true, chosen: false },
+  { slug: 'hero-photo-sheet', tier: 'feature', title: '5.15 HeroPhotoSheet', description: 'Edge-to-edge photo + sliding content sheet.', pagePath: './pages/feature/HeroPhotoSheetPage.vue', scaffolded: true, chosen: false },
 ]
 
 export function findBySlug(slug) {
