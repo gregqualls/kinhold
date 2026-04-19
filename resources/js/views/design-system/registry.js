@@ -68,7 +68,7 @@ export const REGISTRY = [
 
   // Tier 5 — Feature-specific
   { slug: 'stat-tile', tier: 'feature', title: '5.1 StatTile', description: 'Hero number (container-query scaled) + label + delta chip. Optional chart and optional time-range filter (D/W/M/Y) are opt-in props — same component covers dashboard, leaderboard, and analytics widgets.', pagePath: './pages/feature/StatTilePage.vue', scaffolded: true, chosen: true },
-  { slug: 'hero-metric-card', tier: 'feature', title: '5.2 HeroMetricCard', description: 'Featured metric card — gradient / iridescent / photo.', pagePath: './pages/feature/HeroMetricCardPage.vue', scaffolded: true, chosen: false },
+  { slug: 'hero-metric-card', tier: 'feature', title: '5.2 HeroMetricCard', description: 'All three variants ship, chosen by context — iridescent (calm summary), warm (urgency/streak), photo (with two-layer scrim for guaranteed legibility). Unified content-left / CTA-right desktop layout.', pagePath: './pages/feature/HeroMetricCardPage.vue', scaffolded: true, chosen: true },
   { slug: 'event-tile', tier: 'feature', title: '5.3 EventTile', description: 'Calendar event card — light and dark variants.', pagePath: './pages/feature/EventTilePage.vue', scaffolded: true, chosen: false },
   { slug: 'week-strip', tier: 'feature', title: '5.4 WeekStrip', description: 'Horizontal day selector.', pagePath: './pages/feature/WeekStripPage.vue', scaffolded: true, chosen: false },
   { slug: 'month-grid', tier: 'feature', title: '5.5 MonthGrid', description: 'Month calendar with colored event dots.', pagePath: './pages/feature/MonthGridPage.vue', scaffolded: true, chosen: false },

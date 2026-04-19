@@ -79,7 +79,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
   <ComponentPage
     title="5.2 HeroMetricCard"
     description="The flagship card at the top of module landing pages and the dashboard. Combines a StatTile (huge number) with a visual treatment — iridescent gradient, warm gradient, or edge-to-edge photo. Used for: dashboard greeting, module heroes, streak moments, meal plan photo covers."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════
@@ -393,7 +393,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
               </div>
             </div>
 
-            <!-- B2 — Urgency / countdown desktop -->
+            <!-- B2 — Urgency / countdown desktop (horizontal: content-left + CTA-right, matches A/C desktop rhythm) -->
             <div>
               <p class="text-[11px] mb-4 font-medium" :style="{ color: L.inkTertiary }">Urgent countdown · "Reward expires" — desktop width</p>
               <div style="max-width: 640px;">
@@ -406,18 +406,22 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                   "
                   :style="{ boxShadow: SHADOW_HERO_LT }"
                 >
+                  <!-- Glyph watermark: FireIcon, top-left like A -->
                   <svg
                     class="absolute pointer-events-none"
-                    style="width: 160px; height: 160px; left: 50%; top: -16px; transform: translateX(-50%); opacity: 0.09; color: #BA562E;"
+                    style="width: 160px; height: 160px; left: 28px; top: 28px; opacity: 0.10; color: #BA562E;"
                     fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"
                   >
                     <path d="M12.894 2.553a1 1 0 0 0-1.788 0C9.338 5.116 6.75 8.441 6.75 12a5.25 5.25 0 0 0 10.5 0c0-3.559-2.588-6.884-4.356-9.447ZM10.5 13.5a.75.75 0 0 1 1.5 0 1.5 1.5 0 0 0 3 0 .75.75 0 0 1 1.5 0 3 3 0 0 1-6 0Z" />
                   </svg>
 
-                  <div class="absolute inset-0 flex flex-col items-center justify-center px-8 py-8 gap-4 text-center">
-                    <FireIcon class="w-9 h-9 flex-shrink-0" :style="{ color: L.accents.peach.bold }" />
-                    <div class="space-y-1.5">
-                      <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.accents.peach.bold }">Reward expires in</p>
+                  <!-- Content anchored bottom: content-left + CTA-right, matches A's desktop layout -->
+                  <div class="absolute inset-x-0 bottom-0 p-8 flex items-end justify-between gap-6">
+                    <div class="space-y-1.5 min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <FireIcon class="w-4 h-4 flex-shrink-0" :style="{ color: L.accents.peach.bold }" />
+                        <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.accents.peach.bold }">Reward expires in</p>
+                      </div>
                       <p
                         class="font-semibold leading-none tracking-tight"
                         style="font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -0.03em;"
@@ -426,7 +430,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                       <p class="text-[14px] font-medium" :style="{ color: L.inkPrimary }">Movie night · 350 pts to redeem</p>
                     </div>
                     <button
-                      class="hmc-cta-btn-lt flex items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-semibold"
+                      class="hmc-cta-btn-lt flex-shrink-0 flex items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-semibold"
                       :style="{ background: L.accents.peach.bold, color: '#FFFFFF', boxShadow: '0 2px 8px rgba(186,86,46,0.35)' }"
                     >
                       Redeem now
@@ -480,7 +484,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
               </div>
             </div>
 
-            <!-- B2 dark — Urgency desktop -->
+            <!-- B2 dark — Urgency desktop (horizontal: content-left + CTA-right, matches A/C desktop rhythm) -->
             <div>
               <p class="text-[11px] mb-4 font-medium" :style="{ color: D.inkTertiary }">Urgent countdown · "Reward expires" — desktop width</p>
               <div style="max-width: 640px;">
@@ -493,18 +497,22 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                   "
                   :style="{ boxShadow: SHADOW_HERO_DK }"
                 >
+                  <!-- Glyph watermark: FireIcon, top-left like A -->
                   <svg
                     class="absolute pointer-events-none"
-                    style="width: 160px; height: 160px; left: 50%; top: -16px; transform: translateX(-50%); opacity: 0.12; color: #F0A882;"
+                    style="width: 160px; height: 160px; left: 28px; top: 28px; opacity: 0.12; color: #F0A882;"
                     fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"
                   >
                     <path d="M12.894 2.553a1 1 0 0 0-1.788 0C9.338 5.116 6.75 8.441 6.75 12a5.25 5.25 0 0 0 10.5 0c0-3.559-2.588-6.884-4.356-9.447ZM10.5 13.5a.75.75 0 0 1 1.5 0 1.5 1.5 0 0 0 3 0 .75.75 0 0 1 1.5 0 3 3 0 0 1-6 0Z" />
                   </svg>
 
-                  <div class="absolute inset-0 flex flex-col items-center justify-center px-8 py-8 gap-4 text-center">
-                    <FireIcon class="w-9 h-9 flex-shrink-0" :style="{ color: D.accents.peach.bold }" />
-                    <div class="space-y-1.5">
-                      <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.accents.peach.bold }">Reward expires in</p>
+                  <!-- Content anchored bottom: content-left + CTA-right, matches A's desktop layout -->
+                  <div class="absolute inset-x-0 bottom-0 p-8 flex items-end justify-between gap-6">
+                    <div class="space-y-1.5 min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <FireIcon class="w-4 h-4 flex-shrink-0" :style="{ color: D.accents.peach.bold }" />
+                        <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.accents.peach.bold }">Reward expires in</p>
+                      </div>
                       <p
                         class="font-semibold leading-none tracking-tight"
                         style="font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -0.03em;"
@@ -513,7 +521,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                       <p class="text-[14px] font-medium" :style="{ color: D.inkPrimary }">Movie night · 350 pts to redeem</p>
                     </div>
                     <button
-                      class="hmc-cta-btn-dk flex items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-semibold"
+                      class="hmc-cta-btn-dk flex-shrink-0 flex items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-semibold"
                       :style="{ background: D.accents.peach.bold, color: '#1C1C1E', boxShadow: '0 2px 8px rgba(240,168,130,0.30)' }"
                     >
                       Redeem now
@@ -576,7 +584,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                       <p class="text-[11px] font-semibold uppercase tracking-widest" style="color: rgba(255,255,255,0.70)">Tonight's dinner</p>
                       <p
                         class="font-semibold leading-tight"
-                        style="font-size: clamp(1.5rem, 5vw, 2.5rem); letter-spacing: -0.02em; color: #FFFFFF; text-shadow: 0 1px 4px rgba(0,0,0,0.50);"
+                        style="font-size: clamp(1.5rem, 5vw, 2.5rem); letter-spacing: -0.02em; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.80), 0 2px 8px rgba(0,0,0,0.55);"
                       >Roast chicken with rosemary potatoes</p>
                       <p class="text-[12px]" style="color: rgba(255,255,255,0.80)">Serves 5 · 45 min</p>
                     </div>
@@ -619,9 +627,9 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                       <!-- Hero number (days away) -->
                       <p
                         class="font-semibold leading-none tracking-tight"
-                        style="font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -0.03em; color: #FFFFFF; text-shadow: 0 2px 8px rgba(0,0,0,0.60);"
+                        style="font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -0.03em; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 2px 12px rgba(0,0,0,0.60);"
                       >3</p>
-                      <p class="text-[14px] font-medium" style="color: #FFFFFF; text-shadow: 0 1px 4px rgba(0,0,0,0.50)">days until Family Game Night</p>
+                      <p class="text-[14px] font-medium" style="color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.80), 0 2px 8px rgba(0,0,0,0.55)">days until Family Game Night</p>
                       <div class="flex items-center gap-2 flex-wrap">
                         <span class="inline-flex items-center gap-0.5 rounded-full px-2.5 py-1 text-[11px] font-semibold" style="background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); color: #FFFFFF; border: 1px solid rgba(255,255,255,0.25);">
                           Sat, Apr 20
@@ -669,7 +677,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                       <p class="text-[11px] font-semibold uppercase tracking-widest" style="color: rgba(255,255,255,0.70)">Tonight's dinner</p>
                       <p
                         class="font-semibold leading-tight"
-                        style="font-size: clamp(1.5rem, 5vw, 2.5rem); letter-spacing: -0.02em; color: #FFFFFF; text-shadow: 0 1px 4px rgba(0,0,0,0.60);"
+                        style="font-size: clamp(1.5rem, 5vw, 2.5rem); letter-spacing: -0.02em; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.80), 0 2px 8px rgba(0,0,0,0.55);"
                       >Roast chicken with rosemary potatoes</p>
                       <p class="text-[12px]" style="color: rgba(255,255,255,0.80)">Serves 5 · 45 min</p>
                     </div>
@@ -711,9 +719,9 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                       <p class="text-[11px] font-semibold uppercase tracking-widest" style="color: rgba(255,255,255,0.70)">Calendar · Upcoming</p>
                       <p
                         class="font-semibold leading-none tracking-tight"
-                        style="font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -0.03em; color: #FFFFFF; text-shadow: 0 2px 8px rgba(0,0,0,0.70);"
+                        style="font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -0.03em; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 2px 12px rgba(0,0,0,0.60);"
                       >3</p>
-                      <p class="text-[14px] font-medium" style="color: #FFFFFF; text-shadow: 0 1px 4px rgba(0,0,0,0.60)">days until Family Game Night</p>
+                      <p class="text-[14px] font-medium" style="color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.80), 0 2px 8px rgba(0,0,0,0.55)">days until Family Game Night</p>
                       <div class="flex items-center gap-2 flex-wrap">
                         <span class="inline-flex items-center gap-0.5 rounded-full px-2.5 py-1 text-[11px] font-semibold" style="background: rgba(255,255,255,0.16); backdrop-filter: blur(8px); color: #FFFFFF; border: 1px solid rgba(255,255,255,0.22);">
                           Sat, Apr 20
@@ -748,12 +756,12 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
       >
         <SparklesIcon class="w-5 h-5 flex-shrink-0 mt-0.5" :style="{ color: L.accents.lavender.bold }" />
         <div class="space-y-2">
-          <h2 class="text-[15px] font-semibold" :style="{ color: L.accents.lavender.bold }">Claude's pick — Variant A</h2>
+          <h2 class="text-[15px] font-semibold" :style="{ color: L.accents.lavender.bold }">LOCKED — all three variants ship, chosen by context</h2>
           <p class="text-[14px] leading-relaxed" :style="{ color: L.inkPrimary }">
-            Variant A (Iridescent) is the right default for Kinhold because it extends the locked GradientCard (2.3) language directly onto the hero tier — the three-accent radial gradient is already the system's signature treatment for imageless premium surfaces, so this simply makes it bigger and louder. It works equally well in calm "always-on" contexts (dashboard greeting, module summary) and in empty / loading states where there is nothing dynamic to show yet.
+            Unlike most library components, HeroMetricCard ships <strong>all three treatments</strong>. Each serves a different emotional/content purpose, so choosing "one" would limit the component's reach. The variant is a prop — parents pass <code class="text-[12px] font-mono bg-white/60 px-1 rounded">variant="iridescent" | "warm" | "photo"</code> — and every treatment uses the same shape-language, same hero-number sizing, and same corner radius (<code class="text-[12px] font-mono bg-white/60 px-1 rounded">rounded-[28px]</code>). Desktop layouts are unified: content-left, CTA-right, glyph watermark top-left.
           </p>
           <p class="text-[14px] leading-relaxed" :style="{ color: L.inkSecondary }">
-            Variant B earns its place when urgency is the explicit message (streak momentum, countdown, expiring reward) — use it deliberately, not as the default, so it retains its emotional punch. Variant C is reserved for photo-led content (meal plans, events with uploaded photos); when no photo is available, fall back to Variant A, never leave a blank image container.
+            <strong>A — Iridescent</strong> is the default for calm always-on summaries (dashboard greeting, module heroes, empty / loading states). <strong>B — Warm</strong> is reserved for urgency and streak moments (countdowns, expiring rewards, "keep the streak going"); use deliberately so the emotional contrast stays intact. <strong>C — Photo</strong> is for photo-led content (meal plan covers, events with uploaded photos); the two-layer scrim guarantees text legibility no matter what image is behind it. Photo fallback rule: if no image is available, use A — never leave a blank image container.
           </p>
         </div>
       </div>
@@ -844,15 +852,25 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
 
 /* ═══════════════════════════════════════════════════════════════════
    SCRIM — shared between C light and dark
-   Transparent top → opaque black bottom
+   Two-layer system so text stays legible regardless of the photo:
+   (1) subtle full-card darken mutes bright / busy imagery
+   (2) stronger bottom-weighted gradient anchors the text area
+   The whole scrim reaches up to ~90% of card height so the photo
+   still "breathes" at the very top while text below always reads.
    ═══════════════════════════════════════════════════════════════════ */
 .hmc-scrim {
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.75) 0%,
-    rgba(0,0,0,0.25) 40%,
-    transparent 70%
-  );
+  background:
+    /* full-card subtle darken */
+    linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)),
+    /* bottom-weighted main scrim */
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.90) 0%,
+      rgba(0, 0, 0, 0.72) 25%,
+      rgba(0, 0, 0, 0.45) 50%,
+      rgba(0, 0, 0, 0.18) 75%,
+      transparent 95%
+    );
   pointer-events: none;
 }
 
