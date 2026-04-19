@@ -41,13 +41,15 @@ const SHADOW_RESTING_LT = '0 1px 2px rgba(28,20,10,0.04), 0 2px 6px rgba(28,20,1
 const SHADOW_RESTING_DK = '0 1px 2px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.25)'
 
 // ── Variant C — time range filter state ───────────────────────────────────────
-const RANGES = ['Day', 'Week', 'Month', 'Year']
-const rangePointsL  = ref('Week')
-const rangePointsD  = ref('Week')
-const rangeTasksL   = ref('Month')
-const rangeTasksD   = ref('Month')
-const rangeStreakL  = ref('Week')
-const rangeStreakD  = ref('Week')
+// Compact D/W/M/Y labels keep the filter inside the card's top-right corner
+// at every breakpoint. Tooltips on hover would expose full names in production.
+const RANGES = ['D', 'W', 'M', 'Y']
+const rangePointsL  = ref('W')
+const rangePointsD  = ref('W')
+const rangeTasksL   = ref('M')
+const rangeTasksD   = ref('M')
+const rangeStreakL  = ref('W')
+const rangeStreakD  = ref('W')
 
 // ── Micro chart data sets ─────────────────────────────────────────────────────
 // 7 data points, normalised 0–1; rendered as SVG polyline / bars
@@ -81,7 +83,7 @@ function toBars(data) {
   <ComponentPage
     title="5.1 StatTile"
     description="The hero-number component. Every data-heavy surface in Kinhold — points bank, task completion, streak, meal progress, leaderboard — uses StatTile as its centrepiece. Numbers are heroes; everything else is supporting cast."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ═══════════════════════════════════════════════════════════════
@@ -123,7 +125,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.sun.bold }"
                 >1,248</p>
               </div>
@@ -152,7 +154,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.mint.bold }"
                 >84%</p>
               </div>
@@ -181,7 +183,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.peach.bold }"
                 >12</p>
               </div>
@@ -211,7 +213,7 @@ function toBars(data) {
                 <!-- Currency: integer full-size, decimal ~60% scale -->
                 <p
                   class="leading-none font-semibold tracking-tighter flex items-baseline"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.lavender.bold }"
                 >
                   $2,400
@@ -255,7 +257,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.sun.bold }"
                 >1,248</p>
               </div>
@@ -281,7 +283,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.mint.bold }"
                 >84%</p>
               </div>
@@ -307,7 +309,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.peach.bold }"
                 >12</p>
               </div>
@@ -333,7 +335,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter flex items-baseline"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.lavender.bold }"
                 >
                   $2,400
@@ -380,7 +382,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.sun.bold }"
                 >1,248</p>
                 <!-- Sparkline -->
@@ -427,7 +429,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.mint.bold }"
                 >84%</p>
                 <!-- Bar chart -->
@@ -466,7 +468,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.peach.bold }"
                 >12</p>
                 <!-- Bar chart - climbing streak -->
@@ -513,7 +515,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.sun.bold }"
                 >1,248</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" fill="none" aria-hidden="true">
@@ -556,7 +558,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.mint.bold }"
                 >84%</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -594,7 +596,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.peach.bold }"
                 >12</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -669,7 +671,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.sun.bold }"
                 >1,248</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" fill="none" aria-hidden="true">
@@ -728,7 +730,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.mint.bold }"
                 >84%</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -782,7 +784,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.peach.bold }"
                 >12</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -844,7 +846,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.sun.bold }"
                 >1,248</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" fill="none" aria-hidden="true">
@@ -903,7 +905,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.mint.bold }"
                 >84%</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -957,7 +959,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.peach.bold }"
                 >12</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -998,10 +1000,16 @@ function toBars(data) {
         <SparklesIcon class="w-5 h-5 flex-shrink-0 mt-0.5" :style="{ color: L.accents.lavender.bold }" />
         <div>
           <p class="text-sm font-semibold mb-1" :style="{ color: L.accents.lavender.bold }">
-            Claude's pick — Variant C
+            LOCKED — Variant C (all layers · chart and filter are opt-in props)
+          </p>
+          <p class="text-sm leading-relaxed mb-2" :style="{ color: L.inkPrimary }">
+            <strong>"Numbers are heroes" brief, fully realised.</strong> The hero number dominates every tile at every breakpoint via container queries (<code class="text-xs font-mono bg-white/60 px-1 rounded">font-size: clamp(2rem, 30cqw, 6.5rem)</code>) — sized to its own card, not the viewport. Hero stays hero even in a 4-up desktop row or a phone column.
           </p>
           <p class="text-sm leading-relaxed" :style="{ color: L.inkPrimary }">
-            Variant C is the "numbers are heroes" brief fully realised: the hero number dominates the tile at every breakpoint thanks to the <code class="text-xs font-mono bg-white/60 px-1 rounded">clamp</code> scale, the micro chart gives instant visual momentum without competing for attention, and the time-range filter makes the same tile serve dashboard, analytics page, and leaderboard row — one component, three progressive layers, zero duplicated markup. Variants A and B are true subsets (drop the filter, drop the chart), so teams can adopt incrementally without forking the pattern.
+            <strong>Layers are opt-in props — same component does all three jobs.</strong>
+            Pass no chart + no filter → you get Variant A (pure hero) for dashboard tiles.
+            Pass chart, no filter → Variant B for leaderboard rows and side-by-side grids.
+            Pass both → Variant C for full analytics widgets. The time-range filter uses compact <code class="text-xs font-mono bg-white/60 px-1 rounded">D / W / M / Y</code> labels so it fits cleanly inside the card's top-right corner at every width.
           </p>
         </div>
       </div>

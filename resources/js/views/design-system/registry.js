@@ -67,7 +67,7 @@ export const REGISTRY = [
   { slug: 'form-group', tier: 'compounds', title: '4.10 FormGroup', description: 'Top label + input + helper below. Single canonical pattern across every form in the app.', pagePath: './pages/compounds/FormGroupPage.vue', scaffolded: true, chosen: true },
 
   // Tier 5 — Feature-specific
-  { slug: 'stat-tile', tier: 'feature', title: '5.1 StatTile', description: 'Hero-number widget with delta and micro chart.', pagePath: './pages/feature/StatTilePage.vue', scaffolded: true, chosen: false },
+  { slug: 'stat-tile', tier: 'feature', title: '5.1 StatTile', description: 'Hero number (container-query scaled) + label + delta chip. Optional chart and optional time-range filter (D/W/M/Y) are opt-in props — same component covers dashboard, leaderboard, and analytics widgets.', pagePath: './pages/feature/StatTilePage.vue', scaffolded: true, chosen: true },
   { slug: 'hero-metric-card', tier: 'feature', title: '5.2 HeroMetricCard', description: 'Featured metric card — gradient / iridescent / photo.', pagePath: './pages/feature/HeroMetricCardPage.vue', scaffolded: true, chosen: false },
   { slug: 'event-tile', tier: 'feature', title: '5.3 EventTile', description: 'Calendar event card — light and dark variants.', pagePath: './pages/feature/EventTilePage.vue', scaffolded: true, chosen: false },
   { slug: 'week-strip', tier: 'feature', title: '5.4 WeekStrip', description: 'Horizontal day selector.', pagePath: './pages/feature/WeekStripPage.vue', scaffolded: true, chosen: false },
