@@ -476,107 +476,113 @@ function toBars(data) {
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
               <!-- CONFIG 1: Minimal — no chart, no filter -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SHADOW_RESTING_LT }"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Points Earned</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
-                    :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +86
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.sun.bold }"
-                >1,248</p>
-                <p class="text-[11px] pt-2" :style="{ color: L.inkTertiary }">Dashboard tile — number only</p>
-              </div>
-
-              <!-- CONFIG 2: With chart, no filter -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SHADOW_RESTING_LT }"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Points Earned</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
-                    :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +86
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.sun.bold }"
-                >1,248</p>
-                <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
-                  <polyline
-                    :points="toPolyline(chartPoints)"
-                    fill="none"
-                    :stroke="L.accents.sun.bold"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="L.accents.sun.bold" />
-                </svg>
-                <p class="text-[11px]" :style="{ color: L.inkTertiary }">Leaderboard row — with chart</p>
-              </div>
-
-              <!-- CONFIG 3: Full (chart + filter) -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SHADOW_RESTING_LT }"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <div>
+              <div class="flex flex-col gap-3">
+                <div
+                  class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                  :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SHADOW_RESTING_LT }"
+                >
+                  <div class="flex items-start justify-between gap-2">
                     <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Points Earned</p>
                     <span
-                      class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium mt-1"
+                      class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
                       :style="{ background: L.status.success.soft, color: L.status.success.bold }"
                     >
                       <ArrowUpRightIcon class="w-3 h-3" />
                       +86
                     </span>
                   </div>
-                  <div class="inline-flex rounded-full p-0.5 flex-shrink-0" :style="{ border: `1px solid ${L.borderStrong}`, background: L.surfaceRaised }">
-                    <button
-                      v-for="r in RANGES"
-                      :key="r"
-                      class="text-[10px] font-semibold w-6 h-5 rounded-full transition-all"
-                      :style="rangePointsL === r
-                        ? { background: L.inkPrimary, color: L.inkInverse }
-                        : { background: 'transparent', color: L.inkSecondary }"
-                      @click="rangePointsL = r"
-                    >{{ r }}</button>
-                  </div>
+                  <p
+                    class="leading-none font-semibold tracking-tighter"
+                    style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                    :style="{ color: L.accents.sun.bold }"
+                  >1,248</p>
                 </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: L.accents.sun.bold }"
-                >1,248</p>
-                <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
-                  <polyline
-                    :points="toPolyline(chartPoints)"
-                    fill="none"
-                    :stroke="L.accents.sun.bold"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="L.accents.sun.bold" />
-                </svg>
-                <p class="text-[11px]" :style="{ color: L.inkTertiary }">Full widget — chart + filter</p>
+                <p class="text-[11px] text-center" :style="{ color: L.inkTertiary }">Dashboard tile — number only</p>
+              </div>
+
+              <!-- CONFIG 2: With chart, no filter -->
+              <div class="flex flex-col gap-3">
+                <div
+                  class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                  :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SHADOW_RESTING_LT }"
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Points Earned</p>
+                    <span
+                      class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
+                      :style="{ background: L.status.success.soft, color: L.status.success.bold }"
+                    >
+                      <ArrowUpRightIcon class="w-3 h-3" />
+                      +86
+                    </span>
+                  </div>
+                  <p
+                    class="leading-none font-semibold tracking-tighter"
+                    style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                    :style="{ color: L.accents.sun.bold }"
+                  >1,248</p>
+                  <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
+                    <polyline
+                      :points="toPolyline(chartPoints)"
+                      fill="none"
+                      :stroke="L.accents.sun.bold"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="L.accents.sun.bold" />
+                  </svg>
+                </div>
+                <p class="text-[11px] text-center" :style="{ color: L.inkTertiary }">Leaderboard row — with chart</p>
+              </div>
+
+              <!-- CONFIG 3: Full (chart + filter) -->
+              <div class="flex flex-col gap-3">
+                <div
+                  class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                  :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SHADOW_RESTING_LT }"
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Points Earned</p>
+                      <span
+                        class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium mt-1"
+                        :style="{ background: L.status.success.soft, color: L.status.success.bold }"
+                      >
+                        <ArrowUpRightIcon class="w-3 h-3" />
+                        +86
+                      </span>
+                    </div>
+                    <div class="inline-flex rounded-full p-0.5 flex-shrink-0" :style="{ border: `1px solid ${L.borderStrong}`, background: L.surfaceRaised }">
+                      <button
+                        v-for="r in RANGES"
+                        :key="r"
+                        class="text-[10px] font-semibold w-6 h-5 rounded-full transition-all"
+                        :style="rangePointsL === r
+                          ? { background: L.inkPrimary, color: L.inkInverse }
+                          : { background: 'transparent', color: L.inkSecondary }"
+                        @click="rangePointsL = r"
+                      >{{ r }}</button>
+                    </div>
+                  </div>
+                  <p
+                    class="leading-none font-semibold tracking-tighter"
+                    style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                    :style="{ color: L.accents.sun.bold }"
+                  >1,248</p>
+                  <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
+                    <polyline
+                      :points="toPolyline(chartPoints)"
+                      fill="none"
+                      :stroke="L.accents.sun.bold"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="L.accents.sun.bold" />
+                  </svg>
+                </div>
+                <p class="text-[11px] text-center" :style="{ color: L.inkTertiary }">Full widget — chart + filter</p>
               </div>
             </div>
           </div>
@@ -588,107 +594,113 @@ function toBars(data) {
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
               <!-- CONFIG 1: Minimal -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SHADOW_RESTING_DK }"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
-                    :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +86
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.sun.bold }"
-                >1,248</p>
-                <p class="text-[11px] pt-2" :style="{ color: D.inkTertiary }">Dashboard tile — number only</p>
-              </div>
-
-              <!-- CONFIG 2: With chart -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SHADOW_RESTING_DK }"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
-                  <span
-                    class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
-                    :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                  >
-                    <ArrowUpRightIcon class="w-3 h-3" />
-                    +86
-                  </span>
-                </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.sun.bold }"
-                >1,248</p>
-                <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
-                  <polyline
-                    :points="toPolyline(chartPoints)"
-                    fill="none"
-                    :stroke="D.accents.sun.bold"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="D.accents.sun.bold" />
-                </svg>
-                <p class="text-[11px]" :style="{ color: D.inkTertiary }">Leaderboard row — with chart</p>
-              </div>
-
-              <!-- CONFIG 3: Full -->
-              <div
-                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SHADOW_RESTING_DK }"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <div>
+              <div class="flex flex-col gap-3">
+                <div
+                  class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                  :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SHADOW_RESTING_DK }"
+                >
+                  <div class="flex items-start justify-between gap-2">
                     <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
                     <span
-                      class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium mt-1"
+                      class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
                       :style="{ background: D.status.success.soft, color: D.status.success.bold }"
                     >
                       <ArrowUpRightIcon class="w-3 h-3" />
                       +86
                     </span>
                   </div>
-                  <div class="inline-flex rounded-full p-0.5 flex-shrink-0" :style="{ border: `1px solid ${D.borderStrong}`, background: D.surfaceRaised }">
-                    <button
-                      v-for="r in RANGES"
-                      :key="r"
-                      class="text-[10px] font-semibold w-6 h-5 rounded-full transition-all"
-                      :style="rangePointsD === r
-                        ? { background: D.inkPrimary, color: D.inkInverse }
-                        : { background: 'transparent', color: D.inkSecondary }"
-                      @click="rangePointsD = r"
-                    >{{ r }}</button>
-                  </div>
+                  <p
+                    class="leading-none font-semibold tracking-tighter"
+                    style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                    :style="{ color: D.accents.sun.bold }"
+                  >1,248</p>
                 </div>
-                <p
-                  class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
-                  :style="{ color: D.accents.sun.bold }"
-                >1,248</p>
-                <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
-                  <polyline
-                    :points="toPolyline(chartPoints)"
-                    fill="none"
-                    :stroke="D.accents.sun.bold"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="D.accents.sun.bold" />
-                </svg>
-                <p class="text-[11px]" :style="{ color: D.inkTertiary }">Full widget — chart + filter</p>
+                <p class="text-[11px] text-center" :style="{ color: D.inkTertiary }">Dashboard tile — number only</p>
+              </div>
+
+              <!-- CONFIG 2: With chart -->
+              <div class="flex flex-col gap-3">
+                <div
+                  class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                  :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SHADOW_RESTING_DK }"
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
+                    <span
+                      class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium flex-shrink-0"
+                      :style="{ background: D.status.success.soft, color: D.status.success.bold }"
+                    >
+                      <ArrowUpRightIcon class="w-3 h-3" />
+                      +86
+                    </span>
+                  </div>
+                  <p
+                    class="leading-none font-semibold tracking-tighter"
+                    style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                    :style="{ color: D.accents.sun.bold }"
+                  >1,248</p>
+                  <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
+                    <polyline
+                      :points="toPolyline(chartPoints)"
+                      fill="none"
+                      :stroke="D.accents.sun.bold"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="D.accents.sun.bold" />
+                  </svg>
+                </div>
+                <p class="text-[11px] text-center" :style="{ color: D.inkTertiary }">Leaderboard row — with chart</p>
+              </div>
+
+              <!-- CONFIG 3: Full -->
+              <div class="flex flex-col gap-3">
+                <div
+                  class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                  :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SHADOW_RESTING_DK }"
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Points Earned</p>
+                      <span
+                        class="inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium mt-1"
+                        :style="{ background: D.status.success.soft, color: D.status.success.bold }"
+                      >
+                        <ArrowUpRightIcon class="w-3 h-3" />
+                        +86
+                      </span>
+                    </div>
+                    <div class="inline-flex rounded-full p-0.5 flex-shrink-0" :style="{ border: `1px solid ${D.borderStrong}`, background: D.surfaceRaised }">
+                      <button
+                        v-for="r in RANGES"
+                        :key="r"
+                        class="text-[10px] font-semibold w-6 h-5 rounded-full transition-all"
+                        :style="rangePointsD === r
+                          ? { background: D.inkPrimary, color: D.inkInverse }
+                          : { background: 'transparent', color: D.inkSecondary }"
+                        @click="rangePointsD = r"
+                      >{{ r }}</button>
+                    </div>
+                  </div>
+                  <p
+                    class="leading-none font-semibold tracking-tighter"
+                    style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
+                    :style="{ color: D.accents.sun.bold }"
+                  >1,248</p>
+                  <svg viewBox="0 0 140 40" preserveAspectRatio="none" class="w-full h-10 block">
+                    <polyline
+                      :points="toPolyline(chartPoints)"
+                      fill="none"
+                      :stroke="D.accents.sun.bold"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="D.accents.sun.bold" />
+                  </svg>
+                </div>
+                <p class="text-[11px] text-center" :style="{ color: D.inkTertiary }">Full widget — chart + filter</p>
               </div>
             </div>
           </div>
