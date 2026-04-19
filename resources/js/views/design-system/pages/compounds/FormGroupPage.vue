@@ -148,7 +148,7 @@ function helperStyle(p, state) {
   <ComponentPage
     title="4.10 FormGroup"
     description="Label + input + helper + error — the atomic form-field unit. Resolves label placement, error display, and validation timing for every form in the app."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════════════

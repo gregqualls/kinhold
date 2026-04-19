@@ -77,7 +77,7 @@ const activeMob_C = ref('overview')
   <ComponentPage
     title="4.1 TabPillGroup"
     description="Pill-row tabs for in-page sections. Three variants explore fill weight, underline minimalism, and tinted accent. Used in recipe detail, restaurant detail, vault entries, family profile, and food module top nav."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════

@@ -80,15 +80,16 @@ function activeIndex(options, activeKey) {
   <ComponentPage
     title="4.2 SegmentedFilter"
     description="Segmented pill control for mutually-exclusive filter selection — activity feeds, time-range pickers, leaderboard period selectors, and notification filters."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ═══════════════════════════════════════════════════════════════════
-         VARIANT A — Filled active · plain inactive · single outlined container
-         Static segments, no animation. One outlined pill wrapping all options.
+         VARIANT A — LOCKED: Filled active · plain inactive · single outlined container
+         Ease-out fill transition (220ms cubic-bezier(0.22, 1, 0.36, 1)) on the
+         active pill's background + text color. Respects prefers-reduced-motion.
          ════════════════════════════════════════════════════════════════════ -->
     <section class="mb-16">
-      <VariantFrame label="A" caption="Filled active · plain inactive · single outlined container (static, no motion)">
+      <VariantFrame label="A" caption="Filled active · plain inactive · single outlined container · ease-out fill transition (LOCKED)">
         <div class="w-full space-y-10">
 
           <!-- LIGHT PANEL A -->
@@ -890,16 +891,16 @@ function activeIndex(options, activeKey) {
         <h2 class="text-[17px] font-semibold" :style="{ color: L.inkPrimary }">When to use which</h2>
         <ul class="space-y-4 text-[14px]" :style="{ color: L.inkSecondary }">
           <li>
-            <strong :style="{ color: L.inkPrimary }">Variant A — Static fill:</strong>
-            Best when motion needs to be minimised by default (accessibility-first flows, modals, onboarding steps) or when building for reduced-motion-first from the start. The shared outer border communicates "one control" with zero animation. Good for notification preference panels.
+            <strong :style="{ color: L.inkPrimary }">Variant A — Filled active with ease-out fill (LOCKED):</strong>
+            The Kinhold standard. The active segment's background + text color transition over 220ms with a cubic-bezier ease-out (0.22, 1, 0.36, 1) so the fill settles rather than snaps. The shared outer border communicates "one control" while the fill transition conveys "selection changed." Use everywhere: activity feeds, time-range selectors, leaderboard periods, notification filters. Respects <code>prefers-reduced-motion</code> via CSS media query — the transition is suppressed entirely when the user has reduced-motion enabled.
           </li>
           <li>
-            <strong :style="{ color: L.inkPrimary }">Variant B — Sliding pill:</strong>
-            The default choice for most surfaces — activity feeds, leaderboard period selector, calendar time range. The sliding motion is purposeful (you're moving through options) and stays monochrome so it never clashes with surrounding accent colors. Scale from 4 down to 2 options cleanly.
+            <strong :style="{ color: L.inkPrimary }">Variant B — Sliding pill (reference):</strong>
+            iOS-style sliding background indicator. Demonstrated for comparison but not chosen — the separate slider element adds DOM complexity without clear benefit over the locked Variant A for Kinhold's use cases.
           </li>
           <li>
-            <strong :style="{ color: L.inkPrimary }">Variant C — Individual pills:</strong>
-            Reach for this when options carry meaningful category identity (e.g., notification types where each could have its own accent) or when the filter row sits in an area with lots of breathing room. Avoid for 4+ options at sm size in tight mobile layouts — the gap-based row can crowd at 320px.
+            <strong :style="{ color: L.inkPrimary }">Variant C — Individual pills (reference):</strong>
+            Gapped individual pills. Demonstrated for comparison but not chosen — the gapped row feels like "multiple independent chips" rather than "one segmented control."
           </li>
           <li>
             <strong :style="{ color: L.inkPrimary }">Count badges:</strong>
@@ -919,12 +920,24 @@ function activeIndex(options, activeKey) {
 <style scoped>
 /*
   ─────────────────────────────────────────────────────────────────
-  VARIANT A — segment hover transitions (no motion needed; static fill)
+  VARIANT A — LOCKED treatment
+  Ease-out fill transition: the active pill's background + text color
+  transition over 220ms with a cubic-bezier ease-out curve so the
+  fill settles in smoothly rather than snapping. Matches the rest of
+  Kinhold's "purposeful motion" language (fast, deliberate, settled).
   ─────────────────────────────────────────────────────────────────
 */
-.seg-a-lt { transition: background-color 150ms, color 150ms; }
+.seg-a-lt {
+  transition:
+    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
 .seg-a-lt:hover { filter: brightness(0.96); }
-.seg-a-dk { transition: background-color 150ms, color 150ms; }
+.seg-a-dk {
+  transition:
+    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
 .seg-a-dk:hover { filter: brightness(1.1); }
 
 /*

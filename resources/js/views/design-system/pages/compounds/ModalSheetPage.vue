@@ -53,7 +53,7 @@ const SHADOW_MODAL_DK = '0 20px 60px rgba(0,0,0,0.60), 0 4px 12px rgba(0,0,0,0.4
   <ComponentPage
     title="4.7 Modal · Sheet · Drawer"
     description="The canonical overlay container. Locks one direction per breakpoint to eliminate the existing multi-direction inconsistency across the app. Arguably the most consequential pattern decision in Tier 4."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════════════

@@ -73,7 +73,7 @@ const taskSuggestions = [
   <ComponentPage
     title="4.9 EmptyState"
     description="The placeholder shown when a list, board, feed, or vault category is empty. Must feel inviting — not a dead end — and offer a clear path forward. Used on: empty task list, empty vault category, empty rewards store, empty calendar day, empty chat history, empty meal plan."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════════════

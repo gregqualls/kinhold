@@ -72,7 +72,7 @@ const hoveredC_D = ref(null)
   <ComponentPage
     title="4.5 QuickActions"
     description="A grid of 4 (or 6) square icon + label tiles for the top of module landing pages — the fastest tap targets for the most common actions. Used on Dashboard, Tasks, Meal Plan, Points, and Vault landing views."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════

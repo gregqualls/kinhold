@@ -72,7 +72,7 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
   <ComponentPage
     title="4.4 ActionPair"
     description="The canonical two-button decision pattern — a secondary action next to a primary action. Solves the outline/filled, sizing, and gap questions for list rows and decision cards app-wide."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════════════
@@ -1055,13 +1055,16 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
            :style="{ background: L.accents.lavender.soft, borderColor: L.accents.lavender.bold }">
         <div class="flex items-center gap-2">
           <SparklesIcon class="w-5 h-5" :style="{ color: L.accents.lavender.bold }" />
-          <h2 class="text-[15px] font-semibold" :style="{ color: L.accents.lavender.bold }">Claude's pick — Variant A</h2>
+          <h2 class="text-[15px] font-semibold" :style="{ color: L.accents.lavender.bold }">LOCKED — Variant A primary, Variant B as prop alternative</h2>
         </div>
         <p class="text-[14px] leading-relaxed" :style="{ color: L.inkPrimary }">
-          Equal-width outline + filled gives every decision the same surface area, signalling that both choices matter while still guiding the eye rightward to the filled primary. In Kinhold's context — rewards, tasks, vault approvals — these are real decisions where accidentally dismissing is a UX failure, not a minor annoyance. The symmetric layout makes accidental taps less likely and is the safest single default for the component token to bake in.
+          <strong>Variant A (equal-width outline + filled) is the default.</strong> Every decision gets the same surface area, signalling both choices matter while still guiding the eye rightward to the filled primary. Used for the majority of contexts: rewards, tasks, vault approvals, invitations, confirmations.
         </p>
         <p class="text-[14px] leading-relaxed" :style="{ color: L.inkPrimary }">
-          Use Variant B (ghost) when the secondary is genuinely low-stakes (Skip, Later, Not now) and you want the interface to feel confident rather than balanced. Use Variant C any time the decision card takes over the full viewport width on mobile — invitation cards and notification panels especially.
+          <strong>Variant B (asymmetric ghost + filled) is available as a prop variant</strong> — likely <code>variant="confident"</code> or similar — for contexts where the secondary is genuinely low-stakes (Skip, Later, Not now, Maybe) and the interface should feel confident rather than balanced. Consumers pass the variant prop explicitly; the component defaults to A.
+        </p>
+        <p class="text-[14px] leading-relaxed" :style="{ color: L.inkPrimary }">
+          Variant C (responsive stacked-then-inline) is not part of the shipped component — it's a layout concern the parent container handles by adjusting width/stacking, not the ActionPair itself.
         </p>
       </div>
     </section>
@@ -1077,17 +1080,18 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
 
         <div class="space-y-4">
           <div>
-            <p class="text-[13px] font-semibold mb-1" :style="{ color: L.inkPrimary }">Variant A — Equal-width outline + filled</p>
+            <p class="text-[13px] font-semibold mb-1" :style="{ color: L.inkPrimary }">Variant A — Equal-width outline + filled (primary default)</p>
             <ul class="space-y-1 text-[13px] leading-relaxed list-disc list-inside" :style="{ color: L.inkSecondary }">
-              <li>Use when both outcomes have real weight: Decline / Accept, Keep / Delete, Ignore / Approve.</li>
+              <li>The default component shape. Use when both outcomes have real weight: Decline / Accept, Keep / Delete, Ignore / Approve.</li>
               <li>Default token for list rows on desktop where both buttons sit end-aligned inside a horizontal row.</li>
               <li>Keep button labels short (1 word preferred) so the 50/50 split stays tidy at small widths.</li>
             </ul>
           </div>
 
           <div>
-            <p class="text-[13px] font-semibold mb-1" :style="{ color: L.inkPrimary }">Variant B — Asymmetric ghost + filled</p>
+            <p class="text-[13px] font-semibold mb-1" :style="{ color: L.inkPrimary }">Variant B — Asymmetric ghost + filled (available via prop)</p>
             <ul class="space-y-1 text-[13px] leading-relaxed list-disc list-inside" :style="{ color: L.inkSecondary }">
+              <li>Passed explicitly as <code>variant="confident"</code> (or similar prop name — TBD during extraction).</li>
               <li>Use when the secondary is a soft escape: Skip, Later, Not now, Maybe.</li>
               <li>Good for kudos prompts, onboarding nudges, and lightweight confirmations where you want the user to feel propelled forward.</li>
               <li>Avoid for destructive pairs — the ghost label must never be the only safe-out in a high-stakes delete flow.</li>
@@ -1095,11 +1099,10 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
           </div>
 
           <div>
-            <p class="text-[13px] font-semibold mb-1" :style="{ color: L.inkPrimary }">Variant C — Responsive stacked-then-inline</p>
-            <ul class="space-y-1 text-[13px] leading-relaxed list-disc list-inside" :style="{ color: L.inkSecondary }">
-              <li>Use on cards that own their full-width slot on mobile: invitation cards, notification panels, vault share requests.</li>
-              <li>Filled button goes on top in stacked layout — it is the primary tap target on thumb-first mobile UI.</li>
-              <li>Switches to equal-width side-by-side above 480 px; do not use in an already-compact row context on desktop.</li>
+            <p class="text-[13px] font-semibold mb-1" :style="{ color: L.inkTertiary }">Variant C — Responsive stacked-then-inline (not shipped)</p>
+            <ul class="space-y-1 text-[13px] leading-relaxed list-disc list-inside" :style="{ color: L.inkTertiary }">
+              <li>Kept in the library as a reference for responsive stacking behaviour.</li>
+              <li>Not part of the ActionPair component itself — stacking is a parent-container concern (the card or row that wraps the ActionPair decides whether to stack on narrow viewports).</li>
             </ul>
           </div>
 

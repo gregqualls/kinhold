@@ -128,7 +128,7 @@ const stackOverflowCount = computed(() => Math.max(0, MEMBERS_OVERFLOW.length - 
   <ComponentPage
     title="4.6 AvatarPicker"
     description="Horizontal row of selectable avatars for family-member pickers — task assignment, kudos recipient, vault share, meal plan cook assignment. Three layout variants for different density and space constraints."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════

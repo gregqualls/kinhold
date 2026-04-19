@@ -114,7 +114,7 @@ const STACK_TOASTS = [
   <ComponentPage
     title="4.8 Toast"
     description="Non-blocking notifications for task completions, point awards, sync results, and errors. Three placement variants cover the full range from glanceable overlay to persistent in-flow confirmation."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════

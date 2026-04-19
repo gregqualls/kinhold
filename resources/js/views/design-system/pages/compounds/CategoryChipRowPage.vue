@@ -113,7 +113,7 @@ function overflowChipStyle(palette) {
   <ComponentPage
     title="4.3 CategoryChipRow"
     description="Horizontal row of icon + label chips for category selection. Three layout strategies for overflow behavior — the chip style itself is locked from Tier 1.3."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════
