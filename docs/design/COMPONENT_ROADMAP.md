@@ -325,9 +325,54 @@ Edge-to-edge photo + frosted circular back/action buttons + sliding content shee
 
 ---
 
-## Tier 6 — View-level integration (after library is complete)
+## Extraction phase (MUST happen before Tier 6)
 
-Once the library is built and Greg has approved every component, a smaller model does view-by-view refactors. One view per session.
+The design-system pages (`resources/js/views/design-system/pages/**/*.vue`) are **self-contained demos**, not shared source. Each page inlines its markup, hex constants (`const L = {...}, const D = {...}`), and sometimes CSS. Nothing in `resources/js/components/**` imports from them. Before view refactors can happen, every locked component must be **extracted** into a real reusable Vue component under `resources/js/components/design-system/`.
+
+**Why this is a separate phase:**
+- You can't refactor a view against a library that doesn't exist yet. Skipping this step and jumping to view refactors would mean copy-pasting markup from demo pages into views — the opposite of DRY.
+- Extraction forces a clean prop API to be defined once, cleanly, instead of re-invented inside every view refactor.
+- After extraction, a tweak in `resources/js/components/design-system/StatTile.vue` updates both the design-system page AND every view using it. That's the whole point.
+
+**Process per component:**
+1. Read the locked design-system page (e.g. `pages/feature/StatTilePage.vue`).
+2. Extract the core component to `resources/js/components/design-system/<Name>.vue` with a clean prop API.
+3. Refactor the design-system page to import the new component and render it with varied props — the page becomes a demo/documentation wrapper, not a markup source.
+4. Verify both the design-system page and a quick render in an app context still look right (mobile + desktop, light + dark).
+5. Commit.
+
+**Source of truth:** `resources/js/views/design-system/registry.js` is the canonical list of what's locked. Use it to know which components to extract and in what order.
+
+**Convention changes during extraction:**
+- **Drop the inline hex constants.** The demo pages use `const L = {...}, const D = {...}` with inline `:style` bindings so the two-panel Light/Dark preview renders correctly regardless of the `html.dark` state on the root. Real components don't have this problem — they render inside the app's actual theme context — so they should use normal Tailwind `dark:` utilities and the CSS custom properties already defined in `resources/css/tokens.css` (`bg-surface-raised`, `text-ink-primary`, `dark:bg-surface-raised`, etc.).
+- **Prop-driven, not data-driven.** Design-system pages often include arrays of example data baked into the page (`const CATEGORIES = [...]`, `const feedC = [...]`). The extracted component should accept single-item props (or an array prop at most) — not hardcode example data. Example data moves up into the design-system page that renders the component.
+
+**Gotchas learned during scaffolding (bake these into every sub-agent prompt):**
+1. In Vue `<template>`, refs are accessed WITHOUT `.value`. Only `<script setup>` code uses `.value`.
+2. Vue event handlers do NOT support `if` statements — use a ternary or `cond && (expr)`. Example: `@click="!disabled && (active = key)"` not `@click="if (!disabled) active = key"`.
+3. Do NOT set `:chosen="true"` on `VariantFrame` — that's Greg's locked-marker, not a "picked" marker. Use the `status="chosen"` prop on `ComponentPage` for the overall lock signal instead.
+4. For hero numbers that need to scale to their container (not the viewport), use CSS container queries — `container-type: inline-size` on the card + `cqw` units in the `clamp()`. Viewport `vw` units break on narrow cards inside wide viewports (5.1 StatTile was the canary).
+5. For text overlaying photos, use a flat translucent darken `rgba(0, 0, 0, 0.45)` across the whole card. Gradient scrims have unpredictable weak zones where bright photo highlights defeat white text (5.2 HeroMetricCard Variant C was the canary).
+6. SVG clip-path hex tiles can't have dashed borders (the clip cuts the dashes into vertical slivers). Use fill differences to distinguish states instead.
+
+**Batching approach (same pattern used for scaffolding):**
+Sonnet sub-agents in parallel, 5 components per batch. Greg verifies each batch and commits before the next starts. Propose the prop API for the first component (1.1 Button) as the template, get approval, then roll.
+
+Suggested batch order (extraction):
+- Batch 1: primitives 1.1–1.5 (Button, Input, Chip, Avatar, Selection)
+- Batch 2: primitives 1.6–1.7 + cards 2.1–2.3 (Progress, Skeleton, FlatCard, PhotoCard, GradientCard)
+- Batch 3: navigation 3.1–3.4 (TopNav, BottomNav, Sidebar, UtilityRail)
+- Batch 4: compounds 4.1–4.5 (TabPillGroup, SegmentedFilter, CategoryChipRow, ActionPair, QuickActions)
+- Batch 5: compounds 4.6–4.10 (AvatarPicker, Modal/Sheet, Toast, EmptyState, FormGroup)
+- Batch 6: feature 5.1–5.5 (StatTile, HeroMetricCard, EventTile, WeekStrip, MonthGrid)
+- Batch 7: feature 5.6–5.10 (DayHeader, TimelineRow, AchievementTile, ActivityRow, AIActivityCard)
+- Batch 8: feature 5.11–5.15 (StepCard, ReceiptCard, MetaTriplet, AuthorStrip, HeroPhotoSheet)
+
+---
+
+## Tier 6 — View-level integration (after extraction is complete)
+
+Once the library is built AND every component has been extracted into `resources/js/components/design-system/`, a smaller model does view-by-view refactors. One view per session.
 
 **Suggested order:**
 1. Dashboard (highest impact, highest daily use)
