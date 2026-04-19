@@ -375,9 +375,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                   </svg>
 
                   <!-- Centered content -->
-                  <div class="absolute inset-0 flex flex-col items-center justify-center px-6 py-8 gap-3 text-center">
-                    <!-- Fire icon in-content (visible, not watermark) -->
-                    <FireIcon class="w-8 h-8 flex-shrink-0" :style="{ color: L.accents.peach.bold }" />
+                  <div class="absolute inset-0 flex flex-col items-center justify-center px-6 py-8 gap-2 text-center">
                     <div class="space-y-1">
                       <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.accents.peach.bold }">Current streak</p>
                       <p
@@ -464,8 +462,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                     <path d="M12.894 2.553a1 1 0 0 0-1.788 0C9.338 5.116 6.75 8.441 6.75 12a5.25 5.25 0 0 0 10.5 0c0-3.559-2.588-6.884-4.356-9.447ZM10.5 13.5a.75.75 0 0 1 1.5 0 1.5 1.5 0 0 0 3 0 .75.75 0 0 1 1.5 0 3 3 0 0 1-6 0Z" />
                   </svg>
 
-                  <div class="absolute inset-0 flex flex-col items-center justify-center px-6 py-8 gap-3 text-center">
-                    <FireIcon class="w-8 h-8 flex-shrink-0" :style="{ color: D.accents.peach.bold }" />
+                  <div class="absolute inset-0 flex flex-col items-center justify-center px-6 py-8 gap-2 text-center">
                     <div class="space-y-1">
                       <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.accents.peach.bold }">Current streak</p>
                       <p
