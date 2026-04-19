@@ -81,15 +81,6 @@ function buildMonthCells() {
 
 const CELLS = buildMonthCells()
 
-// ── Heatmap intensity helper for Variant C ────────────────────────────────────
-function heatOpacity(day) {
-  const count = EVENTS[day] ? EVENTS[day].length : 0
-  if (count === 0) return 0
-  if (count <= 2)  return 0.28
-  if (count <= 4)  return 0.58
-  return 0.88
-}
-
 // ── Accent color lookup ───────────────────────────────────────────────────────
 function accentOf(name, palette, key) {
   return palette.accents[name] ? palette.accents[name][key] : palette.accents.lavender[key]
@@ -99,8 +90,8 @@ function accentOf(name, palette, key) {
 <template>
   <ComponentPage
     title="5.5 MonthGrid"
-    description="7-column month calendar grid. Each cell shows the date number with event indicators — three density display strategies for different contexts: minimal dots, informative pills, or at-a-glance heatmap fill."
-    status="scaffolded"
+    description="7-column month calendar grid. Each cell shows the date number with event indicators. Default treatment shows up to 3 category-colored dots beneath the number; the mini-pills variant (opt-in via prop) shows up to 2 truncated event titles stacked for desktop / power-user contexts."
+    status="chosen"
   >
 
     <!-- ══════════════════════════════════════════════════════════════
@@ -109,8 +100,8 @@ function accentOf(name, palette, key) {
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame
-        label="A"
-        caption="Dots beneath number — colored dots row at cell bottom, max 3 visible + overflow count"
+        label="Primary"
+        caption="Dots beneath number — the default MonthGrid. Up to 3 category-colored dots per cell, +N overflow for denser days. Works at every width, mobile to desktop."
       >
         <div class="w-full space-y-10">
 
@@ -253,8 +244,8 @@ function accentOf(name, palette, key) {
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame
-        label="B"
-        caption="Mini event pills — up to 2 color pills with truncated label beneath date number, overflow becomes '+N more'"
+        label="Pills"
+        caption="Mini event pills (prop variant) — up to 2 soft-tinted pills with truncated titles beneath the date number, overflow becomes '+N more'. Opt-in via prop for power-user / planner desktop contexts where identifying events by name at a glance matters."
       >
         <div class="w-full space-y-10">
 
@@ -390,170 +381,6 @@ function accentOf(name, palette, key) {
 
 
     <!-- ══════════════════════════════════════════════════════════════
-         VARIANT C — Heatmap fill
-         Density-at-a-glance. Best for meal plan months / task heatmaps.
-         ═══════════════════════════════════════════════════════════════ -->
-    <section class="mb-20">
-      <VariantFrame
-        label="C"
-        caption="Heatmap fill — cell background tints with lavender-soft intensity based on event count (0 → 30% → 60% → 90%)"
-      >
-        <div class="w-full space-y-10">
-
-          <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-4 md:p-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-[10px] font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Light mode — March 2026</p>
-
-            <!-- Legend -->
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-[10px] font-medium" :style="{ color: L.inkTertiary }">Density:</span>
-              <div class="flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-sm border" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"></span>
-                <span class="text-[9px]" :style="{ color: L.inkTertiary }">0</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-sm" :style="{ background: 'rgba(104,86,178,0.28)' }"></span>
-                <span class="text-[9px]" :style="{ color: L.inkTertiary }">1–2</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-sm" :style="{ background: 'rgba(104,86,178,0.58)' }"></span>
-                <span class="text-[9px]" :style="{ color: L.inkTertiary }">3–4</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-sm" :style="{ background: 'rgba(104,86,178,0.88)' }"></span>
-                <span class="text-[9px]" :style="{ color: L.inkTertiary }">5+</span>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-7 gap-0 rounded-xl overflow-hidden border" :style="{ borderColor: L.borderSubtle }">
-              <!-- Header row -->
-              <div
-                v-for="h in DAY_HEADERS"
-                :key="h"
-                class="text-center text-[10px] font-semibold uppercase tracking-wider py-2 border-b border-r last:border-r-0"
-                :style="{ color: L.inkTertiary, background: L.surfaceSunken, borderColor: L.borderSubtle }"
-              >{{ h }}</div>
-
-              <!-- Cells -->
-              <div
-                v-for="(cell, idx) in CELLS"
-                :key="idx"
-                class="relative flex items-center justify-center min-h-[42px] md:min-h-[56px] border-b border-r last:border-r-0"
-                :style="{
-                  borderColor: L.borderSubtle,
-                  background: cell.month !== 'current'
-                    ? L.surfaceSunken
-                    : cell.day === SELECTED
-                      ? L.accents.lavender.soft
-                      : heatOpacity(cell.day) > 0
-                        ? ('rgba(104,86,178,' + heatOpacity(cell.day) + ')')
-                        : L.surfaceRaised,
-                  outline: cell.day === SELECTED && cell.month === 'current'
-                    ? '2px solid ' + L.accents.lavender.bold
-                    : 'none',
-                  outlineOffset: '-2px',
-                }"
-              >
-                <div
-                  class="w-7 h-7 flex items-center justify-center rounded-full text-[13px] font-semibold leading-none"
-                  :style="{
-                    background: cell.day === TODAY && cell.month === 'current'
-                      ? L.accents.lavender.bold
-                      : 'transparent',
-                    color: cell.day === TODAY && cell.month === 'current'
-                      ? L.inkInverse
-                      : cell.month !== 'current'
-                        ? L.inkTertiary
-                        : heatOpacity(cell.day) >= 0.58
-                          ? L.inkInverse
-                          : L.inkPrimary,
-                    opacity: cell.month !== 'current' ? 0.4 : 1,
-                  }"
-                >{{ cell.day }}</div>
-              </div>
-            </div>
-          </div><!-- /light C -->
-
-          <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-4 md:p-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-[10px] font-semibold uppercase tracking-widest mb-4" :style="{ color: D.inkTertiary }">Dark mode — March 2026</p>
-
-            <!-- Legend -->
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-[10px] font-medium" :style="{ color: D.inkTertiary }">Density:</span>
-              <div class="flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-sm border" :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }"></span>
-                <span class="text-[9px]" :style="{ color: D.inkTertiary }">0</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-sm" :style="{ background: 'rgba(182,168,230,0.28)' }"></span>
-                <span class="text-[9px]" :style="{ color: D.inkTertiary }">1–2</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-sm" :style="{ background: 'rgba(182,168,230,0.55)' }"></span>
-                <span class="text-[9px]" :style="{ color: D.inkTertiary }">3–4</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <span class="w-4 h-4 rounded-sm" :style="{ background: 'rgba(182,168,230,0.82)' }"></span>
-                <span class="text-[9px]" :style="{ color: D.inkTertiary }">5+</span>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-7 gap-0 rounded-xl overflow-hidden border" :style="{ borderColor: D.borderSubtle }">
-              <!-- Header row -->
-              <div
-                v-for="h in DAY_HEADERS"
-                :key="h"
-                class="text-center text-[10px] font-semibold uppercase tracking-wider py-2 border-b border-r last:border-r-0"
-                :style="{ color: D.inkTertiary, background: D.surfaceSunken, borderColor: D.borderSubtle }"
-              >{{ h }}</div>
-
-              <!-- Cells -->
-              <div
-                v-for="(cell, idx) in CELLS"
-                :key="idx"
-                class="relative flex items-center justify-center min-h-[42px] md:min-h-[56px] border-b border-r last:border-r-0"
-                :style="{
-                  borderColor: D.borderSubtle,
-                  background: cell.month !== 'current'
-                    ? D.surfaceSunken
-                    : cell.day === SELECTED
-                      ? D.accents.lavender.soft
-                      : heatOpacity(cell.day) > 0
-                        ? ('rgba(182,168,230,' + heatOpacity(cell.day) + ')')
-                        : D.surfaceRaised,
-                  outline: cell.day === SELECTED && cell.month === 'current'
-                    ? '2px solid ' + D.accents.lavender.bold
-                    : 'none',
-                  outlineOffset: '-2px',
-                }"
-              >
-                <div
-                  class="w-7 h-7 flex items-center justify-center rounded-full text-[13px] font-semibold leading-none"
-                  :style="{
-                    background: cell.day === TODAY && cell.month === 'current'
-                      ? D.accents.lavender.bold
-                      : 'transparent',
-                    color: cell.day === TODAY && cell.month === 'current'
-                      ? D.inkInverse
-                      : cell.month !== 'current'
-                        ? D.inkTertiary
-                        : heatOpacity(cell.day) >= 0.55
-                          ? D.inkPrimary
-                          : D.inkPrimary,
-                    opacity: cell.month !== 'current' ? 0.35 : 1,
-                  }"
-                >{{ cell.day }}</div>
-              </div>
-            </div>
-          </div><!-- /dark C -->
-
-        </div>
-      </VariantFrame>
-    </section>
-
-
-    <!-- ══════════════════════════════════════════════════════════════
          CLAUDE'S PICK CALLOUT
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
@@ -567,12 +394,13 @@ function accentOf(name, palette, key) {
         <SparklesIcon class="w-5 h-5 flex-shrink-0 mt-0.5" :style="{ color: L.accents.lavender.bold }" />
         <div>
           <p class="text-[14px] font-semibold mb-1" :style="{ color: L.inkPrimary }">
-            Claude's pick — Variant A
+            LOCKED — Dots primary, Pills as prop variant
           </p>
           <p class="text-[13px] leading-relaxed" :style="{ color: L.inkSecondary }">
-            The dots pattern is the safest default for Kinhold's primary calendar view: cells stay readable at 375px without growing taller, the dot palette maps directly to event colors already in the design system, and the "+N" overflow resolves busy days gracefully at every screen size.
-            Variant B is the better choice when the grid has generous desktop real estate and users need to identify events by name at a glance (power users, planner view).
-            Variant C earns its place on non-interactive analytics surfaces — meal-plan monthly coverage, task heatmaps, vault expiration maps — where density-at-a-glance matters more than individual event identity.
+            <strong>Dots (primary)</strong> is the default for every MonthGrid in the app. Cells stay compact at 375px, dot colors map to the category accent system, and the "+N" overflow resolves busy days gracefully at every screen size.
+          </p>
+          <p class="text-[13px] leading-relaxed mt-2" :style="{ color: L.inkSecondary }">
+            <strong>Pills (prop variant)</strong> — likely <code class="text-[12px] font-mono bg-white/60 px-1 rounded">density="pills"</code> — swaps the dot row for up to 2 truncated event-title pills. Reserved for desktop / planner contexts where identifying events by name at a glance matters. Same component, more vertical cell height.
           </p>
         </div>
       </div>
@@ -584,26 +412,22 @@ function accentOf(name, palette, key) {
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-8">
       <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
-        <h2 class="text-[17px] font-semibold" :style="{ color: L.inkPrimary }">When to use each variant</h2>
+        <h2 class="text-[17px] font-semibold" :style="{ color: L.inkPrimary }">When and how to use MonthGrid</h2>
         <ul class="space-y-3 text-[14px]" :style="{ color: L.inkSecondary }">
           <li>
-            <strong :style="{ color: L.inkPrimary }">Variant A — Dots (default).</strong>
-            Use on the primary family calendar month view, especially on mobile. Cells stay compact (42–44px minimum), the dot colors map to event accent colors, and readability is preserved even with 6+ events. This is the safest choice whenever cell height is constrained.
+            <strong :style="{ color: L.inkPrimary }">Primary (Dots) — the default.</strong>
+            Use on the primary family calendar month view, especially on mobile. Cells stay compact (42–44px minimum), dot colors map to the category accent system, and readability is preserved even with 6+ events. Safest choice whenever cell height is constrained.
           </li>
           <li>
-            <strong :style="{ color: L.inkPrimary }">Variant B — Pills (desktop / power users).</strong>
-            Use when the grid has vertical room (72px+ cells) and users benefit from seeing event names or categories directly in the cell — desktop calendar planner view, weekly summary panels, recipe schedule. Limit to 2 pills per cell; overflow becomes "+N more".
+            <strong :style="{ color: L.inkPrimary }">Pills (prop variant).</strong>
+            Pass <code class="font-mono text-[12px] px-1 py-0.5 rounded" :style="{ background: L.surfaceSunken }">density="pills"</code> when the grid has vertical room (56px+ cells) and users benefit from seeing event titles directly — desktop planner view, weekly summary panels, recipe schedules. Limit to 2 pills per cell; overflow becomes "+N more".
           </li>
           <li>
-            <strong :style="{ color: L.inkPrimary }">Variant C — Heatmap (analytics / overview).</strong>
-            Use on non-interactive density surfaces: meal-plan monthly coverage check, task due-date heatmap, vault document expiration calendar. The filled background communicates busyness instantly without requiring the user to count events. Pair with a legend. Not recommended as a primary navigation calendar — clicking a cell to see event details is less intuitive without visible event markers.
-          </li>
-          <li>
-            <strong :style="{ color: L.inkPrimary }">Today + Selected states</strong> are consistent across all variants: today gets a solid lavender-bold filled circle (36px / 28px), selected cell gets a 2px lavender-bold ring. Leading/trailing month days are dimmed to 35–40% opacity.
+            <strong :style="{ color: L.inkPrimary }">Today + Selected states</strong> apply in both modes: today gets a solid lavender-bold filled circle (36px / 28px), selected cell gets a 2px lavender-bold ring. Leading/trailing month days are dimmed to 35–40% opacity.
           </li>
           <li>
             <strong :style="{ color: L.inkPrimary }">Mobile floor:</strong>
-            Variant A min-height 42px, Variant B 56px (needs pill room), Variant C 42px. Never go below 40px or tap targets become unreliable on iOS.
+            Dots variant min-height 42px, Pills variant 56px (needs pill room). Never go below 40px or tap targets become unreliable on iOS.
           </li>
         </ul>
       </div>
