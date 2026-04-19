@@ -65,117 +65,17 @@ const allSets = [
   <ComponentPage
     title="5.13 MetaTriplet"
     description="A row of 3 icon + value pairs that provides at-a-glance metadata beneath a detail page title. Applies universally: recipe (time / difficulty / calories), event (start / duration / location), task (due / priority / points), restaurant (hours / price / distance). One pattern, four contexts."
-    status="scaffolded"
+    status="chosen"
   >
 
-    <!-- ═══════════════════════════════════════════════════════════════
-         VARIANT A — Horizontal row with hairline dividers
-         ════════════════════════════════════════════════════════════════ -->
-    <section class="mb-20">
-      <VariantFrame
-        label="A"
-        caption="Horizontal row — 3 equal cells, icon + label + value stacked vertically, 1px hairline dividers between. Most compact."
-      >
-        <div class="w-full space-y-10">
-
-          <!-- ── LIGHT PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
-
-            <!-- Mobile mock label -->
-            <p class="text-[11px]" :style="{ color: L.inkTertiary }">375px — full-width, hairlines compress well at phone width.</p>
-
-            <div class="space-y-4">
-              <div
-                v-for="set in allSets"
-                :key="set.key"
-                class="rounded-2xl border overflow-hidden"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"
-              >
-                <!-- Set label -->
-                <div class="px-4 pt-3 pb-1">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">{{ set.label }}</p>
-                </div>
-                <!-- Triplet row -->
-                <div class="flex items-stretch divide-x" :style="{ borderColor: L.inkTertiary, '--tw-divide-opacity': '0.3' }">
-                  <div
-                    v-for="(item, idx) in set.data"
-                    :key="idx"
-                    class="flex-1 flex flex-col items-center justify-center gap-1 py-4 px-2"
-                    :style="idx > 0 ? { borderLeftColor: `rgba(156,152,149,0.3)`, borderLeftWidth: '1px', borderLeftStyle: 'solid' } : {}"
-                  >
-                    <component
-                      :is="item.icon"
-                      class="w-4 h-4 flex-shrink-0"
-                      :style="{ color: L.accents[item.accent].bold }"
-                    />
-                    <p
-                      class="text-[10px] font-semibold uppercase tracking-widest leading-none"
-                      :style="{ color: L.inkTertiary }"
-                    >{{ item.label }}</p>
-                    <p
-                      class="text-[14px] font-semibold leading-tight text-center"
-                      :style="{ color: L.inkPrimary }"
-                    >{{ item.value }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Desktop wider mock note -->
-            <p class="text-[11px]" :style="{ color: L.inkTertiary }">640px+ — triplet row sits naturally beneath a detail card header at any width.</p>
-          </div>
-
-          <!-- ── DARK PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
-
-            <div class="space-y-4">
-              <div
-                v-for="set in allSets"
-                :key="set.key"
-                class="rounded-2xl border overflow-hidden"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }"
-              >
-                <div class="px-4 pt-3 pb-1">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">{{ set.label }}</p>
-                </div>
-                <div class="flex items-stretch">
-                  <div
-                    v-for="(item, idx) in set.data"
-                    :key="idx"
-                    class="flex-1 flex flex-col items-center justify-center gap-1 py-4 px-2"
-                    :style="idx > 0 ? { borderLeftColor: `rgba(110,107,103,0.3)`, borderLeftWidth: '1px', borderLeftStyle: 'solid' } : {}"
-                  >
-                    <component
-                      :is="item.icon"
-                      class="w-4 h-4 flex-shrink-0"
-                      :style="{ color: D.accents[item.accent].bold }"
-                    />
-                    <p
-                      class="text-[10px] font-semibold uppercase tracking-widest leading-none"
-                      :style="{ color: D.inkTertiary }"
-                    >{{ item.label }}</p>
-                    <p
-                      class="text-[14px] font-semibold leading-tight text-center"
-                      :style="{ color: D.inkPrimary }"
-                    >{{ item.value }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </VariantFrame>
-    </section>
 
     <!-- ═══════════════════════════════════════════════════════════════
          VARIANT B — Horizontal inline (icon-left, label+value right)
          ════════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame
-        label="B"
-        caption="Horizontal inline — icon on left, label + value stacked right inside each cell. No dividers, gap-8 spacing. Reads like a summary row."
+        label="MetaTriplet"
+        caption="Horizontal inline — icon on left, label + value stacked right inside each cell. No dividers, gap-8 spacing. The single locked MetaTriplet shape. Works universally: recipe (time/difficulty/calories), event (when/duration/where), task (due/priority/points), restaurant (hours/price/distance)."
       >
         <div class="w-full space-y-10">
 
@@ -265,129 +165,6 @@ const allSets = [
       </VariantFrame>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════════════
-         VARIANT C — Stacked vertically (mobile) + horizontal (desktop)
-         ════════════════════════════════════════════════════════════════ -->
-    <section class="mb-20">
-      <VariantFrame
-        label="C"
-        caption="Responsive stack — full-width rows with icon-left on mobile (375px); collapses into 3-column horizontal grid at sm (640px+). Best for tight or variable-width contexts."
-      >
-        <div class="w-full space-y-10">
-
-          <!-- ── LIGHT PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
-
-            <p class="text-[11px]" :style="{ color: L.inkTertiary }">375px — each item is a full-width row; stacks vertically for maximum readability on small screens.</p>
-
-            <div class="space-y-4">
-              <div
-                v-for="set in allSets"
-                :key="set.key"
-                class="rounded-2xl border p-4"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"
-              >
-                <p class="text-[10px] font-semibold uppercase tracking-widest mb-3" :style="{ color: L.inkTertiary }">{{ set.label }}</p>
-                <!-- Mobile: stack / Desktop: row -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-0">
-                  <div
-                    v-for="(item, idx) in set.data"
-                    :key="idx"
-                    class="flex items-center gap-3 py-2 sm:py-0 sm:justify-center"
-                    :style="idx > 0 && idx < set.data.length
-                      ? {
-                          borderTopColor: `rgba(156,152,149,0.25)`,
-                          borderTopWidth: '1px',
-                          borderTopStyle: 'solid',
-                        }
-                      : {}"
-                  >
-                    <!-- On desktop, add vertical divider via left border on cells 2 and 3 -->
-                    <div
-                      class="flex items-center gap-3 w-full sm:justify-center"
-                      :style="idx > 0
-                        ? {
-                            paddingLeft: '0',
-                            borderLeftColor: `rgba(156,152,149,0.3)`,
-                            borderLeftWidth: '0px',
-                          }
-                        : {}"
-                    >
-                      <component
-                        :is="item.icon"
-                        class="w-[18px] h-[18px] flex-shrink-0"
-                        :style="{ color: L.accents[item.accent].bold }"
-                      />
-                      <div>
-                        <p
-                          class="text-[10px] font-semibold uppercase tracking-widest leading-none mb-0.5"
-                          :style="{ color: L.inkTertiary }"
-                        >{{ item.label }}</p>
-                        <p
-                          class="text-[14px] font-semibold leading-tight"
-                          :style="{ color: L.inkPrimary }"
-                        >{{ item.value }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <p class="text-[11px]" :style="{ color: L.inkTertiary }">640px+ — grid collapses to a 3-column horizontal row, mimicking Variant A layout but with the icon-left treatment from B.</p>
-          </div>
-
-          <!-- ── DARK PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
-
-            <div class="space-y-4">
-              <div
-                v-for="set in allSets"
-                :key="set.key"
-                class="rounded-2xl border p-4"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }"
-              >
-                <p class="text-[10px] font-semibold uppercase tracking-widest mb-3" :style="{ color: D.inkTertiary }">{{ set.label }}</p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-0">
-                  <div
-                    v-for="(item, idx) in set.data"
-                    :key="idx"
-                    class="flex items-center gap-3 py-2 sm:py-0 sm:justify-center"
-                    :style="idx > 0
-                      ? {
-                          borderTopColor: `rgba(110,107,103,0.25)`,
-                          borderTopWidth: '1px',
-                          borderTopStyle: 'solid',
-                        }
-                      : {}"
-                  >
-                    <div class="flex items-center gap-3 w-full sm:justify-center">
-                      <component
-                        :is="item.icon"
-                        class="w-[18px] h-[18px] flex-shrink-0"
-                        :style="{ color: D.accents[item.accent].bold }"
-                      />
-                      <div>
-                        <p
-                          class="text-[10px] font-semibold uppercase tracking-widest leading-none mb-0.5"
-                          :style="{ color: D.inkTertiary }"
-                        >{{ item.label }}</p>
-                        <p
-                          class="text-[14px] font-semibold leading-tight"
-                          :style="{ color: D.inkPrimary }"
-                        >{{ item.value }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </VariantFrame>
-    </section>
 
     <!-- ═══════════════════════════════════════════════════════════════
          CLAUDE'S PICK CALLOUT
@@ -403,7 +180,7 @@ const allSets = [
         <SparklesIcon class="w-5 h-5 flex-shrink-0 mt-0.5" :style="{ color: L.accents.lavender.bold }" />
         <div>
           <p class="text-sm font-semibold mb-1" :style="{ color: L.accents.lavender.bold }">
-            Claude's pick — Variant B
+            LOCKED — single shape, no variants
           </p>
           <p class="text-sm leading-relaxed" :style="{ color: L.inkPrimary }">
             Variant B strikes the right balance for detail pages: the icon-left / text-right treatment gives each cell a clear focal hierarchy while the horizontal inline layout lets the triplet sit naturally in a single line beneath a title without requiring dividers or extra chrome. At phone width (375px) the gap narrows gracefully without stacking, keeping the metadata scannable in one eye pass. Variant A is ideal when space is at an absolute premium (list rows, compact cards) and Variant C earns its place on detail pages embedded in narrow sidebars or panels that cannot guarantee a 640px minimum width.
