@@ -495,7 +495,7 @@ function toBars(data) {
                   style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.sun.bold }"
                 >1,248</p>
-                <p class="text-[10px] font-mono pt-2" :style="{ color: L.inkTertiary }">chart={{ '{' }}false{{ '}' }} · filter={{ '{' }}false{{ '}' }}</p>
+                <p class="text-[11px] pt-2" :style="{ color: L.inkTertiary }">Dashboard tile — number only</p>
               </div>
 
               <!-- CONFIG 2: With chart, no filter -->
@@ -529,7 +529,7 @@ function toBars(data) {
                   />
                   <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="L.accents.sun.bold" />
                 </svg>
-                <p class="text-[10px] font-mono" :style="{ color: L.inkTertiary }">chart · filter={{ '{' }}false{{ '}' }}</p>
+                <p class="text-[11px]" :style="{ color: L.inkTertiary }">Leaderboard row — with chart</p>
               </div>
 
               <!-- CONFIG 3: Full (chart + filter) -->
@@ -576,7 +576,7 @@ function toBars(data) {
                   />
                   <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="L.accents.sun.bold" />
                 </svg>
-                <p class="text-[10px] font-mono" :style="{ color: L.inkTertiary }">chart · filter — full (locked)</p>
+                <p class="text-[11px]" :style="{ color: L.inkTertiary }">Full widget — chart + filter</p>
               </div>
             </div>
           </div>
@@ -607,7 +607,7 @@ function toBars(data) {
                   style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 30cqw, 6.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.sun.bold }"
                 >1,248</p>
-                <p class="text-[10px] font-mono pt-2" :style="{ color: D.inkTertiary }">chart={{ '{' }}false{{ '}' }} · filter={{ '{' }}false{{ '}' }}</p>
+                <p class="text-[11px] pt-2" :style="{ color: D.inkTertiary }">Dashboard tile — number only</p>
               </div>
 
               <!-- CONFIG 2: With chart -->
@@ -641,7 +641,7 @@ function toBars(data) {
                   />
                   <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="D.accents.sun.bold" />
                 </svg>
-                <p class="text-[10px] font-mono" :style="{ color: D.inkTertiary }">chart · filter={{ '{' }}false{{ '}' }}</p>
+                <p class="text-[11px]" :style="{ color: D.inkTertiary }">Leaderboard row — with chart</p>
               </div>
 
               <!-- CONFIG 3: Full -->
@@ -688,7 +688,7 @@ function toBars(data) {
                   />
                   <circle :cx="140" :cy="40 - chartPoints[chartPoints.length - 1] * 40" r="2.5" :fill="D.accents.sun.bold" />
                 </svg>
-                <p class="text-[10px] font-mono" :style="{ color: D.inkTertiary }">chart · filter — full (locked)</p>
+                <p class="text-[11px]" :style="{ color: D.inkTertiary }">Full widget — chart + filter</p>
               </div>
             </div>
           </div>
