@@ -143,18 +143,19 @@ const TILES = {
               <div class="flex flex-col items-center gap-3">
                 <!-- arc ring sits outside the hex -->
                 <div class="relative flex items-center justify-center" style="width: 108px; height: 108px;">
+                  <!-- Hex-shaped progress ring (perimeter ≈ 350 for this viewBox) -->
                   <svg
                     width="108" height="108" viewBox="0 0 108 108"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
+                    class="absolute inset-0"
                     aria-hidden="true"
                   >
-                    <circle cx="54" cy="54" r="48" fill="none" :stroke="L.accents.mint.soft" stroke-width="4" />
-                    <circle
-                      cx="54" cy="54" r="48" fill="none"
-                      :stroke="L.accents.mint.bold" stroke-width="4" stroke-linecap="round"
-                      :stroke-dasharray="2 * Math.PI * 48"
-                      :stroke-dashoffset="2 * Math.PI * 48 * (1 - 0.65)"
-                    />
+                    <polygon points="54,4 104,29 104,79 54,104 4,79 4,29"
+                      fill="none" :stroke="L.accents.mint.soft" stroke-width="4" stroke-linejoin="round" />
+                    <polygon points="54,4 104,29 104,79 54,104 4,79 4,29"
+                      fill="none" :stroke="L.accents.mint.bold"
+                      stroke-width="4" stroke-linejoin="round" stroke-linecap="round"
+                      stroke-dasharray="324"
+                      :stroke-dashoffset="324 * (1 - 0.65)" />
                   </svg>
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
@@ -176,16 +177,16 @@ const TILES = {
                 <div class="relative flex items-center justify-center" style="width: 108px; height: 108px;">
                   <svg
                     width="108" height="108" viewBox="0 0 108 108"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
+                    class="absolute inset-0"
                     aria-hidden="true"
                   >
-                    <circle cx="54" cy="54" r="48" fill="none" :stroke="L.accents.peach.soft" stroke-width="4" />
-                    <circle
-                      cx="54" cy="54" r="48" fill="none"
-                      :stroke="L.accents.peach.bold" stroke-width="4" stroke-linecap="round"
-                      :stroke-dasharray="2 * Math.PI * 48"
-                      :stroke-dashoffset="2 * Math.PI * 48 * (1 - 0.30)"
-                    />
+                    <polygon points="54,4 104,29 104,79 54,104 4,79 4,29"
+                      fill="none" :stroke="L.accents.peach.soft" stroke-width="4" stroke-linejoin="round" />
+                    <polygon points="54,4 104,29 104,79 54,104 4,79 4,29"
+                      fill="none" :stroke="L.accents.peach.bold"
+                      stroke-width="4" stroke-linejoin="round" stroke-linecap="round"
+                      stroke-dasharray="324"
+                      :stroke-dashoffset="324 * (1 - 0.30)" />
                   </svg>
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
@@ -304,16 +305,16 @@ const TILES = {
                 <div class="relative flex items-center justify-center" style="width: 108px; height: 108px;">
                   <svg
                     width="108" height="108" viewBox="0 0 108 108"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
+                    class="absolute inset-0"
                     aria-hidden="true"
                   >
-                    <circle cx="54" cy="54" r="48" fill="none" :stroke="D.accents.mint.soft" stroke-width="4" />
-                    <circle
-                      cx="54" cy="54" r="48" fill="none"
-                      :stroke="D.accents.mint.bold" stroke-width="4" stroke-linecap="round"
-                      :stroke-dasharray="2 * Math.PI * 48"
-                      :stroke-dashoffset="2 * Math.PI * 48 * (1 - 0.65)"
-                    />
+                    <polygon points="54,4 104,29 104,79 54,104 4,79 4,29"
+                      fill="none" :stroke="D.accents.mint.soft" stroke-width="4" stroke-linejoin="round" />
+                    <polygon points="54,4 104,29 104,79 54,104 4,79 4,29"
+                      fill="none" :stroke="D.accents.mint.bold"
+                      stroke-width="4" stroke-linejoin="round" stroke-linecap="round"
+                      stroke-dasharray="324"
+                      :stroke-dashoffset="324 * (1 - 0.65)" />
                   </svg>
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
@@ -335,16 +336,16 @@ const TILES = {
                 <div class="relative flex items-center justify-center" style="width: 108px; height: 108px;">
                   <svg
                     width="108" height="108" viewBox="0 0 108 108"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
+                    class="absolute inset-0"
                     aria-hidden="true"
                   >
-                    <circle cx="54" cy="54" r="48" fill="none" :stroke="D.accents.peach.soft" stroke-width="4" />
-                    <circle
-                      cx="54" cy="54" r="48" fill="none"
-                      :stroke="D.accents.peach.bold" stroke-width="4" stroke-linecap="round"
-                      :stroke-dasharray="2 * Math.PI * 48"
-                      :stroke-dashoffset="2 * Math.PI * 48 * (1 - 0.30)"
-                    />
+                    <polygon points="54,4 104,29 104,79 54,104 4,79 4,29"
+                      fill="none" :stroke="D.accents.peach.soft" stroke-width="4" stroke-linejoin="round" />
+                    <polygon points="54,4 104,29 104,79 54,104 4,79 4,29"
+                      fill="none" :stroke="D.accents.peach.bold"
+                      stroke-width="4" stroke-linejoin="round" stroke-linecap="round"
+                      stroke-dasharray="324"
+                      :stroke-dashoffset="324 * (1 - 0.30)" />
                   </svg>
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
