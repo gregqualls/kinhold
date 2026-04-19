@@ -100,7 +100,7 @@ function toBars(data) {
 
               <!-- Points bank — sun accent -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -123,14 +123,14 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.sun.bold }"
                 >1,248</p>
               </div>
 
               <!-- Task completion — mint accent -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -152,14 +152,14 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.mint.bold }"
                 >84%</p>
               </div>
 
               <!-- Day streak — peach accent + fire icon -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -181,14 +181,14 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.peach.bold }"
                 >12</p>
               </div>
 
               <!-- Currency — lavender accent, decimal at 60% scale -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -211,7 +211,7 @@ function toBars(data) {
                 <!-- Currency: integer full-size, decimal ~60% scale -->
                 <p
                   class="leading-none font-semibold tracking-tighter flex items-baseline"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.lavender.bold }"
                 >
                   $2,400
@@ -236,7 +236,7 @@ function toBars(data) {
 
               <!-- Points bank -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -255,14 +255,14 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.sun.bold }"
                 >1,248</p>
               </div>
 
               <!-- Task completion -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -281,14 +281,14 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.mint.bold }"
                 >84%</p>
               </div>
 
               <!-- Day streak -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -307,14 +307,14 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.peach.bold }"
                 >12</p>
               </div>
 
               <!-- Currency -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -333,7 +333,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter flex items-baseline"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.75rem, 22cqw, 5.5rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.lavender.bold }"
                 >
                   $2,400
@@ -361,7 +361,7 @@ function toBars(data) {
 
               <!-- Points bank — polyline sparkline -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -380,7 +380,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.sun.bold }"
                 >1,248</p>
                 <!-- Sparkline -->
@@ -408,7 +408,7 @@ function toBars(data) {
 
               <!-- Task completion — bar chart -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -427,7 +427,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.mint.bold }"
                 >84%</p>
                 <!-- Bar chart -->
@@ -447,7 +447,7 @@ function toBars(data) {
 
               <!-- Day streak — bar chart, peach -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -466,7 +466,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.peach.bold }"
                 >12</p>
                 <!-- Bar chart - climbing streak -->
@@ -494,7 +494,7 @@ function toBars(data) {
 
               <!-- Points bank -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -513,7 +513,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.sun.bold }"
                 >1,248</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" fill="none" aria-hidden="true">
@@ -537,7 +537,7 @@ function toBars(data) {
 
               <!-- Task completion -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -556,7 +556,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.mint.bold }"
                 >84%</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -575,7 +575,7 @@ function toBars(data) {
 
               <!-- Day streak -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -594,7 +594,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.peach.bold }"
                 >12</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -631,7 +631,7 @@ function toBars(data) {
 
               <!-- Points bank with range filter -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -669,7 +669,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.sun.bold }"
                 >1,248</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" fill="none" aria-hidden="true">
@@ -693,7 +693,7 @@ function toBars(data) {
 
               <!-- Task completion with range filter -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -728,7 +728,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.mint.bold }"
                 >84%</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -747,7 +747,7 @@ function toBars(data) {
 
               <!-- Day streak with range filter -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: L.surfaceRaised,
                   borderColor: L.borderSubtle,
@@ -782,7 +782,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: L.accents.peach.bold }"
                 >12</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -809,7 +809,7 @@ function toBars(data) {
 
               <!-- Points bank -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -844,7 +844,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.sun.bold }"
                 >1,248</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" fill="none" aria-hidden="true">
@@ -868,7 +868,7 @@ function toBars(data) {
 
               <!-- Task completion -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -903,7 +903,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.mint.bold }"
                 >84%</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -922,7 +922,7 @@ function toBars(data) {
 
               <!-- Day streak -->
               <div
-                class="rounded-[20px] border flex flex-col gap-3 py-6 px-6"
+                class="stat-card-root rounded-[20px] border flex flex-col gap-3 py-6 px-6"
                 :style="{
                   background: D.surfaceRaised,
                   borderColor: D.borderSubtle,
@@ -957,7 +957,7 @@ function toBars(data) {
                 </div>
                 <p
                   class="leading-none font-semibold tracking-tighter"
-                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(3rem, 7vw, 7rem); letter-spacing: -0.02em;"
+                  style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.5rem, 18cqw, 4rem); letter-spacing: -0.02em;"
                   :style="{ color: D.accents.peach.bold }"
                 >12</p>
                 <svg viewBox="0 0 140 40" class="w-full mt-1" style="height: 36px;" aria-hidden="true">
@@ -1091,3 +1091,18 @@ function toBars(data) {
 
   </ComponentPage>
 </template>
+
+<style scoped>
+/*
+  Each StatTile card is a CSS containment context so the hero number
+  scales to the card's width via `cqw` units rather than the viewport.
+  This fixes the "big screen, small card" clipping problem — a 4-up
+  desktop row of ~220px cards used to blow through the card bounds
+  when the viewport was wide. With container queries, the hero number
+  sizes itself to its own container.
+*/
+.stat-card-root {
+  container-type: inline-size;
+  container-name: stat-card;
+}
+</style>
