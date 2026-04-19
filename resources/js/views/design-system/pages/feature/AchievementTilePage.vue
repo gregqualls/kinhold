@@ -3,7 +3,7 @@ import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
 import {
   SparklesIcon, TrophyIcon, StarIcon, HeartIcon, FireIcon,
-  AcademicCapIcon, QuestionMarkCircleIcon, LockClosedIcon, CheckBadgeIcon,
+  AcademicCapIcon, QuestionMarkCircleIcon,
 } from '@heroicons/vue/24/solid'
 import { SparklesIcon as SparklesOutlineIcon } from '@heroicons/vue/24/outline'
 
@@ -61,782 +61,10 @@ const TILES = {
   <ComponentPage
     title="5.8 AchievementTile"
     description="Trophy-case tile with three data-driven states: locked, in-progress, and earned. Three surface treatments — Flat (A), Iridescent Gradient (B), and Hexagonal Steam-style badge (C) — each driving the same state machine. Hidden achievements render as '???' until earned."
-    status="scaffolded"
+    status="chosen"
   >
 
     <!-- ═══════════════════════════════════════════════════════════════
-         VARIANT A — Flat surface with accent icon
-         surfaceRaised card, 64px trophy icon centered, title + desc below.
-         Locked = inkTertiary icon + 40% opacity + "Locked" chip.
-         In-progress = inkTertiary icon + accent-bold arc ring.
-         Earned = accent-bold icon + tiny glow + "Earned" chip in success green.
-         ════════════════════════════════════════════════════════════════ -->
-    <section class="mb-20">
-      <VariantFrame
-        label="A"
-        caption="Flat surface with accent icon — rounded-[20px] surfaceRaised card. Locked = ghost. In-progress = arc ring. Earned = accent icon + glow chip. Safest everyday default."
-      >
-        <div class="w-full space-y-10">
-
-          <!-- ── LIGHT PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
-
-            <!-- 2 rows × 3 cols — all six canonical tiles -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-              <!-- A-L · Earned — Week Warrior (sun / trophy) -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{
-                  background: L.surfaceRaised,
-                  borderColor: L.accents.sun.bold + '30',
-                  boxShadow: `0 0 24px ${L.accents.sun.soft}, 0 2px 8px rgba(162,120,12,0.12)`,
-                }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{ background: L.accents.sun.soft }"
-                >
-                  <TrophyIcon class="w-9 h-9" :style="{ color: L.accents.sun.bold }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkPrimary }">Week Warrior</p>
-                  <p class="text-[12px]" :style="{ color: L.inkSecondary }">7 tasks in a row</p>
-                  <p class="text-[11px]" :style="{ color: L.inkTertiary }">Earned 2d ago</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
-              </div>
-
-              <!-- A-L · Earned — Kindness Captain (peach / heart) -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{
-                  background: L.surfaceRaised,
-                  borderColor: L.accents.peach.bold + '30',
-                  boxShadow: `0 0 24px ${L.accents.peach.soft}, 0 2px 8px rgba(186,86,46,0.10)`,
-                }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{ background: L.accents.peach.soft }"
-                >
-                  <HeartIcon class="w-9 h-9" :style="{ color: L.accents.peach.bold }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkPrimary }">Kindness Captain</p>
-                  <p class="text-[12px]" :style="{ color: L.inkSecondary }">Gave 10 kudos</p>
-                  <p class="text-[11px]" :style="{ color: L.inkTertiary }">Earned 5d ago</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
-              </div>
-
-              <!-- A-L · In-progress — Meal Planner (mint / cap, 65%) -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: '0 1px 2px rgba(28,20,10,0.04), 0 2px 6px rgba(28,20,10,0.05)' }"
-              >
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <svg
-                    width="80" height="80" viewBox="0 0 80 80"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
-                    aria-hidden="true"
-                  >
-                    <circle cx="40" cy="40" :r="RING_R" fill="none" :stroke="L.accents.mint.soft" stroke-width="3" />
-                    <circle
-                      cx="40" cy="40" :r="RING_R" fill="none"
-                      :stroke="L.accents.mint.bold" stroke-width="3" stroke-linecap="round"
-                      :stroke-dasharray="RING_CIRC" :stroke-dashoffset="arcOffset(0.65)"
-                    />
-                  </svg>
-                  <AcademicCapIcon class="w-9 h-9 relative z-10" style="filter: grayscale(0.5);" :style="{ color: L.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkPrimary }">Meal Planner</p>
-                  <p class="text-[12px]" :style="{ color: L.inkSecondary }">Plan 20 meals</p>
-                  <p class="text-[11px] font-medium" :style="{ color: L.accents.mint.bold }">12/20</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.accents.mint.soft, color: L.accents.mint.bold }"
-                >
-                  In progress
-                </span>
-              </div>
-
-              <!-- A-L · In-progress — Streak Starter (peach / fire, 30%) -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: '0 1px 2px rgba(28,20,10,0.04), 0 2px 6px rgba(28,20,10,0.05)' }"
-              >
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <svg
-                    width="80" height="80" viewBox="0 0 80 80"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
-                    aria-hidden="true"
-                  >
-                    <circle cx="40" cy="40" :r="RING_R" fill="none" :stroke="L.accents.peach.soft" stroke-width="3" />
-                    <circle
-                      cx="40" cy="40" :r="RING_R" fill="none"
-                      :stroke="L.accents.peach.bold" stroke-width="3" stroke-linecap="round"
-                      :stroke-dasharray="RING_CIRC" :stroke-dashoffset="arcOffset(0.30)"
-                    />
-                  </svg>
-                  <FireIcon class="w-9 h-9 relative z-10" style="filter: grayscale(0.5);" :style="{ color: L.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkPrimary }">Streak Starter</p>
-                  <p class="text-[12px]" :style="{ color: L.inkSecondary }">3-day streak, 7 to go</p>
-                  <p class="text-[11px] font-medium" :style="{ color: L.accents.peach.bold }">3/10 days</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.accents.peach.soft, color: L.accents.peach.bold }"
-                >
-                  In progress
-                </span>
-              </div>
-
-              <!-- A-L · Locked — Century Club (lavender / star) -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: '0 1px 2px rgba(28,20,10,0.04), 0 2px 6px rgba(28,20,10,0.05)', opacity: 0.7 }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  style="filter: grayscale(1);"
-                  :style="{ background: L.surfaceSunken }"
-                >
-                  <StarIcon class="w-9 h-9" :style="{ color: L.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkTertiary }">Century Club</p>
-                  <p class="text-[12px]" :style="{ color: L.inkTertiary }">Complete 100 tasks</p>
-                  <p class="text-[11px]" :style="{ color: L.inkTertiary }">Locked</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.surfaceSunken, color: L.inkTertiary, border: `1px solid ${L.borderSubtle}` }"
-                >
-                  <LockClosedIcon class="w-3 h-3" />
-                  Locked
-                </span>
-              </div>
-
-              <!-- A-L · Hidden — ??? -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, borderStyle: 'dashed', opacity: 0.6 }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{ background: L.surfaceSunken }"
-                >
-                  <QuestionMarkCircleIcon class="w-9 h-9" :style="{ color: L.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[15px] font-semibold tracking-widest" :style="{ color: L.inkTertiary }">???</p>
-                  <p class="text-[12px]" :style="{ color: L.inkTertiary }">Keep playing to unlock</p>
-                  <p class="text-[11px]" :style="{ color: L.inkTertiary }">Hidden</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- ── DARK PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-4" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-              <!-- A-D · Earned — Week Warrior -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{
-                  background: D.surfaceRaised,
-                  borderColor: D.accents.sun.bold + '40',
-                  boxShadow: `0 0 24px ${D.accents.sun.soft}, 0 2px 8px rgba(230,196,82,0.15)`,
-                }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{ background: D.accents.sun.soft }"
-                >
-                  <TrophyIcon class="w-9 h-9" :style="{ color: D.accents.sun.bold }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkPrimary }">Week Warrior</p>
-                  <p class="text-[12px]" :style="{ color: D.inkSecondary }">7 tasks in a row</p>
-                  <p class="text-[11px]" :style="{ color: D.inkTertiary }">Earned 2d ago</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
-              </div>
-
-              <!-- A-D · Earned — Kindness Captain -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{
-                  background: D.surfaceRaised,
-                  borderColor: D.accents.peach.bold + '40',
-                  boxShadow: `0 0 24px ${D.accents.peach.soft}, 0 2px 8px rgba(240,168,130,0.12)`,
-                }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{ background: D.accents.peach.soft }"
-                >
-                  <HeartIcon class="w-9 h-9" :style="{ color: D.accents.peach.bold }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkPrimary }">Kindness Captain</p>
-                  <p class="text-[12px]" :style="{ color: D.inkSecondary }">Gave 10 kudos</p>
-                  <p class="text-[11px]" :style="{ color: D.inkTertiary }">Earned 5d ago</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
-              </div>
-
-              <!-- A-D · In-progress — Meal Planner (65%) -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: '0 1px 2px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.25)' }"
-              >
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <svg
-                    width="80" height="80" viewBox="0 0 80 80"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
-                    aria-hidden="true"
-                  >
-                    <circle cx="40" cy="40" :r="RING_R" fill="none" :stroke="D.accents.mint.soft" stroke-width="3" />
-                    <circle
-                      cx="40" cy="40" :r="RING_R" fill="none"
-                      :stroke="D.accents.mint.bold" stroke-width="3" stroke-linecap="round"
-                      :stroke-dasharray="RING_CIRC" :stroke-dashoffset="arcOffset(0.65)"
-                    />
-                  </svg>
-                  <AcademicCapIcon class="w-9 h-9 relative z-10" style="filter: grayscale(0.5);" :style="{ color: D.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkPrimary }">Meal Planner</p>
-                  <p class="text-[12px]" :style="{ color: D.inkSecondary }">Plan 20 meals</p>
-                  <p class="text-[11px] font-medium" :style="{ color: D.accents.mint.bold }">12/20</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.accents.mint.soft, color: D.accents.mint.bold }"
-                >
-                  In progress
-                </span>
-              </div>
-
-              <!-- A-D · In-progress — Streak Starter (30%) -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: '0 1px 2px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.25)' }"
-              >
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <svg
-                    width="80" height="80" viewBox="0 0 80 80"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
-                    aria-hidden="true"
-                  >
-                    <circle cx="40" cy="40" :r="RING_R" fill="none" :stroke="D.accents.peach.soft" stroke-width="3" />
-                    <circle
-                      cx="40" cy="40" :r="RING_R" fill="none"
-                      :stroke="D.accents.peach.bold" stroke-width="3" stroke-linecap="round"
-                      :stroke-dasharray="RING_CIRC" :stroke-dashoffset="arcOffset(0.30)"
-                    />
-                  </svg>
-                  <FireIcon class="w-9 h-9 relative z-10" style="filter: grayscale(0.5);" :style="{ color: D.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkPrimary }">Streak Starter</p>
-                  <p class="text-[12px]" :style="{ color: D.inkSecondary }">3-day streak, 7 to go</p>
-                  <p class="text-[11px] font-medium" :style="{ color: D.accents.peach.bold }">3/10 days</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.accents.peach.soft, color: D.accents.peach.bold }"
-                >
-                  In progress
-                </span>
-              </div>
-
-              <!-- A-D · Locked — Century Club -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: '0 1px 2px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.25)', opacity: 0.6 }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  style="filter: grayscale(1);"
-                  :style="{ background: D.surfaceSunken }"
-                >
-                  <StarIcon class="w-9 h-9" :style="{ color: D.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkTertiary }">Century Club</p>
-                  <p class="text-[12px]" :style="{ color: D.inkTertiary }">Complete 100 tasks</p>
-                  <p class="text-[11px]" :style="{ color: D.inkTertiary }">Locked</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.surfaceSunken, color: D.inkTertiary, border: `1px solid ${D.borderSubtle}` }"
-                >
-                  <LockClosedIcon class="w-3 h-3" />
-                  Locked
-                </span>
-              </div>
-
-              <!-- A-D · Hidden — ??? -->
-              <div
-                class="relative rounded-[20px] border flex flex-col items-center gap-3 px-5 py-7"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, borderStyle: 'dashed', opacity: 0.55 }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{ background: D.surfaceSunken }"
-                >
-                  <QuestionMarkCircleIcon class="w-9 h-9" :style="{ color: D.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[15px] font-semibold tracking-widest" :style="{ color: D.inkTertiary }">???</p>
-                  <p class="text-[12px]" :style="{ color: D.inkTertiary }">Keep playing to unlock</p>
-                  <p class="text-[11px]" :style="{ color: D.inkTertiary }">Hidden</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </VariantFrame>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════
-         VARIANT B — Iridescent GradientCard treatment
-         Earned = GradientCard language (radial accent gradient + embossed glyph).
-         Locked = flat surface-sunken with grey icon.
-         In-progress = flat surface with accent arc.
-         ════════════════════════════════════════════════════════════════ -->
-    <section class="mb-20">
-      <VariantFrame
-        label="B"
-        caption="Iridescent GradientCard — earned state uses radial accent gradient + embossed glyph feel. Makes earned feel like a reward; unearned stays quiet. Best for Achievements landing hero."
-      >
-        <div class="w-full space-y-10">
-
-          <!-- ── LIGHT PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-              <!-- B-L · Earned — Week Warrior (sun gradient) -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                style="
-                  background-color: #FFFBF0;
-                  background-image: radial-gradient(ellipse 80% 70% at 50% 25%, rgba(252,243,210,0.95), transparent 68%);
-                  box-shadow: 0 1px 2px rgba(28,20,10,0.04), 0 2px 6px rgba(28,20,10,0.05), inset 0 0 40px rgba(162,120,12,0.07);
-                "
-              >
-                <div
-                  class="relative w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{
-                    background: L.accents.sun.soft,
-                    boxShadow: `0 0 0 6px rgba(162,120,12,0.12), 0 0 20px rgba(162,120,12,0.18)`,
-                  }"
-                >
-                  <TrophyIcon class="w-9 h-9" :style="{ color: L.accents.sun.bold }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkPrimary }">Week Warrior</p>
-                  <p class="text-[12px]" :style="{ color: L.inkSecondary }">7 tasks in a row</p>
-                  <p class="text-[11px]" :style="{ color: L.inkTertiary }">Earned 2d ago</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
-              </div>
-
-              <!-- B-L · Earned — Kindness Captain (peach gradient) -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                style="
-                  background-color: #FFF7F4;
-                  background-image: radial-gradient(ellipse 80% 70% at 50% 25%, rgba(252,233,224,0.92), transparent 68%);
-                  box-shadow: 0 1px 2px rgba(28,20,10,0.04), 0 2px 6px rgba(28,20,10,0.05), inset 0 0 40px rgba(186,86,46,0.05);
-                "
-              >
-                <div
-                  class="relative w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{
-                    background: L.accents.peach.soft,
-                    boxShadow: `0 0 0 6px rgba(186,86,46,0.10), 0 0 20px rgba(186,86,46,0.14)`,
-                  }"
-                >
-                  <HeartIcon class="w-9 h-9" :style="{ color: L.accents.peach.bold }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkPrimary }">Kindness Captain</p>
-                  <p class="text-[12px]" :style="{ color: L.inkSecondary }">Gave 10 kudos</p>
-                  <p class="text-[11px]" :style="{ color: L.inkTertiary }">Earned 5d ago</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
-              </div>
-
-              <!-- B-L · In-progress — Meal Planner (flat + mint arc, 65%) -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                :style="{
-                  background: L.surfaceRaised,
-                  boxShadow: '0 1px 2px rgba(28,20,10,0.04), 0 2px 6px rgba(28,20,10,0.05)',
-                }"
-              >
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <svg
-                    width="80" height="80" viewBox="0 0 80 80"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
-                    aria-hidden="true"
-                  >
-                    <circle cx="40" cy="40" :r="RING_R" fill="none" :stroke="L.accents.mint.soft" stroke-width="3" />
-                    <circle
-                      cx="40" cy="40" :r="RING_R" fill="none"
-                      :stroke="L.accents.mint.bold" stroke-width="3" stroke-linecap="round"
-                      :stroke-dasharray="RING_CIRC" :stroke-dashoffset="arcOffset(0.65)"
-                    />
-                  </svg>
-                  <AcademicCapIcon class="w-9 h-9 relative z-10" style="filter: grayscale(0.5);" :style="{ color: L.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkPrimary }">Meal Planner</p>
-                  <p class="text-[12px]" :style="{ color: L.inkSecondary }">Plan 20 meals</p>
-                  <p class="text-[11px] font-medium" :style="{ color: L.accents.mint.bold }">12/20</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.accents.mint.soft, color: L.accents.mint.bold }"
-                >
-                  In progress
-                </span>
-              </div>
-
-              <!-- B-L · In-progress — Streak Starter (flat + peach arc, 30%) -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                :style="{
-                  background: L.surfaceRaised,
-                  boxShadow: '0 1px 2px rgba(28,20,10,0.04), 0 2px 6px rgba(28,20,10,0.05)',
-                }"
-              >
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <svg
-                    width="80" height="80" viewBox="0 0 80 80"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
-                    aria-hidden="true"
-                  >
-                    <circle cx="40" cy="40" :r="RING_R" fill="none" :stroke="L.accents.peach.soft" stroke-width="3" />
-                    <circle
-                      cx="40" cy="40" :r="RING_R" fill="none"
-                      :stroke="L.accents.peach.bold" stroke-width="3" stroke-linecap="round"
-                      :stroke-dasharray="RING_CIRC" :stroke-dashoffset="arcOffset(0.30)"
-                    />
-                  </svg>
-                  <FireIcon class="w-9 h-9 relative z-10" style="filter: grayscale(0.5);" :style="{ color: L.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkPrimary }">Streak Starter</p>
-                  <p class="text-[12px]" :style="{ color: L.inkSecondary }">3-day streak, 7 to go</p>
-                  <p class="text-[11px] font-medium" :style="{ color: L.accents.peach.bold }">3/10 days</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.accents.peach.soft, color: L.accents.peach.bold }"
-                >
-                  In progress
-                </span>
-              </div>
-
-              <!-- B-L · Locked — Century Club (surface-sunken, grey icon) -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                :style="{
-                  background: L.surfaceSunken,
-                  opacity: 0.7,
-                  boxShadow: '0 1px 2px rgba(28,20,10,0.04)',
-                }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  style="filter: grayscale(1);"
-                  :style="{ background: L.borderSubtle }"
-                >
-                  <StarIcon class="w-9 h-9" :style="{ color: L.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: L.inkTertiary }">Century Club</p>
-                  <p class="text-[12px]" :style="{ color: L.inkTertiary }">Complete 100 tasks</p>
-                  <p class="text-[11px]" :style="{ color: L.inkTertiary }">Locked</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.surfaceRaised, color: L.inkTertiary, border: `1px solid ${L.borderSubtle}` }"
-                >
-                  <LockClosedIcon class="w-3 h-3" />
-                  Locked
-                </span>
-              </div>
-
-              <!-- B-L · Hidden — ??? (surface-sunken, fully quiet) -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                :style="{
-                  background: L.surfaceSunken,
-                  opacity: 0.55,
-                }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{ background: L.borderSubtle }"
-                >
-                  <QuestionMarkCircleIcon class="w-9 h-9" :style="{ color: L.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[15px] font-semibold tracking-widest" :style="{ color: L.inkTertiary }">???</p>
-                  <p class="text-[12px]" :style="{ color: L.inkTertiary }">Keep playing to unlock</p>
-                  <p class="text-[11px]" :style="{ color: L.inkTertiary }">Hidden</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- ── DARK PANEL ── -->
-          <div class="rounded-2xl border p-6 space-y-4" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-              <!-- B-D · Earned — Week Warrior -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                style="
-                  background-color: #1C1B19;
-                  background-image: radial-gradient(ellipse 80% 70% at 50% 25%, rgba(230,196,82,0.28), transparent 65%);
-                  box-shadow: 0 1px 2px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.25), inset 0 0 40px rgba(230,196,82,0.05);
-                "
-              >
-                <div
-                  class="relative w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{
-                    background: D.accents.sun.soft,
-                    boxShadow: `0 0 0 6px rgba(230,196,82,0.10), 0 0 20px rgba(230,196,82,0.20)`,
-                  }"
-                >
-                  <TrophyIcon class="w-9 h-9" :style="{ color: D.accents.sun.bold }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkPrimary }">Week Warrior</p>
-                  <p class="text-[12px]" :style="{ color: D.inkSecondary }">7 tasks in a row</p>
-                  <p class="text-[11px]" :style="{ color: D.inkTertiary }">Earned 2d ago</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
-              </div>
-
-              <!-- B-D · Earned — Kindness Captain -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                style="
-                  background-color: #1C1B19;
-                  background-image: radial-gradient(ellipse 80% 70% at 50% 25%, rgba(240,168,130,0.22), transparent 65%);
-                  box-shadow: 0 1px 2px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.25), inset 0 0 40px rgba(240,168,130,0.04);
-                "
-              >
-                <div
-                  class="relative w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{
-                    background: D.accents.peach.soft,
-                    boxShadow: `0 0 0 6px rgba(240,168,130,0.08), 0 0 20px rgba(240,168,130,0.16)`,
-                  }"
-                >
-                  <HeartIcon class="w-9 h-9" :style="{ color: D.accents.peach.bold }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkPrimary }">Kindness Captain</p>
-                  <p class="text-[12px]" :style="{ color: D.inkSecondary }">Gave 10 kudos</p>
-                  <p class="text-[11px]" :style="{ color: D.inkTertiary }">Earned 5d ago</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
-              </div>
-
-              <!-- B-D · In-progress — Meal Planner (65%) -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                :style="{ background: D.surfaceRaised, boxShadow: '0 1px 2px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.25)' }"
-              >
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <svg
-                    width="80" height="80" viewBox="0 0 80 80"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
-                    aria-hidden="true"
-                  >
-                    <circle cx="40" cy="40" :r="RING_R" fill="none" :stroke="D.accents.mint.soft" stroke-width="3" />
-                    <circle
-                      cx="40" cy="40" :r="RING_R" fill="none"
-                      :stroke="D.accents.mint.bold" stroke-width="3" stroke-linecap="round"
-                      :stroke-dasharray="RING_CIRC" :stroke-dashoffset="arcOffset(0.65)"
-                    />
-                  </svg>
-                  <AcademicCapIcon class="w-9 h-9 relative z-10" style="filter: grayscale(0.5);" :style="{ color: D.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkPrimary }">Meal Planner</p>
-                  <p class="text-[12px]" :style="{ color: D.inkSecondary }">Plan 20 meals</p>
-                  <p class="text-[11px] font-medium" :style="{ color: D.accents.mint.bold }">12/20</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.accents.mint.soft, color: D.accents.mint.bold }"
-                >
-                  In progress
-                </span>
-              </div>
-
-              <!-- B-D · In-progress — Streak Starter (30%) -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                :style="{ background: D.surfaceRaised, boxShadow: '0 1px 2px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.25)' }"
-              >
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <svg
-                    width="80" height="80" viewBox="0 0 80 80"
-                    class="absolute inset-0" style="transform: rotate(-90deg);"
-                    aria-hidden="true"
-                  >
-                    <circle cx="40" cy="40" :r="RING_R" fill="none" :stroke="D.accents.peach.soft" stroke-width="3" />
-                    <circle
-                      cx="40" cy="40" :r="RING_R" fill="none"
-                      :stroke="D.accents.peach.bold" stroke-width="3" stroke-linecap="round"
-                      :stroke-dasharray="RING_CIRC" :stroke-dashoffset="arcOffset(0.30)"
-                    />
-                  </svg>
-                  <FireIcon class="w-9 h-9 relative z-10" style="filter: grayscale(0.5);" :style="{ color: D.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkPrimary }">Streak Starter</p>
-                  <p class="text-[12px]" :style="{ color: D.inkSecondary }">3-day streak, 7 to go</p>
-                  <p class="text-[11px] font-medium" :style="{ color: D.accents.peach.bold }">3/10 days</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.accents.peach.soft, color: D.accents.peach.bold }"
-                >
-                  In progress
-                </span>
-              </div>
-
-              <!-- B-D · Locked — Century Club -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                :style="{
-                  background: D.surfaceSunken,
-                  opacity: 0.6,
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.30)',
-                }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  style="filter: grayscale(1);"
-                  :style="{ background: D.borderSubtle }"
-                >
-                  <StarIcon class="w-9 h-9" :style="{ color: D.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[14px] font-semibold" :style="{ color: D.inkTertiary }">Century Club</p>
-                  <p class="text-[12px]" :style="{ color: D.inkTertiary }">Complete 100 tasks</p>
-                  <p class="text-[11px]" :style="{ color: D.inkTertiary }">Locked</p>
-                </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.surfaceRaised, color: D.inkTertiary, border: `1px solid ${D.borderSubtle}` }"
-                >
-                  <LockClosedIcon class="w-3 h-3" />
-                  Locked
-                </span>
-              </div>
-
-              <!-- B-D · Hidden — ??? -->
-              <div
-                class="relative rounded-[20px] overflow-hidden flex flex-col items-center gap-3 px-5 py-8"
-                :style="{
-                  background: D.surfaceSunken,
-                  opacity: 0.50,
-                }"
-              >
-                <div
-                  class="w-16 h-16 rounded-full flex items-center justify-center"
-                  :style="{ background: D.borderSubtle }"
-                >
-                  <QuestionMarkCircleIcon class="w-9 h-9" :style="{ color: D.inkTertiary }" />
-                </div>
-                <div class="text-center space-y-0.5">
-                  <p class="text-[15px] font-semibold tracking-widest" :style="{ color: D.inkTertiary }">???</p>
-                  <p class="text-[12px]" :style="{ color: D.inkTertiary }">Keep playing to unlock</p>
-                  <p class="text-[11px]" :style="{ color: D.inkTertiary }">Hidden</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </VariantFrame>
-    </section>
 
     <!-- ═══════════════════════════════════════════════════════════════
          VARIANT C — Hexagonal badge (Steam-style)
@@ -847,8 +75,8 @@ const TILES = {
          ════════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame
-        label="C"
-        caption="Hexagonal badge — Steam/console-achievement feel. 80×80px hex container with SVG clip. Earned = accent fill + inset glow. In-progress = tinted fill + arc ring. Locked = ghost outline. Profile trophy-case hero."
+        label="Hex"
+        caption="Hexagonal badge · Steam/console-achievement feel. State is communicated by the hex itself: earned = accent-bold fill + inset glow + outer pulse. In-progress = greyed surfaceSunken hex + inkTertiary icon + colored arc ring. Locked = outline ghost hex. Hidden = dashed outline + ??? glyph."
       >
         <div class="w-full space-y-10">
 
@@ -883,13 +111,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: L.inkSecondary }">7 tasks in a row</p>
                   <p class="text-[11px]" :style="{ color: L.inkTertiary }">Earned 2d ago</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
               </div>
 
               <!-- C-L · Earned — Kindness Captain (peach) -->
@@ -916,13 +137,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: L.inkSecondary }">Gave 10 kudos</p>
                   <p class="text-[11px]" :style="{ color: L.inkTertiary }">Earned 5d ago</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.status.success.soft, color: L.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
               </div>
 
               <!-- C-L · In-progress — Meal Planner (mint, 65%) -->
@@ -945,9 +159,9 @@ const TILES = {
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: L.accents.mint.soft }"
+                    :style="{ background: L.surfaceSunken }"
                   >
-                    <AcademicCapIcon class="w-9 h-9" style="filter: grayscale(0.4);" :style="{ color: L.accents.mint.bold }" />
+                    <AcademicCapIcon class="w-9 h-9" :style="{ color: L.inkTertiary }" />
                   </div>
                 </div>
                 <div class="text-center space-y-0.5">
@@ -955,12 +169,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: L.inkSecondary }">Plan 20 meals</p>
                   <p class="text-[11px] font-medium" :style="{ color: L.accents.mint.bold }">12/20</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.accents.mint.soft, color: L.accents.mint.bold }"
-                >
-                  In progress
-                </span>
               </div>
 
               <!-- C-L · In-progress — Streak Starter (peach, 30%) -->
@@ -982,9 +190,9 @@ const TILES = {
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: L.accents.peach.soft }"
+                    :style="{ background: L.surfaceSunken }"
                   >
-                    <FireIcon class="w-9 h-9" style="filter: grayscale(0.4);" :style="{ color: L.accents.peach.bold }" />
+                    <FireIcon class="w-9 h-9" :style="{ color: L.inkTertiary }" />
                   </div>
                 </div>
                 <div class="text-center space-y-0.5">
@@ -992,12 +200,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: L.inkSecondary }">3-day streak, 7 to go</p>
                   <p class="text-[11px] font-medium" :style="{ color: L.accents.peach.bold }">3/10 days</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.accents.peach.soft, color: L.accents.peach.bold }"
-                >
-                  In progress
-                </span>
               </div>
 
               <!-- C-L · Locked — Century Club -->
@@ -1016,13 +218,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: L.inkTertiary }">Complete 100 tasks</p>
                   <p class="text-[11px]" :style="{ color: L.inkTertiary }">Locked</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: L.surfaceSunken, color: L.inkTertiary, border: `1px solid ${L.borderSubtle}` }"
-                >
-                  <LockClosedIcon class="w-3 h-3" />
-                  Locked
-                </span>
               </div>
 
               <!-- C-L · Hidden — ??? (dashed border ghost) -->
@@ -1076,13 +271,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: D.inkSecondary }">7 tasks in a row</p>
                   <p class="text-[11px]" :style="{ color: D.inkTertiary }">Earned 2d ago</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
               </div>
 
               <!-- C-D · Earned — Kindness Captain -->
@@ -1109,13 +297,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: D.inkSecondary }">Gave 10 kudos</p>
                   <p class="text-[11px]" :style="{ color: D.inkTertiary }">Earned 5d ago</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.status.success.soft, color: D.status.success.bold }"
-                >
-                  <CheckBadgeIcon class="w-3.5 h-3.5" />
-                  Earned
-                </span>
               </div>
 
               <!-- C-D · In-progress — Meal Planner (65%) -->
@@ -1137,9 +318,9 @@ const TILES = {
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: D.accents.mint.soft }"
+                    :style="{ background: D.surfaceSunken }"
                   >
-                    <AcademicCapIcon class="w-9 h-9" style="filter: grayscale(0.4);" :style="{ color: D.accents.mint.bold }" />
+                    <AcademicCapIcon class="w-9 h-9" :style="{ color: D.inkTertiary }" />
                   </div>
                 </div>
                 <div class="text-center space-y-0.5">
@@ -1147,12 +328,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: D.inkSecondary }">Plan 20 meals</p>
                   <p class="text-[11px] font-medium" :style="{ color: D.accents.mint.bold }">12/20</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.accents.mint.soft, color: D.accents.mint.bold }"
-                >
-                  In progress
-                </span>
               </div>
 
               <!-- C-D · In-progress — Streak Starter (30%) -->
@@ -1174,9 +349,9 @@ const TILES = {
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: D.accents.peach.soft }"
+                    :style="{ background: D.surfaceSunken }"
                   >
-                    <FireIcon class="w-9 h-9" style="filter: grayscale(0.4);" :style="{ color: D.accents.peach.bold }" />
+                    <FireIcon class="w-9 h-9" :style="{ color: D.inkTertiary }" />
                   </div>
                 </div>
                 <div class="text-center space-y-0.5">
@@ -1184,12 +359,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: D.inkSecondary }">3-day streak, 7 to go</p>
                   <p class="text-[11px] font-medium" :style="{ color: D.accents.peach.bold }">3/10 days</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.accents.peach.soft, color: D.accents.peach.bold }"
-                >
-                  In progress
-                </span>
               </div>
 
               <!-- C-D · Locked — Century Club -->
@@ -1208,13 +377,6 @@ const TILES = {
                   <p class="text-[12px]" :style="{ color: D.inkTertiary }">Complete 100 tasks</p>
                   <p class="text-[11px]" :style="{ color: D.inkTertiary }">Locked</p>
                 </div>
-                <span
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium"
-                  :style="{ background: D.surfaceSunken, color: D.inkTertiary, border: `1px solid ${D.borderSubtle}` }"
-                >
-                  <LockClosedIcon class="w-3 h-3" />
-                  Locked
-                </span>
               </div>
 
               <!-- C-D · Hidden — ??? -->
@@ -1252,10 +414,16 @@ const TILES = {
         <SparklesOutlineIcon class="w-5 h-5 flex-shrink-0 mt-0.5" :style="{ color: L.accents.lavender.bold }" />
         <div>
           <p class="text-sm font-semibold mb-1" :style="{ color: L.accents.lavender.bold }">
-            Claude's pick — Variant C
+            LOCKED — Hexagonal AchievementTile
           </p>
           <p class="text-sm leading-relaxed" :style="{ color: L.inkPrimary }">
-            The hexagonal container is doing semantic work that circles and rectangles can't: it imports Steam's established badge grammar so players read "achievement" before they read the title. The arc ring hugging the hex boundary at in-progress creates the tightest possible progress composition — no separate element needed. Reserve A for everyday feed/list views where the flat surface keeps visual cost low; use B on the Achievements landing page hero where a single "just earned" badge deserves the gradient spotlight; reach for C wherever gamification is the primary story — profile trophy case, dedicated Achievements grid, or a celebration modal.
+            One shape, three states expressed entirely through the hex itself — no status chips. The hexagonal container imports Steam's badge grammar so viewers read "achievement" before they read the title.
+          </p>
+          <p class="text-sm leading-relaxed mt-2" :style="{ color: L.inkSecondary }">
+            <strong>Earned:</strong> full-color accent-bold hex fill, inset white highlight, outer pulse ring.
+            <strong>In-progress:</strong> greyed-out hex (surfaceSunken fill + inkTertiary icon) + <em>colored</em> arc ring around the hex showing progress — color is reserved for what the user hasn't achieved yet.
+            <strong>Locked:</strong> transparent hex with borderStrong outline + inkTertiary icon.
+            <strong>Hidden:</strong> dashed outline + QuestionMarkCircle glyph. Reveals the real badge on earn.
           </p>
         </div>
       </div>
@@ -1272,7 +440,7 @@ const TILES = {
         <div class="px-6 py-4">
           <h2 class="text-base font-semibold" :style="{ color: L.inkPrimary }">Usage guide</h2>
           <p class="text-sm mt-1" :style="{ color: L.inkSecondary }">
-            All three variants share one state machine: <strong>locked</strong> (grey/ghost, reduced opacity), <strong>in-progress</strong> (greyscale or tinted glyph + accent arc ring + count label), <strong>earned</strong> (full-accent glyph, no arc, "Earned" success chip). Hidden achievements always render as "???" with <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">QuestionMarkCircleIcon</code> until earned, regardless of variant.
+            One hex, four states. Used on Achievements page trophy grids, profile trophy case, celebration modals, and dashboard "just earned" spotlights. Badge density of 6+ per row works fine — the hex shape scales down cleanly to 56px without losing identity.
           </p>
         </div>
 
@@ -1281,12 +449,11 @@ const TILES = {
             <span
               class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold"
               :style="{ background: L.inkPrimary, color: L.inkInverse }"
-            >A — Flat surface</span>
+            >Earned</span>
           </div>
           <div class="space-y-1">
-            <p class="text-sm font-medium" :style="{ color: L.inkPrimary }">Everyday feed tiles, task-completion toasts, dense lists of 8+ badges</p>
             <p class="text-sm" :style="{ color: L.inkSecondary }">
-              Lowest visual cost — the flat surfaceRaised card keeps the focus on the badge metadata (title, description, progress). The accent-colored glow on the earned state is subtle enough not to compete with surrounding content. Safe default for any context where badge density is higher than two per row.
+              Accent-bold hex fill + inset white highlight + outer pulse ring at 20% accent-bold opacity. Icon is inkInverse. The pulse ring is a second hex sibling behind the primary one — no animation required, the soft halo reads as "lit up."
             </p>
           </div>
         </div>
@@ -1296,12 +463,11 @@ const TILES = {
             <span
               class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold"
               :style="{ background: L.inkPrimary, color: L.inkInverse }"
-            >B — Gradient card</span>
+            >In progress</span>
           </div>
           <div class="space-y-1">
-            <p class="text-sm font-medium" :style="{ color: L.inkPrimary }">Achievements landing hero, dashboard "just earned" spotlight, profile header</p>
             <p class="text-sm" :style="{ color: L.inkSecondary }">
-              The iridescent radial gradient makes earned feel like a collectible and unearned feels appropriately quiet (surface-sunken, no gradient). Best when you want to feature one or two badges prominently rather than scan a whole grid. The contrast between earned (glowing gradient) and locked (flat sunken) is maximally clear in this treatment.
+              Hex fill is <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">surfaceSunken</code> and the icon is <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">inkTertiary</code> — fully greyed out. The arc ring around the hex stays in the accent-bold color at the progress percentage. Color is reserved for what hasn't happened yet, so the eye tracks progress not identity. Progress-count text (e.g. "12/20") below the tile stays in the accent-bold color as an anchor.
             </p>
           </div>
         </div>
@@ -1311,21 +477,27 @@ const TILES = {
             <span
               class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold"
               :style="{ background: L.inkPrimary, color: L.inkInverse }"
-            >C — Hex badge</span>
+            >Locked</span>
           </div>
           <div class="space-y-1">
-            <p class="text-sm font-medium" :style="{ color: L.inkPrimary }">Achievements page trophy grid, profile trophy case, celebration modal</p>
             <p class="text-sm" :style="{ color: L.inkSecondary }">
-              The hexagonal shape borrows Steam's badge grammar — recognizable as an "achievement" before any label is read. The arc ring hugging the hex boundary at in-progress and the outer pulse-ring on earned are the highest-drama moments in this component set. The SVG clip-path means the hex bleeds correctly into any background — always verify in both light and dark before shipping. Use the dashed outline variant (hex-tile-dashed) for hidden badges so they read as structurally distinct from regular-locked tiles.
+              Transparent hex with a 2px <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">borderStrong</code> outline + inkTertiary icon. Whole tile wrapper at 55% opacity. No arc (no progress to show). The tile is deliberately quiet — it's a placeholder.
             </p>
           </div>
         </div>
 
-        <div class="px-6 py-4">
-          <p class="text-xs font-semibold uppercase tracking-widest mb-2" :style="{ color: L.inkTertiary }">Hidden badge mechanic</p>
-          <p class="text-sm" :style="{ color: L.inkSecondary }">
-            When <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">is_hidden = true</code> and not yet earned: always render "???" as the title, <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">QuestionMarkCircleIcon</code> as the glyph, and "Keep playing to unlock" as the description. Never expose the real name, icon category, or progress count until earned. In Variant C, use the dashed hex border (.hex-tile-dashed) to visually separate hidden-locked from regular-locked.
-          </p>
+        <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3">
+          <div>
+            <span
+              class="inline-flex items-center justify-center h-6 min-w-[1.5rem] px-2 rounded-full text-xs font-semibold"
+              :style="{ background: L.inkPrimary, color: L.inkInverse }"
+            >Hidden</span>
+          </div>
+          <div class="space-y-1">
+            <p class="text-sm" :style="{ color: L.inkSecondary }">
+              When <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">is_hidden = true</code> and not yet earned, render "???" as the title, <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">QuestionMarkCircleIcon</code> as the glyph, and "Keep playing to unlock" as the description. Use the dashed hex border (<code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">.hex-tile-dashed</code>) to distinguish hidden-locked from regular-locked. Never expose the real name or icon category until earned.
+            </p>
+          </div>
         </div>
       </div>
     </section>
