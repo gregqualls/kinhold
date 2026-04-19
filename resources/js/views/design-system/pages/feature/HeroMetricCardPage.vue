@@ -106,7 +106,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                 <div
                   class="hmc-a-lt relative rounded-[28px] overflow-hidden"
                   style="
-                    min-height: 220px;
+                    min-height: 180px;
                     background-color: #FFFFFF;
                     background-image: radial-gradient(circle at 15% 15%, #EAE6F8, #D5F2E8 40%, #FCE9E0 85%, #FFFFFF 100%);
                   "
@@ -168,7 +168,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                 <div
                   class="hmc-a-lt relative rounded-[28px] overflow-hidden"
                   style="
-                    min-height: 280px;
+                    min-height: 220px;
                     background-color: #FFFFFF;
                     background-image: radial-gradient(circle at 15% 15%, #EAE6F8, #D5F2E8 40%, #FCE9E0 85%, #FFFFFF 100%);
                   "
@@ -228,7 +228,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                 <div
                   class="hmc-a-dk relative rounded-[28px] overflow-hidden"
                   style="
-                    min-height: 220px;
+                    min-height: 180px;
                     background-color: #1C1B19;
                     background-image: radial-gradient(circle at 15% 15%, rgba(104,86,178,0.55), rgba(124,214,174,0.28) 40%, rgba(240,168,130,0.22) 85%, transparent 100%);
                   "
@@ -282,7 +282,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                 <div
                   class="hmc-a-dk relative rounded-[28px] overflow-hidden"
                   style="
-                    min-height: 280px;
+                    min-height: 220px;
                     background-color: #1C1B19;
                     background-image: radial-gradient(circle at 15% 15%, rgba(104,86,178,0.55), rgba(124,214,174,0.28) 40%, rgba(240,168,130,0.22) 85%, transparent 100%);
                   "
@@ -359,7 +359,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                 <div
                   class="hmc-b-lt relative rounded-[28px] overflow-hidden"
                   style="
-                    min-height: 240px;
+                    min-height: 200px;
                     background-color: #FFFFFF;
                     background-image: radial-gradient(circle at 50% 0%, #FCE9E0, #FCF3D2 50%, #BA562E 120%);
                   "
@@ -400,7 +400,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                 <div
                   class="hmc-b-lt relative rounded-[28px] overflow-hidden"
                   style="
-                    min-height: 260px;
+                    min-height: 220px;
                     background-color: #FFFFFF;
                     background-image: radial-gradient(circle at 50% 0%, #FCE9E0, #FCF3D2 50%, #BA562E 120%);
                   "
@@ -418,10 +418,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                   <!-- Content anchored bottom: content-left + CTA-right, matches A's desktop layout -->
                   <div class="absolute inset-x-0 bottom-0 p-8 flex items-end justify-between gap-6">
                     <div class="space-y-1.5 min-w-0">
-                      <div class="flex items-center gap-1.5">
-                        <FireIcon class="w-4 h-4 flex-shrink-0" :style="{ color: L.accents.peach.bold }" />
-                        <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.accents.peach.bold }">Reward expires in</p>
-                      </div>
+                      <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.accents.peach.bold }">Reward expires in</p>
                       <p
                         class="font-semibold leading-none tracking-tight"
                         style="font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -0.03em;"
@@ -453,7 +450,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                 <div
                   class="hmc-b-dk relative rounded-[28px] overflow-hidden"
                   style="
-                    min-height: 240px;
+                    min-height: 200px;
                     background-color: #1C1B19;
                     background-image: radial-gradient(circle at 50% 0%, rgba(240,168,130,0.55), rgba(230,196,82,0.30) 50%, rgba(186,86,46,0.55) 120%);
                   "
@@ -491,7 +488,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                 <div
                   class="hmc-b-dk relative rounded-[28px] overflow-hidden"
                   style="
-                    min-height: 260px;
+                    min-height: 220px;
                     background-color: #1C1B19;
                     background-image: radial-gradient(circle at 50% 0%, rgba(240,168,130,0.55), rgba(230,196,82,0.30) 50%, rgba(186,86,46,0.55) 120%);
                   "
@@ -509,10 +506,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                   <!-- Content anchored bottom: content-left + CTA-right, matches A's desktop layout -->
                   <div class="absolute inset-x-0 bottom-0 p-8 flex items-end justify-between gap-6">
                     <div class="space-y-1.5 min-w-0">
-                      <div class="flex items-center gap-1.5">
-                        <FireIcon class="w-4 h-4 flex-shrink-0" :style="{ color: D.accents.peach.bold }" />
-                        <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.accents.peach.bold }">Reward expires in</p>
-                      </div>
+                      <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.accents.peach.bold }">Reward expires in</p>
                       <p
                         class="font-semibold leading-none tracking-tight"
                         style="font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -0.03em;"
@@ -584,7 +578,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                       <p class="text-[11px] font-semibold uppercase tracking-widest" style="color: rgba(255,255,255,0.70)">Tonight's dinner</p>
                       <p
                         class="font-semibold leading-tight"
-                        style="font-size: clamp(1.5rem, 5vw, 2.5rem); letter-spacing: -0.02em; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.80), 0 2px 8px rgba(0,0,0,0.55);"
+                        style="font-size: clamp(1.125rem, 3.5vw, 1.75rem); letter-spacing: -0.01em; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.80), 0 2px 8px rgba(0,0,0,0.55);"
                       >Roast chicken with rosemary potatoes</p>
                       <p class="text-[12px]" style="color: rgba(255,255,255,0.80)">Serves 5 · 45 min</p>
                     </div>
@@ -605,7 +599,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
               <div style="max-width: 640px;">
                 <div
                   class="hmc-c-lt relative rounded-[28px] overflow-hidden"
-                  style="min-height: 320px; background-color: #1A1A2E;"
+                  style="min-height: 260px; background-color: #1A1A2E;"
                   :style="{ boxShadow: SHADOW_HERO_LT }"
                 >
                   <img
@@ -677,7 +671,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
                       <p class="text-[11px] font-semibold uppercase tracking-widest" style="color: rgba(255,255,255,0.70)">Tonight's dinner</p>
                       <p
                         class="font-semibold leading-tight"
-                        style="font-size: clamp(1.5rem, 5vw, 2.5rem); letter-spacing: -0.02em; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.80), 0 2px 8px rgba(0,0,0,0.55);"
+                        style="font-size: clamp(1.125rem, 3.5vw, 1.75rem); letter-spacing: -0.01em; color: #FFFFFF; text-shadow: 0 1px 3px rgba(0,0,0,0.80), 0 2px 8px rgba(0,0,0,0.55);"
                       >Roast chicken with rosemary potatoes</p>
                       <p class="text-[12px]" style="color: rgba(255,255,255,0.80)">Serves 5 · 45 min</p>
                     </div>
@@ -698,7 +692,7 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
               <div style="max-width: 640px;">
                 <div
                   class="hmc-c-dk relative rounded-[28px] overflow-hidden"
-                  style="min-height: 320px; background-color: #1A1A2E;"
+                  style="min-height: 260px; background-color: #1A1A2E;"
                   :style="{ boxShadow: SHADOW_HERO_DK }"
                 >
                   <img
