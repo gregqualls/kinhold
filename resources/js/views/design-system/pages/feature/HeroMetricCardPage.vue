@@ -843,25 +843,14 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
 
 /* ═══════════════════════════════════════════════════════════════════
    SCRIM — shared between C light and dark
-   Two-layer system so text stays legible regardless of the photo:
-   (1) subtle full-card darken mutes bright / busy imagery
-   (2) stronger bottom-weighted gradient anchors the text area
-   The whole scrim reaches up to ~90% of card height so the photo
-   still "breathes" at the very top while text below always reads.
+   Flat translucent overlay across the whole card. Photo stays
+   visible at ~55% through, white text reads anywhere on the card
+   regardless of image content. Simpler and more predictable than
+   a gradient — no "legible at the bottom, breaks at the top"
+   surprises when a photo has bright highlights mid-card.
    ═══════════════════════════════════════════════════════════════════ */
 .hmc-scrim {
-  background:
-    /* full-card subtle darken */
-    linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)),
-    /* bottom-weighted main scrim */
-    linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.90) 0%,
-      rgba(0, 0, 0, 0.72) 25%,
-      rgba(0, 0, 0, 0.45) 50%,
-      rgba(0, 0, 0, 0.18) 75%,
-      transparent 95%
-    );
+  background: rgba(0, 0, 0, 0.45);
   pointer-events: none;
 }
 
