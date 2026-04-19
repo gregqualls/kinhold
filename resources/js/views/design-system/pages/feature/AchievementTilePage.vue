@@ -92,7 +92,7 @@ const TILES = {
                 <div class="relative flex items-center justify-center" style="width: 108px; height: 108px;">
                   <div
                     class="hex-tile absolute"
-                    style="width: 108px; height: 108px; opacity: 0.20;"
+                    style="width: 108px; height: 108px; opacity: 0.40;"
                     :style="{ background: L.accents.sun.bold }"
                   />
                   <div
@@ -118,7 +118,7 @@ const TILES = {
                 <div class="relative flex items-center justify-center" style="width: 108px; height: 108px;">
                   <div
                     class="hex-tile absolute"
-                    style="width: 108px; height: 108px; opacity: 0.20;"
+                    style="width: 108px; height: 108px; opacity: 0.40;"
                     :style="{ background: L.accents.peach.bold }"
                   />
                   <div
@@ -159,7 +159,7 @@ const TILES = {
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: L.surfaceSunken }"
+                    :style="{ background: L.borderSubtle }"
                   >
                     <AcademicCapIcon class="w-9 h-9" :style="{ color: L.inkTertiary }" />
                   </div>
@@ -190,7 +190,7 @@ const TILES = {
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: L.surfaceSunken }"
+                    :style="{ background: L.borderSubtle }"
                   >
                     <FireIcon class="w-9 h-9" :style="{ color: L.inkTertiary }" />
                   </div>
@@ -207,8 +207,8 @@ const TILES = {
                 <div style="width: 108px; height: 108px; display: flex; align-items: center; justify-content: center;">
                   <div
                     class="hex-tile flex items-center justify-center"
-                    style="width: 80px; height: 80px; background: transparent;"
-                    :style="{ outline: `2px solid ${L.borderStrong}` }"
+                    style="width: 80px; height: 80px;"
+                    :style="{ background: L.borderSubtle }"
                   >
                     <StarIcon class="w-8 h-8" :style="{ color: L.inkTertiary }" />
                   </div>
@@ -224,9 +224,9 @@ const TILES = {
               <div class="flex flex-col items-center gap-3" style="opacity: 0.50;">
                 <div style="width: 108px; height: 108px; display: flex; align-items: center; justify-content: center;">
                   <div
-                    class="hex-tile-dashed flex items-center justify-center"
+                    class="hex-tile flex items-center justify-center"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: L.surfaceSunken }"
+                    :style="{ background: L.borderSubtle }"
                   >
                     <QuestionMarkCircleIcon class="w-8 h-8" :style="{ color: L.inkTertiary }" />
                   </div>
@@ -252,7 +252,7 @@ const TILES = {
                 <div class="relative flex items-center justify-center" style="width: 108px; height: 108px;">
                   <div
                     class="hex-tile absolute"
-                    style="width: 108px; height: 108px; opacity: 0.18;"
+                    style="width: 108px; height: 108px; opacity: 0.35;"
                     :style="{ background: D.accents.sun.bold }"
                   />
                   <div
@@ -278,7 +278,7 @@ const TILES = {
                 <div class="relative flex items-center justify-center" style="width: 108px; height: 108px;">
                   <div
                     class="hex-tile absolute"
-                    style="width: 108px; height: 108px; opacity: 0.18;"
+                    style="width: 108px; height: 108px; opacity: 0.35;"
                     :style="{ background: D.accents.peach.bold }"
                   />
                   <div
@@ -318,7 +318,7 @@ const TILES = {
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: D.surfaceSunken }"
+                    :style="{ background: D.borderSubtle }"
                   >
                     <AcademicCapIcon class="w-9 h-9" :style="{ color: D.inkTertiary }" />
                   </div>
@@ -349,7 +349,7 @@ const TILES = {
                   <div
                     class="hex-tile flex items-center justify-center relative z-10"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: D.surfaceSunken }"
+                    :style="{ background: D.borderSubtle }"
                   >
                     <FireIcon class="w-9 h-9" :style="{ color: D.inkTertiary }" />
                   </div>
@@ -366,8 +366,8 @@ const TILES = {
                 <div style="width: 108px; height: 108px; display: flex; align-items: center; justify-content: center;">
                   <div
                     class="hex-tile flex items-center justify-center"
-                    style="width: 80px; height: 80px; background: transparent;"
-                    :style="{ outline: `2px solid ${D.borderStrong}` }"
+                    style="width: 80px; height: 80px;"
+                    :style="{ background: D.borderSubtle }"
                   >
                     <StarIcon class="w-8 h-8" :style="{ color: D.inkTertiary }" />
                   </div>
@@ -383,9 +383,9 @@ const TILES = {
               <div class="flex flex-col items-center gap-3" style="opacity: 0.45;">
                 <div style="width: 108px; height: 108px; display: flex; align-items: center; justify-content: center;">
                   <div
-                    class="hex-tile-dashed flex items-center justify-center"
+                    class="hex-tile flex items-center justify-center"
                     style="width: 80px; height: 80px;"
-                    :style="{ background: D.surfaceSunken }"
+                    :style="{ background: D.borderSubtle }"
                   >
                     <QuestionMarkCircleIcon class="w-8 h-8" :style="{ color: D.inkTertiary }" />
                   </div>
@@ -481,7 +481,7 @@ const TILES = {
           </div>
           <div class="space-y-1">
             <p class="text-sm" :style="{ color: L.inkSecondary }">
-              Transparent hex with a 2px <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">borderStrong</code> outline + inkTertiary icon. Whole tile wrapper at 55% opacity. No arc (no progress to show). The tile is deliberately quiet — it's a placeholder.
+              Hex filled with <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">borderSubtle</code> + inkTertiary icon. Whole tile wrapper at 55% opacity. No arc (no progress to show). The tile is deliberately quiet — it's a placeholder.
             </p>
           </div>
         </div>
@@ -495,7 +495,7 @@ const TILES = {
           </div>
           <div class="space-y-1">
             <p class="text-sm" :style="{ color: L.inkSecondary }">
-              When <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">is_hidden = true</code> and not yet earned, render "???" as the title, <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">QuestionMarkCircleIcon</code> as the glyph, and "Keep playing to unlock" as the description. Use the dashed hex border (<code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">.hex-tile-dashed</code>) to distinguish hidden-locked from regular-locked. Never expose the real name or icon category until earned.
+              When <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">is_hidden = true</code> and not yet earned, render "???" as the title, <code class="text-xs font-mono px-1 rounded" :style="{ background: L.surfaceSunken, color: L.inkPrimary }">QuestionMarkCircleIcon</code> as the glyph, and "Keep playing to unlock" as the description. Uses the same greyed hex as locked — the ??? title + question-mark icon + "Hidden" label do the distinguishing work. Never expose the real name or icon category until earned.
             </p>
           </div>
         </div>
@@ -515,21 +515,8 @@ const TILES = {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
-/*
-  Dashed-border hex for hidden badges — rendered as a box with
-  dashed border that is then clip-pathed to hex shape.
-  The clip-path eats the border corners, so the dashes approximate
-  the hex edge without a separate SVG stroke.
-*/
-.hex-tile-dashed {
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  border: 2px dashed currentColor;
-  opacity: 0.6;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .hex-tile,
-  .hex-tile-dashed {
+  .hex-tile {
     animation: none !important;
     transition: none !important;
   }
