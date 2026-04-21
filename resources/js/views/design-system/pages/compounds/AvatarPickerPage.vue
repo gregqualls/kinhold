@@ -2,10 +2,26 @@
 import { ref, computed } from 'vue'
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinAvatarPicker from '@/components/design-system/KinAvatarPicker.vue'
 import {
   SparklesIcon, CheckIcon, StarIcon, HeartIcon,
 } from '@heroicons/vue/24/solid'
 import { SparklesIcon as SparklesOutlineIcon } from '@heroicons/vue/24/outline'
+
+// ── Kin component preview data ───────────────────────────────────────────────
+// Maps the original member shape to KinAvatarPicker's prop shape:
+//   photo   → { src }
+//   initials → let KinAvatar generate from `name`
+//   icon    → pass the icon component reference
+const ICON_MAP = { heart: HeartIcon, star: StarIcon }
+function toKinMembers(members) {
+  return members.map((m) => {
+    const base = { key: m.key, name: m.name, accentColor: m.accentColor }
+    if (m.type === 'photo') return { ...base, src: m.photo }
+    if (m.type === 'icon')  return { ...base, icon: ICON_MAP[m.icon] }
+    return base   // initials — KinAvatar generates from name
+  })
+}
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const L = {
@@ -1398,6 +1414,87 @@ const stackOverflowCount = computed(() => Math.max(0, MEMBERS_OVERFLOW.length - 
           </li>
         </ul>
       </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — review below before replacing the bespoke demo
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinAvatarPicker — proposed extraction. Review against the bespoke variants above.">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-6 space-y-6"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Single-select · md (40px)</p>
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeA_L]" @update:active-keys="(ks) => activeA_L = ks[0] || null" size="md" />
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Single-select · lg (56px)</p>
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeA_L]" @update:active-keys="(ks) => activeA_L = ks[0] || null" size="lg" />
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Multi-select · md (checkmark overlay)</p>
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" v-model:active-keys="multiA_L" multi size="md" />
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">8 members · overflow-x-auto in 320px frame</p>
+              <div class="max-w-[320px] rounded-xl border p-3"
+                   :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+                <div class="overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
+                  <div class="w-max">
+                    <KinAvatarPicker :members="toKinMembers(MEMBERS_OVERFLOW)" :active-keys="[activeA_L]" @update:active-keys="(ks) => activeA_L = ks[0] || null" size="md" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6 space-y-6"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Single-select · md (40px)</p>
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeA_D]" @update:active-keys="(ks) => activeA_D = ks[0] || null" size="md" />
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Single-select · lg (56px)</p>
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeA_D]" @update:active-keys="(ks) => activeA_D = ks[0] || null" size="lg" />
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Multi-select · md (checkmark overlay)</p>
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" v-model:active-keys="multiA_D" multi size="md" />
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">8 members · overflow-x-auto in 320px frame</p>
+              <div class="max-w-[320px] rounded-xl border p-3"
+                   :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
+                <div class="overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
+                  <div class="w-max">
+                    <KinAvatarPicker :members="toKinMembers(MEMBERS_OVERFLOW)" :active-keys="[activeA_D]" @update:active-keys="(ks) => activeA_D = ks[0] || null" size="md" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        Review this against the bespoke variants A and B above. When approved, the bespoke markup will be removed and this becomes the canonical demo.
+      </p>
     </section>
 
   </ComponentPage>

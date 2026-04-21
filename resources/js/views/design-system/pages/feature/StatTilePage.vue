@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinStatTile from '@/components/design-system/KinStatTile.vue'
 import {
   SparklesIcon, ArrowUpRightIcon, ArrowDownRightIcon, FireIcon,
 } from '@heroicons/vue/24/outline'
@@ -818,6 +819,87 @@ function toBars(data) {
           </div>
         </div>
       </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — review below before replacing the bespoke demo
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinStatTile — proposed extraction. Hero number is container-query scaled (30cqw).">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL — Full configuration (all layers) -->
+          <div class="rounded-2xl border p-6 space-y-6"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode — full (label + range + delta + hero + chart)</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <KinStatTile
+                label="Points Earned" value="1,248" accent-color="sun"
+                delta="+86" :delta-up="true"
+                :chart-data="chartPoints" chart-type="line"
+                :ranges="RANGES" v-model:range="rangePointsL"
+              />
+              <KinStatTile
+                label="Tasks Done" value="84%" accent-color="mint"
+                delta="+12%" :delta-up="true"
+                :chart-data="chartTasks" chart-type="bars"
+                :ranges="RANGES" v-model:range="rangeTasksL"
+              />
+              <KinStatTile
+                label="Day Streak" value="23" accent-color="peach"
+                delta="+3" :delta-up="true"
+                :chart-data="chartStreak" chart-type="line"
+                :ranges="RANGES" v-model:range="rangeStreakL"
+              />
+            </div>
+
+            <p class="text-xs font-semibold uppercase tracking-widest pt-4" :style="{ color: L.inkTertiary }">Layers removed — label + hero only</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <KinStatTile label="Members" value="5" accent-color="lavender" />
+              <KinStatTile label="This Week" value="$287" accent-color="mint" delta="-$12" :delta-up="false" />
+              <KinStatTile label="Leader" value="Greg" accent-color="sun" />
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6 space-y-6"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode — full</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <KinStatTile
+                label="Points Earned" value="1,248" accent-color="sun"
+                delta="+86" :delta-up="true"
+                :chart-data="chartPoints" chart-type="line"
+                :ranges="RANGES" v-model:range="rangePointsD"
+              />
+              <KinStatTile
+                label="Tasks Done" value="84%" accent-color="mint"
+                delta="+12%" :delta-up="true"
+                :chart-data="chartTasks" chart-type="bars"
+                :ranges="RANGES" v-model:range="rangeTasksD"
+              />
+              <KinStatTile
+                label="Day Streak" value="23" accent-color="peach"
+                delta="+3" :delta-up="true"
+                :chart-data="chartStreak" chart-type="line"
+                :ranges="RANGES" v-model:range="rangeStreakD"
+              />
+            </div>
+
+            <p class="text-xs font-semibold uppercase tracking-widest pt-4" :style="{ color: D.inkTertiary }">Layers removed — label + hero only</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <KinStatTile label="Members" value="5" accent-color="lavender" />
+              <KinStatTile label="This Week" value="$287" accent-color="mint" delta="-$12" :delta-up="false" />
+              <KinStatTile label="Leader" value="Greg" accent-color="sun" />
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        Review against the bespoke variants above. Every layer below the hero number is opt-in — drop the range filter, chart, or delta props to reveal only what's needed.
+      </p>
     </section>
 
   </ComponentPage>

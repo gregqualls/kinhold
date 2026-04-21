@@ -1,6 +1,7 @@
 <script setup>
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinMetaTriplet from '@/components/design-system/KinMetaTriplet.vue'
 import {
   SparklesIcon, ClockIcon, CalendarDaysIcon, MapPinIcon,
   FireIcon, FlagIcon, StarIcon, CurrencyDollarIcon,
@@ -281,6 +282,30 @@ const allSets = [
           </ul>
         </div>
       </div>
+    </section>
+
+
+    <!-- KIN COMPONENT PREVIEW -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinMetaTriplet — proposed extraction. Pass any 3-item array.">
+        <div class="w-full space-y-10">
+          <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-2" :style="{ color: L.inkTertiary }">Light mode</p>
+            <div v-for="set in allSets" :key="set.key" class="rounded-2xl border p-4" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+              <p class="text-[10px] font-semibold uppercase tracking-widest mb-3" :style="{ color: L.inkTertiary }">{{ set.label }}</p>
+              <KinMetaTriplet :items="set.data" />
+            </div>
+          </div>
+
+          <div class="dark rounded-2xl border p-6 space-y-4" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-2" :style="{ color: D.inkTertiary }">Dark mode</p>
+            <div v-for="set in allSets" :key="set.key" class="rounded-2xl border p-4" :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
+              <p class="text-[10px] font-semibold uppercase tracking-widest mb-3" :style="{ color: D.inkTertiary }">{{ set.label }}</p>
+              <KinMetaTriplet :items="set.data" />
+            </div>
+          </div>
+        </div>
+      </VariantFrame>
     </section>
 
   </ComponentPage>

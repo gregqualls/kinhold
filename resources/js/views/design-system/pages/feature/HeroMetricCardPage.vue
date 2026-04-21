@@ -1,6 +1,7 @@
 <script setup>
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinHeroMetricCard from '@/components/design-system/KinHeroMetricCard.vue'
 import {
   SparklesIcon, FireIcon, ArrowUpRightIcon, ArrowRightIcon,
   CalendarDaysIcon, CheckBadgeIcon,
@@ -797,6 +798,109 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
           </li>
         </ul>
       </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — review below before replacing the bespoke demo
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinHeroMetricCard — proposed extraction. Three variants: iridescent, warm, photo.">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-6 space-y-6"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
+
+            <div class="space-y-4">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: L.inkTertiary }">Iridescent · calm summary</p>
+              <KinHeroMetricCard
+                variant="iridescent"
+                :glyph="SparklesIcon"
+                label="Today's score"
+                value="64"
+                delta="+12"
+                cta-label="View"
+              />
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: L.inkTertiary }">Warm · streak / urgency</p>
+              <KinHeroMetricCard
+                variant="warm"
+                :glyph="FireIcon"
+                label="Day streak"
+                value="23 days"
+                delta="+1 today"
+                cta-label="Keep going"
+              />
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: L.inkTertiary }">Photo · two-layer scrim</p>
+              <KinHeroMetricCard
+                variant="photo"
+                :photo="PHOTO_FAMILY_DINNER"
+                photo-alt="Family dinner"
+                label="Tonight's plan"
+                value="6 PM"
+                delta="3 of 5 confirmed"
+                cta-label="Details"
+                min-height="260px"
+              />
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6 space-y-6"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
+
+            <div class="space-y-4">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: D.inkTertiary }">Iridescent · calm summary</p>
+              <KinHeroMetricCard
+                variant="iridescent"
+                :glyph="SparklesIcon"
+                label="Today's score"
+                value="64"
+                delta="+12"
+                cta-label="View"
+              />
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: D.inkTertiary }">Warm · streak / urgency</p>
+              <KinHeroMetricCard
+                variant="warm"
+                :glyph="FireIcon"
+                label="Day streak"
+                value="23 days"
+                delta="+1 today"
+                cta-label="Keep going"
+              />
+            </div>
+
+            <div class="space-y-4">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: D.inkTertiary }">Photo · two-layer scrim</p>
+              <KinHeroMetricCard
+                variant="photo"
+                :photo="PHOTO_FAMILY_DINNER"
+                photo-alt="Family dinner"
+                label="Tonight's plan"
+                value="6 PM"
+                delta="3 of 5 confirmed"
+                cta-label="Details"
+                min-height="260px"
+              />
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        Review against the bespoke variants above. All three variants ship — chosen by context at the callsite.
+      </p>
     </section>
 
   </ComponentPage>

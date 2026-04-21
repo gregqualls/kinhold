@@ -2,7 +2,14 @@
 import { ref } from 'vue'
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinWeekStrip from '@/components/design-system/KinWeekStrip.vue'
 import { SparklesIcon } from '@heroicons/vue/24/outline'
+
+// Kin component preview state
+const kinSelectedL = ref(3)
+const kinSelectedD = ref(3)
+const kinSelectedL2 = ref(3)
+const kinSelectedD2 = ref(3)
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const L = {
@@ -554,6 +561,45 @@ function extraCount(events) {
           </li>
         </ul>
       </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — review below before replacing the bespoke demo
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinWeekStrip — proposed extraction. Today anchored lavender-soft; selected fills lavender-bold; past dims to 45%.">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-6 space-y-6"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode · 7 days</p>
+            <KinWeekStrip :days="WEEK" :today-index="TODAY_INDEX" v-model:selected-index="kinSelectedL" />
+
+            <p class="text-xs font-semibold uppercase tracking-widest pt-2" :style="{ color: L.inkTertiary }">Light mode · 14 days (two-week context)</p>
+            <div class="overflow-x-auto">
+              <KinWeekStrip :days="TWO_WEEKS" :today-index="TODAY_INDEX" v-model:selected-index="kinSelectedL2" />
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6 space-y-6"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode · 7 days</p>
+            <KinWeekStrip :days="WEEK" :today-index="TODAY_INDEX" v-model:selected-index="kinSelectedD" />
+
+            <p class="text-xs font-semibold uppercase tracking-widest pt-2" :style="{ color: D.inkTertiary }">Dark mode · 14 days</p>
+            <div class="overflow-x-auto">
+              <KinWeekStrip :days="TWO_WEEKS" :today-index="TODAY_INDEX" v-model:selected-index="kinSelectedD2" />
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        Review against the bespoke strip above. Click any non-past pill to select; past days are disabled.
+      </p>
     </section>
 
   </ComponentPage>

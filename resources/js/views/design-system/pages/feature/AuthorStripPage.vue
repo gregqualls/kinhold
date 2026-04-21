@@ -5,6 +5,7 @@ import {
   SparklesIcon, BookmarkIcon, ShareIcon, HandThumbUpIcon,
   ArrowTopRightOnSquareIcon, UserPlusIcon, PencilSquareIcon,
 } from '@heroicons/vue/24/outline'
+import KinAuthorStrip from '@/components/design-system/KinAuthorStrip.vue'
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const L = {
@@ -298,6 +299,36 @@ const authors = [
           </p>
         </div>
       </div>
+    </section>
+
+
+    <!-- KIN COMPONENT PREVIEW -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinAuthorStrip — proposed extraction. Avatar + name/role/meta + action.">
+        <div class="w-full space-y-10">
+          <div class="rounded-2xl border" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <div class="px-5 py-3 border-b" :style="{ borderColor: L.borderSubtle }">
+              <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
+            </div>
+            <div class="rounded-b-2xl overflow-hidden divide-y" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+              <KinAuthorStrip initials="EQ" avatar-color="#2E8A62" name="Emma Qualls (12)" role="Kid" meta="Created this task" action-label="Edit" :action-icon="PencilSquareIcon" />
+              <KinAuthorStrip initials="AQ" avatar-color="#A2780C" name="Ava (14)"          role="Sibling" meta="Gave kudos 2h ago" action-label="Thank" :action-icon="HandThumbUpIcon" />
+              <KinAuthorStrip is-ai                                    name="Kinhold Assistant" role="Generated" meta="4.2s" action-label="View trace" :action-icon="ArrowTopRightOnSquareIcon" />
+            </div>
+          </div>
+
+          <div class="dark rounded-2xl border" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <div class="px-5 py-3 border-b" :style="{ borderColor: D.borderSubtle }">
+              <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
+            </div>
+            <div class="rounded-b-2xl overflow-hidden divide-y" :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
+              <KinAuthorStrip initials="EQ" avatar-color="#7CD6AE" name="Emma Qualls (12)" role="Kid" meta="Created this task" action-label="Edit" :action-icon="PencilSquareIcon" />
+              <KinAuthorStrip initials="AQ" avatar-color="#E6C452" name="Ava (14)"          role="Sibling" meta="Gave kudos 2h ago" action-label="Thank" :action-icon="HandThumbUpIcon" />
+              <KinAuthorStrip is-ai                                    name="Kinhold Assistant" role="Generated" meta="4.2s" action-label="View trace" :action-icon="ArrowTopRightOnSquareIcon" />
+            </div>
+          </div>
+        </div>
+      </VariantFrame>
     </section>
 
   </ComponentPage>

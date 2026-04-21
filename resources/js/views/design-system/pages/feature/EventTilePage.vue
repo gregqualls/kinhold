@@ -1,6 +1,7 @@
 <script setup>
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinEventTile from '@/components/design-system/KinEventTile.vue'
 import {
   SparklesIcon,
   ClockIcon,
@@ -730,6 +731,79 @@ const AVATARS = {
           </li>
         </ul>
       </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — review below before replacing the bespoke demo
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinEventTile — proposed extraction. Block (default) + span variants; accent colors + source + visibility handled via props.">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-6 space-y-6"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
+
+            <div>
+              <p class="text-[11px] mb-3 font-medium" :style="{ color: L.inkTertiary }">Block variant — accent colors, avatars, all-day, task, busy, private</p>
+              <div class="flex flex-wrap gap-2">
+                <KinEventTile width="148px" title="Soccer practice"  time="5:00 – 6:30 PM"  accent-color="lavender" />
+                <KinEventTile width="148px" title="Parent-teacher"   time="2:00 – 3:00 PM"  accent-color="mint"
+                              :avatars="[{ initials: 'M', color: '#6856B2' }, { initials: 'D', color: '#2E8A62' }]" />
+                <KinEventTile width="148px" title="Emma's birthday"  all-day                accent-color="sun" />
+                <KinEventTile width="148px" title="Science project"  time="Due 3:00 PM"     accent-color="peach"  source="task" />
+                <KinEventTile width="148px" title="Busy"             time="10:00 – 11:30 AM" visibility="busy" />
+                <KinEventTile width="148px" title="Private"          time="7:00 – 8:00 PM"  visibility="private" />
+              </div>
+            </div>
+
+            <div>
+              <p class="text-[11px] mb-3 font-medium" :style="{ color: L.inkTertiary }">Span variant — multi-day pills</p>
+              <div class="space-y-2">
+                <KinEventTile variant="span" title="Family camping trip" accent-color="lavender"
+                              :avatars="[{ initials: 'M', color: '#6856B2' }, { initials: 'D', color: '#2E8A62' }, { initials: 'E', color: '#BA562E' }]" />
+                <KinEventTile variant="span" title="Meal plan: Mediterranean week" accent-color="mint" />
+                <KinEventTile variant="span" title="Vacation · Maine" accent-color="sun" source="task" />
+              </div>
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6 space-y-6"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
+
+            <div>
+              <p class="text-[11px] mb-3 font-medium" :style="{ color: D.inkTertiary }">Block variant</p>
+              <div class="flex flex-wrap gap-2">
+                <KinEventTile width="148px" title="Soccer practice"  time="5:00 – 6:30 PM"  accent-color="lavender" />
+                <KinEventTile width="148px" title="Parent-teacher"   time="2:00 – 3:00 PM"  accent-color="mint"
+                              :avatars="[{ initials: 'M', color: '#B6A8E6' }, { initials: 'D', color: '#7CD6AE' }]" />
+                <KinEventTile width="148px" title="Emma's birthday"  all-day                accent-color="sun" />
+                <KinEventTile width="148px" title="Science project"  time="Due 3:00 PM"     accent-color="peach"  source="task" />
+                <KinEventTile width="148px" title="Busy"             time="10:00 – 11:30 AM" visibility="busy" />
+                <KinEventTile width="148px" title="Private"          time="7:00 – 8:00 PM"  visibility="private" />
+              </div>
+            </div>
+
+            <div>
+              <p class="text-[11px] mb-3 font-medium" :style="{ color: D.inkTertiary }">Span variant — multi-day pills</p>
+              <div class="space-y-2">
+                <KinEventTile variant="span" title="Family camping trip" accent-color="lavender"
+                              :avatars="[{ initials: 'M', color: '#B6A8E6' }, { initials: 'D', color: '#7CD6AE' }, { initials: 'E', color: '#F0A882' }]" />
+                <KinEventTile variant="span" title="Meal plan: Mediterranean week" accent-color="mint" />
+                <KinEventTile variant="span" title="Vacation · Maine" accent-color="sun" source="task" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        Review against the bespoke variants above. Block is the primary; span is a prop-opt-in variant for multi-day spans.
+      </p>
     </section>
 
   </ComponentPage>

@@ -27,7 +27,7 @@
    Light: warm near-white cream family — not hospital-white
    Dark:  deep warm-charcoal family — not dead-OLED black
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   /* App background — warm ivory with a breath of cream */
   --surface-app:     250 248 245;   /* #FAF8F5 */
 
@@ -59,7 +59,7 @@
   --border-strong:   188 184 178;   /* #BCB8B2 */
 }
 
-html.dark {
+.dark {
   /* App background — deep warm charcoal, hints of brown warmth */
   --surface-app:     20  19  17;    /* #141311 — warmer than pure #121214 */
 
@@ -103,7 +103,7 @@ html.dark {
    Dark:  slightly deeper soft (reads against dark bg),
           lighter/brighter bold (stays legible)
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   /* Lavender — soft purple hue */
   --accent-lavender-soft:  234 230 248;   /* #EAE6F8 — very pale lavender */
   --accent-lavender-bold:  104  86 178;   /* #6856B2 — 4.6:1 on #EAE6F8 (AA), 5.8:1 on #FAF8F5 */
@@ -121,7 +121,7 @@ html.dark {
   --accent-sun-bold:       162 120  12;   /* #A2780C — 4.7:1 on #FCF3D2 (AA), 5.0:1 on #FAF8F5 */
 }
 
-html.dark {
+.dark {
   /* Lavender dark — deeper soft, lighter bold */
   --accent-lavender-soft:  48  42  72;    /* #302A48 — deep lavender tint */
   --accent-lavender-bold:  182 168 230;   /* #B6A8E6 — 5.4:1 on #302A48 (AA), 6.2:1 on #141311 */
@@ -146,7 +146,7 @@ html.dark {
    Light: muted tones on warm-white
    Dark:  independently softened for dark ground
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   /* Success — sage green */
   --status-success:   77 140 106;   /* #4D8C6A — 4.6:1 on #FAF8F5 (AA) */
 
@@ -166,7 +166,7 @@ html.dark {
   --status-warning:  196 140  36;   /* #C48C24 — 4.5:1 on #FAF8F5 (AA) */
 }
 
-html.dark {
+.dark {
   /* Success — lighter sage, reads on dark charcoal */
   --status-success:  108 196 152;   /* #6CC498 — 5.8:1 on #141311 (AA) */
 
@@ -193,12 +193,29 @@ html.dark {
    moments (not as the default button color in the new library).
    One token per mode — same hex across both (it's a brand constant).
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   --brand-gold: 196 151  90;   /* #C4975A — muted gold, unchanged from BRAND_GUIDE */
 }
 
-html.dark {
+.dark {
   --brand-gold: 196 151  90;   /* #C4975A — brand constant, same in dark */
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   4.5 SKELETON SHIMMER
+   Skeleton base is slightly DARKER than surface-sunken so it reads
+   against any panel bg. Shimmer highlight is LIGHTER than the base
+   — a lighter gradient pass that slides across.
+   ──────────────────────────────────────────────────────────────── */
+:root, .light {
+  --skeleton-base:     237 234 229;   /* #EDEAE5 — darker than surface-sunken #F5F2EE */
+  --skeleton-shimmer:  248 246 243;   /* #F8F6F3 — lighter highlight pass */
+}
+
+.dark {
+  --skeleton-base:     44 42 39;      /* #2C2A27 — lighter than surface-app #141311 */
+  --skeleton-shimmer:  62 60 56;      /* #3E3C38 — lighter highlight pass */
 }
 
 
@@ -238,7 +255,7 @@ html.dark {
    These tokens are NOT mode-dependent (typography is mode-agnostic).
    Color is handled by --ink-* tokens from Section 1.
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   /* ── Hero — 64–180px ── */
   /* Used for: points balance, daily step count, big stat on dashboard  */
   /* Pair with: font-heading (Plus Jakarta Sans), font-tabular if numbers */
@@ -323,7 +340,7 @@ html.dark {
    Pill is the primary shape language for interactive chrome.
    Cards, sheets, and fields use progressively softer rectangles.
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   --radius-pill:   9999px;   /* buttons, chips, nav pills, status pills */
   --radius-card:     20px;   /* cards (raised surfaces) */
   --radius-sheet:    28px;   /* modals, bottom sheets, drawers */
@@ -338,7 +355,7 @@ html.dark {
    They feel natural against the warm-ivory surface rather than
    the cold greyish shadows produced by pure-black rgba().
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   --shadow-resting:
     0 1px  2px rgba(28, 20, 10, 0.04),
     0 2px  6px rgba(28, 20, 10, 0.05);
@@ -368,7 +385,7 @@ html.dark {
    They must be significantly darker and deeper to create
    visible elevation against a near-black charcoal surface.
    ──────────────────────────────────────────────────────────────── */
-html.dark {
+.dark {
   --shadow-resting:
     0 1px  2px rgba(0, 0, 0, 0.30),
     0 2px  6px rgba(0, 0, 0, 0.25);
@@ -400,7 +417,7 @@ html.dark {
    Easing tokens: out-soft (decelerate into rest),
    in-out-soft (symmetric slide), spring (overshoot = lively).
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   /* Durations */
   --duration-instant:    100ms;   /* micro-feedback: toggle, press highlight */
   --duration-quick:      200ms;   /* hover lift, nav pill switch, chip select */
@@ -461,7 +478,7 @@ html.dark {
           glow. The dark isn't an inversion — same structure, different
           palette, authored independently.
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   /*
    * Light subtle — four overlapping radial wells sized LARGER than the
    * container (120–150%) with late fade (85–90%) so the wells blanket
@@ -492,7 +509,7 @@ html.dark {
     linear-gradient(135deg, rgba(252, 233, 224, 0.20) 0%, rgba(252, 243, 210, 0.20) 100%);
 }
 
-html.dark {
+.dark {
   /*
    * Dark subtle — oversized wells of -bold accent hexes at low opacity
    * so the hues blanket the charcoal surface without splotchy gaps.
@@ -538,14 +555,14 @@ html.dark {
    18% / 15% / 10% opacity so they're barely visible — just enough
    to suggest depth and warmth in a premium way.
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   --gradient-ambient:
     radial-gradient(ellipse 80% 60% at 20% 10%, rgba(234, 230, 248, 0.55), transparent 50%),
     radial-gradient(ellipse 70% 50% at 85% 20%, rgba(252, 233, 224, 0.45), transparent 55%),
     radial-gradient(ellipse 60% 50% at 70% 90%, rgba(213, 242, 232, 0.40), transparent 50%);
 }
 
-html.dark {
+.dark {
   --gradient-ambient:
     radial-gradient(ellipse 80% 60% at 20% 10%, rgba(72, 110, 156, 0.18), transparent 55%),
     radial-gradient(ellipse 70% 50% at 85% 25%, rgba(104, 86, 178, 0.15), transparent 55%),
@@ -562,7 +579,7 @@ html.dark {
    Light uses the light-mode accent hexes; dark uses the dark-mode
    accent hexes with slightly more saturation at the mid-stop.
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   /* Lavender accent — pale opal wash */
   --gradient-accent-lavender:
     linear-gradient(135deg, #EAE6F8 0%, #D8D0F2 50%, #EAE6F8 100%);
@@ -580,7 +597,7 @@ html.dark {
     linear-gradient(135deg, #FCF3D2 0%, #F5E4A8 50%, #FCF3D2 100%);
 }
 
-html.dark {
+.dark {
   /* Lavender accent dark — deep indigo tint (mid-stop brightened ~20 % toward bold for parity with peach/mint/sun) */
   --gradient-accent-lavender:
     linear-gradient(135deg, #302A48 0%, #4B4368 50%, #302A48 100%);
@@ -627,7 +644,7 @@ html.dark {
 /* ────────────────────────────────────────────────────────────────
    7. GLASS UTILITIES — LIGHT
    ──────────────────────────────────────────────────────────────── */
-:root {
+:root, .light {
   --glass-bg:          rgba(255, 255, 255, 0.55);
   --glass-bg-strong:   rgba(255, 255, 255, 0.72);
   --glass-border:      rgba(255, 255, 255, 0.65);
@@ -642,7 +659,7 @@ html.dark {
    Border and highlight are restrained — just enough to suggest a
    surface boundary without competing with the content behind.
    ──────────────────────────────────────────────────────────────── */
-html.dark {
+.dark {
   --glass-bg:          rgba(28, 27, 25, 0.55);
   --glass-bg-strong:   rgba(28, 27, 25, 0.75);
   --glass-border:      rgba(255, 255, 255, 0.08);
@@ -662,7 +679,7 @@ html.dark {
    ──────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   :root,
-  html.dark {
+  .dark {
     --duration-instant:    0ms;
     --duration-quick:      0ms;
     --duration-deliberate: 0ms;

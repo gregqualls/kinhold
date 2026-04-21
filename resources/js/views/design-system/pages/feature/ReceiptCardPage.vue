@@ -7,6 +7,7 @@ import {
   FlagIcon, UserGroupIcon, PencilSquareIcon, CheckIcon,
   ArrowTopRightOnSquareIcon, TagIcon,
 } from '@heroicons/vue/24/outline'
+import KinReceiptCard from '@/components/design-system/KinReceiptCard.vue'
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const L = {
@@ -528,6 +529,72 @@ const SH_DK = '0 1px 2px rgba(0,0,0,0.30), 0 2px 6px rgba(0,0,0,0.25)'
           </div>
         </div>
       </div>
+    </section>
+
+
+    <!-- KIN COMPONENT PREVIEW -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinReceiptCard — proposed extraction. Header + icon rows + optional action.">
+        <div class="w-full space-y-10">
+          <div class="rounded-2xl border p-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Light mode</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <KinReceiptCard
+                title="Movie night pass"
+                :title-icon="TicketIcon"
+                accent-color="sun"
+                :rows="[
+                  { label: 'Points spent', value: '150', icon: StarIcon },
+                  { label: 'Purchased',    value: 'Today', icon: CalendarDaysIcon },
+                  { label: 'Expires',      value: 'Apr 30', icon: ClockIcon },
+                  { label: 'Redeemed by',  value: 'Emma',   icon: UserIcon },
+                ]"
+                action-label="View details"
+              />
+              <KinReceiptCard
+                title="Do laundry"
+                :title-icon="CheckBadgeIcon"
+                accent-color="mint"
+                :rows="[
+                  { label: 'Due',      value: 'Tomorrow 6pm', icon: CalendarDaysIcon },
+                  { label: 'Priority', value: 'High',          icon: FlagIcon, iconAccent: 'peach' },
+                  { label: 'Points',   value: '5',             icon: StarIcon, iconAccent: 'sun' },
+                ]"
+                action-label="Mark complete"
+              />
+            </div>
+          </div>
+
+          <div class="dark rounded-2xl border p-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: D.inkTertiary }">Dark mode</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <KinReceiptCard
+                title="Movie night pass"
+                :title-icon="TicketIcon"
+                accent-color="sun"
+                :rows="[
+                  { label: 'Points spent', value: '150', icon: StarIcon },
+                  { label: 'Purchased',    value: 'Today', icon: CalendarDaysIcon },
+                  { label: 'Expires',      value: 'Apr 30', icon: ClockIcon },
+                  { label: 'Redeemed by',  value: 'Emma',   icon: UserIcon },
+                ]"
+                action-label="View details"
+              />
+              <KinReceiptCard
+                title="Do laundry"
+                :title-icon="CheckBadgeIcon"
+                accent-color="mint"
+                :rows="[
+                  { label: 'Due',      value: 'Tomorrow 6pm', icon: CalendarDaysIcon },
+                  { label: 'Priority', value: 'High',          icon: FlagIcon, iconAccent: 'peach' },
+                  { label: 'Points',   value: '5',             icon: StarIcon, iconAccent: 'sun' },
+                ]"
+                action-label="Mark complete"
+              />
+            </div>
+          </div>
+        </div>
+      </VariantFrame>
     </section>
 
   </ComponentPage>

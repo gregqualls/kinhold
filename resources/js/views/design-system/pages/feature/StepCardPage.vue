@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
 import { SparklesIcon, CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/24/outline'
+import KinStepCard from '@/components/design-system/KinStepCard.vue'
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const L = {
@@ -425,6 +426,28 @@ const stepsB = [
           </div>
         </div>
       </div>
+    </section>
+
+
+    <!-- KIN COMPONENT PREVIEW -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinStepCard — proposed extraction. Stack multiple cards; connector line auto-suppressed on last.">
+        <div class="w-full space-y-10">
+          <div class="rounded-2xl border p-5" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Light mode</p>
+            <KinStepCard :number="1" state="done"    title="Create your family" body="Give your family a name and invite code. This becomes your private workspace." />
+            <KinStepCard :number="2" state="active"  title="Connect your calendar" body="Link Google Calendar so family events appear alongside tasks and reminders." />
+            <KinStepCard :number="3" state="default" title="Invite your family members" body="Share the invite code with your partner and kids." :is-last="true" />
+          </div>
+
+          <div class="dark rounded-2xl border p-5" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: D.inkTertiary }">Dark mode</p>
+            <KinStepCard :number="1" state="done"    title="Create your family" body="Give your family a name and invite code. This becomes your private workspace." />
+            <KinStepCard :number="2" state="active"  title="Connect your calendar" body="Link Google Calendar so family events appear alongside tasks and reminders." />
+            <KinStepCard :number="3" state="default" title="Invite your family members" body="Share the invite code with your partner and kids." :is-last="true" />
+          </div>
+        </div>
+      </VariantFrame>
     </section>
 
   </ComponentPage>

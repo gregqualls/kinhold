@@ -80,7 +80,7 @@ function activeIndex(options, activeKey) {
   <ComponentPage
     title="4.2 SegmentedFilter"
     description="Segmented pill control for mutually-exclusive filter selection — activity feeds, time-range pickers, leaderboard period selectors, and notification filters."
-    status="chosen"
+    status="scaffolded"
   >
 
     <!-- ═══════════════════════════════════════════════════════════════════

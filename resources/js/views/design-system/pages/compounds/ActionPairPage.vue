@@ -72,7 +72,7 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
   <ComponentPage
     title="4.4 ActionPair"
     description="The canonical two-button decision pattern — a secondary action next to a primary action. Solves the outline/filled, sizing, and gap questions for list rows and decision cards app-wide."
-    status="chosen"
+    status="scaffolded"
   >
 
     <!-- ══════════════════════════════════════════════════════════════════════

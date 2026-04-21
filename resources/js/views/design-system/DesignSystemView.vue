@@ -1,7 +1,8 @@
 <script setup>
-import { computed, defineAsyncComponent, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { REGISTRY, TIERS, findBySlug, progressByTier } from './registry'
+import { useDarkMode } from '@/composables/useDarkMode'
 
 const route = useRoute()
 const router = useRouter()
@@ -35,10 +36,15 @@ watch(activeSlug, () => {
   sidebarOpen.value = false
 })
 
-function toggleDark() {
-  const root = document.documentElement
-  root.classList.toggle('dark')
-}
+// Design-system always shows light + dark side-by-side via ModeSplit, so the
+// root theme is forced to light while this view is mounted. The user's global
+// dark-mode preference (localStorage) is untouched — it reapplies on exit.
+const { isDark } = useDarkMode()
+const root = document.documentElement
+onMounted(() => root.classList.remove('dark'))
+onBeforeUnmount(() => {
+  if (isDark.value) root.classList.add('dark')
+})
 </script>
 
 <template>
@@ -54,11 +60,7 @@ function toggleDark() {
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
       </button>
       <p class="text-sm font-semibold">Design System</p>
-      <button
-        type="button"
-        class="text-xs px-3 py-1.5 rounded-full border border-kin-gray-200 dark:border-kin-gray-700"
-        @click="toggleDark"
-      >Theme</button>
+      <span class="w-5" aria-hidden="true"></span>
     </header>
 
     <!-- Sidebar -->
@@ -73,17 +75,12 @@ function toggleDark() {
           <p class="text-xs uppercase tracking-wider text-kin-gray-500 dark:text-kin-gray-400">Kinhold</p>
           <p class="text-lg font-semibold tracking-tight">Design System</p>
         </RouterLink>
-        <div class="mt-4 flex items-center justify-between">
+        <div class="mt-4">
           <a
             href="/docs/design/COMPONENT_ROADMAP.md"
             target="_blank"
-            class="text-xs text-kin-gray-500 dark:text-kin-gray-400 underline-offset-2 hover:underline"
+            class="text-xs text-kin-gray-500 underline-offset-2 hover:underline"
           >Roadmap</a>
-          <button
-            type="button"
-            class="text-xs px-3 py-1.5 rounded-full border border-kin-gray-200 dark:border-kin-gray-700 hover:bg-kin-gray-50 dark:hover:bg-kin-gray-800"
-            @click="toggleDark"
-          >Toggle theme</button>
         </div>
       </div>
 

@@ -1,7 +1,8 @@
 <script setup>
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
-import { SparklesIcon } from '@heroicons/vue/24/outline'
+import KinTimelineRow from '@/components/design-system/KinTimelineRow.vue'
+import { SparklesIcon, CakeIcon, MapPinIcon } from '@heroicons/vue/24/outline'
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const L = {
@@ -631,6 +632,30 @@ const STACKED_ROWS = [
           </li>
         </ul>
       </div>
+    </section>
+
+
+    <!-- KIN COMPONENT PREVIEW -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinTimelineRow — proposed extraction. Pill only; parent handles grid positioning.">
+        <div class="w-full space-y-10">
+          <div class="rounded-2xl border p-6 space-y-3" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Light mode — 4 accent colors, icons, avatars, drag handle</p>
+            <KinTimelineRow label="Leftover stir-fry · Mon→Wed" accent-color="mint" :icon="CakeIcon" draggable />
+            <KinTimelineRow label="Movie night pass · Fri→Sun" accent-color="sun" :avatars="[{initials:'M',color:'#6856B2'},{initials:'D',color:'#2E8A62'},{initials:'E',color:'#BA562E'}]" />
+            <KinTimelineRow label="Vacation · Maine" accent-color="lavender" :icon="MapPinIcon" draggable />
+            <KinTimelineRow label="Peach week" accent-color="peach" />
+          </div>
+
+          <div class="dark rounded-2xl border p-6 space-y-3" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: D.inkTertiary }">Dark mode</p>
+            <KinTimelineRow label="Leftover stir-fry · Mon→Wed" accent-color="mint" :icon="CakeIcon" draggable />
+            <KinTimelineRow label="Movie night pass · Fri→Sun" accent-color="sun" :avatars="[{initials:'M',color:'#B6A8E6'},{initials:'D',color:'#7CD6AE'},{initials:'E',color:'#F0A882'}]" />
+            <KinTimelineRow label="Vacation · Maine" accent-color="lavender" :icon="MapPinIcon" draggable />
+            <KinTimelineRow label="Peach week" accent-color="peach" />
+          </div>
+        </div>
+      </VariantFrame>
     </section>
 
   </ComponentPage>

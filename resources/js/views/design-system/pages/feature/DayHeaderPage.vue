@@ -1,6 +1,7 @@
 <script setup>
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinDayHeader from '@/components/design-system/KinDayHeader.vue'
 import { SparklesIcon } from '@heroicons/vue/24/outline'
 
 // ── Palette — light ────────────────────────────────────────────────────────
@@ -348,6 +349,36 @@ const MONTH_LABEL_STYLE = {
           </li>
         </ul>
       </div>
+    </section>
+
+
+    <!-- KIN COMPONENT PREVIEW -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinDayHeader — proposed extraction. Hero number + vertical rule + stacked weekday/month/count.">
+        <div class="w-full space-y-10">
+          <div class="rounded-2xl border p-8 space-y-10" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
+            <KinDayHeader :day="14" weekday="Friday" month="March 2026" :event-count="3" />
+            <KinDayHeader :day="21" weekday="Saturday" month="March 2026" />
+            <KinDayHeader :day="14" weekday="Friday" month="March 2026" :event-count="3" :is-today="true" />
+            <div class="max-w-[375px] rounded-xl border p-4" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+              <KinDayHeader :day="14" weekday="Friday" month="March 2026" :event-count="3" size="sm" />
+            </div>
+            <div class="rounded-xl border p-8 max-w-[640px]" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+              <KinDayHeader :day="14" weekday="Friday" month="March 2026" :event-count="3" size="lg" />
+            </div>
+          </div>
+
+          <div class="dark rounded-2xl border p-8 space-y-10" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
+            <KinDayHeader :day="14" weekday="Friday" month="March 2026" :event-count="3" />
+            <KinDayHeader :day="14" weekday="Friday" month="March 2026" :event-count="3" :is-today="true" />
+            <div class="rounded-xl border p-8 max-w-[640px]" :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
+              <KinDayHeader :day="14" weekday="Friday" month="March 2026" :event-count="3" size="lg" />
+            </div>
+          </div>
+        </div>
+      </VariantFrame>
     </section>
 
   </ComponentPage>

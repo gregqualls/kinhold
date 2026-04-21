@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinMonthGrid from '@/components/design-system/KinMonthGrid.vue'
 import { SparklesIcon } from '@heroicons/vue/24/outline'
 
 // ── Palettes ─────────────────────────────────────────────────────────────────
@@ -85,6 +86,12 @@ const CELLS = buildMonthCells()
 function accentOf(name, palette, key) {
   return palette.accents[name] ? palette.accents[name][key] : palette.accents.lavender[key]
 }
+
+// ── Kin preview — reactive selected state (depends on SELECTED above) ────────
+const kinSelL      = ref(SELECTED)
+const kinSelD      = ref(SELECTED)
+const kinSelPillsL = ref(SELECTED)
+const kinSelPillsD = ref(SELECTED)
 </script>
 
 <template>
@@ -431,6 +438,41 @@ function accentOf(name, palette, key) {
           </li>
         </ul>
       </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — review below before replacing the bespoke demo
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinMonthGrid — proposed extraction. Dots density (default) + pills density (prop variant).">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-4 md:p-6"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-[10px] font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Light mode · dots density (default)</p>
+            <KinMonthGrid :cells="CELLS" :events="EVENTS" :today="TODAY" v-model:selected="kinSelL" density="dots" />
+
+            <p class="text-[10px] font-semibold uppercase tracking-widest mt-6 mb-4" :style="{ color: L.inkTertiary }">Light mode · pills density</p>
+            <KinMonthGrid :cells="CELLS" :events="EVENTS" :today="TODAY" v-model:selected="kinSelPillsL" density="pills" />
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-4 md:p-6"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-[10px] font-semibold uppercase tracking-widest mb-4" :style="{ color: D.inkTertiary }">Dark mode · dots density (default)</p>
+            <KinMonthGrid :cells="CELLS" :events="EVENTS" :today="TODAY" v-model:selected="kinSelD" density="dots" />
+
+            <p class="text-[10px] font-semibold uppercase tracking-widest mt-6 mb-4" :style="{ color: D.inkTertiary }">Dark mode · pills density</p>
+            <KinMonthGrid :cells="CELLS" :events="EVENTS" :today="TODAY" v-model:selected="kinSelPillsD" density="pills" />
+          </div>
+
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        Review against the bespoke grids above. Click any current-month cell to select; leading/trailing month days are dimmed and disabled.
+      </p>
     </section>
 
   </ComponentPage>

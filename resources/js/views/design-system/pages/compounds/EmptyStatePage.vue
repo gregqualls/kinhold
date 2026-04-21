@@ -1,6 +1,8 @@
 <script setup>
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 import {
   SparklesIcon,
   ClipboardDocumentListIcon,
@@ -788,6 +790,153 @@ const taskSuggestions = [
           </div>
         </div>
       </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — review below before replacing the bespoke demo
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinEmptyState — proposed extraction. Centered iridescent glyph + title + description + CTA slot.">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-6"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-6" :style="{ color: L.inkTertiary }">Light mode</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="rounded-xl border" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+                <KinEmptyState
+                  :icon="ClipboardDocumentListIcon"
+                  title="No tasks yet"
+                  description="Add your first task to start tracking what your family needs to do."
+                  accent-color="lavender"
+                  size="md"
+                >
+                  <template #cta>
+                    <KinButton variant="primary">
+                      <template #leading><PlusIcon class="w-4 h-4" /></template>
+                      Add task
+                    </KinButton>
+                  </template>
+                </KinEmptyState>
+              </div>
+
+              <div class="rounded-xl border" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+                <KinEmptyState
+                  :icon="LockClosedIcon"
+                  title="Vault is empty"
+                  description="Save important family documents, passwords, and notes here."
+                  accent-color="peach"
+                  size="md"
+                >
+                  <template #cta>
+                    <KinButton variant="primary">
+                      <template #leading><PlusIcon class="w-4 h-4" /></template>
+                      Add entry
+                    </KinButton>
+                  </template>
+                </KinEmptyState>
+              </div>
+
+              <div class="rounded-xl border" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+                <KinEmptyState
+                  :icon="ChatBubbleLeftEllipsisIcon"
+                  title="No messages yet"
+                  description="Ask the Kinhold assistant anything about your family's week."
+                  accent-color="mint"
+                  size="sm"
+                />
+              </div>
+
+              <div class="rounded-xl border" :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+                <KinEmptyState
+                  :icon="UserGroupIcon"
+                  title="No family yet"
+                  description="Invite parents, kids, and care-givers to get started together."
+                  accent-color="sun"
+                  size="md"
+                >
+                  <template #cta>
+                    <KinButton variant="primary">Send invites</KinButton>
+                  </template>
+                </KinEmptyState>
+              </div>
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-6" :style="{ color: D.inkTertiary }">Dark mode</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="rounded-xl border" :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
+                <KinEmptyState
+                  :icon="ClipboardDocumentListIcon"
+                  title="No tasks yet"
+                  description="Add your first task to start tracking what your family needs to do."
+                  accent-color="lavender"
+                  size="md"
+                >
+                  <template #cta>
+                    <KinButton variant="primary">
+                      <template #leading><PlusIcon class="w-4 h-4" /></template>
+                      Add task
+                    </KinButton>
+                  </template>
+                </KinEmptyState>
+              </div>
+
+              <div class="rounded-xl border" :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
+                <KinEmptyState
+                  :icon="LockClosedIcon"
+                  title="Vault is empty"
+                  description="Save important family documents, passwords, and notes here."
+                  accent-color="peach"
+                  size="md"
+                >
+                  <template #cta>
+                    <KinButton variant="primary">
+                      <template #leading><PlusIcon class="w-4 h-4" /></template>
+                      Add entry
+                    </KinButton>
+                  </template>
+                </KinEmptyState>
+              </div>
+
+              <div class="rounded-xl border" :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
+                <KinEmptyState
+                  :icon="ChatBubbleLeftEllipsisIcon"
+                  title="No messages yet"
+                  description="Ask the Kinhold assistant anything about your family's week."
+                  accent-color="mint"
+                  size="sm"
+                />
+              </div>
+
+              <div class="rounded-xl border" :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
+                <KinEmptyState
+                  :icon="UserGroupIcon"
+                  title="No family yet"
+                  description="Invite parents, kids, and care-givers to get started together."
+                  accent-color="sun"
+                  size="md"
+                >
+                  <template #cta>
+                    <KinButton variant="primary">Send invites</KinButton>
+                  </template>
+                </KinEmptyState>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        Review this against the bespoke variants above. All four accent colors shown + sm and md size.
+      </p>
     </section>
 
   </ComponentPage>

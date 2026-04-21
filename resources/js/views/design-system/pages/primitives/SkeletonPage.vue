@@ -1,22 +1,9 @@
 <script setup>
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
 
-// ── Dark-mode hex constants ──────────────────────────────────────────────────
-const D = {
-  surfaceApp:    '#141311',
-  surfaceRaised: '#1C1B19',
-  surfaceSunken: '#161513',
-  inkPrimary:    '#F0EDE9',
-  inkSecondary:  '#A09C97',
-  inkTertiary:   '#6E6B67',
-  borderSubtle:  '#2C2A27',
-  borderStrong:  '#403E3A',
-  skelBase:      '#2C2A27',   // skeleton base in dark — lighter than page (#141311) so it reads
-  skelHighlight: '#3E3C38',   // highlight pass — clearly lighter than base
-}
-
-// ── Light-mode hex constants ─────────────────────────────────────────────────
+// ── Panel chrome tokens (hand-rolled Light/Dark panel wrappers) ──────────────
 const L = {
   surfaceApp:    '#FAF8F5',
   surfaceRaised: '#FFFFFF',
@@ -25,8 +12,13 @@ const L = {
   inkSecondary:  '#6B6966',
   inkTertiary:   '#9C9895',
   borderSubtle:  '#E8E4DF',
-  skelBase:      '#EDEAE5',   // slightly darker than surface-sunken so shimmer reads
-  skelHighlight: '#F8F6F3',   // lighter pass for the shimmer gradient
+}
+const D = {
+  surfaceApp:    '#141311',
+  inkPrimary:    '#F0EDE9',
+  inkSecondary:  '#A09C97',
+  inkTertiary:   '#6E6B67',
+  borderSubtle:  '#2C2A27',
 }
 </script>
 
@@ -39,7 +31,6 @@ const L = {
 
     <!-- ══════════════════════════════════════════════════════════════
          SECTION 1 — SHAPE PRIMITIVES
-         The five canonical skeleton shapes, each in light + dark panels.
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame label="Shapes" caption="Five canonical skeleton shapes for any loading state">
@@ -53,9 +44,9 @@ const L = {
             <div>
               <p class="text-xs mb-4" :style="{ color: L.inkTertiary }">Text lines — for headlines, body text, metadata</p>
               <div class="space-y-3">
-                <div class="skel-lt h-3 w-3/4 rounded-[6px]" />
-                <div class="skel-lt h-3 w-1/2 rounded-[6px]" />
-                <div class="skel-lt h-3 w-2/3 rounded-[6px]" />
+                <KinSkeleton force-motion shape="rect" :height="12" width="75%" rounded="6px" />
+                <KinSkeleton force-motion shape="rect" :height="12" width="50%" rounded="6px" />
+                <KinSkeleton force-motion shape="rect" :height="12" width="66.6667%" rounded="6px" />
               </div>
             </div>
 
@@ -64,23 +55,23 @@ const L = {
               <p class="text-xs mb-4" :style="{ color: L.inkTertiary }">Circle (avatar) — xs / sm / md / lg / xl sizes matching Avatar tokens</p>
               <div class="flex items-end gap-4">
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-lt rounded-full flex-shrink-0" style="width:24px; height:24px" />
+                  <KinSkeleton force-motion shape="circle" :width="24" />
                   <span class="text-[10px]" :style="{ color: L.inkTertiary }">xs</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-lt rounded-full flex-shrink-0" style="width:32px; height:32px" />
+                  <KinSkeleton force-motion shape="circle" :width="32" />
                   <span class="text-[10px]" :style="{ color: L.inkTertiary }">sm</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-lt rounded-full flex-shrink-0" style="width:40px; height:40px" />
+                  <KinSkeleton force-motion shape="circle" :width="40" />
                   <span class="text-[10px]" :style="{ color: L.inkTertiary }">md</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-lt rounded-full flex-shrink-0" style="width:56px; height:56px" />
+                  <KinSkeleton force-motion shape="circle" :width="56" />
                   <span class="text-[10px]" :style="{ color: L.inkTertiary }">lg</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-lt rounded-full flex-shrink-0" style="width:80px; height:80px" />
+                  <KinSkeleton force-motion shape="circle" :width="80" />
                   <span class="text-[10px]" :style="{ color: L.inkTertiary }">xl</span>
                 </div>
               </div>
@@ -91,15 +82,15 @@ const L = {
               <p class="text-xs mb-4" :style="{ color: L.inkTertiary }">Pill (button / chip) — sm / md / lg heights with varying widths</p>
               <div class="flex items-end gap-4">
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-lt rounded-full" style="height:24px; width:60px" />
+                  <KinSkeleton force-motion shape="rect" :height="24" :width="60" rounded="9999px" />
                   <span class="text-[10px]" :style="{ color: L.inkTertiary }">sm</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-lt rounded-full" style="height:32px; width:80px" />
+                  <KinSkeleton force-motion shape="rect" :height="32" :width="80" rounded="9999px" />
                   <span class="text-[10px]" :style="{ color: L.inkTertiary }">md</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-lt rounded-full" style="height:40px; width:120px" />
+                  <KinSkeleton force-motion shape="rect" :height="40" :width="120" rounded="9999px" />
                   <span class="text-[10px]" :style="{ color: L.inkTertiary }">lg</span>
                 </div>
               </div>
@@ -108,27 +99,27 @@ const L = {
             <!-- 4. Field / input -->
             <div>
               <p class="text-xs mb-4" :style="{ color: L.inkTertiary }">Field / input — h-10, rounded-[12px], full width</p>
-              <div class="skel-lt w-full rounded-[12px]" style="height:40px" />
+              <KinSkeleton force-motion shape="rect" :height="40" width="100%" rounded="12px" />
             </div>
 
             <!-- 5. Card block -->
             <div>
               <p class="text-xs mb-4" :style="{ color: L.inkTertiary }">Card block — rounded-[16px], full width, 120px tall</p>
-              <div class="skel-lt w-full rounded-[16px]" style="height:120px" />
+              <KinSkeleton force-motion shape="rect" :height="120" width="100%" rounded="16px" />
             </div>
           </div><!-- /light shapes -->
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-10" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div class="dark rounded-2xl border p-6 space-y-10" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <!-- 1. Text lines -->
             <div>
               <p class="text-xs mb-4" :style="{ color: D.inkTertiary }">Text lines — for headlines, body text, metadata</p>
               <div class="space-y-3">
-                <div class="skel-dk h-3 w-3/4 rounded-[6px]" />
-                <div class="skel-dk h-3 w-1/2 rounded-[6px]" />
-                <div class="skel-dk h-3 w-2/3 rounded-[6px]" />
+                <KinSkeleton force-motion shape="rect" :height="12" width="75%" rounded="6px" />
+                <KinSkeleton force-motion shape="rect" :height="12" width="50%" rounded="6px" />
+                <KinSkeleton force-motion shape="rect" :height="12" width="66.6667%" rounded="6px" />
               </div>
             </div>
 
@@ -137,23 +128,23 @@ const L = {
               <p class="text-xs mb-4" :style="{ color: D.inkTertiary }">Circle (avatar) — xs / sm / md / lg / xl</p>
               <div class="flex items-end gap-4">
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-dk rounded-full flex-shrink-0" style="width:24px; height:24px" />
+                  <KinSkeleton force-motion shape="circle" :width="24" />
                   <span class="text-[10px]" :style="{ color: D.inkTertiary }">xs</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-dk rounded-full flex-shrink-0" style="width:32px; height:32px" />
+                  <KinSkeleton force-motion shape="circle" :width="32" />
                   <span class="text-[10px]" :style="{ color: D.inkTertiary }">sm</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-dk rounded-full flex-shrink-0" style="width:40px; height:40px" />
+                  <KinSkeleton force-motion shape="circle" :width="40" />
                   <span class="text-[10px]" :style="{ color: D.inkTertiary }">md</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-dk rounded-full flex-shrink-0" style="width:56px; height:56px" />
+                  <KinSkeleton force-motion shape="circle" :width="56" />
                   <span class="text-[10px]" :style="{ color: D.inkTertiary }">lg</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-dk rounded-full flex-shrink-0" style="width:80px; height:80px" />
+                  <KinSkeleton force-motion shape="circle" :width="80" />
                   <span class="text-[10px]" :style="{ color: D.inkTertiary }">xl</span>
                 </div>
               </div>
@@ -164,15 +155,15 @@ const L = {
               <p class="text-xs mb-4" :style="{ color: D.inkTertiary }">Pill (button / chip) — sm / md / lg</p>
               <div class="flex items-end gap-4">
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-dk rounded-full" style="height:24px; width:60px" />
+                  <KinSkeleton force-motion shape="rect" :height="24" :width="60" rounded="9999px" />
                   <span class="text-[10px]" :style="{ color: D.inkTertiary }">sm</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-dk rounded-full" style="height:32px; width:80px" />
+                  <KinSkeleton force-motion shape="rect" :height="32" :width="80" rounded="9999px" />
                   <span class="text-[10px]" :style="{ color: D.inkTertiary }">md</span>
                 </div>
                 <div class="flex flex-col items-center gap-2">
-                  <div class="skel-dk rounded-full" style="height:40px; width:120px" />
+                  <KinSkeleton force-motion shape="rect" :height="40" :width="120" rounded="9999px" />
                   <span class="text-[10px]" :style="{ color: D.inkTertiary }">lg</span>
                 </div>
               </div>
@@ -181,13 +172,13 @@ const L = {
             <!-- 4. Field -->
             <div>
               <p class="text-xs mb-4" :style="{ color: D.inkTertiary }">Field / input — h-10, rounded-[12px], full width</p>
-              <div class="skel-dk w-full rounded-[12px]" style="height:40px" />
+              <KinSkeleton force-motion shape="rect" :height="40" width="100%" rounded="12px" />
             </div>
 
             <!-- 5. Card block -->
             <div>
               <p class="text-xs mb-4" :style="{ color: D.inkTertiary }">Card block — rounded-[16px], full width, 120px tall</p>
-              <div class="skel-dk w-full rounded-[16px]" style="height:120px" />
+              <KinSkeleton force-motion shape="rect" :height="120" width="100%" rounded="16px" />
             </div>
           </div><!-- /dark shapes -->
 
@@ -198,7 +189,6 @@ const L = {
 
     <!-- ══════════════════════════════════════════════════════════════
          SECTION 2 — COMPOSED PATTERNS
-         Real Kinhold loading states assembled from shape primitives.
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame label="Patterns" caption="Composed skeletons — real loading states for Kinhold UI">
@@ -214,30 +204,14 @@ const L = {
               <div class="space-y-3">
                 <div v-for="i in 3" :key="i" class="flex items-center gap-3">
                   <!-- avatar circle sm -->
-                  <div
-                    class="skel-lt rounded-full flex-shrink-0"
-                    style="width:32px; height:32px"
-                    :class="i === 2 ? 'skel-delay-1' : i === 3 ? 'skel-delay-2' : ''"
-                  />
+                  <KinSkeleton force-motion shape="circle" :width="32" :delay="(i - 1) * 150" />
                   <!-- text stack -->
                   <div class="flex-1 space-y-2">
-                    <div
-                      class="skel-lt rounded-[6px] h-3"
-                      style="width:60%"
-                      :class="i === 2 ? 'skel-delay-1' : i === 3 ? 'skel-delay-2' : ''"
-                    />
-                    <div
-                      class="skel-lt rounded-[6px] h-2.5"
-                      style="width:35%"
-                      :class="i === 2 ? 'skel-delay-1' : i === 3 ? 'skel-delay-2' : ''"
-                    />
+                    <KinSkeleton force-motion shape="rect" :height="12" width="60%" rounded="6px" :delay="(i - 1) * 150" />
+                    <KinSkeleton force-motion shape="rect" :height="10" width="35%" rounded="6px" :delay="(i - 1) * 150" />
                   </div>
                   <!-- pill right -->
-                  <div
-                    class="skel-lt rounded-full flex-shrink-0"
-                    style="height:22px; width:52px"
-                    :class="i === 2 ? 'skel-delay-1' : i === 3 ? 'skel-delay-2' : ''"
-                  />
+                  <KinSkeleton force-motion shape="rect" :height="22" :width="52" rounded="9999px" :delay="(i - 1) * 150" />
                 </div>
               </div>
             </div>
@@ -247,14 +221,14 @@ const L = {
               <p class="text-xs mb-4" :style="{ color: L.inkTertiary }">Vault entry card skeleton — title + subtitle + tag row</p>
               <div class="rounded-[16px] border p-4 space-y-3" :style="{ borderColor: L.borderSubtle }">
                 <!-- title line -->
-                <div class="skel-lt rounded-[6px] h-4" style="width:66%" />
+                <KinSkeleton force-motion shape="rect" :height="16" width="66%" rounded="6px" />
                 <!-- subtitle line -->
-                <div class="skel-lt rounded-[6px] h-3 mt-2" style="width:33%" />
+                <KinSkeleton force-motion shape="rect" :height="12" width="33%" rounded="6px" />
                 <!-- tag row -->
                 <div class="flex gap-2 mt-3">
-                  <div class="skel-lt rounded-full" style="height:22px; width:56px" />
-                  <div class="skel-lt rounded-full skel-delay-1" style="height:22px; width:64px" />
-                  <div class="skel-lt rounded-full skel-delay-2" style="height:22px; width:48px" />
+                  <KinSkeleton force-motion shape="rect" :height="22" :width="56" rounded="9999px" />
+                  <KinSkeleton force-motion shape="rect" :height="22" :width="64" rounded="9999px" :delay="150" />
+                  <KinSkeleton force-motion shape="rect" :height="22" :width="48" rounded="9999px" :delay="300" />
                 </div>
               </div>
             </div>
@@ -264,20 +238,20 @@ const L = {
               <p class="text-xs mb-4" :style="{ color: L.inkTertiary }">Profile header skeleton — xl avatar + name + role + status pill</p>
               <div class="flex items-center gap-4">
                 <!-- xl circle -->
-                <div class="skel-lt rounded-full flex-shrink-0" style="width:80px; height:80px" />
+                <KinSkeleton force-motion shape="circle" :width="80" />
                 <!-- text stack -->
                 <div class="flex-1 space-y-2">
-                  <div class="skel-lt rounded-[6px] h-5" style="width:50%" />
-                  <div class="skel-lt rounded-[6px] skel-delay-1 h-4" style="width:33%" />
+                  <KinSkeleton force-motion shape="rect" :height="20" width="50%" rounded="6px" />
+                  <KinSkeleton force-motion shape="rect" :height="16" width="33%" rounded="6px" :delay="150" />
                 </div>
                 <!-- status pill -->
-                <div class="skel-lt rounded-full flex-shrink-0 skel-delay-2" style="height:28px; width:72px" />
+                <KinSkeleton force-motion shape="rect" :height="28" :width="72" rounded="9999px" :delay="300" />
               </div>
             </div>
           </div><!-- /light patterns -->
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-10" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div class="dark rounded-2xl border p-6 space-y-10" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <!-- Task row skeleton × 3 -->
@@ -285,28 +259,12 @@ const L = {
               <p class="text-xs mb-4" :style="{ color: D.inkTertiary }">Task row skeleton (×3)</p>
               <div class="space-y-3">
                 <div v-for="i in 3" :key="i" class="flex items-center gap-3">
-                  <div
-                    class="skel-dk rounded-full flex-shrink-0"
-                    style="width:32px; height:32px"
-                    :class="i === 2 ? 'skel-delay-1' : i === 3 ? 'skel-delay-2' : ''"
-                  />
+                  <KinSkeleton force-motion shape="circle" :width="32" :delay="(i - 1) * 150" />
                   <div class="flex-1 space-y-2">
-                    <div
-                      class="skel-dk rounded-[6px] h-3"
-                      style="width:60%"
-                      :class="i === 2 ? 'skel-delay-1' : i === 3 ? 'skel-delay-2' : ''"
-                    />
-                    <div
-                      class="skel-dk rounded-[6px] h-2.5"
-                      style="width:35%"
-                      :class="i === 2 ? 'skel-delay-1' : i === 3 ? 'skel-delay-2' : ''"
-                    />
+                    <KinSkeleton force-motion shape="rect" :height="12" width="60%" rounded="6px" :delay="(i - 1) * 150" />
+                    <KinSkeleton force-motion shape="rect" :height="10" width="35%" rounded="6px" :delay="(i - 1) * 150" />
                   </div>
-                  <div
-                    class="skel-dk rounded-full flex-shrink-0"
-                    style="height:22px; width:52px"
-                    :class="i === 2 ? 'skel-delay-1' : i === 3 ? 'skel-delay-2' : ''"
-                  />
+                  <KinSkeleton force-motion shape="rect" :height="22" :width="52" rounded="9999px" :delay="(i - 1) * 150" />
                 </div>
               </div>
             </div>
@@ -315,12 +273,12 @@ const L = {
             <div>
               <p class="text-xs mb-4" :style="{ color: D.inkTertiary }">Vault entry card skeleton</p>
               <div class="rounded-[16px] border p-4 space-y-3" :style="{ borderColor: D.borderSubtle }">
-                <div class="skel-dk rounded-[6px] h-4" style="width:66%" />
-                <div class="skel-dk rounded-[6px] h-3 mt-2" style="width:33%" />
+                <KinSkeleton force-motion shape="rect" :height="16" width="66%" rounded="6px" />
+                <KinSkeleton force-motion shape="rect" :height="12" width="33%" rounded="6px" />
                 <div class="flex gap-2 mt-3">
-                  <div class="skel-dk rounded-full" style="height:22px; width:56px" />
-                  <div class="skel-dk rounded-full skel-delay-1" style="height:22px; width:64px" />
-                  <div class="skel-dk rounded-full skel-delay-2" style="height:22px; width:48px" />
+                  <KinSkeleton force-motion shape="rect" :height="22" :width="56" rounded="9999px" />
+                  <KinSkeleton force-motion shape="rect" :height="22" :width="64" rounded="9999px" :delay="150" />
+                  <KinSkeleton force-motion shape="rect" :height="22" :width="48" rounded="9999px" :delay="300" />
                 </div>
               </div>
             </div>
@@ -329,12 +287,12 @@ const L = {
             <div>
               <p class="text-xs mb-4" :style="{ color: D.inkTertiary }">Profile header skeleton</p>
               <div class="flex items-center gap-4">
-                <div class="skel-dk rounded-full flex-shrink-0" style="width:80px; height:80px" />
+                <KinSkeleton force-motion shape="circle" :width="80" />
                 <div class="flex-1 space-y-2">
-                  <div class="skel-dk rounded-[6px] h-5" style="width:50%" />
-                  <div class="skel-dk rounded-[6px] skel-delay-1 h-4" style="width:33%" />
+                  <KinSkeleton force-motion shape="rect" :height="20" width="50%" rounded="6px" />
+                  <KinSkeleton force-motion shape="rect" :height="16" width="33%" rounded="6px" :delay="150" />
                 </div>
-                <div class="skel-dk rounded-full flex-shrink-0 skel-delay-2" style="height:28px; width:72px" />
+                <KinSkeleton force-motion shape="rect" :height="28" :width="72" rounded="9999px" :delay="300" />
               </div>
             </div>
           </div><!-- /dark patterns -->
@@ -346,8 +304,8 @@ const L = {
 
     <!-- ══════════════════════════════════════════════════════════════
          SECTION 3 — REDUCED MOTION BEHAVIOR
-         Side-by-side comparison: forced motion vs static fallback.
-         Visible regardless of Greg's OS reduced-motion setting.
+         Kept as bespoke markup so forced-motion vs static comparison
+         works regardless of the viewer's OS reduced-motion setting.
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame label="Motion" caption="Always honors prefers-reduced-motion; static fallback is just the muted base color">
@@ -380,7 +338,7 @@ const L = {
           </div><!-- /light motion -->
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div class="dark rounded-2xl border p-6 space-y-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
             <p class="text-[13px]" :style="{ color: D.inkSecondary }">
               Same comparison in dark. Base color is <code class="font-mono text-[10px] px-1 py-0.5 rounded" :style="{ background: D.borderSubtle, color: D.inkSecondary }">#2C2A27</code> — clearly lighter than the page bg <code class="font-mono text-[10px] px-1 py-0.5 rounded" :style="{ background: D.borderSubtle, color: D.inkSecondary }">#141311</code>.
@@ -429,7 +387,7 @@ const L = {
           </li>
           <li>
             <strong :style="{ color: L.inkPrimary }">Stagger (optional):</strong>
-            Add <code class="font-mono text-[12px]">skel-delay-1</code> / <code class="font-mono text-[12px]">skel-delay-2</code> / <code class="font-mono text-[12px]">skel-delay-3</code> to successive skeleton elements for a gentle wave effect. Stagger delays are 150ms each. Skip on reduced-motion systems (animation is off anyway).
+            Pass <code class="font-mono text-[12px]">:delay="150"</code> / <code class="font-mono text-[12px]">:delay="300"</code> (milliseconds) to successive <code class="font-mono text-[12px]">&lt;KinSkeleton&gt;</code> elements for a gentle wave effect. Stagger has no effect on reduced-motion systems (animation is off anyway).
           </li>
         </ul>
       </div>
@@ -441,96 +399,15 @@ const L = {
 <style scoped>
 /*
   ═══════════════════════════════════════════════════════════════
-  SKELETON SHIMMER KEYFRAME
-  background-position slides from -100% to 200% so the highlight
-  band enters from the left edge and fully exits the right edge.
+  SECTION 3 ESCAPE-HATCH CLASSES (bespoke — NOT the KinSkeleton component)
+  These ignore the OS reduced-motion preference on purpose so the
+  Motion comparison is always visible regardless of system setting.
   ═══════════════════════════════════════════════════════════════
 */
-@keyframes skel-shimmer {
+@keyframes skel-shimmer-forced {
   from { background-position: -100% 0; }
   to   { background-position: 200% 0; }
 }
-
-/*
-  ═══════════════════════════════════════════════════════════════
-  SKELETON — LIGHT MODE
-  Base: #EDEAE5 (slightly darker than surface-sunken #F5F2EE)
-  Highlight: #F8F6F3 (lighter gradient pass)
-  Duration: 1.8s linear infinite — hardcoded, not from var()
-  ═══════════════════════════════════════════════════════════════
-*/
-.skel-lt {
-  background-color: #EDEAE5;
-  background-image: linear-gradient(
-    90deg,
-    transparent 0%,
-    #F8F6F3 50%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  background-repeat: no-repeat;
-  background-position: -100% 0;
-  animation: skel-shimmer 1.8s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .skel-lt {
-    animation: none;
-    background-image: none;
-    background-color: #EDEAE5;
-  }
-}
-
-/*
-  ═══════════════════════════════════════════════════════════════
-  SKELETON — DARK MODE
-  Base: #2C2A27 (lighter than page #141311 so it reads)
-  Highlight: #3E3C38 (clearly lighter — visible gradient pass)
-  ═══════════════════════════════════════════════════════════════
-*/
-.skel-dk {
-  background-color: #2C2A27;
-  background-image: linear-gradient(
-    90deg,
-    transparent 0%,
-    #3E3C38 50%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  background-repeat: no-repeat;
-  background-position: -100% 0;
-  animation: skel-shimmer 1.8s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .skel-dk {
-    animation: none;
-    background-image: none;
-    background-color: #2C2A27;
-  }
-}
-
-/*
-  ═══════════════════════════════════════════════════════════════
-  STAGGER DELAYS
-  Optional wave effect for composed patterns with multiple rows.
-  Each class adds 150ms of delay to the shimmer.
-  Delay only matters when animation is active — on reduced-motion
-  systems animation is already none, so stagger has no effect.
-  ═══════════════════════════════════════════════════════════════
-*/
-.skel-delay-1 { animation-delay: 0.15s; }
-.skel-delay-2 { animation-delay: 0.30s; }
-.skel-delay-3 { animation-delay: 0.45s; }
-
-/*
-  ═══════════════════════════════════════════════════════════════
-  SECTION 3 ESCAPE-HATCH CLASSES
-  These ignore the OS reduced-motion preference on purpose.
-  Used ONLY in the comparison demo so Greg can see both states
-  regardless of his system setting. Never use these in app code.
-  ═══════════════════════════════════════════════════════════════
-*/
 
 /* Always animates — ignores prefers-reduced-motion */
 .skel-forced-motion-lt {
@@ -544,14 +421,12 @@ const L = {
   background-size: 200% 100%;
   background-repeat: no-repeat;
   background-position: -100% 0;
-  animation: skel-shimmer 1.8s linear infinite;
-  /* No @media (prefers-reduced-motion) override — always animates */
+  animation: skel-shimmer-forced 1.8s linear infinite;
 }
 
 /* Always static — just the muted base color, no shimmer */
 .skel-static-lt {
   background-color: #EDEAE5;
-  /* No animation, no gradient. The reduced-motion fallback look. */
 }
 
 /* Dark forced-motion */
@@ -566,7 +441,7 @@ const L = {
   background-size: 200% 100%;
   background-repeat: no-repeat;
   background-position: -100% 0;
-  animation: skel-shimmer 1.8s linear infinite;
+  animation: skel-shimmer-forced 1.8s linear infinite;
 }
 
 /* Dark always static */

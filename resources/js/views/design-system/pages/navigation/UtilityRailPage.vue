@@ -1,6 +1,7 @@
 <script setup>
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinUtilityRail from '@/components/design-system/KinUtilityRail.vue'
 import {
   BookmarkIcon,
   ArrowPathIcon,
@@ -169,15 +170,9 @@ const FILTERS = [
                 </div>
               </div>
 
-              <!-- Rail — 280px -->
-              <div class="flex-shrink-0 flex flex-col border-l p-4 space-y-5"
-                style="width: 280px"
-                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
-
-                <!-- Section 1: Mini-month -->
-                <div>
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-3" :style="{ color: L.inkTertiary }">This month</p>
-
+              <!-- Rail — KinUtilityRail with the 5 conventional slots -->
+              <KinUtilityRail>
+                <template #mini-month>
                   <!-- Month nav header -->
                   <div class="flex items-center justify-between mb-2">
                     <button class="w-6 h-6 rounded-full flex items-center justify-center ur-lt-action" :style="{ color: L.inkTertiary }">
@@ -188,14 +183,12 @@ const FILTERS = [
                       <ChevronRightIcon class="w-3.5 h-3.5" />
                     </button>
                   </div>
-
                   <!-- Day-of-week header -->
                   <div class="grid grid-cols-7 mb-1">
                     <div v-for="d in DAYS_OF_WEEK" :key="d"
                       class="text-center text-[9px] font-semibold uppercase"
                       :style="{ color: L.inkTertiary }">{{ d }}</div>
                   </div>
-
                   <!-- Day cells -->
                   <div class="grid grid-cols-7 gap-y-0.5">
                     <div v-for="(cell, idx) in MONTH_CELLS" :key="idx"
@@ -209,18 +202,15 @@ const FILTERS = [
                           : { color: L.inkPrimary }"
                       >{{ cell }}</div>
                       <div v-else class="w-7 h-7" />
-                      <!-- Event dot -->
                       <div v-if="cell !== null && EVENT_DAYS.has(cell)"
                         class="w-[3px] h-[3px] rounded-full -mt-0.5 mb-0.5"
                         :style="{ background: cell === TODAY_DAY ? '#FFFFFF' : L.lavenderBold }" />
                       <div v-else class="h-[3px] mb-0.5" />
                     </div>
                   </div>
-                </div>
+                </template>
 
-                <!-- Section 2: Filters -->
-                <div class="pt-5 border-t" :style="{ borderColor: L.borderSubtle }">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: L.inkTertiary }">Filters</p>
+                <template #filters>
                   <div class="flex flex-wrap gap-1.5">
                     <button
                       v-for="f in FILTERS" :key="f.label"
@@ -230,11 +220,9 @@ const FILTERS = [
                         : { border: `1px solid ${L.chipOffBorder}`, background: 'transparent', color: L.chipOffText }"
                     >{{ f.label }}</button>
                   </div>
-                </div>
+                </template>
 
-                <!-- Section 3: Presence -->
-                <div class="pt-5 border-t" :style="{ borderColor: L.borderSubtle }">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: L.inkTertiary }">Who's around</p>
+                <template #presence>
                   <div class="space-y-2">
                     <div v-for="m in FAMILY" :key="m.initials" class="flex items-center gap-2.5">
                       <div class="relative flex-shrink-0">
@@ -251,11 +239,9 @@ const FILTERS = [
                       </div>
                     </div>
                   </div>
-                </div>
+                </template>
 
-                <!-- Section 4: Saved views -->
-                <div class="pt-5 border-t" :style="{ borderColor: L.borderSubtle }">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-2" :style="{ color: L.inkTertiary }">Saved views</p>
+                <template #saved-views>
                   <div class="space-y-0.5">
                     <button
                       v-for="v in SAVED_VIEWS" :key="v"
@@ -265,11 +251,9 @@ const FILTERS = [
                       <span class="text-[12px]" :style="{ color: L.inkPrimary }">{{ v }}</span>
                     </button>
                   </div>
-                </div>
+                </template>
 
-                <!-- Section 5: Actions (push to bottom) -->
-                <div class="pt-5 border-t mt-auto" :style="{ borderColor: L.borderSubtle }">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: L.inkTertiary }">Actions</p>
+                <template #actions>
                   <div class="flex items-center gap-1.5">
                     <button class="w-8 h-8 rounded-full flex items-center justify-center ur-lt-action" :style="{ color: L.inkTertiary }">
                       <ArrowPathIcon class="w-4 h-4" />
@@ -278,15 +262,14 @@ const FILTERS = [
                       <ArrowTopRightOnSquareIcon class="w-4 h-4" />
                     </button>
                   </div>
-                </div>
-
-              </div><!-- /light rail -->
+                </template>
+              </KinUtilityRail>
             </div><!-- /light layout -->
           </div><!-- /light panel -->
 
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-4" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div class="dark rounded-2xl border p-6 space-y-4" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
             <p class="text-[12px]" :style="{ color: D.inkTertiary }">Desktop layout — main content + 280px right rail</p>
 
@@ -307,14 +290,9 @@ const FILTERS = [
                 </div>
               </div>
 
-              <!-- Rail — 280px dark -->
-              <div class="flex-shrink-0 flex flex-col border-l p-4 space-y-5"
-                style="width: 280px"
-                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
-
-                <!-- Section 1: Mini-month -->
-                <div>
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-3" :style="{ color: D.inkTertiary }">This month</p>
+              <!-- Rail — KinUtilityRail (dark panel wrapper forces .dark scope) -->
+              <KinUtilityRail>
+                <template #mini-month>
                   <div class="flex items-center justify-between mb-2">
                     <button class="w-6 h-6 rounded-full flex items-center justify-center ur-dk-action" :style="{ color: D.inkTertiary }">
                       <ChevronLeftIcon class="w-3.5 h-3.5" />
@@ -346,11 +324,9 @@ const FILTERS = [
                       <div v-else class="h-[3px] mb-0.5" />
                     </div>
                   </div>
-                </div>
+                </template>
 
-                <!-- Section 2: Filters -->
-                <div class="pt-5 border-t" :style="{ borderColor: D.borderSubtle }">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: D.inkTertiary }">Filters</p>
+                <template #filters>
                   <div class="flex flex-wrap gap-1.5">
                     <button
                       v-for="f in FILTERS" :key="f.label"
@@ -360,11 +336,9 @@ const FILTERS = [
                         : { border: `1px solid ${D.chipOffBorder}`, background: 'transparent', color: D.chipOffText }"
                     >{{ f.label }}</button>
                   </div>
-                </div>
+                </template>
 
-                <!-- Section 3: Presence -->
-                <div class="pt-5 border-t" :style="{ borderColor: D.borderSubtle }">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: D.inkTertiary }">Who's around</p>
+                <template #presence>
                   <div class="space-y-2">
                     <div v-for="m in FAMILY" :key="m.initials" class="flex items-center gap-2.5">
                       <div class="relative flex-shrink-0">
@@ -381,11 +355,9 @@ const FILTERS = [
                       </div>
                     </div>
                   </div>
-                </div>
+                </template>
 
-                <!-- Section 4: Saved views -->
-                <div class="pt-5 border-t" :style="{ borderColor: D.borderSubtle }">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-2" :style="{ color: D.inkTertiary }">Saved views</p>
+                <template #saved-views>
                   <div class="space-y-0.5">
                     <button
                       v-for="v in SAVED_VIEWS" :key="v"
@@ -395,11 +367,9 @@ const FILTERS = [
                       <span class="text-[12px]" :style="{ color: D.inkPrimary }">{{ v }}</span>
                     </button>
                   </div>
-                </div>
+                </template>
 
-                <!-- Section 5: Actions -->
-                <div class="pt-5 border-t mt-auto" :style="{ borderColor: D.borderSubtle }">
-                  <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: D.inkTertiary }">Actions</p>
+                <template #actions>
                   <div class="flex items-center gap-1.5">
                     <button class="w-8 h-8 rounded-full flex items-center justify-center ur-dk-action" :style="{ color: D.inkTertiary }">
                       <ArrowPathIcon class="w-4 h-4" />
@@ -408,9 +378,8 @@ const FILTERS = [
                       <ArrowTopRightOnSquareIcon class="w-4 h-4" />
                     </button>
                   </div>
-                </div>
-
-              </div><!-- /dark rail -->
+                </template>
+              </KinUtilityRail>
             </div><!-- /dark layout -->
           </div><!-- /dark panel -->
 

@@ -2,43 +2,28 @@
 import { ref } from 'vue'
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinTabPillGroup from '@/components/design-system/KinTabPillGroup.vue'
 import { SparklesIcon } from '@heroicons/vue/24/outline'
 
-// ── Palette ───────────────────────────────────────────────────────────────────
+// ── Panel chrome tokens (Light/Dark hand-rolled wrappers) ────────────────────
 const L = {
   surfaceApp:    '#FAF8F5', surfaceRaised: '#FFFFFF', surfaceSunken: '#F5F2EE',
   inkPrimary:    '#1C1C1E', inkSecondary:  '#6B6966', inkTertiary:   '#9C9895', inkInverse: '#FAF8F5',
-  borderSubtle:  '#E8E4DF', borderStrong:  '#BCB8B2',
+  borderSubtle:  '#E8E4DF',
   accents: {
     lavender: { soft: '#EAE6F8', bold: '#6856B2' },
-    peach:    { soft: '#FCE9E0', bold: '#BA562E' },
-    mint:     { soft: '#D5F2E8', bold: '#2E8A62' },
-    sun:      { soft: '#FCF3D2', bold: '#A2780C' },
-  },
-  status: {
-    success: '#4D8C6A', pending: '#486E9C', paused: '#BE8230',
-    failed: '#BA4A4A', info: '#6856B2', warning: '#C48C24',
   },
 }
-
 const D = {
-  surfaceApp:    '#141311', surfaceRaised: '#1C1B19', surfaceSunken: '#161513', surfaceOverlay: '#242220',
+  surfaceApp:    '#141311', surfaceRaised: '#1C1B19',
   inkPrimary:    '#F0EDE9', inkSecondary:  '#A09C97', inkTertiary:   '#6E6B67', inkInverse: '#1C1C1E',
-  borderSubtle:  '#2C2A27', borderStrong:  '#403E3A',
+  borderSubtle:  '#2C2A27',
   accents: {
     lavender: { soft: '#302A48', bold: '#B6A8E6' },
-    peach:    { soft: '#3E241A', bold: '#F0A882' },
-    mint:     { soft: '#18342A', bold: '#7CD6AE' },
-    sun:      { soft: '#342C0A', bold: '#E6C452' },
-  },
-  status: {
-    success: '#6CC498', pending: '#78A4DC', paused: '#DCA848',
-    failed: '#E67070', info: '#B6A8E6', warning: '#E6C452',
   },
 }
 
 // ── Tab data ──────────────────────────────────────────────────────────────────
-// Core 4-tab set used in all standard demos
 const TABS_CORE = [
   { key: 'overview',     label: 'Overview',     count: null },
   { key: 'ingredients',  label: 'Ingredients',  count: 12   },
@@ -46,7 +31,6 @@ const TABS_CORE = [
   { key: 'history',      label: 'History',      count: null },
 ]
 
-// Extended 7-tab set for the mobile overflow demo
 const TABS_OVERFLOW = [
   { key: 'overview',     label: 'Overview',     count: null },
   { key: 'ingredients',  label: 'Ingredients',  count: 12   },
@@ -57,17 +41,13 @@ const TABS_OVERFLOW = [
   { key: 'related',      label: 'Related',      count: 5    },
 ]
 
-// ── Active-tab state per demo ─────────────────────────────────────────────────
-// Variant A
+// Active-tab state per demo
 const activeA_L = ref('overview')
 const activeA_D = ref('overview')
-// Variant B
 const activeB_L = ref('overview')
 const activeB_D = ref('overview')
-// Variant C
 const activeC_L = ref('overview')
 const activeC_D = ref('overview')
-// Mobile overflow demos
 const activeMob_A = ref('overview')
 const activeMob_B = ref('overview')
 const activeMob_C = ref('overview')
@@ -82,8 +62,6 @@ const activeMob_C = ref('overview')
 
     <!-- ══════════════════════════════════════════════════════════════
          VARIANT A — Filled active pill
-         Dark ink fill + inverse text. Outlined border on inactive.
-         Recipe detail pattern — strong visual weight.
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-16">
       <VariantFrame label="A" caption="Filled active pill · outlined inactive · count badge support">
@@ -95,29 +73,11 @@ const activeMob_C = ref('overview')
             <p class="text-xs font-semibold uppercase tracking-widest"
                :style="{ color: L.inkTertiary }">Light mode</p>
 
-            <!-- Tab row -->
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="tab in TABS_CORE"
-                :key="tab.key"
-                class="tab-pill-a inline-flex items-center gap-1.5 h-8 px-4 rounded-full text-[13px] font-medium transition-all"
-                :class="{ 'tab-pill-a--active': activeA_L === tab.key }"
-                :style="activeA_L === tab.key
-                  ? { background: L.inkPrimary, color: L.inkInverse, border: `1.5px solid ${L.inkPrimary}` }
-                  : { background: 'transparent', color: L.inkSecondary, border: `1.5px solid ${L.borderStrong}` }"
-                @click="activeA_L = tab.key"
-              >
-                {{ tab.label }}
-                <!-- Count badge -->
-                <span
-                  v-if="tab.count !== null"
-                  class="inline-flex items-center justify-center text-[11px] font-semibold rounded-full px-1.5 min-w-[18px] h-[18px]"
-                  :style="activeA_L === tab.key
-                    ? { background: 'rgba(250, 248, 245, 0.18)', color: L.inkInverse }
-                    : { background: L.surfaceSunken, color: L.inkTertiary }"
-                >{{ tab.count }}</span>
-              </button>
-            </div>
+            <KinTabPillGroup
+              variant="filled"
+              :tabs="TABS_CORE"
+              v-model:active-key="activeA_L"
+            />
 
             <!-- Content placeholder -->
             <div class="rounded-xl p-4" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
@@ -133,35 +93,17 @@ const activeMob_C = ref('overview')
           </div>
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
+          <div class="dark rounded-2xl border p-6 space-y-6"
                :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest"
                :style="{ color: D.inkTertiary }">Dark mode</p>
 
-            <!-- Tab row -->
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="tab in TABS_CORE"
-                :key="tab.key"
-                class="tab-pill-a inline-flex items-center gap-1.5 h-8 px-4 rounded-full text-[13px] font-medium transition-all"
-                :class="{ 'tab-pill-a--active-dk': activeA_D === tab.key }"
-                :style="activeA_D === tab.key
-                  ? { background: D.inkPrimary, color: D.inkInverse, border: `1.5px solid ${D.inkPrimary}` }
-                  : { background: 'transparent', color: D.inkSecondary, border: `1.5px solid ${D.borderStrong}` }"
-                @click="activeA_D = tab.key"
-              >
-                {{ tab.label }}
-                <span
-                  v-if="tab.count !== null"
-                  class="inline-flex items-center justify-center text-[11px] font-semibold rounded-full px-1.5 min-w-[18px] h-[18px]"
-                  :style="activeA_D === tab.key
-                    ? { background: 'rgba(28, 28, 30, 0.20)', color: D.inkInverse }
-                    : { background: D.surfaceOverlay, color: D.inkTertiary }"
-                >{{ tab.count }}</span>
-              </button>
-            </div>
+            <KinTabPillGroup
+              variant="filled"
+              :tabs="TABS_CORE"
+              v-model:active-key="activeA_D"
+            />
 
-            <!-- Content placeholder -->
             <div class="rounded-xl p-4" :style="{ background: D.surfaceRaised, border: `1px solid ${D.borderSubtle}` }">
               <p class="text-[13px]" :style="{ color: D.inkSecondary }">
                 Showing: <strong :style="{ color: D.inkPrimary }">{{ TABS_CORE.find(t => t.key === activeA_D)?.label }}</strong>
@@ -185,8 +127,6 @@ const activeMob_C = ref('overview')
 
     <!-- ══════════════════════════════════════════════════════════════
          VARIANT B — Underline active
-         Thin 2px bar beneath the active label. Zero pill chrome.
-         Cleanest; minimal visual interruption.
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-16">
       <VariantFrame label="B" caption="Underline active · plain inactive · zero fill chrome">
@@ -198,35 +138,12 @@ const activeMob_C = ref('overview')
             <p class="text-xs font-semibold uppercase tracking-widest"
                :style="{ color: L.inkTertiary }">Light mode</p>
 
-            <!-- Tab row — bottom border container for underline effect -->
-            <div class="relative flex gap-1 border-b" :style="{ borderColor: L.borderSubtle }">
-              <button
-                v-for="tab in TABS_CORE"
-                :key="tab.key"
-                class="tab-pill-b relative inline-flex items-center gap-1.5 h-9 px-4 text-[13px] font-medium transition-all"
-                :style="activeB_L === tab.key
-                  ? { color: L.inkPrimary }
-                  : { color: L.inkTertiary }"
-                @click="activeB_L = tab.key"
-              >
-                {{ tab.label }}
-                <span
-                  v-if="tab.count !== null"
-                  class="inline-flex items-center justify-center text-[11px] font-semibold rounded-full px-1.5 min-w-[18px] h-[18px]"
-                  :style="activeB_L === tab.key
-                    ? { background: L.accents.lavender.soft, color: L.accents.lavender.bold }
-                    : { background: L.surfaceSunken, color: L.inkTertiary }"
-                >{{ tab.count }}</span>
-                <!-- Active underline bar — absolute positioned at the bottom edge -->
-                <span
-                  v-if="activeB_L === tab.key"
-                  class="absolute bottom-0 left-0 right-0 h-[2px] rounded-t-full"
-                  :style="{ background: L.inkPrimary }"
-                />
-              </button>
-            </div>
+            <KinTabPillGroup
+              variant="underline"
+              :tabs="TABS_CORE"
+              v-model:active-key="activeB_L"
+            />
 
-            <!-- Content placeholder -->
             <div class="rounded-xl p-4" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
               <p class="text-[13px]" :style="{ color: L.inkSecondary }">
                 Showing: <strong :style="{ color: L.inkPrimary }">{{ TABS_CORE.find(t => t.key === activeB_L)?.label }}</strong>
@@ -240,38 +157,17 @@ const activeMob_C = ref('overview')
           </div>
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
+          <div class="dark rounded-2xl border p-6 space-y-6"
                :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest"
                :style="{ color: D.inkTertiary }">Dark mode</p>
 
-            <div class="relative flex gap-1 border-b" :style="{ borderColor: D.borderSubtle }">
-              <button
-                v-for="tab in TABS_CORE"
-                :key="tab.key"
-                class="tab-pill-b-dk relative inline-flex items-center gap-1.5 h-9 px-4 text-[13px] font-medium transition-all"
-                :style="activeB_D === tab.key
-                  ? { color: D.inkPrimary }
-                  : { color: D.inkTertiary }"
-                @click="activeB_D = tab.key"
-              >
-                {{ tab.label }}
-                <span
-                  v-if="tab.count !== null"
-                  class="inline-flex items-center justify-center text-[11px] font-semibold rounded-full px-1.5 min-w-[18px] h-[18px]"
-                  :style="activeB_D === tab.key
-                    ? { background: D.accents.lavender.soft, color: D.accents.lavender.bold }
-                    : { background: D.surfaceOverlay, color: D.inkTertiary }"
-                >{{ tab.count }}</span>
-                <span
-                  v-if="activeB_D === tab.key"
-                  class="absolute bottom-0 left-0 right-0 h-[2px] rounded-t-full"
-                  :style="{ background: D.inkPrimary }"
-                />
-              </button>
-            </div>
+            <KinTabPillGroup
+              variant="underline"
+              :tabs="TABS_CORE"
+              v-model:active-key="activeB_D"
+            />
 
-            <!-- Content placeholder -->
             <div class="rounded-xl p-4" :style="{ background: D.surfaceRaised, border: `1px solid ${D.borderSubtle}` }">
               <p class="text-[13px]" :style="{ color: D.inkSecondary }">
                 Showing: <strong :style="{ color: D.inkPrimary }">{{ TABS_CORE.find(t => t.key === activeB_D)?.label }}</strong>
@@ -295,8 +191,6 @@ const activeMob_C = ref('overview')
 
     <!-- ══════════════════════════════════════════════════════════════
          VARIANT C — Tinted active pill
-         Lavender-soft fill + lavender-bold text for active.
-         Transparent inactive. Accent-brand identity.
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-16">
       <VariantFrame label="C" caption="Tinted active pill · transparent inactive · Kinhold lavender accent">
@@ -308,28 +202,12 @@ const activeMob_C = ref('overview')
             <p class="text-xs font-semibold uppercase tracking-widest"
                :style="{ color: L.inkTertiary }">Light mode</p>
 
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="tab in TABS_CORE"
-                :key="tab.key"
-                class="tab-pill-c inline-flex items-center gap-1.5 h-8 px-4 rounded-full text-[13px] font-medium transition-all"
-                :style="activeC_L === tab.key
-                  ? { background: L.accents.lavender.soft, color: L.accents.lavender.bold, border: `1.5px solid transparent` }
-                  : { background: 'transparent', color: L.inkSecondary, border: `1.5px solid transparent` }"
-                @click="activeC_L = tab.key"
-              >
-                {{ tab.label }}
-                <span
-                  v-if="tab.count !== null"
-                  class="inline-flex items-center justify-center text-[11px] font-semibold rounded-full px-1.5 min-w-[18px] h-[18px]"
-                  :style="activeC_L === tab.key
-                    ? { background: L.accents.lavender.bold, color: '#FFFFFF' }
-                    : { background: L.surfaceSunken, color: L.inkTertiary }"
-                >{{ tab.count }}</span>
-              </button>
-            </div>
+            <KinTabPillGroup
+              variant="tinted"
+              :tabs="TABS_CORE"
+              v-model:active-key="activeC_L"
+            />
 
-            <!-- Content placeholder -->
             <div class="rounded-xl p-4" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
               <p class="text-[13px]" :style="{ color: L.inkSecondary }">
                 Showing: <strong :style="{ color: L.accents.lavender.bold }">{{ TABS_CORE.find(t => t.key === activeC_L)?.label }}</strong>
@@ -343,33 +221,17 @@ const activeMob_C = ref('overview')
           </div>
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
+          <div class="dark rounded-2xl border p-6 space-y-6"
                :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest"
                :style="{ color: D.inkTertiary }">Dark mode</p>
 
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="tab in TABS_CORE"
-                :key="tab.key"
-                class="tab-pill-c-dk inline-flex items-center gap-1.5 h-8 px-4 rounded-full text-[13px] font-medium transition-all"
-                :style="activeC_D === tab.key
-                  ? { background: D.accents.lavender.soft, color: D.accents.lavender.bold, border: `1.5px solid transparent` }
-                  : { background: 'transparent', color: D.inkSecondary, border: `1.5px solid transparent` }"
-                @click="activeC_D = tab.key"
-              >
-                {{ tab.label }}
-                <span
-                  v-if="tab.count !== null"
-                  class="inline-flex items-center justify-center text-[11px] font-semibold rounded-full px-1.5 min-w-[18px] h-[18px]"
-                  :style="activeC_D === tab.key
-                    ? { background: D.accents.lavender.bold, color: D.inkInverse }
-                    : { background: D.surfaceOverlay, color: D.inkTertiary }"
-                >{{ tab.count }}</span>
-              </button>
-            </div>
+            <KinTabPillGroup
+              variant="tinted"
+              :tabs="TABS_CORE"
+              v-model:active-key="activeC_D"
+            />
 
-            <!-- Content placeholder -->
             <div class="rounded-xl p-4" :style="{ background: D.surfaceRaised, border: `1px solid ${D.borderSubtle}` }">
               <p class="text-[13px]" :style="{ color: D.inkSecondary }">
                 Showing: <strong :style="{ color: D.accents.lavender.bold }">{{ TABS_CORE.find(t => t.key === activeC_D)?.label }}</strong>
@@ -393,14 +255,11 @@ const activeMob_C = ref('overview')
 
     <!-- ══════════════════════════════════════════════════════════════
          MOBILE OVERFLOW DEMO (375px)
-         All three variants on a narrow viewport with 7 tabs and
-         horizontal scroll. Shows overflow-x-auto behavior.
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-16">
       <VariantFrame label="Mobile" caption="375px viewport · 7 tabs · overflow-x-auto — scrolls horizontally without wrapping">
         <div class="w-full space-y-8">
 
-          <!-- Label row -->
           <p class="text-[12px]" :style="{ color: L.inkTertiary }">
             Each variant on a 375px-equivalent container. Tabs are <code class="font-mono text-[11px] px-1 py-0.5 rounded" :style="{ background: L.surfaceSunken }">flex-shrink-0</code>
             so they never compress. The row uses <code class="font-mono text-[11px] px-1 py-0.5 rounded" :style="{ background: L.surfaceSunken }">overflow-x-auto; scrollbar-width: none</code>
@@ -412,26 +271,13 @@ const activeMob_C = ref('overview')
             <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Variant A — filled pill</p>
             <div class="max-w-[375px] rounded-2xl border p-4 space-y-4"
                  :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-              <!-- Scrollable tab row -->
-              <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
-                <button
-                  v-for="tab in TABS_OVERFLOW"
-                  :key="tab.key"
-                  class="flex-shrink-0 inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full text-[12px] font-medium transition-all"
-                  :style="activeMob_A === tab.key
-                    ? { background: L.inkPrimary, color: L.inkInverse, border: `1.5px solid ${L.inkPrimary}` }
-                    : { background: 'transparent', color: L.inkSecondary, border: `1.5px solid ${L.borderStrong}` }"
-                  @click="activeMob_A = tab.key"
-                >
-                  {{ tab.label }}
-                  <span
-                    v-if="tab.count !== null"
-                    class="inline-flex items-center justify-center text-[10px] font-semibold rounded-full px-1 min-w-[16px] h-[16px]"
-                    :style="activeMob_A === tab.key
-                      ? { background: 'rgba(250, 248, 245, 0.18)', color: L.inkInverse }
-                      : { background: L.surfaceSunken, color: L.inkTertiary }"
-                  >{{ tab.count }}</span>
-                </button>
+              <div class="overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <KinTabPillGroup
+                  variant="filled"
+                  size="sm"
+                  :tabs="TABS_OVERFLOW"
+                  v-model:active-key="activeMob_A"
+                />
               </div>
               <div class="rounded-xl px-3 py-2" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
                 <p class="text-[12px]" :style="{ color: L.inkSecondary }">
@@ -446,32 +292,13 @@ const activeMob_C = ref('overview')
             <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Variant B — underline</p>
             <div class="max-w-[375px] rounded-2xl border p-4 space-y-4"
                  :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-              <div class="relative border-b" :style="{ borderColor: L.borderSubtle }">
-                <div class="flex gap-0 overflow-x-auto pb-0" style="scrollbar-width: none; -ms-overflow-style: none;">
-                  <button
-                    v-for="tab in TABS_OVERFLOW"
-                    :key="tab.key"
-                    class="flex-shrink-0 relative inline-flex items-center gap-1.5 h-9 px-3.5 text-[12px] font-medium transition-all"
-                    :style="activeMob_B === tab.key
-                      ? { color: L.inkPrimary }
-                      : { color: L.inkTertiary }"
-                    @click="activeMob_B = tab.key"
-                  >
-                    {{ tab.label }}
-                    <span
-                      v-if="tab.count !== null"
-                      class="inline-flex items-center justify-center text-[10px] font-semibold rounded-full px-1 min-w-[16px] h-[16px]"
-                      :style="activeMob_B === tab.key
-                        ? { background: L.accents.lavender.soft, color: L.accents.lavender.bold }
-                        : { background: L.surfaceSunken, color: L.inkTertiary }"
-                    >{{ tab.count }}</span>
-                    <span
-                      v-if="activeMob_B === tab.key"
-                      class="absolute bottom-0 left-0 right-0 h-[2px] rounded-t-full"
-                      :style="{ background: L.inkPrimary }"
-                    />
-                  </button>
-                </div>
+              <div class="overflow-x-auto pb-0" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <KinTabPillGroup
+                  variant="underline"
+                  size="sm"
+                  :tabs="TABS_OVERFLOW"
+                  v-model:active-key="activeMob_B"
+                />
               </div>
               <div class="rounded-xl px-3 py-2" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
                 <p class="text-[12px]" :style="{ color: L.inkSecondary }">
@@ -486,25 +313,13 @@ const activeMob_C = ref('overview')
             <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Variant C — tinted accent</p>
             <div class="max-w-[375px] rounded-2xl border p-4 space-y-4"
                  :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-              <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
-                <button
-                  v-for="tab in TABS_OVERFLOW"
-                  :key="tab.key"
-                  class="flex-shrink-0 inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full text-[12px] font-medium transition-all"
-                  :style="activeMob_C === tab.key
-                    ? { background: L.accents.lavender.soft, color: L.accents.lavender.bold }
-                    : { background: 'transparent', color: L.inkSecondary }"
-                  @click="activeMob_C = tab.key"
-                >
-                  {{ tab.label }}
-                  <span
-                    v-if="tab.count !== null"
-                    class="inline-flex items-center justify-center text-[10px] font-semibold rounded-full px-1 min-w-[16px] h-[16px]"
-                    :style="activeMob_C === tab.key
-                      ? { background: L.accents.lavender.bold, color: '#FFFFFF' }
-                      : { background: L.surfaceSunken, color: L.inkTertiary }"
-                  >{{ tab.count }}</span>
-                </button>
+              <div class="overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <KinTabPillGroup
+                  variant="tinted"
+                  size="sm"
+                  :tabs="TABS_OVERFLOW"
+                  v-model:active-key="activeMob_C"
+                />
               </div>
               <div class="rounded-xl px-3 py-2" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
                 <p class="text-[12px]" :style="{ color: L.inkSecondary }">
@@ -573,10 +388,9 @@ const activeMob_C = ref('overview')
             unless they contain a pending-action number worth surfacing.
           </li>
           <li>
-            <strong :style="{ color: L.inkPrimary }">Mobile overflow</strong> — Always use <code class="font-mono text-[12px] px-1 py-0.5 rounded" :style="{ background: L.surfaceSunken }">overflow-x-auto</code>
-            + <code class="font-mono text-[12px] px-1 py-0.5 rounded" :style="{ background: L.surfaceSunken }">flex-shrink-0</code> on each tab.
+            <strong :style="{ color: L.inkPrimary }">Mobile overflow</strong> — Wrap the component in an <code class="font-mono text-[12px] px-1 py-0.5 rounded" :style="{ background: L.surfaceSunken }">overflow-x-auto</code>
+            container. The component itself uses <code class="font-mono text-[12px] px-1 py-0.5 rounded" :style="{ background: L.surfaceSunken }">flex-shrink-0</code> on each tab.
             Never wrap — a wrapped pill row changes height dynamically and shifts layout on tab change.
-            Fade the trailing edge with a CSS mask if desired (optional polish).
           </li>
         </ul>
       </div>
@@ -586,89 +400,8 @@ const activeMob_C = ref('overview')
 </template>
 
 <style scoped>
-/*
-  ═══════════════════════════════════════════════════════════════
-  VARIANT A — filled pill hover (light)
-  Hover: border tightens to border-strong, text shifts to ink-primary.
-  ═══════════════════════════════════════════════════════════════
-*/
-.tab-pill-a {
-  transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 150ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-/* Dark variant transitions — same curve */
-.tab-pill-a:not(.tab-pill-a--active):hover {
-  color: #1C1C1E;
-  border-color: #1C1C1E;
-}
-
-/*
-  ═══════════════════════════════════════════════════════════════
-  VARIANT B — underline hover (light)
-  Hover: text lifts from tertiary to secondary.
-  ═══════════════════════════════════════════════════════════════
-*/
-.tab-pill-b {
-  transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.tab-pill-b:hover {
-  color: #6B6966; /* ink-secondary */
-}
-
-/* Dark variant B hover */
-.tab-pill-b-dk {
-  transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.tab-pill-b-dk:hover {
-  color: #A09C97; /* D.inkSecondary */
-}
-
-/*
-  ═══════════════════════════════════════════════════════════════
-  VARIANT C — tinted pill hover (light)
-  Hover: text hints at lavender-bold before fill appears on click.
-  ═══════════════════════════════════════════════════════════════
-*/
-.tab-pill-c {
-  transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 150ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.tab-pill-c:not([style*="lavender"]):hover {
-  color: #6856B2; /* lavender-bold */
-}
-
-/* Dark variant C hover */
-.tab-pill-c-dk {
-  transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 150ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-.tab-pill-c-dk:hover {
-  color: #B6A8E6; /* D.accents.lavender.bold */
-}
-
-/*
-  ═══════════════════════════════════════════════════════════════
-  HIDE WEBKIT SCROLLBAR on mobile overflow rows
-  ═══════════════════════════════════════════════════════════════
-*/
+/* Hide the horizontal scrollbar on mobile overflow containers. */
 .overflow-x-auto::-webkit-scrollbar {
   display: none;
-}
-
-/*
-  ═══════════════════════════════════════════════════════════════
-  REDUCED MOTION
-  Remove all transitions. States still change — just instant.
-  ═══════════════════════════════════════════════════════════════
-*/
-@media (prefers-reduced-motion: reduce) {
-  .tab-pill-a,
-  .tab-pill-b,
-  .tab-pill-b-dk,
-  .tab-pill-c,
-  .tab-pill-c-dk {
-    transition: none;
-  }
 }
 </style>

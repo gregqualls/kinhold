@@ -2,6 +2,7 @@
 import { ref, onUnmounted } from 'vue'
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinToast from '@/components/design-system/KinToast.vue'
 import {
   SparklesIcon, CheckCircleIcon, InformationCircleIcon,
   ExclamationTriangleIcon, XCircleIcon, XMarkIcon,
@@ -1132,6 +1133,49 @@ const STACK_TOASTS = [
           </li>
         </ul>
       </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — review below before replacing the bespoke demo
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinToast — proposed extraction. One toast unit; stacking/placement is a consumer concern.">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-6 space-y-4"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode — all 6 statuses</p>
+            <div class="space-y-3 max-w-[400px]">
+              <KinToast status="success" title="Task completed" body="You earned 15 points for finishing early." action-label="View" />
+              <KinToast status="info"    title="Sync scheduled"   body="Calendar sync runs in 5 minutes." />
+              <KinToast status="warning" title="Low stock"        body="Only 2 movie night passes left this month." action-label="Reorder" />
+              <KinToast status="failed"  title="Upload failed"    body="We couldn't save the vault entry. Check your connection." action-label="Retry" />
+              <KinToast status="pending" title="Invite sent"      body="Maya hasn't accepted yet." />
+              <KinToast status="paused"  title="Automation paused" body="Your weekly digest is on hold." action-label="Resume" />
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6 space-y-4"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode — all 6 statuses</p>
+            <div class="space-y-3 max-w-[400px]">
+              <KinToast status="success" title="Task completed" body="You earned 15 points for finishing early." action-label="View" />
+              <KinToast status="info"    title="Sync scheduled"   body="Calendar sync runs in 5 minutes." />
+              <KinToast status="warning" title="Low stock"        body="Only 2 movie night passes left this month." action-label="Reorder" />
+              <KinToast status="failed"  title="Upload failed"    body="We couldn't save the vault entry. Check your connection." action-label="Retry" />
+              <KinToast status="pending" title="Invite sent"      body="Maya hasn't accepted yet." />
+              <KinToast status="paused"  title="Automation paused" body="Your weekly digest is on hold." action-label="Resume" />
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        Review this against the bespoke variants above. Stacking, animation, and auto-dismiss timers live in the consumer view; KinToast is a single unit.
+      </p>
     </section>
 
   </ComponentPage>

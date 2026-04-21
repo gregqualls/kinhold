@@ -5,6 +5,7 @@ import {
   SparklesIcon, ArrowLeftIcon, ShareIcon, BookmarkIcon,
   ClockIcon, FireIcon, ChartBarIcon,
 } from '@heroicons/vue/24/outline'
+import KinHeroPhotoSheet from '@/components/design-system/KinHeroPhotoSheet.vue'
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const L = {
@@ -556,6 +557,76 @@ const HERO_PHOTO_URL = 'https://images.unsplash.com/photo-1546548970-71785318a17
           </div>
         </div>
       </div>
+    </section>
+
+
+    <!-- KIN COMPONENT PREVIEW -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinHeroPhotoSheet — proposed extraction. Photo + sliding sheet. Bind sheetTop reactively for real parallax.">
+        <div class="w-full space-y-10">
+          <div class="rounded-2xl border p-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Light mode — resting state (sheet at 60%)</p>
+            <div class="flex justify-center">
+              <div style="width: 280px; border-radius: 40px; overflow: hidden; aspect-ratio: 9/16; border: 2px solid #BCB8B2; box-shadow: 0 8px 32px rgba(28,20,10,0.18);">
+                <KinHeroPhotoSheet
+                  photo="https://images.unsplash.com/photo-1546548970-71785318a17b?w=800"
+                  photo-alt="Sunday roast dinner"
+                  title="Grandma's Sunday Roast"
+                  sheet-top="60%"
+                >
+                  <template #actions>
+                    <button type="button" class="kin-hero-photo-sheet__frost-btn flex items-center justify-center" style="width: 40px; height: 40px; background: rgba(255,255,255,0.88); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.60); border-radius: 9999px;">
+                      <ShareIcon class="w-4 h-4" style="color: #1C1C1E;" />
+                    </button>
+                    <button type="button" class="kin-hero-photo-sheet__frost-btn flex items-center justify-center" style="width: 40px; height: 40px; background: rgba(255,255,255,0.88); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.60); border-radius: 9999px;">
+                      <BookmarkIcon class="w-4 h-4" style="color: #1C1C1E;" />
+                    </button>
+                  </template>
+                  <template #meta>
+                    <div class="flex items-center gap-3 text-[11px]" :style="{ color: L.inkSecondary }">
+                      <span class="inline-flex items-center gap-1"><ClockIcon class="w-3 h-3" /> 2h 30m</span>
+                      <span class="inline-flex items-center gap-1"><FireIcon class="w-3 h-3" /> Medium</span>
+                      <span class="inline-flex items-center gap-1"><ChartBarIcon class="w-3 h-3" /> 620 kcal</span>
+                    </div>
+                  </template>
+                  <p class="text-[12px] leading-relaxed" :style="{ color: L.inkSecondary }">
+                    A slow-roasted beef shoulder with root vegetables, roasted potatoes, and proper Yorkshire pudding — the one dish that pulls the whole family to the table on Sunday afternoon.
+                  </p>
+                </KinHeroPhotoSheet>
+              </div>
+            </div>
+
+            <p class="text-xs font-semibold uppercase tracking-widest mt-8 mb-4" :style="{ color: L.inkTertiary }">Scrolled state (sheet at 20%)</p>
+            <div class="flex justify-center">
+              <div style="width: 280px; border-radius: 40px; overflow: hidden; aspect-ratio: 9/16; border: 2px solid #BCB8B2; box-shadow: 0 8px 32px rgba(28,20,10,0.18);">
+                <KinHeroPhotoSheet
+                  photo="https://images.unsplash.com/photo-1546548970-71785318a17b?w=800"
+                  photo-alt="Sunday roast dinner"
+                  title="Grandma's Sunday Roast"
+                  sheet-top="20%"
+                >
+                  <template #meta>
+                    <div class="flex items-center gap-3 text-[11px]" :style="{ color: L.inkSecondary }">
+                      <span class="inline-flex items-center gap-1"><ClockIcon class="w-3 h-3" /> 2h 30m</span>
+                      <span class="inline-flex items-center gap-1"><FireIcon class="w-3 h-3" /> Medium</span>
+                      <span class="inline-flex items-center gap-1"><ChartBarIcon class="w-3 h-3" /> 620 kcal</span>
+                    </div>
+                  </template>
+                  <p class="text-[12px] leading-relaxed" :style="{ color: L.inkSecondary }">
+                    A slow-roasted beef shoulder with root vegetables, roasted potatoes, and proper Yorkshire pudding — the one dish that pulls the whole family to the table on Sunday afternoon.
+                  </p>
+                  <p class="text-[12px] leading-relaxed mt-3" :style="{ color: L.inkSecondary }">
+                    Serves 6. Prep 30 min, cook 2 hours. Rest the beef for 20 minutes before carving — this is the step most people skip and it's the difference between a great roast and a perfect one.
+                  </p>
+                </KinHeroPhotoSheet>
+              </div>
+            </div>
+          </div>
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        The sheet top position is a reactive prop — bind it to scroll position in the consuming view to drive parallax.
+      </p>
     </section>
 
   </ComponentPage>

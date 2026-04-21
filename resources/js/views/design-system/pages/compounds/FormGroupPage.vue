@@ -2,6 +2,10 @@
 import { ref } from 'vue'
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
+import KinFormGroup from '@/components/design-system/KinFormGroup.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinTextarea from '@/components/design-system/KinTextarea.vue'
+import KinSwitch from '@/components/design-system/KinSwitch.vue'
 import {
   SparklesIcon,
   ExclamationCircleIcon,
@@ -9,6 +13,13 @@ import {
   ChevronDownIcon,
   EnvelopeIcon,
 } from '@heroicons/vue/24/outline'
+
+// Kin component preview reactive state
+const kinEmail     = ref('')
+const kinPassword  = ref('')
+const kinBio       = ref('')
+const kinNotifs    = ref(true)
+const kinBadEmail  = ref('bad@')
 
 // ── Palette ──────────────────────────────────────────────────────────────────
 const L = {
@@ -1217,6 +1228,105 @@ function helperStyle(p, state) {
           </div>
         </div>
       </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — review below before replacing the bespoke demo
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinFormGroup — proposed extraction. Atomic label + field slot + helper/error. Default slot exposes {id, ariaInvalid, ariaDescribedby}.">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-6 space-y-5"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
+
+            <div class="max-w-md space-y-5">
+              <KinFormGroup label="Email address" helper="We'll never share it with anyone.">
+                <template #default="{ id }">
+                  <KinInput :id="id" v-model="kinEmail" type="email" placeholder="you@example.com" />
+                </template>
+              </KinFormGroup>
+
+              <KinFormGroup label="Password" required>
+                <template #default="{ id }">
+                  <KinInput :id="id" v-model="kinPassword" type="password" />
+                </template>
+              </KinFormGroup>
+
+              <KinFormGroup label="Email address" error="That doesn't look like a valid email.">
+                <template #default="{ id }">
+                  <KinInput :id="id" v-model="kinBadEmail" type="email" error="invalid" />
+                </template>
+              </KinFormGroup>
+
+              <KinFormGroup label="Bio" helper="A short introduction for your family profile.">
+                <template #default="{ id }">
+                  <KinTextarea :id="id" v-model="kinBio" :rows="3" placeholder="Tell your family about yourself…" />
+                </template>
+              </KinFormGroup>
+
+              <KinFormGroup label="Weekly digest" helper="Every Sunday morning at 8am.">
+                <KinSwitch v-model="kinNotifs" label="Send me a weekly summary email" />
+              </KinFormGroup>
+
+              <KinFormGroup label="Family name" disabled helper="Set during onboarding — contact support to change.">
+                <template #default="{ id }">
+                  <KinInput :id="id" model-value="The Qualls family" disabled />
+                </template>
+              </KinFormGroup>
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6 space-y-5"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
+
+            <div class="max-w-md space-y-5">
+              <KinFormGroup label="Email address" helper="We'll never share it with anyone.">
+                <template #default="{ id }">
+                  <KinInput :id="id" v-model="kinEmail" type="email" placeholder="you@example.com" />
+                </template>
+              </KinFormGroup>
+
+              <KinFormGroup label="Password" required>
+                <template #default="{ id }">
+                  <KinInput :id="id" v-model="kinPassword" type="password" />
+                </template>
+              </KinFormGroup>
+
+              <KinFormGroup label="Email address" error="That doesn't look like a valid email.">
+                <template #default="{ id }">
+                  <KinInput :id="id" v-model="kinBadEmail" type="email" error="invalid" />
+                </template>
+              </KinFormGroup>
+
+              <KinFormGroup label="Bio" helper="A short introduction for your family profile.">
+                <template #default="{ id }">
+                  <KinTextarea :id="id" v-model="kinBio" :rows="3" placeholder="Tell your family about yourself…" />
+                </template>
+              </KinFormGroup>
+
+              <KinFormGroup label="Weekly digest" helper="Every Sunday morning at 8am.">
+                <KinSwitch v-model="kinNotifs" label="Send me a weekly summary email" />
+              </KinFormGroup>
+
+              <KinFormGroup label="Family name" disabled helper="Set during onboarding — contact support to change.">
+                <template #default="{ id }">
+                  <KinInput :id="id" model-value="The Qualls family" disabled />
+                </template>
+              </KinFormGroup>
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
+      <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
+        Review against the bespoke variants above. Covers label, required, helper, error, disabled, with KinInput / KinTextarea / KinSwitch fields inside.
+      </p>
     </section>
 
   </ComponentPage>
