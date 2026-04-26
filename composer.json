@@ -42,7 +42,7 @@
         ],
         "post-install-cmd": [
             "@php artisan optimize:clear",
-            "git config core.hooksPath hooks 2>/dev/null || true"
+            "git config core.hooksPath scripts/hooks 2>/dev/null || true"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

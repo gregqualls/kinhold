@@ -21,7 +21,7 @@ class ListPlaybooks extends Tool
 
     public function handle(Request $request): Response
     {
-        $playbookDir = base_path('playbooks/vault');
+        $playbookDir = resource_path('playbooks/vault');
 
         if (! is_dir($playbookDir)) {
             return Response::json(['playbooks' => [], 'message' => 'No playbooks directory found.']);

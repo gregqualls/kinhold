@@ -58,6 +58,9 @@ Thumbs.db
 .claude/*
 !.claude/commands/
 
+# Personal/local CLAUDE context (not for the public repo)
+CLAUDE.local.md
+
 # Session captures
 *-session-capture.md
 
