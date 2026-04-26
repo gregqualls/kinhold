@@ -5,9 +5,10 @@
   Slots: default (overrides body), #icon (override default icon)
   Emits: action, close
 
-  Stacking / placement is a consumer concern — wrap one or more KinToast
-  instances in a fixed-position container (bottom-center is the canonical
-  placement; max 3 visible at once).
+  Stacking / placement is handled by KinToastStack (preferred). Canonical
+  placement: top-right on desktop (≥md), top-center on mobile. Max 3 visible.
+  For ad-hoc usage, you may wrap KinToast directly in a fixed-position
+  container, but prefer KinToastStack + useToasts() for consistency.
 
   Semantic statuses ship with sensible default icons:
     success → CheckCircleIcon

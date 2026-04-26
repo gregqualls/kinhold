@@ -3,6 +3,12 @@ import { ref } from 'vue'
 import ComponentPage from '../../shared/ComponentPage.vue'
 import VariantFrame from '../../shared/VariantFrame.vue'
 import { SparklesIcon } from '@heroicons/vue/24/outline'
+import KinSegmentedFilter from '@/components/design-system/KinSegmentedFilter.vue'
+
+const kinFeedL = ref('all')
+const kinFeedD = ref('all')
+const kinTimeL = ref('w')
+const kinTimeD = ref('w')
 
 // ── Palette constants ────────────────────────────────────────────────────────
 
@@ -912,6 +918,54 @@ function activeIndex(options, activeKey) {
           </li>
         </ul>
       </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — Variant A's look + B's sliding motion
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinSegmentedFilter — outlined container · ink-filled active pill that *slides* between options. forceMotion is on so you can see the slide regardless of OS reduced-motion preference.">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-6 space-y-6"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Feed filter — md · with counts</p>
+              <KinSegmentedFilter :options="FEED_OPTIONS" v-model:active-key="kinFeedL" force-motion />
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Time range — sm · compact</p>
+              <KinSegmentedFilter :options="TIME_OPTIONS" v-model:active-key="kinTimeL" size="sm" force-motion />
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Disabled</p>
+              <KinSegmentedFilter :options="FEED_OPTIONS" :active-key="kinFeedL" disabled />
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6 space-y-6"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Feed filter — md · with counts</p>
+              <KinSegmentedFilter :options="FEED_OPTIONS" v-model:active-key="kinFeedD" force-motion />
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Time range — sm · compact</p>
+              <KinSegmentedFilter :options="TIME_OPTIONS" v-model:active-key="kinTimeD" size="sm" force-motion />
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
     </section>
 
   </ComponentPage>

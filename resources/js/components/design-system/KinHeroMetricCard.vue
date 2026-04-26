@@ -1,7 +1,7 @@
 <!--
   KinHeroMetricCard — flagship hero surface for module landing pages.
   @see /design-system/hero-metric-card  (docs/design/COMPONENT_ROADMAP.md §5.2)
-  Props: variant, glyph, photo, label, value, delta, deltaUp, ctaLabel, ctaHref, ctaTo
+  Props: variant, photo, label, value, delta, deltaUp, ctaLabel, ctaHref, ctaTo
   Slots: #cta (override CTA button), #content (override content overlay)
   Emits: cta-click
 
@@ -10,10 +10,9 @@
     warm        — peach→coral→amber radial wash. Streak / urgency.
     photo       — edge-to-edge photo + two-layer scrim for legibility.
 
-  Gradient variants use a glyph watermark (upper-left, ~10% opacity).
-  Photo variant ignores the glyph.
   Content (label + hero number + delta + CTA) sits bottom-left with the
-  CTA right-aligned on md+ screens.
+  CTA right-aligned on md+ screens. Gradient variants are intentionally
+  glyph-free — the wash carries the surface, the number carries the data.
 -->
 <script setup>
 import { computed } from 'vue'
@@ -27,8 +26,6 @@ const props = defineProps({
     default: 'iridescent',
     validator: (v) => ['iridescent', 'warm', 'photo'].includes(v),
   },
-  /** Glyph component for gradient variants (ignored when variant="photo"). */
-  glyph: { type: [Object, Function], default: null },
   /** Photo URL (required when variant="photo"). */
   photo: { type: String, default: null },
   /** Alt text for photo variant. */
@@ -53,6 +50,16 @@ const props = defineProps({
 
 const emit = defineEmits(['cta-click'])
 
+// Hero number scales by character count so short values ("64") feel huge
+// and long ones ("23 days", "6 PM") stay on one line on narrow cards.
+const valueFontSize = computed(() => {
+  const len = String(props.value).length
+  if (len <= 2) return 'clamp(3rem, 16cqw, 8rem)'
+  if (len <= 4) return 'clamp(2.5rem, 13cqw, 6.5rem)'
+  if (len <= 6) return 'clamp(2rem, 10cqw, 5rem)'
+  return 'clamp(1.75rem, 8cqw, 4rem)'
+})
+
 const ctaTag = computed(() => {
   if (props.ctaTo) return RouterLink
   if (props.ctaHref) return 'a'
@@ -67,11 +74,11 @@ const ctaAttrs = computed(() => {
 
 <template>
   <article
-    class="kin-hmc relative rounded-[28px] overflow-hidden"
+    class="kin-hmc relative rounded-[28px] overflow-hidden flex flex-col justify-end"
     :class="`kin-hmc--${variant}`"
     :style="{ minHeight }"
   >
-    <!-- Photo variant: image + two-layer scrim -->
+    <!-- Photo variant: image + full-coverage scrim, both absolutely positioned behind -->
     <template v-if="variant === 'photo' && photo">
       <img
         :src="photo"
@@ -82,20 +89,15 @@ const ctaAttrs = computed(() => {
       <div class="kin-hmc__scrim absolute inset-0" aria-hidden="true" />
     </template>
 
-    <!-- Gradient variants: glyph watermark top-left (if provided) -->
-    <component
-      v-if="variant !== 'photo' && glyph"
-      :is="glyph"
-      class="kin-hmc__glyph absolute pointer-events-none"
-      aria-hidden="true"
-    />
-
-    <!-- Content overlay — bottom-left with optional right-aligned CTA -->
-    <div class="absolute inset-x-0 bottom-0 p-6 md:p-8 flex items-end justify-between gap-4">
+    <!-- Content — in normal flow, pushed to bottom of article via justify-end. -->
+    <div class="relative p-6 md:p-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-4">
       <slot name="content">
         <div class="space-y-2 min-w-0">
           <p class="kin-hmc__label text-[11px] font-semibold uppercase tracking-widest">{{ label }}</p>
-          <p class="kin-hmc__value font-semibold leading-none tracking-tight">{{ value }}</p>
+          <p
+            class="kin-hmc__value font-semibold leading-none tracking-tight whitespace-nowrap"
+            :style="{ fontSize: valueFontSize }"
+          >{{ value }}</p>
           <div v-if="delta" class="flex items-center gap-2 pt-1">
             <span
               class="kin-hmc__delta inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
@@ -131,10 +133,9 @@ const ctaAttrs = computed(() => {
   container-type: inline-size;
 }
 
-/* Hero number uses container-query units so it scales with the card. */
+/* Hero number — font size set inline (content-length aware). */
 .kin-hmc__value {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(3rem, 12cqw, 8rem);
   letter-spacing: -0.03em;
   color: rgb(var(--ink-primary));
 }
@@ -144,69 +145,52 @@ const ctaAttrs = computed(() => {
 }
 
 /* ── IRIDESCENT variant ─────────────────────────────────────────────── */
+/* Triple radial wash — two color anchors + accent splash for visual depth.
+   Reads as multi-color iridescence on every card width, including narrow mobile. */
 .kin-hmc--iridescent {
   background-color: rgb(var(--surface-raised));
-  background-image: radial-gradient(
-    circle at 15% 15%,
-    rgb(var(--accent-lavender-soft)) 0%,
-    rgb(var(--accent-mint-soft)) 40%,
-    rgb(var(--accent-peach-soft)) 85%,
-    rgb(var(--surface-raised)) 100%
-  );
+  background-image:
+    radial-gradient(circle at 15% 20%, rgb(var(--accent-lavender-soft)) 0%, transparent 55%),
+    radial-gradient(circle at 95% 85%, rgb(var(--accent-peach-soft)) 0%, transparent 60%),
+    radial-gradient(circle at 60% 100%, rgb(var(--accent-mint-soft)) 0%, transparent 55%);
 }
 .dark .kin-hmc--iridescent {
-  background-image: radial-gradient(
-    circle at 15% 15%,
-    rgb(var(--accent-lavender-bold) / 0.25) 0%,
-    rgb(var(--accent-mint-bold) / 0.18) 45%,
-    rgb(var(--accent-peach-bold) / 0.18) 85%,
-    rgb(var(--surface-raised)) 100%
-  );
+  background-image:
+    radial-gradient(circle at 15% 20%, rgb(var(--accent-lavender-bold) / 0.32) 0%, transparent 55%),
+    radial-gradient(circle at 95% 85%, rgb(var(--accent-peach-bold)  / 0.28) 0%, transparent 60%),
+    radial-gradient(circle at 60% 100%, rgb(var(--accent-mint-bold)  / 0.22) 0%, transparent 55%);
 }
 
 /* ── WARM variant ───────────────────────────────────────────────────── */
 .kin-hmc--warm {
   background-color: rgb(var(--surface-raised));
-  background-image: radial-gradient(
-    circle at 15% 15%,
-    rgb(var(--accent-peach-soft)) 0%,
-    rgb(var(--accent-sun-soft)) 45%,
-    rgb(var(--surface-raised)) 100%
-  );
+  background-image:
+    radial-gradient(circle at 15% 15%, rgb(var(--accent-peach-soft)) 0%, transparent 60%),
+    radial-gradient(circle at 90% 90%, rgb(var(--accent-sun-soft))   0%, transparent 60%),
+    radial-gradient(circle at 80% 20%, rgb(var(--accent-peach-soft)) 0%, transparent 45%);
 }
 .dark .kin-hmc--warm {
-  background-image: radial-gradient(
-    circle at 15% 15%,
-    rgb(var(--accent-peach-bold) / 0.30) 0%,
-    rgb(var(--accent-sun-bold) / 0.22) 50%,
-    rgb(var(--surface-raised)) 100%
-  );
+  background-image:
+    radial-gradient(circle at 15% 15%, rgb(var(--accent-peach-bold) / 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 90% 90%, rgb(var(--accent-sun-bold)   / 0.28) 0%, transparent 60%),
+    radial-gradient(circle at 80% 20%, rgb(var(--accent-peach-bold) / 0.22) 0%, transparent 45%);
 }
 
 /* ── PHOTO variant ──────────────────────────────────────────────────── */
-/* Two-layer scrim for guaranteed legibility — bottom half darkens to 0.70. */
+/* Full-coverage scrim — uniform darkening so any region can host text.
+   Slightly heavier toward the bottom where the content sits. */
 .kin-hmc__scrim {
-  background:
-    linear-gradient(180deg, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.25) 55%, rgba(0, 0, 0, 0.70) 85%, rgba(0, 0, 0, 0.92) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.55) 50%,
+    rgba(0, 0, 0, 0.78) 100%
+  );
 }
 .kin-hmc--photo .kin-hmc__value,
 .kin-hmc--photo .kin-hmc__label {
   color: #FFFFFF;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-}
-
-/* ── Glyph watermark ────────────────────────────────────────────────── */
-.kin-hmc__glyph {
-  width: 120px;
-  height: 120px;
-  left: 24px;
-  top: 24px;
-  opacity: 0.10;
-  color: rgb(var(--accent-lavender-bold));
-}
-.kin-hmc--warm .kin-hmc__glyph {
-  color: rgb(var(--accent-peach-bold));
-  opacity: 0.14;
 }
 
 /* ── Delta chip ─────────────────────────────────────────────────────── */

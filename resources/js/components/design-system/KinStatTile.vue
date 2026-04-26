@@ -52,6 +52,17 @@ const props = defineProps({
 
 defineEmits(['update:range'])
 
+// Hero number scales with character count so short values ("5") feel as
+// substantial as long ones ("1,248"). cqw = % of card width.
+const valueFontSize = computed(() => {
+  const len = String(props.value).length
+  if (len <= 1) return 'clamp(3.5rem, 60cqw, 10rem)'
+  if (len === 2) return 'clamp(3rem, 48cqw, 8.5rem)'
+  if (len === 3) return 'clamp(2.5rem, 40cqw, 7.5rem)'
+  if (len === 4) return 'clamp(2.25rem, 34cqw, 7rem)'
+  return 'clamp(2rem, 30cqw, 6.5rem)'
+})
+
 // ── Chart math ───────────────────────────────────────────────────────────────
 const CHART_W = 140
 const CHART_H = 40
@@ -92,10 +103,10 @@ const bars = computed(() => {
   >
     <!-- Row: label + optional range filter -->
     <div class="flex items-center justify-between gap-2">
-      <p class="text-[11px] font-semibold uppercase tracking-widest text-ink-tertiary">{{ label }}</p>
+      <p class="kin-stat-tile__label flex-1 min-w-0 text-[11px] font-semibold uppercase tracking-widest text-ink-tertiary">{{ label }}</p>
       <div
         v-if="ranges"
-        class="kin-stat-tile__ranges flex items-center rounded-lg overflow-hidden border border-border-subtle bg-surface-sunken text-[10px] font-medium"
+        class="kin-stat-tile__ranges flex-shrink-0 flex items-center rounded-lg overflow-hidden border border-border-subtle bg-surface-sunken text-[10px] font-medium"
       >
         <button
           v-for="r in ranges"
@@ -120,8 +131,11 @@ const bars = computed(() => {
       </span>
     </div>
 
-    <!-- Hero number — container-query-scaled via cqw units -->
-    <p class="kin-stat-tile__value leading-none font-semibold tracking-tighter">{{ value }}</p>
+    <!-- Hero number — container-query-scaled, content-length aware -->
+    <p
+      class="kin-stat-tile__value leading-none font-semibold tracking-tighter"
+      :style="{ fontSize: valueFontSize }"
+    >{{ value }}</p>
 
     <!-- Optional chart -->
     <svg
@@ -177,12 +191,17 @@ const bars = computed(() => {
   container-type: inline-size;  /* hero number uses cqw units */
 }
 
-/* Hero number — container-query scaled.
-   30cqw at card width ≈ 200px → 60px, scales up with container. */
+/* Hero number — font-family + letter-spacing only.
+   font-size is set inline (content-length aware) — see valueFontSize in script. */
 .kin-stat-tile__value {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(2rem, 30cqw, 6.5rem);
   letter-spacing: -0.02em;
+}
+
+/* Allow long labels to truncate on a single line; if the label wraps over
+   two lines naturally, that's fine, but never let it crowd the range row. */
+.kin-stat-tile__label {
+  overflow-wrap: anywhere;
 }
 
 /* Accent color drives hero number + chart + active filter. */

@@ -37,13 +37,13 @@ defineEmits(['action-click'])
       <span v-else>{{ initials }}</span>
     </div>
 
-    <!-- Name + role/meta -->
+    <!-- Name + role/meta (role in ink-secondary, meta in ink-tertiary) -->
     <div class="flex-1 min-w-0">
-      <p class="text-[13px] font-semibold leading-tight truncate text-ink-primary">{{ name }}</p>
-      <p v-if="role || meta" class="text-[11px] leading-tight mt-0.5 truncate text-ink-tertiary">
-        <span v-if="role">{{ role }}</span>
-        <span v-if="role && meta"> · </span>
-        <span v-if="meta">{{ meta }}</span>
+      <p class="text-[14px] font-semibold leading-tight truncate text-ink-primary">{{ name }}</p>
+      <p v-if="role || meta" class="text-[12px] leading-tight mt-0.5 truncate">
+        <span v-if="role" class="text-ink-secondary">{{ role }}</span>
+        <span v-if="role && meta" class="text-ink-tertiary"> · </span>
+        <span v-if="meta" class="text-ink-tertiary">{{ meta }}</span>
       </p>
     </div>
 
@@ -52,7 +52,7 @@ defineEmits(['action-click'])
       <button
         v-if="actionLabel"
         type="button"
-        class="kin-author-strip__action flex-shrink-0 inline-flex items-center gap-1 rounded-full h-8 px-3 text-[12px] font-medium border"
+        class="kin-author-strip__action flex-shrink-0 inline-flex items-center gap-1.5 rounded-full h-7 px-3 text-[12px] font-medium border"
         @click="$emit('action-click', $event)"
       >
         <component v-if="actionIcon" :is="actionIcon" class="w-3.5 h-3.5" />

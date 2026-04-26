@@ -214,9 +214,15 @@ const sizeClasses = computed(() => {
   box-shadow: var(--shadow-hover);
 }
 
-/* SECONDARY — dark mode: tokens auto-swap, only overrides needed */
-.dark .kin-btn--secondary:not(:disabled):not([aria-busy="true"]):hover {
+/* SECONDARY — dark mode: bump contrast so the button doesn't disappear into
+   the page background. Resting uses surface-overlay (lighter than surface-raised)
+   and a stronger border. Hover bumps another step. */
+.dark .kin-btn--secondary {
   background-color: rgb(var(--surface-overlay));   /* #242220 */
+  border-color: rgb(var(--border-strong));
+}
+.dark .kin-btn--secondary:not(:disabled):not([aria-busy="true"]):hover {
+  background-color: rgb(var(--ink-tertiary) / 0.18);
   box-shadow: var(--shadow-elevated);
 }
 .dark .kin-btn--secondary:not(:disabled):not([aria-busy="true"]):active {

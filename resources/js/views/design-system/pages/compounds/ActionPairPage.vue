@@ -9,6 +9,8 @@ import {
   ArrowRightIcon,
   PencilSquareIcon,
 } from '@heroicons/vue/24/outline'
+import KinActionPair from '@/components/design-system/KinActionPair.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 
 // ── Palette ──────────────────────────────────────────────────────────────────
 const L = {
@@ -1118,6 +1120,87 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         KIN COMPONENT PREVIEW — Variant B (asymmetric ghost + filled, 1:2)
+         ═══════════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="Kin" caption="KinActionPair — layout='asymmetric' gives secondary 1/3 (ghost) + primary 2/3 (filled). layout='equal' (default) is 50/50.">
+        <div class="w-full space-y-10">
+
+          <!-- LIGHT PANEL -->
+          <div class="rounded-2xl border p-6 space-y-6"
+               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: L.inkTertiary }">Asymmetric · affirmative</p>
+              <KinActionPair layout="asymmetric">
+                <template #secondary><KinButton variant="ghost">Skip</KinButton></template>
+                <template #primary><KinButton variant="primary">Send Kudos</KinButton></template>
+              </KinActionPair>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: L.inkTertiary }">Asymmetric · destructive</p>
+              <KinActionPair layout="asymmetric">
+                <template #secondary><KinButton variant="ghost">Keep</KinButton></template>
+                <template #primary>
+                  <KinButton variant="danger">
+                    <template #leading><TrashIcon class="w-4 h-4" /></template>
+                    Delete Forever
+                  </KinButton>
+                </template>
+              </KinActionPair>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: L.inkTertiary }">Equal (50/50)</p>
+              <KinActionPair layout="equal">
+                <template #secondary><KinButton variant="secondary">Cancel</KinButton></template>
+                <template #primary><KinButton variant="primary">Save</KinButton></template>
+              </KinActionPair>
+            </div>
+          </div>
+
+          <!-- DARK PANEL -->
+          <div class="dark rounded-2xl border p-6 space-y-6"
+               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: D.inkTertiary }">Asymmetric · affirmative</p>
+              <KinActionPair layout="asymmetric">
+                <template #secondary><KinButton variant="ghost">Skip</KinButton></template>
+                <template #primary><KinButton variant="primary">Send Kudos</KinButton></template>
+              </KinActionPair>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: D.inkTertiary }">Asymmetric · destructive</p>
+              <KinActionPair layout="asymmetric">
+                <template #secondary><KinButton variant="ghost">Keep</KinButton></template>
+                <template #primary>
+                  <KinButton variant="danger">
+                    <template #leading><TrashIcon class="w-4 h-4" /></template>
+                    Delete Forever
+                  </KinButton>
+                </template>
+              </KinActionPair>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: D.inkTertiary }">Equal (50/50)</p>
+              <KinActionPair layout="equal">
+                <template #secondary><KinButton variant="secondary">Cancel</KinButton></template>
+                <template #primary><KinButton variant="primary">Save</KinButton></template>
+              </KinActionPair>
+            </div>
+          </div>
+
+        </div>
+      </VariantFrame>
     </section>
 
   </ComponentPage>

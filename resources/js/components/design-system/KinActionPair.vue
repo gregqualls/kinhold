@@ -5,26 +5,27 @@
   Slots: #secondary (left — outline/ghost), #primary (right — filled)
 
   Primary sits on the right (rightmost = most forward action, per platform
-  conventions). Secondary on the left. Variants:
-    equal      — both buttons expand to fill (flex-1). Default for full-width
-                 decision rows and card footers.
-    asymmetric — secondary is ghost/compact, primary holds intrinsic width.
-                 Used inside list rows where actions share space with content.
+  conventions). Secondary on the left.
+
+  Layouts:
+    equal      — both buttons share the row 50/50 (flex-1 each).
+                 Default for full-width decision rows and card footers.
+    asymmetric — confident hierarchy: secondary takes 1/3 (ghost),
+                 primary takes 2/3 (filled). Both still fill their slot.
 
   Children are expected to be KinButton instances — this component does not
-  style them, only provides the spacing + flex layout convention.
+  style them, only provides the spacing + flex-weight layout convention.
 -->
 <script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
-  /** Layout strategy. */
   layout: {
     type: String,
     default: 'equal',
     validator: (v) => ['equal', 'asymmetric'].includes(v),
   },
-  /** Horizontal alignment of the pair. Only applies when the pair doesn't fill its container (asymmetric + no flex-1). */
+  /** Horizontal alignment of the pair when align !== 'stretch' on equal layout. */
   align: {
     type: String,
     default: 'stretch',
@@ -33,42 +34,42 @@ const props = defineProps({
 })
 
 const wrapperClass = computed(() => {
-  const base = 'flex gap-2'
-  // Asymmetric layouts span the container with ghost pushed left + primary right.
-  if (props.layout === 'asymmetric') {
-    return `${base} justify-between items-center`
-  }
-  // Equal layouts respect the align prop.
-  const alignCls = {
-    start:   'justify-start',
-    end:     'justify-end',
-    stretch: '',
-  }[props.align]
+  const base = 'flex gap-2 items-center'
+  if (props.layout === 'asymmetric' || props.align === 'stretch') return base
+  const alignCls = { start: 'justify-start', end: 'justify-end' }[props.align]
   return [base, alignCls].filter(Boolean).join(' ')
 })
 
-const childClass = computed(() =>
-  props.layout === 'equal' ? 'flex-1' : ''
+const secondaryClass = computed(() =>
+  props.layout === 'asymmetric' ? 'kin-action-pair__slot--narrow' : 'flex-1'
+)
+const primaryClass = computed(() =>
+  props.layout === 'asymmetric' ? 'kin-action-pair__slot--wide' : 'flex-1'
 )
 </script>
 
 <template>
   <div :class="wrapperClass">
-    <div :class="childClass">
+    <div :class="secondaryClass">
       <slot name="secondary" />
     </div>
-    <div :class="childClass">
+    <div :class="primaryClass">
       <slot name="primary" />
     </div>
   </div>
 </template>
 
 <style scoped>
-/* When slot children are KinButton and flex-1 is applied to this wrapper,
-   the button must also fill its wrapper. KinButton is an inline-flex root
-   so we apply width: 100% to any button-like element nested inside. */
+.kin-action-pair__slot--narrow { flex: 1 1 0; }
+.kin-action-pair__slot--wide   { flex: 2 1 0; }
+
+/* Buttons inside any flex-weighted slot fill the slot. */
 :deep(.flex-1 > button),
-:deep(.flex-1 > a) {
+:deep(.flex-1 > a),
+:deep(.kin-action-pair__slot--narrow > button),
+:deep(.kin-action-pair__slot--narrow > a),
+:deep(.kin-action-pair__slot--wide > button),
+:deep(.kin-action-pair__slot--wide > a) {
   width: 100%;
 }
 </style>

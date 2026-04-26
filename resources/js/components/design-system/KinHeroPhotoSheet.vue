@@ -26,7 +26,7 @@ defineEmits(['back'])
 </script>
 
 <template>
-  <div class="kin-hero-photo-sheet relative overflow-hidden bg-ink-primary">
+  <div class="kin-hero-photo-sheet relative overflow-hidden bg-ink-primary w-full h-full">
     <!-- Photo -->
     <div
       class="kin-hero-photo-sheet__photo absolute inset-0"
