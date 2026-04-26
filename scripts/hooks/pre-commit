@@ -1,12 +1,26 @@
 #!/bin/bash
 # Git pre-commit hook — auto-fix formatting + block on real errors
 # Auto-fixes Pint/ESLint formatting, re-stages fixed files, blocks on syntax errors.
-# Install: git config core.hooksPath hooks
+# Install: git config core.hooksPath scripts/hooks
 
 set -euo pipefail
 
-# Ensure Homebrew tools are on PATH
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+# Ensure dev tools are on PATH across macOS, Linux, and Windows (Git Bash).
+# On macOS, Homebrew typically installs to /opt/homebrew or /usr/local.
+# On Windows, winget links and Composer's setup directory must be added
+# explicitly because git's hook environment doesn't always inherit them.
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:$PATH"
+if [ -d "/c/Users/${USERNAME:-$USER}/AppData/Local/Microsoft/WinGet/Links" ]; then
+  export PATH="/c/Users/${USERNAME:-$USER}/AppData/Local/Microsoft/WinGet/Links:$PATH"
+fi
+# winget PHP installs land in Packages/PHP.PHP.X.Y_*; pick the highest version.
+WINGET_PHP_DIR=$(ls -d /c/Users/"${USERNAME:-$USER}"/AppData/Local/Microsoft/WinGet/Packages/PHP.PHP.*_*/ 2>/dev/null | sort -V | tail -1)
+if [ -n "$WINGET_PHP_DIR" ] && [ -x "${WINGET_PHP_DIR}php.exe" ]; then
+  export PATH="${WINGET_PHP_DIR%/}:$PATH"
+fi
+if [ -d "/c/ProgramData/ComposerSetup/bin" ]; then
+  export PATH="/c/ProgramData/ComposerSetup/bin:$PATH"
+fi
 
 # Get staged files (only added/modified, not deleted)
 STAGED_PHP=$(git diff --cached --name-only --diff-filter=d -- '*.php' || true)

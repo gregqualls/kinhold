@@ -4,7 +4,7 @@ Thanks for your interest in contributing! Kinhold is an open-source family hub a
 
 ## Before you start
 
-1. **Read [PRINCIPLES.md](PRINCIPLES.md).** Every contribution should align with our core product principles. The short version: keep it simple for busy parents, privacy-first, API-first, mobile-first.
+1. **Read [PRINCIPLES.md](docs/PRINCIPLES.md).** Every contribution should align with our core product principles. The short version: keep it simple for busy parents, privacy-first, API-first, mobile-first.
 2. **Check the [roadmap](docs/ROADMAP.md)** to see what's planned and where help is needed.
 3. **Open an issue first** for anything beyond a small bug fix. This avoids duplicate work and lets us align on approach.
 
@@ -47,7 +47,7 @@ Open http://localhost:8000. Demo accounts are created by the seeder.
 ### Docker alternative
 
 ```bash
-chmod +x setup.sh && ./setup.sh
+chmod +x scripts/setup-dev.sh && ./scripts/setup-dev.sh
 ```
 
 ## Code conventions
@@ -104,7 +104,7 @@ A feature is **not done** until all applicable items are complete. This is enfor
 
 ## Principles check
 
-Before submitting, verify your changes against [PRINCIPLES.md](PRINCIPLES.md):
+Before submitting, verify your changes against [PRINCIPLES.md](docs/PRINCIPLES.md):
 
 - [ ] Can a busy parent figure this out in 30 seconds?
 - [ ] Does it work for different family sizes and age ranges?
