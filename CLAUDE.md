@@ -3,16 +3,11 @@
 > This file is automatically read at the start of every Claude session.
 > Keep it updated after every working session. It is the single source of truth.
 
-## Project Owner
-
-Greg Qualls (glqualls@gmail.com)
-- Has ADHD — will have many ideas, needs help staying focused on priorities
-- Familiar with Laravel, prefers clear explanations for frontend/Vue concepts
-- Family: wife + 3 kids (ages 12, 14, 17 as of March 2026)
+> Personal owner/instance details (project IDs, deployment specifics, family context) live in `CLAUDE.local.md` (gitignored). Read both if working on this checkout.
 
 ## What Is Kinhold?
 
-An open-source family hub web application at **kinhold.app**. It's a central place for the Qualls family (and eventually other families) to manage their shared life — calendar, tasks, important documents, and quick AI-powered answers about family data.
+An open-source family hub web application at **kinhold.app**. It's a central place for families to manage their shared life — calendar, tasks, important documents, and quick AI-powered answers about family data.
 
 ## Tech Stack
 
@@ -79,7 +74,7 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 - **Kids personal vault:** `is_personal` flag — children can create/edit/delete their own entries. Parents see everything.
 - Document uploads (PDFs, images) with download
 - **Permissions model:** Parent/child base roles + per-item overrides (view/edit). Share UI with family member dropdown.
-- **Vault playbooks:** 5 `.md` skill files in `playbooks/vault/` for AI-guided data entry (house manual, medical, vehicle, school, emergency). Community-contributable via PR.
+- **Vault playbooks:** 5 `.md` skill files in `resources/playbooks/vault/` for AI-guided data entry (house manual, medical, vehicle, school, emergency). Community-contributable via PR.
 - Data format: `encrypted_data` stores `{ body: "markdown", sensitive_fields: { key: value } }`. Legacy flat key/value format has fallback rendering.
 - **Future:** RAG search tool, version history, audit log
 
@@ -100,7 +95,6 @@ An open-source family hub web application at **kinhold.app**. It's a central pla
 - Direct model/service access (no HTTP round-trips)
 - `ScopesToFamily` trait scopes all queries to authenticated user's family
 - Parent-only write actions enforced at tool level
-- Greg manages Kinhold entirely through Claude Desktop or Claude Code
 - **Legacy:** `mcp-server/` TypeScript directory still exists but is superseded
 - **Future:** Webhooks, real-time sync
 
@@ -192,12 +186,12 @@ All routes are prefixed with `/api/v1/`. Auth routes are public, everything else
 1. **Read this file first.** It's your project briefing.
 2. **Check `docs/ROADMAP.md`** to understand what phase we're in and what's next.
 3. **Check `CHANGELOG.md`** to see what was done in recent sessions.
-4. **Ask Greg what he wants to focus on** before starting work. Don't assume.
+4. **Ask the user what they want to focus on** before starting work. Don't assume.
 5. **After completing work**, update:
    - `CHANGELOG.md` — What was done this session
    - `CLAUDE.md` — If any architectural decisions changed, modules were added/modified, or the tech stack evolved
    - `docs/ROADMAP.md` — If features moved between phases or new ones were added
-6. **Don't scope-creep.** Greg has ADHD and will throw out ideas. Capture them in the roadmap but stay focused on what was agreed for the session.
+6. **Don't scope-creep.** Capture new ideas in the roadmap but stay focused on what was agreed for the session.
 7. **Test your changes** when possible. If you can't run the app, at least verify syntax and logic.
 8. **Keep the API-first principle.** Never bypass the API from the frontend.
 9. **Mobile-first.** Always design for phone screens first.
@@ -205,7 +199,7 @@ All routes are prefixed with `/api/v1/`. Auth routes are public, everything else
 11. **Follow the pipeline.** Use `/playbook` if unsure what's next. The full flow is:
     `/kickoff` → code → `/review` → `/check` → `/pr` → `/qa` → `/handoff` → `/merge` → `/cleanup`
 12. **Quality gates are mandatory.** `/check` must pass before `/pr`. No exceptions.
-13. **Upsun CLI requires Greg to log in first.** The Upsun plugin is installed but the CLI needs an active auth session. If any `upsun` command fails with an auth error, ask Greg to run `upsun auth:browser-login` in his terminal before proceeding.
+13. **Upsun CLI requires an active auth session.** If any `upsun` command fails with an auth error, ask the user to run `upsun auth:browser-login` in their terminal before proceeding.
 
 ## Local Development Setup
 
@@ -228,16 +222,16 @@ php artisan db:seed
 # Open http://localhost:8000
 ```
 
-**Alternative: Docker** (Dockerfile fixed, setup.sh included)
+**Alternative: Docker** (Dockerfile + dev compose file in `docker/`)
 ```bash
-chmod +x setup.sh && ./setup.sh
+chmod +x scripts/setup-dev.sh && ./scripts/setup-dev.sh
 ```
 
 ## Current Status (Updated: 2026-04-16)
 
 **Phase:** MVP deployed to production. Phase 0 (Foundations) complete. Gamification, onboarding wizard, MCP server, and profile pictures all shipped. Rebranded to Kinhold. **Pushed to GitHub as public open-source repo.** Security audit complete (PR #110). Self-hosting infrastructure shipped (PR #115). CI pipeline + open-source community docs in place (PR #116).
 
-**Production:** Deployed on Upsun at `kinhold.app` (project ID: `2rozcvqjtjdta`, Terra Nova org). GitHub integration auto-deploys on push to `main`. PRs auto-create preview environments. Never use `upsun push` — just push to GitHub.
+**Production:** Deployed on Upsun at `kinhold.app`. GitHub integration auto-deploys on push to `main`. PRs auto-create preview environments. Never use `upsun push` — just push to GitHub. (Owner-specific Upsun project ID + org are in `CLAUDE.local.md`.)
 
 **GitHub:** https://github.com/gregqualls/kinhold (public, Elastic License 2.0)
 
@@ -301,32 +295,31 @@ chmod +x setup.sh && ./setup.sh
 
 ## Deployment Strategy (Upsun)
 
-**Problem:** Greg owns the open-source repo (`gregqualls/kinhold`) and also wants to deploy a personal instance for his family. Other users should be able to fork/deploy their own instance and pull upstream updates.
+**Problem:** The repo owner runs the canonical instance at `kinhold.app` from the same `main` branch that other users fork. Other users should be able to fork/deploy their own instance and pull upstream updates.
 
 **Solution: Single repo, Upsun connects directly to `main` branch.**
 
-- **No fork needed.** Greg owns the repo. Upsun connects directly to `gregqualls/kinhold`.
-- The `.upsun/config.yaml` is already in the repo (committed in Session 1).
-- Family-specific config (API keys, DB creds, domain) lives in Upsun environment variables — never in the repo.
+- **No fork needed for the owner.** Upsun connects directly to the upstream repo's `main`.
+- The `.upsun/config.yaml` is already in the repo.
+- Instance-specific config (API keys, DB creds, domain) lives in Upsun environment variables — never in the repo.
 - Other users fork the repo, connect their fork to their own Upsun project (or any host), and pull upstream updates with `git pull upstream main`.
 
 **Deployment steps (already complete):**
-1. Upsun project created and connected to GitHub repo (`gregqualls/kinhold`, `main` branch)
+1. Upsun project created and connected to GitHub repo (`main` branch)
 2. Environment variables set on Upsun (APP_KEY, DB creds, Redis, Google OAuth, Anthropic key)
 3. `.upsun/config.yaml` has build/deploy hooks (composer install, npm build, migrate, etc.)
-4. Domain configured: kinhold.app (via Cloudflare)
-5. SSL handled automatically by Upsun
-6. PRs auto-create preview environments
+4. Domain configured (DNS + SSL handled by Upsun)
+5. PRs auto-create preview environments
 
 **For other users who want to deploy:**
-1. Fork `gregqualls/kinhold` on GitHub
+1. Fork the repo on GitHub
 2. Connect their fork to their Upsun project (or Docker/VPS/whatever)
 3. Set their own environment variables
 4. To get updates: `git remote add upstream https://github.com/gregqualls/kinhold && git pull upstream main`
 
 ## Aspirational Features (Not Planned Yet)
 
-These are Greg's ideas. Don't build them unless Greg specifically asks. Capture new ideas here.
+Owner's ideas backlog. Don't build them unless explicitly asked. Capture new ideas here.
 
 - ~~Gamification: Points on tasks, badges/achievements, leaderboard~~ — IMPLEMENTED (Session 5)
 - Real-money rewards for kids ($ values on tasks, track earnings)

@@ -35,6 +35,10 @@ else
 fi
 
 echo "✓ Docker Compose is available ($COMPOSE)"
+
+# Use the dev compose file (relocated under docker/ to keep the repo root clean)
+export COMPOSE_FILE="docker/docker-compose.dev.yml"
+
 echo ""
 
 # Step 1: Create .env from example
