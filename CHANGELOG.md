@@ -2,6 +2,39 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-26 — Session 38: Root Directory Cleanup, Personal Context Split, Upsun Integration Repair
+
+### What Was Done
+
+**Root directory decluttered (PR #172)**
+- Reduced visible root entries by relocating files to conventional homes:
+  - `setup.sh` → `scripts/setup-dev.sh` (developer/full-stack Docker flow). Now exports `COMPOSE_FILE` so the script keeps working with the relocated compose file.
+  - `docker-compose.yml` (dev) → `docker/docker-compose.dev.yml`. Self-host pair (`docker-compose.simple.yml` + `setup-simple.sh` + `.env.docker-simple`) and `Dockerfile` stayed at root for one-command self-hosting.
+  - `PRINCIPLES.md` → `docs/PRINCIPLES.md`.
+  - `hooks/pre-commit` → `scripts/hooks/pre-commit`. `composer.json` post-install hook now points `core.hooksPath` at `scripts/hooks`.
+  - `playbooks/` → `resources/playbooks/` (Laravel-conventional). MCP tools `ListPlaybooks` and `GetPlaybook` updated `base_path()` → `resource_path()`.
+- All references chased: README, SELF-HOSTING, CONTRIBUTING, CLAUDE.md, the moved scripts.
+- Pre-commit hook hardened to find PHP across macOS (Homebrew), Linux, and Windows (auto-discovers winget's `PHP.PHP.X.Y_*` package dir, picks the highest version).
+
+**Personal context split out of CLAUDE.md**
+- New `CLAUDE.local.md` (gitignored) holds owner identity, Upsun project ID, instance specifics, ADHD/collaboration notes — anything that doesn't belong in a public OSS repo.
+- Public `CLAUDE.md` is now contributor-/AI-agnostic: removed the Project Owner section, hardcoded Upsun project ID, "Greg manages…" lines, and de-personalized session-rule wording. `CLAUDE.local.md` is referenced from the top of the public file so any Claude session reads both on this checkout.
+- `.gitignore` updated to exclude `CLAUDE.local.md`.
+
+**Upsun GitHub integration repair (production fix, not in PR)**
+- After the `q32hub → kinhold` rebrand, the Upsun GitHub integration kept its old repository pointer. GitHub redirects (`q32hub` → `kinhold`) caused Upsun's HTTP client to strip auth on redirect, returning 401 on every fetch. Webhooks still delivered successfully (200 OK) so the integration looked healthy from the outside; only `upsun integration:activity:list` exposed the per-fetch failures. Result: PRs got CI but no preview environments since the rename.
+- Diagnosed via webhook delivery history (200 OK, but no Upsun status checks on PR #172 vs PR #171 having them) → integration:list (revealed `repository: gregqualls/q32hub`) → integration:activity:list (revealed every fetch 401-ing on the redirected URL).
+- Fix: deleted the stale integration via CLI, re-added via Upsun console (clean GitHub App OAuth flow vs CLI's PAT-only path). New integration `zfotth2rn333o` correctly tracks `gregqualls/kinhold`. Preview env for PR #172 came up immediately.
+- Worth flagging on other Upsun projects after any GitHub repo rename — the failure mode is silent.
+
+### Files Changed
+
+- Moved (10): `setup.sh`, `docker-compose.yml`, `PRINCIPLES.md`, `hooks/pre-commit`, `playbooks/{dashboard,vault}/*.md`
+- Modified: `.gitignore`, `CLAUDE.md`, `CONTRIBUTING.md`, `README.md`, `SELF-HOSTING.md`, `composer.json`, `app/Mcp/Tools/{ListPlaybooks,GetPlaybook}.php`, `scripts/hooks/pre-commit` (PATH portability), `scripts/setup-dev.sh` (COMPOSE_FILE export)
+- New (gitignored): `CLAUDE.local.md`
+
+---
+
 ## 2026-04-17 — Session 37: Tag Scopes, Meal Plan Shopping Flow, Responsive Grid, Mobile Nav Redesign
 
 ### What Was Done
