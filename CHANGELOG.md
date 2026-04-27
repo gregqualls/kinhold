@@ -2,9 +2,11 @@
 
 > Updated at the end of every working session. Newest entries first.
 
-## 2026-04-27 — Demo landing page at `/demo`
+## 2026-04-27 — Demo landing page at `/demo`, fix dashboard-flash on boot
 
 New `DemoView.vue` at `/demo` — a full-page version of the existing demo modal that the marketing site can deep-link to instead of `/login`. Reuses the same five Johnson-family member picker and `authStore.demoLogin()` action as the modal, wrapped in a Kin design-system layout with intro copy ("Meet the Johnson family"), a "What's inside" highlights row (calendar/tasks, vault/recipes, points/badges), and footer links to sign in or create an account. Route is `requiresGuest`, so authenticated visitors bounce to Dashboard. `'Demo'` added to App.vue's chromeless-page list.
+
+Also fixed a brief authenticated-chrome flash on SPA boot when visiting `/login` or `/demo`. The router's async `beforeEach` awaits `initAuth`, so `route.name` is undefined for the first frame — App.vue's `isAuthPage` previously evaluated to `false` and rendered Sidebar/TopBar/BottomNav before the route resolved. Now `isAuthPage` returns `true` (chromeless) until `authStore.initialAuthChecked` flips, eliminating the flash without changing post-boot behavior.
 
 ## 2026-04-27 — Removed landing page from SPA (#134)
 

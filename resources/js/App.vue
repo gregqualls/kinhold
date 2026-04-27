@@ -125,7 +125,12 @@ provide('easterEggs', easterEggsRef)
 
 // `isAuthPage` doubles as "chromeless" — no sidebar/topbar/bottomnav wraps these routes.
 // The design system is chromeless by design: it owns its full viewport with its own sidebar.
+//
+// Also chromeless during the initial auth check: until the router's async beforeEach
+// finishes initAuth, `route.name` is undefined and the chrome would briefly render
+// before the real route resolves. Defaulting to chromeless avoids that flash.
 const isAuthPage = computed(() => {
+  if (!authStore.initialAuthChecked) return true
   return ['Login', 'Register', 'Demo', 'Privacy', 'Terms', 'Onboarding', 'DesignSystem'].includes(route.name)
 })
 
