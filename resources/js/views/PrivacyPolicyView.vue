@@ -4,7 +4,7 @@
     <nav class="sticky top-0 z-50 bg-surface-raised/80 backdrop-blur-md border-b border-border-subtle">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <RouterLink to="/" class="flex items-center gap-2">
+          <RouterLink to="/login" class="flex items-center gap-2">
             <span class="text-2xl">&#x1F3E0;</span>
             <span class="text-xl font-bold text-accent-lavender-bold">Kinhold</span>
           </RouterLink>
@@ -185,7 +185,7 @@
       <div class="max-w-4xl mx-auto px-4">
         <p>&copy; {{ new Date().getFullYear() }} Kinhold &mdash; Open source under the Elastic License 2.0</p>
         <div class="mt-2 flex items-center justify-center gap-4">
-          <RouterLink to="/" class="hover:text-accent-lavender-bold transition-colors">Home</RouterLink>
+          <RouterLink to="/login" class="hover:text-accent-lavender-bold transition-colors">Home</RouterLink>
           <span>&bull;</span>
           <RouterLink to="/terms" class="hover:text-accent-lavender-bold transition-colors">Terms</RouterLink>
           <span>&bull;</span>

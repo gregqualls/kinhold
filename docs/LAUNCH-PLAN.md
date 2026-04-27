@@ -1,3 +1,5 @@
+> **Archival note:** Launch shipped April 17, 2026 as v1.4.0. This document is preserved for historical reference.
+
 # Kinhold v1.0.0 Launch Plan — r/selfhosted Post Sunday April 12
 
 > **Target:** r/selfhosted and open-source subreddits
