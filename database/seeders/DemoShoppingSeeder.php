@@ -103,7 +103,7 @@ class DemoShoppingSeeder extends Seeder
             ['name' => 'Trash bags',        'quantity' => '1 box',      'category' => 'household'],
             ['name' => 'Toothpaste',        'quantity' => '2 tubes',    'category' => 'personal-care'],
             ['name' => 'Shampoo',           'quantity' => '1',          'category' => 'personal-care'],
-            ['name' => 'Lily\'s school glue','quantity' => '2 bottles',  'category' => 'school'],
+            ['name' => 'Lily\'s school glue', 'quantity' => '2 bottles',  'category' => 'school'],
             ['name' => 'Birthday card',     'quantity' => '1',          'category' => 'misc'],
         ];
 
