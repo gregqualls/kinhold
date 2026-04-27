@@ -34,6 +34,7 @@ const RecipeDetailView = () => import('@/views/food/RecipeDetailView.vue')
 const ShoppingView = () => import('@/views/food/ShoppingTab.vue')
 
 const NotFoundView = () => import('@/views/NotFoundView.vue')
+const DemoView = () => import('@/views/DemoView.vue')
 
 // Design System — always open, accessible as a community reference for
 // contributors. Lives outside auth so the component library can be linked to
@@ -46,6 +47,7 @@ const routes = [
   { path: '/terms', name: 'Terms', component: TermsView, meta: { isOpen: true } },
   { path: '/login', name: 'Login', component: LoginView, meta: { requiresGuest: true } },
   { path: '/register', name: 'Register', component: RegisterView, meta: { requiresGuest: true } },
+  { path: '/demo', name: 'Demo', component: DemoView, meta: { requiresGuest: true } },
   { path: '/onboarding', name: 'Onboarding', component: OnboardingView, meta: { requiresAuth: true, isOnboarding: true } },
   { path: '/dashboard', name: 'Dashboard', component: DashboardView, meta: { requiresAuth: true } },
   { path: '/calendar', name: 'Calendar', component: CalendarView, meta: { requiresAuth: true, module: 'calendar' } },
