@@ -107,7 +107,7 @@
                   title="Change avatar"
                   @click="openAvatarEditor(member)"
                 >
-                  <KinAvatar :name="member.name" :src="member.avatar" size="md" color="lavender" />
+                  <UserAvatar :user="member" size="md" />
                 </button>
                 <div>
                   <p class="font-semibold text-ink-primary">{{ member.name }}</p>
@@ -231,7 +231,7 @@
                   class="flex items-center gap-2 px-3 py-2 bg-surface-raised rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
                 >
                   <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
-                  <KinAvatar :name="member.name" :src="member.avatar" size="xs" color="lavender" />
+                  <UserAvatar :user="member" size="xs" />
                   <span class="text-sm text-ink-primary">{{ member.name }}</span>
                   <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-ink-tertiary italic">(always)</span>
                 </label>
@@ -835,7 +835,7 @@
                   class="flex items-center gap-2 px-3 py-2 bg-surface-raised rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
                 >
                   <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
-                  <KinAvatar :name="member.name" :src="member.avatar" size="xs" color="lavender" />
+                  <UserAvatar :user="member" size="xs" />
                   <span class="text-sm text-ink-primary">{{ member.name }}</span>
                   <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-ink-tertiary italic">(always)</span>
                 </label>

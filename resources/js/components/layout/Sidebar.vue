@@ -23,12 +23,7 @@
           :class="collapsed ? 'justify-center py-2 px-0' : 'gap-3 px-2 py-2'"
           :title="collapsed ? currentUser?.name : undefined"
         >
-          <KinAvatar
-            :src="currentUser?.avatar_url"
-            :name="currentUser?.name"
-            size="sm"
-            color="lavender"
-          />
+          <UserAvatar :user="currentUser" size="sm" />
           <div v-if="!collapsed" class="flex-1 min-w-0">
             <p class="text-sm font-medium text-ink-primary truncate">{{ currentUser?.name }}</p>
             <p class="text-[11px] text-ink-tertiary truncate capitalize">{{ currentUser?.family_role || 'member' }}</p>
@@ -55,7 +50,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import KinSidebar from '@/components/design-system/KinSidebar.vue'
-import KinAvatar from '@/components/design-system/KinAvatar.vue'
+import UserAvatar from '@/components/common/UserAvatar.vue'
 import {
   HomeIcon,
   CalendarIcon,

@@ -1,37 +1,34 @@
+<!--
+  UserAvatar — thin compatibility shim over KinAvatar.
+
+  Reads `:user` (id, name, avatar, avatar_color, google_avatar) and resolves
+  to the right KinAvatar props:
+    • Photo URL (avatar starts with http/https) → src=URL
+    • Preset icon (avatar starts with `phosphor:`) → src is passed through
+      and KinAvatar resolves it natively
+    • Stored avatar_color → mapped via kinAccentFor() to one of the 4 Kin
+      accent families (lavender / peach / mint / sun). Legacy 12-color names
+      (teal/amber/sage/etc.) fall through to the closest accent.
+    • No avatar_color → hash of user.id chooses a stable accent so each
+      family member is visually distinct across the app.
+
+  Every consumer of `<UserAvatar :user="...">` now renders a KinAvatar
+  underneath, keeping avatars consistent everywhere (topbar, sidebar,
+  leaderboard, feeds, meal cards, task rows, settings, etc.).
+-->
 <template>
-  <!-- Uploaded photo or Google URL -->
-  <img
-    v-if="avatarUrl && !imgError"
-    :src="avatarUrl"
-    :alt="user?.name"
-    class="rounded-full object-cover flex-shrink-0"
-    :class="sizeClasses"
-    @error="imgError = true"
+  <KinAvatar
+    :src="resolvedSrc"
+    :name="user?.name"
+    :color="resolvedColor"
+    :size="size"
   />
-  <!-- Phosphor preset icon -->
-  <div
-    v-else-if="presetIcon"
-    class="rounded-full flex items-center justify-center flex-shrink-0"
-    :class="[sizeClasses, colorClasses]"
-    :title="user?.name"
-  >
-    <component :is="presetIcon" weight="duotone" class="text-white" :size="iconSize" />
-  </div>
-  <!-- Initials fallback -->
-  <div
-    v-else
-    class="rounded-full flex items-center justify-center font-semibold text-white flex-shrink-0"
-    :class="[sizeClasses, colorClasses]"
-    :title="user?.name"
-  >
-    {{ initials }}
-  </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
-import { useFamilyColors } from '@/composables/useFamilyColors'
-import { getPreset } from '@/components/common/avatarPresets'
+import { computed } from 'vue'
+import KinAvatar from '@/components/design-system/KinAvatar.vue'
+import { kinAccentFor } from '@/composables/useFamilyColors'
 
 const props = defineProps({
   user: {
@@ -45,53 +42,24 @@ const props = defineProps({
   },
 })
 
-const { getColorForUser } = useFamilyColors()
+// Photo URL OR phosphor:<key> preset — KinAvatar handles both natively.
+// Avatars starting with `/` or anything else returned as-is.
+const resolvedSrc = computed(() => props.user?.avatar || null)
 
-const imgError = ref(false)
-watch(() => props.user?.avatar, () => { imgError.value = false })
+// Hash a stable string to one of the 4 Kin accent families. Used when the
+// user has no explicit avatar_color set, so each family member still gets
+// a consistent distinct color across the app.
+const HASH_ACCENTS = ['lavender', 'peach', 'mint', 'sun']
+function hashToAccent(str) {
+  if (!str) return 'lavender'
+  let h = 0
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0
+  return HASH_ACCENTS[Math.abs(h) % HASH_ACCENTS.length]
+}
 
-const sizeClasses = computed(() => {
-  const sizes = {
-    xs: 'w-5 h-5 text-[8px]',
-    sm: 'w-8 h-8 text-xs',
-    md: 'w-10 h-10 text-sm',
-    lg: 'w-12 h-12 text-base',
-    xl: 'w-16 h-16 text-lg',
-  }
-  return sizes[props.size]
-})
-
-const iconSize = computed(() => {
-  const sizes = { xs: 14, sm: 20, md: 24, lg: 28, xl: 38 }
-  return sizes[props.size]
-})
-
-const avatarUrl = computed(() => {
-  const avatar = props.user?.avatar
-  if (avatar && avatar.startsWith('http')) return avatar
-  return null
-})
-
-const presetIcon = computed(() => {
-  const avatar = props.user?.avatar
-  if (!avatar || !avatar.startsWith('phosphor:')) return null
-  const key = avatar.replace('phosphor:', '')
-  const preset = getPreset(key)
-  return preset?.component || null
-})
-
-const initials = computed(() => {
-  if (!props.user?.name) return '?'
-  return props.user.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-})
-
-const colorClasses = computed(() => {
-  const color = getColorForUser(props.user?.id, props.user?.name, props.user?.avatar_color)
-  return color.bg
+const resolvedColor = computed(() => {
+  const stored = props.user?.avatar_color
+  if (stored) return kinAccentFor(stored)
+  return hashToAccent(props.user?.id || props.user?.name || '')
 })
 </script>

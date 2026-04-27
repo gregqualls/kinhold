@@ -12,15 +12,15 @@
       <SunIcon v-else class="w-5 h-5" />
     </button>
 
-    <!-- Family avatars -->
+    <!-- Family avatars — UserAvatar renders KinAvatar with each member's
+         own avatar_color (or stable hash when none set) so the topbar row
+         matches the per-user accent shown elsewhere in the app. -->
     <div class="flex -space-x-1.5">
-      <KinAvatar
+      <UserAvatar
         v-for="member in displayedMembers"
         :key="member.id"
-        :src="member.avatar_url"
-        :name="member.name"
+        :user="member"
         size="sm"
-        color="lavender"
         class="ring-2 ring-surface-raised rounded-full"
       />
       <div
@@ -38,7 +38,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { useDarkMode } from '@/composables/useDarkMode'
-import KinAvatar from '@/components/design-system/KinAvatar.vue'
+import UserAvatar from '@/components/common/UserAvatar.vue'
 import { SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
 
 const authStore = useAuthStore()
