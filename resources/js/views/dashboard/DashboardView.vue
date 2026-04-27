@@ -11,18 +11,21 @@
 
     <!-- Edit button (shown when not editing) -->
     <div v-else class="flex justify-end mb-2">
-      <button
-        class="p-2 rounded-lg text-lavender-400 hover:text-wisteria-500 hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
+      <KinButton
+        variant="ghost"
+        size="sm"
+        icon-only
+        aria-label="Edit Dashboard"
         title="Edit Dashboard"
         @click="dashboardStore.enterEditMode()"
       >
         <PencilSquareIcon class="w-5 h-5" />
-      </button>
+      </KinButton>
     </div>
 
     <!-- Loading skeleton -->
     <div v-if="dashboardStore.loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 items-start">
-      <div v-for="n in 6" :key="n" class="h-32 bg-lavender-100 dark:bg-prussian-700 rounded-card animate-pulse"></div>
+      <KinSkeleton v-for="n in 6" :key="n" shape="card" height="128px" />
     </div>
 
     <!-- Widget grid -->
@@ -40,23 +43,26 @@
     </div>
 
     <!-- Empty state (no widgets) -->
-    <div
+    <KinEmptyState
       v-if="!dashboardStore.loading && dashboardStore.widgets.length === 0"
-      class="text-center py-12"
+      :icon="Squares2X2Icon"
+      title="No widgets yet"
+      description="Add widgets to customize your dashboard, or ask the Assistant to build one for you."
+      accent-color="lavender"
+      size="md"
     >
-      <Squares2X2Icon class="w-12 h-12 text-lavender-400 dark:text-lavender-500 mx-auto mb-3" />
-      <h3 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-1">No widgets yet</h3>
-      <p class="text-sm text-lavender-500 dark:text-lavender-400 mb-4">
-        Add widgets to customize your dashboard, or ask the Assistant to build one for you.
-      </p>
-      <button
-        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-wisteria-600 text-white hover:bg-wisteria-700 transition-colors"
-        @click="dashboardStore.enterEditMode(); showPicker = true"
-      >
-        <PlusIcon class="w-4 h-4" />
-        Add Widget
-      </button>
-    </div>
+      <template #cta>
+        <KinButton
+          variant="primary"
+          @click="dashboardStore.enterEditMode(); showPicker = true"
+        >
+          <template #leading>
+            <PlusIcon class="w-4 h-4" />
+          </template>
+          Add Widget
+        </KinButton>
+      </template>
+    </KinEmptyState>
 
     <!-- Widget picker modal -->
     <WidgetPickerModal
@@ -75,6 +81,9 @@ import { useFeaturedEventsStore } from '@/stores/featuredEvents'
 import DashboardWidget from '@/components/dashboard/DashboardWidget.vue'
 import DashboardToolbar from '@/components/dashboard/DashboardToolbar.vue'
 import WidgetPickerModal from '@/components/dashboard/WidgetPickerModal.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import { useNotification } from '@/composables/useNotification'
 import { PencilSquareIcon, PlusIcon, Squares2X2Icon } from '@heroicons/vue/24/outline'
 

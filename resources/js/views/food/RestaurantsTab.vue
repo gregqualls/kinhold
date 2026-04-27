@@ -3,67 +3,71 @@
     <!-- Search + controls -->
     <div class="px-4 md:px-6 pt-4 pb-2 space-y-3">
       <div class="flex items-center gap-3">
-        <div class="flex-1 relative">
-          <MagnifyingGlassIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-lavender-400" />
-          <input
+        <div class="flex-1">
+          <KinSearch
             v-model="restaurantsStore.searchQuery"
-            type="text"
             placeholder="Search restaurants..."
-            class="w-full pl-9 pr-4 py-2.5 text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 dark:placeholder-lavender-500 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+            size="sm"
           />
         </div>
+        <!-- View toggle (grid / compact) -->
         <button
-          class="hidden md:flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#C4975A] hover:bg-[#D4A96A] rounded-[10px] transition-colors whitespace-nowrap"
+          type="button"
+          class="flex-shrink-0 p-2.5 rounded-[10px] bg-surface-sunken text-ink-secondary hover:bg-surface-overlay transition-colors"
+          :title="viewMode === 'grid' ? 'Switch to compact view' : 'Switch to grid view'"
+          :aria-label="viewMode === 'grid' ? 'Switch to compact view' : 'Switch to grid view'"
+          @click="toggleViewMode"
+        >
+          <Squares2X2Icon v-if="viewMode === 'compact'" class="w-4 h-4" />
+          <ListBulletIcon v-else class="w-4 h-4" />
+        </button>
+        <KinButton
+          variant="primary"
+          size="sm"
+          class="hidden md:inline-flex whitespace-nowrap"
           @click="openAddModal"
         >
-          <PlusIcon class="w-4 h-4" />
+          <template #leading><PlusIcon class="w-4 h-4" /></template>
           Add Restaurant
-        </button>
+        </KinButton>
       </div>
 
       <!-- Filter row -->
       <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
         <!-- Favorites chip -->
-        <button
-          class="flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
-          :class="showFavoritesOnly
-            ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-700'
-            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+        <KinChip
+          variant="filter"
+          size="sm"
+          :active="showFavoritesOnly"
+          class="flex-shrink-0"
           @click="showFavoritesOnly = !showFavoritesOnly"
         >
-          <span class="flex items-center gap-1">
-            <HeartIcon class="w-3 h-3" />
-            Favorites
-          </span>
-        </button>
+          <template #leading><HeartIcon class="w-3 h-3" /></template>
+          Favorites
+        </KinChip>
 
         <!-- Divider -->
-        <div v-if="restaurantTags.length" class="w-px h-4 bg-lavender-200 dark:bg-prussian-700 flex-shrink-0"></div>
+        <div v-if="restaurantTags.length" class="w-px h-4 bg-border-subtle flex-shrink-0"></div>
 
         <!-- Tag chips -->
-        <button
+        <KinChip
           v-for="tag in restaurantTags"
           :key="tag.id"
-          class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
-          :class="isTagSelected(tag.id)
-            ? 'text-white'
-            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
-          :style="isTagSelected(tag.id) ? { backgroundColor: tag.color || '#C4975A' } : {}"
+          variant="filter"
+          size="sm"
+          :custom-color="tag.color || '#C4975A'"
+          :active="isTagSelected(tag.id)"
+          class="flex-shrink-0"
           @click="toggleTagFilter(tag.id)"
         >
-          <span
-            v-if="!isTagSelected(tag.id)"
-            class="w-2 h-2 rounded-full flex-shrink-0"
-            :style="{ backgroundColor: tag.color || '#C4975A' }"
-          ></span>
           {{ tag.name }}
-        </button>
+        </KinChip>
       </div>
     </div>
 
     <!-- Divider -->
     <div class="px-4 md:px-6">
-      <div class="border-t border-lavender-200 dark:border-prussian-700"></div>
+      <div class="border-t border-border-subtle"></div>
     </div>
 
     <!-- Content -->
@@ -74,29 +78,92 @@
       </div>
 
       <!-- Empty state -->
-      <EmptyState
+      <KinEmptyState
         v-else-if="displayedRestaurants.length === 0"
         :icon="BuildingStorefrontIcon"
         title="No restaurants yet"
         :description="restaurantsStore.searchQuery ? 'No restaurants match your search.' : 'Add your favourite spots to order from or visit.'"
-        action-text="Add Restaurant"
-        @action="openAddModal"
-      />
+        accent-color="peach"
+      >
+        <template #cta>
+          <KinButton variant="primary" size="sm" @click="openAddModal">Add Restaurant</KinButton>
+        </template>
+      </KinEmptyState>
 
       <!-- Grid -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
+      <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
         <FoodCard
           v-for="restaurant in displayedRestaurants"
           :key="restaurant.id"
           :title="restaurant.name"
           :image-url="restaurant.image_url"
-          :placeholder-icon="BuildingStorefrontIcon"
+          :fallback-gradient="restaurantFallbackGradient(restaurant)"
           :is-favorite="!!restaurant.is_favorite"
           :meta-items="restaurantMeta(restaurant)"
           :tags="restaurantCardTags(restaurant)"
           @click="openDetail(restaurant)"
           @toggle-favorite="restaurantsStore.toggleFavorite(restaurant.id)"
         />
+      </div>
+
+      <!-- Compact list view -->
+      <div v-else class="space-y-1 mt-2">
+        <div
+          v-for="restaurant in displayedRestaurants"
+          :key="restaurant.id"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-[10px] bg-surface-raised border border-border-subtle cursor-pointer hover:border-[#C4975A]/40 transition-colors"
+          @click="openDetail(restaurant)"
+        >
+          <!-- Thumbnail -->
+          <div
+            class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-surface-raised"
+            :style="restaurant.image_url ? null : restaurantFallbackStyle(restaurant)"
+          >
+            <img
+              v-if="restaurant.image_url"
+              :src="resolveImageUrl(restaurant.image_url)"
+              :alt="restaurant.name"
+              class="w-full h-full object-cover"
+            />
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-ink-primary truncate">{{ restaurant.name }}</p>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span v-if="restaurant.address" class="flex items-center gap-1 text-xs text-ink-tertiary truncate">
+                <MapPinIcon class="w-3 h-3 flex-shrink-0" />
+                {{ restaurant.address.length > 30 ? restaurant.address.slice(0, 30) + '…' : restaurant.address }}
+              </span>
+              <span
+                v-for="tag in (restaurant.tags || []).slice(0, 2)"
+                :key="tag.id"
+                class="px-1.5 py-0.5 text-[10px] font-medium rounded-full"
+                :style="{ backgroundColor: (tag.color || '#C4975A') + '20', color: tag.color || '#C4975A' }"
+              >
+                {{ tag.name }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Favorite -->
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <span v-if="restaurant.family_average_rating > 0" class="flex items-center gap-0.5 text-xs text-ink-tertiary">
+              <StarIcon class="w-3.5 h-3.5 text-[#C4975A]" />
+              {{ Number(restaurant.family_average_rating).toFixed(1) }}
+            </span>
+            <button
+              type="button"
+              class="p-1.5 rounded-full transition-colors"
+              :class="restaurant.is_favorite ? 'text-status-failed' : 'text-ink-tertiary hover:text-status-failed/80'"
+              :aria-label="restaurant.is_favorite ? 'Remove favorite' : 'Mark as favorite'"
+              @click.stop="restaurantsStore.toggleFavorite(restaurant.id)"
+            >
+              <HeartIconSolid v-if="restaurant.is_favorite" class="w-4 h-4" />
+              <HeartIcon v-else class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -108,51 +175,11 @@
       <div v-if="selectedRestaurant" class="p-6 space-y-5">
         <!-- Editable fields -->
         <div class="space-y-3">
-          <div>
-            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Name</label>
-            <input
-              v-model="editFields.name"
-              type="text"
-              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
-              placeholder="Restaurant name"
-            />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Address</label>
-            <input
-              v-model="editFields.address"
-              type="text"
-              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
-              placeholder="Street address"
-            />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Phone</label>
-            <input
-              v-model="editFields.phone"
-              type="tel"
-              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
-              placeholder="Phone number"
-            />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Website / Menu URL</label>
-            <input
-              v-model="editFields.menu_url"
-              type="url"
-              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
-              placeholder="https://..."
-            />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Google Maps URL</label>
-            <input
-              v-model="editFields.google_maps_url"
-              type="url"
-              class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
-              placeholder="https://maps.google.com/..."
-            />
-          </div>
+          <KinInput v-model="editFields.name" label="Name" placeholder="Restaurant name" size="sm" />
+          <KinInput v-model="editFields.address" label="Address" placeholder="Street address" type="text" size="sm" />
+          <KinInput v-model="editFields.phone" label="Phone" placeholder="Phone number" type="tel" size="sm" />
+          <KinInput v-model="editFields.menu_url" label="Website / Menu URL" placeholder="https://..." type="url" size="sm" />
+          <KinInput v-model="editFields.google_maps_url" label="Google Maps URL" placeholder="https://maps.google.com/..." type="url" size="sm" />
           <PhotoUpload v-model="editFields.image_url" label="Photo" :uploader="uploadRestaurantImage" />
         </div>
 
@@ -170,7 +197,7 @@
             :href="editFields.google_maps_url"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-lavender-100 dark:bg-prussian-700 text-prussian-500 dark:text-lavender-300 rounded-full hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-sunken text-ink-primary rounded-full hover:bg-surface-sunken/80 transition-colors"
             @click.stop
           >
             <MapPinIcon class="w-3.5 h-3.5" />
@@ -181,7 +208,7 @@
             :href="editFields.menu_url"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-lavender-100 dark:bg-prussian-700 text-prussian-500 dark:text-lavender-300 rounded-full hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-sunken text-ink-primary rounded-full hover:bg-surface-sunken/80 transition-colors"
             @click.stop
           >
             <DocumentTextIcon class="w-3.5 h-3.5" />
@@ -190,7 +217,7 @@
           <a
             v-if="editFields.phone"
             :href="'tel:' + editFields.phone"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-lavender-100 dark:bg-prussian-700 text-prussian-500 dark:text-lavender-300 rounded-full hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
+            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-sunken text-ink-primary rounded-full hover:bg-surface-sunken/80 transition-colors"
             @click.stop
           >
             <PhoneIcon class="w-3.5 h-3.5" />
@@ -200,7 +227,7 @@
 
         <!-- Star rating -->
         <div>
-          <p class="text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-2 uppercase tracking-wide">Your Rating</p>
+          <p class="text-xs font-medium text-ink-tertiary mb-2 uppercase tracking-wide">Your Rating</p>
           <div class="flex items-center gap-1">
             <button
               v-for="n in 5"
@@ -212,32 +239,30 @@
                 class="w-6 h-6"
                 :class="n <= (pendingRating || Math.round(selectedRestaurant.family_average_rating || 0))
                   ? 'text-[#C4975A] fill-current'
-                  : 'text-lavender-200 dark:text-prussian-600'"
+                  : 'text-ink-tertiary'"
               />
             </button>
           </div>
         </div>
 
         <!-- Family notes -->
-        <div>
-          <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Family Notes</label>
-          <textarea
-            v-model="editNotes"
-            rows="3"
-            class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors resize-none"
-            placeholder="Add notes about this restaurant..."
-          ></textarea>
-        </div>
+        <KinTextarea
+          v-model="editNotes"
+          label="Family Notes"
+          :rows="3"
+          placeholder="Add notes about this restaurant..."
+          size="sm"
+        />
 
         <!-- Save all -->
-        <BaseButton variant="primary" :loading="isDetailSaving" class="w-full" @click="saveDetail">
+        <KinButton variant="primary" size="sm" :loading="isDetailSaving" class="w-full" @click="saveDetail">
           Save Changes
-        </BaseButton>
+        </KinButton>
 
         <!-- Actions -->
-        <div v-if="isParent" class="pt-2 border-t border-lavender-200 dark:border-prussian-700">
+        <div v-if="isParent" class="pt-2 border-t border-border-subtle">
           <button
-            class="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 transition-colors"
+            class="flex items-center gap-2 text-sm text-status-failed hover:opacity-80 transition-opacity"
             @click="confirmDelete(selectedRestaurant)"
           >
             <TrashIcon class="w-4 h-4" />
@@ -248,16 +273,22 @@
     </SlidePanel>
 
     <!-- Add/Import modal -->
-    <BaseModal :show="showAddModal" title="Add Restaurant" size="md" @close="closeAddModal">
+    <KinModalSheet
+      :model-value="showAddModal"
+      title="Add Restaurant"
+      size="md"
+      @update:model-value="(v) => { if (!v) closeAddModal() }"
+      @close="closeAddModal"
+    >
       <!-- Tab switcher (only before preview) -->
-      <div v-if="!previewData" class="flex border-b border-lavender-200 dark:border-prussian-700 mb-5">
+      <div v-if="!previewData" class="flex border-b border-border-subtle mb-5">
         <button
           v-for="tab in addTabs"
           :key="tab.key"
           class="px-4 py-2.5 text-sm font-medium transition-colors relative"
           :class="addTab === tab.key
             ? 'text-[#C4975A]'
-            : 'text-lavender-500 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200'"
+            : 'text-ink-tertiary hover:text-ink-primary'"
           @click="addTab = tab.key"
         >
           {{ tab.label }}
@@ -267,33 +298,33 @@
 
       <!-- Import: URL input -->
       <div v-if="addTab === 'import' && !previewData" class="px-6 pb-6 space-y-4">
-        <BaseInput v-model="importUrl" label="Restaurant URL" placeholder="https://www.restaurant-website.com" :error="formErrors.url" @keydown.enter.prevent="previewImport" />
+        <KinInput v-model="importUrl" label="Restaurant URL" placeholder="https://www.restaurant-website.com" :error="formErrors.url" size="sm" @keydown.enter.prevent="previewImport" />
 
         <!-- Error -->
         <div
           v-if="saveError"
           class="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-xl"
         >
-          <ExclamationCircleIcon class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <ExclamationCircleIcon class="w-5 h-5 text-status-failed flex-shrink-0 mt-0.5" />
           <div class="text-sm">
-            <p class="font-medium text-red-600 dark:text-red-400">Import failed</p>
-            <p class="text-lavender-600 dark:text-lavender-400">{{ saveError }}</p>
+            <p class="font-medium text-status-failed">Import failed</p>
+            <p class="text-ink-secondary">{{ saveError }}</p>
           </div>
         </div>
 
-        <p class="text-xs text-lavender-400 dark:text-lavender-500">
+        <p class="text-xs text-ink-tertiary">
           Paste the restaurant's website URL. You can edit all details before saving.
         </p>
 
-        <BaseButton variant="primary" :loading="isImporting" :disabled="!importUrl" class="w-full" @click="previewImport">
+        <KinButton variant="primary" size="sm" :loading="isImporting" :disabled="!importUrl" class="w-full" @click="previewImport">
           {{ isImporting ? 'Extracting...' : 'Preview Restaurant' }}
-        </BaseButton>
+        </KinButton>
       </div>
 
       <!-- Import: loading spinner -->
       <div v-if="isImporting" class="flex flex-col items-center justify-center py-8">
         <LoadingSpinner size="lg" />
-        <p class="mt-3 text-sm text-lavender-500 dark:text-lavender-400">Extracting restaurant details...</p>
+        <p class="mt-3 text-sm text-ink-tertiary">Extracting restaurant details...</p>
       </div>
 
       <!-- Import: preview form (edit before save) -->
@@ -305,41 +336,38 @@
           </p>
         </div>
 
-        <BaseInput v-model="form.name" label="Name *" placeholder="Restaurant name" :error="formErrors.name" />
-        <BaseInput v-model="form.address" label="Address" placeholder="Street address" />
-        <BaseInput v-model="form.phone" label="Phone" placeholder="Phone number" />
-        <BaseInput v-model="form.menu_url" label="Website" placeholder="https://..." />
+        <KinInput v-model="form.name" label="Name *" placeholder="Restaurant name" :error="formErrors.name" size="sm" />
+        <KinInput v-model="form.address" label="Address" placeholder="Street address" size="sm" />
+        <KinInput v-model="form.phone" label="Phone" placeholder="Phone number" size="sm" />
+        <KinInput v-model="form.menu_url" label="Website" placeholder="https://..." size="sm" />
         <PhotoUpload v-model="form.image_url" label="Photo" :uploader="uploadRestaurantImage" />
         <TagPicker v-model="form.tag_ids" :tags="foodTags" :on-create="createTag" />
 
         <div class="flex gap-3">
-          <BaseButton variant="primary" :loading="isSaving" class="flex-1" @click="saveFromPreview">
+          <KinButton variant="primary" size="sm" :loading="isSaving" class="flex-1" @click="saveFromPreview">
             Save Restaurant
-          </BaseButton>
-          <button
-            class="px-4 py-2 text-sm text-lavender-500 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors"
-            @click="resetPreview"
-          >
+          </KinButton>
+          <KinButton variant="ghost" size="sm" @click="resetPreview">
             Back
-          </button>
+          </KinButton>
         </div>
-        <p v-if="saveError" class="text-xs text-red-500">{{ saveError }}</p>
+        <p v-if="saveError" class="text-xs text-status-failed">{{ saveError }}</p>
       </div>
 
       <!-- Manual form -->
       <div v-if="addTab === 'manual' && !previewData" class="px-6 pb-6 space-y-4">
-        <BaseInput v-model="form.name" label="Name *" placeholder="e.g. Gusto Pizzeria" :error="formErrors.name" />
-        <BaseInput v-model="form.address" label="Address" placeholder="123 Main St" />
-        <BaseInput v-model="form.phone" label="Phone" placeholder="+1 (555) 000-0000" />
-        <BaseInput v-model="form.menu_url" label="Website" placeholder="https://..." />
+        <KinInput v-model="form.name" label="Name *" placeholder="e.g. Gusto Pizzeria" :error="formErrors.name" size="sm" />
+        <KinInput v-model="form.address" label="Address" placeholder="123 Main St" size="sm" />
+        <KinInput v-model="form.phone" label="Phone" placeholder="+1 (555) 000-0000" size="sm" />
+        <KinInput v-model="form.menu_url" label="Website" placeholder="https://..." size="sm" />
         <PhotoUpload v-model="form.image_url" label="Photo" :uploader="uploadRestaurantImage" />
         <TagPicker v-model="form.tag_ids" :tags="foodTags" :on-create="createTag" />
-        <BaseButton variant="primary" :loading="isSaving" class="w-full" @click="saveManual">
+        <KinButton variant="primary" size="sm" :loading="isSaving" class="w-full" @click="saveManual">
           Add Restaurant
-        </BaseButton>
-        <p v-if="saveError" class="text-xs text-red-500">{{ saveError }}</p>
+        </KinButton>
+        <p v-if="saveError" class="text-xs text-status-failed">{{ saveError }}</p>
       </div>
-    </BaseModal>
+    </KinModalSheet>
 
     <!-- Confirm delete -->
     <ConfirmDialog
@@ -358,7 +386,6 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import {
-  MagnifyingGlassIcon,
   PlusIcon,
   HeartIcon,
   StarIcon,
@@ -369,7 +396,10 @@ import {
   PhoneIcon,
   ExclamationCircleIcon,
   CheckCircleIcon,
+  Squares2X2Icon,
+  ListBulletIcon,
 } from '@heroicons/vue/24/outline'
+import { HeartIcon as HeartIconSolid } from '@heroicons/vue/24/solid'
 import api from '@/services/api'
 import { useRestaurantsStore } from '@/stores/restaurants'
 import { useAuthStore } from '@/stores/auth'
@@ -378,13 +408,16 @@ import FoodCard from '@/components/food/FoodCard.vue'
 import PhotoUpload from '@/components/food/PhotoUpload.vue'
 import TagPicker from '@/components/food/TagPicker.vue'
 import SlidePanel from '@/components/common/SlidePanel.vue'
-import BaseModal from '@/components/common/BaseModal.vue'
-import BaseInput from '@/components/common/BaseInput.vue'
-import BaseButton from '@/components/common/BaseButton.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
-import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import KinSearch from '@/components/design-system/KinSearch.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinTextarea from '@/components/design-system/KinTextarea.vue'
 
 const restaurantsStore = useRestaurantsStore()
 const { tags, selectedTagIds } = storeToRefs(restaurantsStore)
@@ -421,6 +454,65 @@ const restaurantMeta = (r) => {
 }
 
 const restaurantCardTags = (r) => (r.tags || []).map(t => t.name)
+
+// Stable fallback gradient per restaurant — first food tag → accent family;
+// otherwise a hash of the name keeps each restaurant card visually distinct.
+const RESTAURANT_TAG_TO_GRADIENT = {
+  Italian:  'peach',
+  Mexican:  'sun',
+  Asian:    'mint',
+  Chinese:  'mint',
+  Japanese: 'mint',
+  Indian:   'sun',
+  Pizza:    'peach',
+  Cafe:     'lavender',
+  Bakery:   'peach',
+  Diner:    'warm',
+  Dessert:  'peach',
+  Snack:    'warm',
+  Breakfast:'sun',
+  Lunch:    'mint',
+  Dinner:   'lavender',
+}
+const RESTAURANT_HASH_GRADIENTS = ['warm', 'lavender', 'peach', 'mint', 'sun', 'cool']
+const restaurantFallbackGradient = (r) => {
+  const tag = (r.tags || [])[0]
+  const tagName = tag?.name
+  if (tagName && RESTAURANT_TAG_TO_GRADIENT[tagName]) return RESTAURANT_TAG_TO_GRADIENT[tagName]
+  const s = r.name || ''
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
+  return RESTAURANT_HASH_GRADIENTS[Math.abs(h) % RESTAURANT_HASH_GRADIENTS.length]
+}
+
+// ── View mode (grid / compact) — same toggle pattern as RecipesTab ────────────
+const viewMode = ref(localStorage.getItem('kinhold-restaurant-view') || 'grid')
+const toggleViewMode = () => {
+  viewMode.value = viewMode.value === 'grid' ? 'compact' : 'grid'
+  localStorage.setItem('kinhold-restaurant-view', viewMode.value)
+}
+
+// Pass-through for absolute URLs; storage prefix for relative paths.
+const resolveImageUrl = (path) => {
+  if (!path) return null
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('/')) return path
+  return `/storage/${path}`
+}
+
+// Inline gradient CSS for the compact-row thumbnail. Same wash math as
+// KinPhotoCard's scoped fallback styles.
+const RESTAURANT_FALLBACK_BG = {
+  iridescent: 'var(--gradient-iridescent-subtle)',
+  warm:       'var(--gradient-iridescent-warm)',
+  lavender:   'radial-gradient(ellipse 100% 90% at 30% 20%, rgb(var(--accent-lavender-soft) / 0.85) 0%, transparent 70%)',
+  peach:      'radial-gradient(ellipse 100% 90% at 30% 20%, rgb(var(--accent-peach-soft) / 0.85) 0%, transparent 70%)',
+  mint:       'radial-gradient(ellipse 100% 90% at 30% 20%, rgb(var(--accent-mint-soft) / 0.85) 0%, transparent 70%)',
+  sun:        'radial-gradient(ellipse 100% 90% at 30% 20%, rgb(var(--accent-sun-soft) / 0.85) 0%, transparent 70%)',
+  cool:       'radial-gradient(ellipse 80% 70% at 18% 20%, rgb(var(--accent-lavender-soft) / 0.80) 0%, transparent 70%), radial-gradient(ellipse 70% 60% at 82% 80%, rgb(var(--accent-mint-soft) / 0.80) 0%, transparent 70%)',
+}
+const restaurantFallbackStyle = (r) => ({
+  backgroundImage: RESTAURANT_FALLBACK_BG[restaurantFallbackGradient(r)] ?? RESTAURANT_FALLBACK_BG.warm,
+})
 
 // Tag creation (shared with form + detail)
 const createTag = async ({ name, color }) => {

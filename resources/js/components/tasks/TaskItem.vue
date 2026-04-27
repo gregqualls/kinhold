@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group flex items-start gap-3 px-4 py-3 rounded-[12px] hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors cursor-pointer"
+    class="group flex items-start gap-3 px-4 py-3.5 border-b border-border-subtle last:border-b-0 hover:bg-surface-sunken transition-colors cursor-pointer"
     :class="{
       'opacity-60': task.completed_at,
     }"
@@ -21,7 +21,7 @@
       <div v-if="!isEditingTitle" @dblclick.stop="startEditTitle">
         <p
           class="text-sm font-medium leading-snug"
-          :class="task.completed_at ? 'line-through text-lavender-400' : 'text-prussian-500 dark:text-lavender-200'"
+          :class="task.completed_at ? 'line-through text-ink-tertiary' : 'text-ink-primary'"
         >
           {{ task.title }}
         </p>
@@ -30,7 +30,7 @@
         v-else
         ref="titleInput"
         v-model="editTitle"
-        class="w-full text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-transparent border-b-2 border-wisteria-400 outline-none py-0"
+        class="w-full text-sm font-medium text-ink-primary bg-transparent border-b-2 border-accent-lavender-bold outline-none py-0"
         @keydown.enter="saveTitle"
         @keydown.escape="cancelEditTitle"
         @blur="saveTitle"
@@ -61,11 +61,11 @@
         </span>
 
         <!-- Assignee or Family task -->
-        <span v-if="task.is_family_task" class="flex items-center gap-1 text-xs text-wisteria-500 dark:text-wisteria-400">
+        <span v-if="task.is_family_task" class="flex items-center gap-1 text-xs text-accent-lavender-bold">
           <UserGroupIcon class="w-3 h-3" />
           Open
         </span>
-        <span v-else-if="task.assignee" class="flex items-center gap-1 text-xs text-lavender-500 dark:text-lavender-400">
+        <span v-else-if="task.assignee" class="flex items-center gap-1 text-xs text-ink-tertiary">
           <UserAvatar :user="task.assignee" size="xs" />
           {{ task.assignee.name?.split(' ')[0] }}
         </span>
@@ -78,14 +78,14 @@
         <!-- Recurring indicator with label -->
         <span
           v-if="task.recurrence_label || task.recurrence_rule"
-          class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-wisteria-100 text-wisteria-600 dark:bg-wisteria-900/30 dark:text-wisteria-400"
+          class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-accent-lavender-soft/40 text-accent-lavender-bold"
         >
           <ArrowPathIcon class="w-3 h-3" />
           {{ task.recurrence_label || 'Recurring' }}
         </span>
 
         <!-- Description indicator -->
-        <span v-if="task.description" class="text-xs text-lavender-400">
+        <span v-if="task.description" class="text-xs text-ink-tertiary">
           <DocumentTextIcon class="w-3 h-3" />
         </span>
       </div>
@@ -166,9 +166,9 @@ const cyclePriority = () => {
 
 const priorityIndicatorClass = computed(() => {
   const classes = {
-    high: 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20',
+    high: 'text-status-failed hover:bg-status-failed/10',
     medium: 'text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20',
-    low: 'text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-600',
+    low: 'text-ink-tertiary hover:bg-surface-sunken',
   }
   return classes[props.task.priority] || classes.medium
 })
@@ -205,15 +205,15 @@ const formattedDueDate = computed(() => {
 })
 
 const dueDateClass = computed(() => {
-  if (!props.task.due_date || props.task.completed_at) return 'text-lavender-500 dark:text-lavender-400'
+  if (!props.task.due_date || props.task.completed_at) return 'text-ink-tertiary'
   const due = new Date(props.task.due_date)
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const dueDay = new Date(due)
   dueDay.setHours(0, 0, 0, 0)
 
-  if (dueDay < today) return 'text-red-500 font-medium'
+  if (dueDay < today) return 'text-status-failed font-medium'
   if (dueDay.getTime() === today.getTime()) return 'text-sand-500 dark:text-sand-400 font-medium'
-  return 'text-lavender-500 dark:text-lavender-400'
+  return 'text-ink-tertiary'
 })
 </script>

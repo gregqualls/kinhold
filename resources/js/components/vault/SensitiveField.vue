@@ -1,10 +1,10 @@
 <template>
   <div class="flex items-center justify-between gap-3 py-2">
     <div class="flex-1 min-w-0">
-      <p class="text-[10px] font-semibold text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-0.5">{{ label }}</p>
+      <p class="text-[10px] font-semibold text-ink-tertiary uppercase tracking-wider mb-0.5">{{ label }}</p>
       <p
         class="text-sm font-mono truncate"
-        :class="revealed ? 'text-prussian-500 dark:text-lavender-200' : 'text-lavender-400 dark:text-lavender-500 select-none'"
+        :class="revealed ? 'text-ink-primary' : 'text-ink-tertiary select-none'"
       >
         {{ revealed ? value : maskedValue }}
       </p>
@@ -14,7 +14,7 @@
       <!-- Reveal toggle -->
       <button
         v-if="sensitive"
-        class="p-1.5 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-lg transition-colors"
+        class="p-1.5 text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken rounded-lg transition-colors"
         :title="revealed ? 'Hide' : 'Reveal'"
         @click="toggleReveal"
       >
@@ -25,7 +25,7 @@
       <!-- Copy -->
       <button
         class="p-1.5 rounded-lg transition-all"
-        :class="justCopied ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' : 'text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700'"
+        :class="justCopied ? 'text-status-success bg-status-success/10' : 'text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken'"
         :title="justCopied ? 'Copied!' : 'Copy'"
         @click="copyValue"
       >

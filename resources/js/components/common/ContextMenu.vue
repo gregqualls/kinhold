@@ -2,7 +2,7 @@
   <div ref="menuRef" class="relative">
     <!-- Trigger -->
     <button
-      class="p-1.5 rounded-lg text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
+      class="p-1.5 rounded-lg text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken transition-colors"
       :class="triggerClass"
       aria-label="More actions"
       @click.stop="toggle"
@@ -24,10 +24,10 @@
           <div class="fixed inset-0" @click="close"></div>
 
           <!-- Dropdown -->
-          <div class="relative bg-white dark:bg-prussian-800 rounded-[12px] shadow-xl border border-lavender-200 dark:border-prussian-700 py-1 min-w-[180px] overflow-hidden">
+          <div class="relative bg-surface-raised rounded-[12px] shadow-xl border border-border-subtle py-1 min-w-[180px] overflow-hidden">
             <template v-for="(item, index) in items" :key="index">
               <!-- Divider -->
-              <div v-if="item.divider" class="my-1 border-t border-lavender-100 dark:border-prussian-700"></div>
+              <div v-if="item.divider" class="my-1 border-t border-border-subtle"></div>
 
               <!-- Menu Item -->
               <button
@@ -35,8 +35,8 @@
                 class="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
                 :class="[
                   item.variant === 'danger'
-                    ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
-                    : 'text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700',
+                    ? 'text-status-failed hover:bg-status-failed/10'
+                    : 'text-ink-primary hover:bg-surface-sunken',
                   item.disabled && 'opacity-40 cursor-not-allowed',
                 ]"
                 :disabled="item.disabled"
@@ -48,7 +48,7 @@
                   class="w-4 h-4 flex-shrink-0"
                 />
                 <span class="flex-1 text-left">{{ item.label }}</span>
-                <span v-if="item.shortcut" class="text-xs text-lavender-400">{{ item.shortcut }}</span>
+                <span v-if="item.shortcut" class="text-xs text-ink-tertiary">{{ item.shortcut }}</span>
               </button>
             </template>
           </div>

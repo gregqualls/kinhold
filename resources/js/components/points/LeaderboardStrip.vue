@@ -2,83 +2,83 @@
   <div class="leaderboard-strip">
     <!-- Podium for top 3 -->
     <div v-if="topThree.length > 0" class="flex items-end justify-center gap-1 sm:gap-2 mb-2">
-      <!-- 2nd Place -->
+      <!-- 2nd Place — lavender medal tier -->
       <div
         v-if="topThree.length > 1"
         class="flex flex-col items-center animate-slide-up-delayed"
       >
         <div class="relative mb-1">
-          <div class="medal-icon text-xs sm:text-sm font-bold text-lavender-500 dark:text-lavender-300">2nd</div>
+          <div class="medal-icon text-xs sm:text-sm font-bold text-ink-tertiary">2nd</div>
           <div
             class="relative"
-            :class="{ 'ring-2 ring-wisteria-400 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 rounded-full': isCurrentUser(topThree[1]) }"
+            :class="{ 'ring-2 ring-accent-lavender-bold ring-offset-2 ring-offset-surface-raised rounded-full': isCurrentUser(topThree[1]) }"
           >
             <UserAvatar :user="topThree[1].user" size="sm" />
           </div>
         </div>
-        <p class="text-[10px] sm:text-xs font-semibold text-prussian-500 dark:text-lavender-200 truncate max-w-[56px] sm:max-w-[72px] text-center">
+        <p class="text-[10px] sm:text-xs font-semibold text-ink-primary truncate max-w-[56px] sm:max-w-[72px] text-center">
           {{ firstName(topThree[1]) }}
         </p>
         <div
-          class="podium-bar bg-gradient-to-t from-lavender-300 to-lavender-200 dark:from-prussian-600 dark:to-prussian-500 rounded-t-[12px] mt-1"
-          :style="{ height: '36px', width: '56px' }"
+          class="podium-bar rounded-t-[12px] mt-1 border border-accent-lavender-bold/20"
+          :style="{ height: '52px', width: '60px', background: 'rgb(var(--accent-lavender-bold) / 0.16)' }"
         >
-          <span class="podium-points text-[10px] sm:text-xs font-bold font-mono text-prussian-500 dark:text-lavender-200">
+          <span class="podium-points text-sm font-bold font-mono text-accent-lavender-bold">
             {{ topThree[1].total_points }}
           </span>
         </div>
       </div>
 
-      <!-- 1st Place -->
+      <!-- 1st Place — sun (gold) medal tier -->
       <div
         v-if="topThree.length > 0"
         class="flex flex-col items-center animate-slide-up"
       >
         <div class="relative mb-1">
-          <div class="crown-bounce"><TrophyIcon class="w-5 h-5 sm:w-6 sm:h-6 text-wisteria-400" /></div>
+          <div class="crown-bounce"><TrophyIcon class="w-5 h-5 sm:w-6 sm:h-6 text-accent-sun-bold" /></div>
           <div
             class="relative"
-            :class="{ 'ring-2 ring-wisteria-400 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 rounded-full': isCurrentUser(topThree[0]) }"
+            :class="{ 'ring-2 ring-accent-sun-bold ring-offset-2 ring-offset-surface-raised rounded-full': isCurrentUser(topThree[0]) }"
           >
             <UserAvatar :user="topThree[0].user" size="md" />
           </div>
         </div>
-        <p class="text-xs sm:text-sm font-bold text-prussian-500 dark:text-lavender-200 truncate max-w-[64px] sm:max-w-[80px] text-center">
+        <p class="text-xs sm:text-sm font-bold text-ink-primary truncate max-w-[64px] sm:max-w-[80px] text-center">
           {{ firstName(topThree[0]) }}
         </p>
         <div
-          class="podium-bar bg-gradient-to-t from-sand-400 to-sand-300 dark:from-sand-700 dark:to-sand-600 rounded-t-[12px] mt-1 relative overflow-hidden"
-          :style="{ height: '52px', width: '64px' }"
+          class="podium-bar rounded-t-[12px] mt-1 relative overflow-hidden border border-accent-sun-bold/30"
+          :style="{ height: '80px', width: '68px', background: 'rgb(var(--accent-sun-bold) / 0.20)' }"
         >
           <div class="podium-shimmer"></div>
-          <span class="podium-points text-xs sm:text-sm font-bold font-mono text-prussian-600 dark:text-sand-100">
+          <span class="podium-points text-base font-bold font-mono text-accent-sun-bold">
             {{ topThree[0].total_points }}
           </span>
         </div>
       </div>
 
-      <!-- 3rd Place -->
+      <!-- 3rd Place — peach medal tier -->
       <div
         v-if="topThree.length > 2"
         class="flex flex-col items-center animate-slide-up-delayed-2"
       >
         <div class="relative mb-1">
-          <div class="medal-icon text-xs sm:text-sm font-bold text-lavender-500 dark:text-lavender-300">3rd</div>
+          <div class="medal-icon text-xs sm:text-sm font-bold text-ink-tertiary">3rd</div>
           <div
             class="relative"
-            :class="{ 'ring-2 ring-wisteria-400 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 rounded-full': isCurrentUser(topThree[2]) }"
+            :class="{ 'ring-2 ring-accent-peach-bold ring-offset-2 ring-offset-surface-raised rounded-full': isCurrentUser(topThree[2]) }"
           >
             <UserAvatar :user="topThree[2].user" size="sm" />
           </div>
         </div>
-        <p class="text-[10px] sm:text-xs font-semibold text-prussian-500 dark:text-lavender-200 truncate max-w-[56px] sm:max-w-[72px] text-center">
+        <p class="text-[10px] sm:text-xs font-semibold text-ink-primary truncate max-w-[56px] sm:max-w-[72px] text-center">
           {{ firstName(topThree[2]) }}
         </p>
         <div
-          class="podium-bar bg-gradient-to-t from-amber-200 to-amber-100 dark:from-prussian-700 dark:to-prussian-600 rounded-t-[12px] mt-1"
-          :style="{ height: '24px', width: '56px' }"
+          class="podium-bar rounded-t-[12px] mt-1 border border-accent-peach-bold/20"
+          :style="{ height: '36px', width: '60px', background: 'rgb(var(--accent-peach-bold) / 0.16)' }"
         >
-          <span class="podium-points text-[10px] sm:text-xs font-bold font-mono text-amber-800 dark:text-lavender-300">
+          <span class="podium-points text-sm font-bold font-mono text-accent-peach-bold">
             {{ topThree[2].total_points }}
           </span>
         </div>
@@ -92,26 +92,26 @@
         :key="entry.user_id"
         class="flex items-center gap-2 px-1 py-0.5 rounded-md transition-colors"
         :class="{
-          'bg-wisteria-50 dark:bg-wisteria-900/20': isCurrentUser(entry),
+          'bg-accent-lavender-soft/40': isCurrentUser(entry),
         }"
       >
-        <span class="text-[10px] font-bold w-4 text-center text-lavender-500 dark:text-lavender-400">
+        <span class="text-[10px] font-bold w-4 text-center text-ink-tertiary">
           {{ idx + 1 }}
         </span>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between mb-0.5">
             <span
               class="text-[11px] font-medium truncate"
-              :class="isCurrentUser(entry) ? 'text-wisteria-700 dark:text-wisteria-300' : 'text-prussian-500 dark:text-lavender-300'"
+              :class="isCurrentUser(entry) ? 'text-accent-lavender-bold' : 'text-ink-secondary'"
             >
               {{ firstName(entry) }}
-              <span v-if="isCurrentUser(entry)" class="text-[9px] text-wisteria-500 dark:text-wisteria-400">(you)</span>
+              <span v-if="isCurrentUser(entry)" class="text-[9px] text-accent-lavender-bold">(you)</span>
             </span>
-            <span class="text-[10px] font-semibold font-mono text-wisteria-600 dark:text-wisteria-400 ml-1 flex-shrink-0">
+            <span class="text-[10px] font-semibold font-mono text-accent-lavender-bold ml-1 flex-shrink-0">
               {{ entry.total_points }} pts
             </span>
           </div>
-          <div class="h-1.5 bg-lavender-200 dark:bg-prussian-700 rounded-full overflow-hidden">
+          <div class="h-1.5 bg-surface-sunken rounded-full overflow-hidden">
             <div
               class="h-full rounded-full transition-all duration-700 ease-out"
               :class="progressBarColor(idx)"
@@ -124,11 +124,11 @@
 
     <!-- Empty state -->
     <div v-if="leaderboard.length === 0" class="text-center py-3">
-      <TrophyIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mx-auto mb-1" />
-      <p class="text-sm text-lavender-500 dark:text-lavender-400">
+      <TrophyIcon class="w-8 h-8 text-ink-tertiary mx-auto mb-1" />
+      <p class="text-sm text-ink-secondary">
         No activity yet this period
       </p>
-      <p class="text-xs text-lavender-400 dark:text-lavender-500 mt-0.5">
+      <p class="text-xs text-ink-tertiary mt-0.5">
         Complete tasks to earn points!
       </p>
     </div>
@@ -166,11 +166,16 @@ const progressWidth = (entry) => {
   return `${Math.max(pct, 4)}%`
 }
 
+// Progress-bar tier colors mirror the podium medal accents
+// (sun = 1st, lavender = 2nd, peach = 3rd) so the rankings list and the
+// podium read as one coherent visualization. 4th+ uses ink-tertiary at
+// reduced alpha so it reads as "below-tier" without competing with the
+// medals.
 const progressBarColor = (idx) => {
-  if (idx === 0) return 'bg-gradient-to-r from-sand-400 to-sand-500'
-  if (idx === 1) return 'bg-gradient-to-r from-lavender-400 to-lavender-500'
-  if (idx === 2) return 'bg-gradient-to-r from-amber-300 to-amber-400'
-  return 'bg-gradient-to-r from-wisteria-300 to-wisteria-400'
+  if (idx === 0) return 'bg-accent-sun-bold'
+  if (idx === 1) return 'bg-accent-lavender-bold'
+  if (idx === 2) return 'bg-accent-peach-bold'
+  return 'bg-ink-tertiary/50'
 }
 </script>
 

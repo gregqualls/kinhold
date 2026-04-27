@@ -1,66 +1,66 @@
 <template>
-  <div class="h-full flex flex-col">
-    <!-- Header -->
-    <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Tasks</h1>
-          <p class="text-sm text-lavender-500 dark:text-lavender-400 mt-0.5">
-            {{ filteredIncompleteTasks.length }} remaining
-          </p>
+  <div class="h-full flex">
+    <!-- Main column -->
+    <div class="flex-1 min-w-0 flex flex-col">
+      <!-- Header -->
+      <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold font-heading text-ink-primary">Tasks</h1>
+            <p class="text-sm text-ink-tertiary mt-0.5">
+              {{ filteredIncompleteTasks.length }} remaining
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tag filter bar -->
-    <div class="px-4 md:px-6 py-2">
-      <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
-        <!-- All chip -->
-        <button
-          class="flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
-          :class="selectedTagIds.length === 0
-            ? 'bg-prussian-500 dark:bg-wisteria-600 text-white'
-            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
-          @click="clearTagFilter"
-        >
-          All
-        </button>
+      <!-- Tag filter bar (mobile-only — desktop moves to the rail) -->
+      <div class="px-4 md:px-6 py-2 lg:hidden">
+        <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+          <!-- All chip -->
+          <KinChip
+            variant="filter"
+            size="sm"
+            color="neutral"
+            :active="selectedTagIds.length === 0"
+            class="flex-shrink-0 whitespace-nowrap"
+            @click="clearTagFilter"
+          >
+            All
+          </KinChip>
 
-        <!-- Tag chips -->
-        <button
-          v-for="tag in tags"
-          :key="tag.id"
-          class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
-          :class="isTagSelected(tag.id)
-            ? 'text-white'
-            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
-          :style="isTagSelected(tag.id) ? { backgroundColor: getTagHex(tag.color) } : {}"
-          @click="toggleTagFilter(tag.id)"
-        >
-          <span
-            v-if="!isTagSelected(tag.id)"
-            class="w-2 h-2 rounded-full flex-shrink-0"
-            :style="{ backgroundColor: getTagHex(tag.color) }"
-          ></span>
-          {{ tag.name }}
-          <span class="opacity-70">{{ tag.incomplete_tasks_count || 0 }}</span>
-        </button>
+          <!-- Tag chips with dynamic hex colors via customColor escape-hatch -->
+          <KinChip
+            v-for="tag in tags"
+            :key="tag.id"
+            variant="filter"
+            size="sm"
+            :custom-color="getTagHex(tag.color)"
+            :active="isTagSelected(tag.id)"
+            class="flex-shrink-0 whitespace-nowrap"
+            @click="toggleTagFilter(tag.id)"
+          >
+            {{ tag.name }}
+            <span class="opacity-70 ml-1">{{ tag.incomplete_tasks_count || 0 }}</span>
+          </KinChip>
 
-        <!-- Manage tags -->
-        <button
-          class="flex-shrink-0 p-1.5 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-full transition-colors"
-          title="Manage tags"
-          @click="showTagManager = true"
-        >
-          <CogIcon class="w-4 h-4" />
-        </button>
+          <!-- Manage tags -->
+          <button
+            type="button"
+            class="flex-shrink-0 p-1.5 text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken rounded-full transition-colors"
+            title="Manage tags"
+            aria-label="Manage tags"
+            @click="showTagManager = true"
+          >
+            <CogIcon class="w-4 h-4" />
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!-- Divider -->
-    <div class="px-4 md:px-6">
-      <div class="border-t border-lavender-200 dark:border-prussian-700"></div>
-    </div>
+      <!-- Divider -->
+      <div class="px-4 md:px-6">
+        <div class="border-t border-border-subtle"></div>
+      </div>
 
     <!-- Loading -->
     <div v-if="isLoading" class="flex items-center justify-center py-16">
@@ -73,7 +73,11 @@
       <TaskQuickAdd ref="quickAddRef" :tags="tags" @add="handleQuickAdd" />
 
       <!-- Incomplete tasks -->
-      <div v-if="filteredIncompleteTasks.length > 0" class="mt-2">
+      <KinFlatCard
+        v-if="filteredIncompleteTasks.length > 0"
+        padding="none"
+        class="mx-4 md:mx-6 mt-3 overflow-hidden"
+      >
         <TransitionGroup name="task-list" tag="div">
           <TaskItem
             v-for="task in filteredIncompleteTasks"
@@ -86,12 +90,13 @@
             @update-inline="handleInlineUpdate"
           />
         </TransitionGroup>
-      </div>
+      </KinFlatCard>
 
       <!-- Completed section -->
-      <div v-if="filteredCompletedTasks.length > 0" class="mt-4 px-4">
+      <div v-if="filteredCompletedTasks.length > 0" class="mt-5 px-4 md:px-6">
         <button
-          class="flex items-center gap-2 text-xs font-medium text-lavender-500 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors"
+          type="button"
+          class="flex items-center gap-2 text-xs font-medium text-ink-tertiary hover:text-ink-primary transition-colors mb-2"
           @click="showCompleted = !showCompleted"
         >
           <ChevronRightIcon
@@ -101,39 +106,94 @@
           Completed ({{ filteredCompletedTasks.length }})
         </button>
 
-        <TransitionGroup v-if="showCompleted" name="task-list" tag="div" class="mt-1">
-          <TaskItem
-            v-for="task in filteredCompletedTasks"
-            :key="task.id"
-            :task="task"
-            @click="openDetail(task)"
-            @toggle="handleToggle(task)"
-            @edit="openDetail(task)"
-            @delete="confirmDelete(task)"
-            @update-inline="handleInlineUpdate"
-          />
-        </TransitionGroup>
+        <KinFlatCard v-if="showCompleted" padding="none" class="overflow-hidden">
+          <TransitionGroup name="task-list" tag="div">
+            <TaskItem
+              v-for="task in filteredCompletedTasks"
+              :key="task.id"
+              :task="task"
+              @click="openDetail(task)"
+              @toggle="handleToggle(task)"
+              @edit="openDetail(task)"
+              @delete="confirmDelete(task)"
+              @update-inline="handleInlineUpdate"
+            />
+          </TransitionGroup>
+        </KinFlatCard>
       </div>
 
       <!-- Empty state -->
-      <EmptyState
+      <KinEmptyState
         v-if="tasks.length === 0 && !isLoading"
         :icon="CheckCircleIcon"
         title="No tasks yet"
         description="Add your first task to get started."
+        accent-color="mint"
+        size="md"
       />
 
       <!-- No matches for filter -->
       <div
         v-if="tasks.length > 0 && filteredIncompleteTasks.length === 0 && filteredCompletedTasks.length === 0 && selectedTagIds.length > 0"
-        class="text-center py-12 text-lavender-500 dark:text-lavender-400 text-sm"
+        class="text-center py-12 text-ink-tertiary text-sm"
       >
         No tasks match the selected tags.
       </div>
     </div>
+    </div><!-- /main column -->
+
+    <!-- Right utility rail (desktop only) -->
+    <KinUtilityRail class="hidden lg:flex" width="280px">
+      <template #filters>
+        <div class="flex flex-col gap-1.5 items-start">
+          <KinChip
+            variant="filter"
+            size="sm"
+            color="neutral"
+            :active="selectedTagIds.length === 0"
+            @click="clearTagFilter"
+          >
+            All
+          </KinChip>
+          <KinChip
+            v-for="tag in tags"
+            :key="tag.id"
+            variant="filter"
+            size="sm"
+            :custom-color="getTagHex(tag.color)"
+            :active="isTagSelected(tag.id)"
+            @click="toggleTagFilter(tag.id)"
+          >
+            {{ tag.name }}
+            <span class="opacity-70 ml-1">{{ tag.incomplete_tasks_count || 0 }}</span>
+          </KinChip>
+        </div>
+      </template>
+
+      <template #actions>
+        <div class="flex items-center gap-2">
+          <KinButton variant="primary" size="sm" @click="focusQuickAdd">
+            <template #leading>
+              <PlusIcon class="w-4 h-4" />
+            </template>
+            Add Task
+          </KinButton>
+          <KinButton
+            variant="ghost"
+            size="sm"
+            icon-only
+            aria-label="Manage tags"
+            title="Manage tags"
+            @click="showTagManager = true"
+          >
+            <CogIcon class="w-4 h-4" />
+          </KinButton>
+        </div>
+      </template>
+    </KinUtilityRail>
 
     <!-- Mobile FAB -->
-    <FloatingActionButton @click="focusQuickAdd" />
+    <FloatingActionButton class="lg:hidden" @click="focusQuickAdd" />
 
     <!-- Task Detail Panel -->
     <TaskDetailPanel
@@ -165,11 +225,11 @@
     />
 
     <!-- Tag Manager Modal -->
-    <BaseModal
-      :show="showTagManager"
+    <KinModalSheet
+      :model-value="showTagManager"
       title="Manage Tags"
       size="sm"
-      @close="showTagManager = false"
+      @update:model-value="(v) => !v && (showTagManager = false)"
     >
       <div class="space-y-4">
         <!-- Existing tags -->
@@ -177,39 +237,45 @@
           <div
             v-for="tag in tags"
             :key="tag.id"
-            class="flex items-center gap-3 p-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 group"
+            class="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-sunken group"
           >
             <span
               class="w-3 h-3 rounded-full flex-shrink-0"
               :style="{ backgroundColor: getTagHex(tag.color) }"
             ></span>
-            <span v-if="editingTag?.id !== tag.id" class="flex-1 text-sm text-prussian-500 dark:text-lavender-200">
+            <span v-if="editingTag?.id !== tag.id" class="flex-1 text-sm text-ink-primary">
               {{ tag.name }}
             </span>
             <input
               v-else
               v-model="editingTag.name"
-              class="flex-1 text-sm text-prussian-500 dark:text-lavender-200 bg-transparent border-b border-wisteria-400 outline-none"
+              class="flex-1 text-sm text-ink-primary bg-transparent border-b border-accent-lavender-bold outline-none"
               @keydown.enter="saveEditTag"
               @keydown.escape="editingTag = null"
             />
             <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 v-if="editingTag?.id !== tag.id"
-                class="p-1 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 rounded"
+                type="button"
+                class="p-1 text-ink-tertiary hover:text-ink-primary rounded"
+                aria-label="Edit tag"
                 @click="editingTag = { id: tag.id, name: tag.name, color: tag.color }"
               >
                 <PencilIcon class="w-3.5 h-3.5" />
               </button>
               <button
                 v-else
-                class="p-1 text-emerald-500 hover:text-emerald-600 rounded"
+                type="button"
+                class="p-1 text-status-success hover:opacity-80 rounded"
+                aria-label="Save tag"
                 @click="saveEditTag"
               >
                 <CheckIcon class="w-3.5 h-3.5" />
               </button>
               <button
-                class="p-1 text-lavender-400 hover:text-red-500 rounded"
+                type="button"
+                class="p-1 text-ink-tertiary hover:text-status-failed rounded"
+                aria-label="Delete tag"
                 @click="handleDeleteTag(tag)"
               >
                 <TrashIcon class="w-3.5 h-3.5" />
@@ -218,37 +284,39 @@
           </div>
         </div>
 
-        <p v-else class="text-sm text-lavender-500 dark:text-lavender-400 text-center py-4">
+        <p v-else class="text-sm text-ink-tertiary text-center py-4">
           No tags yet
         </p>
 
         <!-- Add new tag -->
-        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4">
+        <div class="border-t border-border-subtle pt-4">
           <form class="flex gap-2" @submit.prevent="handleCreateTag">
             <div class="flex items-center gap-2 flex-1">
               <button
                 type="button"
-                class="w-6 h-6 rounded-full flex-shrink-0 border-2 border-white dark:border-prussian-700 shadow-sm"
+                class="w-6 h-6 rounded-full flex-shrink-0 border-2 border-surface-raised shadow-resting"
                 :style="{ backgroundColor: getTagHex(newTagColor) }"
+                aria-label="Cycle tag color"
                 @click="cycleNewTagColor"
               ></button>
               <input
                 v-model="newTagName"
                 placeholder="New tag name..."
-                class="flex-1 text-sm text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 outline-none bg-transparent border-b border-lavender-200 dark:border-prussian-600 focus:border-wisteria-400 py-1"
+                class="flex-1 text-sm text-ink-primary placeholder:text-ink-tertiary outline-none bg-transparent border-b border-border-subtle focus:border-accent-lavender-bold py-1"
               />
             </div>
-            <button
+            <KinButton
               type="submit"
+              variant="primary"
+              size="sm"
               :disabled="!newTagName.trim()"
-              class="px-3 py-1.5 text-xs font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-lg disabled:opacity-40 transition-colors"
             >
               Add
-            </button>
+            </KinButton>
           </form>
         </div>
       </div>
-    </BaseModal>
+    </KinModalSheet>
   </div>
 </template>
 
@@ -263,9 +331,14 @@ import TaskDetailPanel from '@/components/tasks/TaskDetailPanel.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
 import UndoToast from '@/components/common/UndoToast.vue'
-import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import BaseModal from '@/components/common/BaseModal.vue'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
+import KinUtilityRail from '@/components/design-system/KinUtilityRail.vue'
+import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
+import { PlusIcon } from '@heroicons/vue/24/outline'
 import {
   ChevronRightIcon,
   CheckCircleIcon,

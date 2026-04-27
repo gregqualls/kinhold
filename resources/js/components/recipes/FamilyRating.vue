@@ -15,13 +15,13 @@
         >
           <StarIconSolid
             class="w-6 h-6 transition-colors"
-            :class="star <= displayRating ? 'text-[#C4975A]' : 'text-lavender-200 dark:text-prussian-600'"
+            :class="star <= displayRating ? 'text-[#C4975A]' : 'text-ink-tertiary'"
           />
         </button>
       </div>
 
       <!-- Average label -->
-      <span class="text-sm text-lavender-500 dark:text-lavender-400">
+      <span class="text-sm text-ink-tertiary">
         <template v-if="averageRating > 0">
           {{ averageRating.toFixed(1) }} avg
         </template>
@@ -32,14 +32,14 @@
     </div>
 
     <!-- Your rating label -->
-    <p v-if="userRating" class="text-xs text-lavender-400 dark:text-lavender-500">
+    <p v-if="userRating" class="text-xs text-ink-tertiary">
       Your rating: {{ userRating }}/5
     </p>
 
     <!-- Individual ratings (expandable) -->
     <div v-if="ratings.length > 0">
       <button
-        class="text-xs text-lavender-400 dark:text-lavender-500 hover:text-prussian-500 dark:hover:text-lavender-300 transition-colors"
+        class="text-xs text-ink-tertiary hover:text-ink-primary transition-colors"
         @click="showAll = !showAll"
       >
         {{ showAll ? 'Hide' : 'Show' }} family ratings ({{ ratings.length }})
@@ -51,13 +51,13 @@
           class="flex items-center gap-2 text-sm"
         >
           <UserAvatar :user="rating.user" size="xs" />
-          <span class="text-prussian-500 dark:text-lavender-200">{{ rating.user?.name }}</span>
+          <span class="text-ink-primary">{{ rating.user?.name }}</span>
           <div class="flex items-center gap-0.5">
             <StarIconSolid
               v-for="s in 5"
               :key="s"
               class="w-3 h-3"
-              :class="s <= rating.score ? 'text-[#C4975A]' : 'text-lavender-200 dark:text-prussian-600'"
+              :class="s <= rating.score ? 'text-[#C4975A]' : 'text-ink-tertiary'"
             />
           </div>
         </div>

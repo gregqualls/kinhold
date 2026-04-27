@@ -1,74 +1,67 @@
 <template>
-  <div ref="backdrop" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" tabindex="-1" @click.self="$emit('close')" @keydown.escape="$emit('close')">
-    <div class="card p-5 w-full max-w-sm mx-4">
-      <h3 class="text-lg font-bold text-prussian-500 dark:text-lavender-200 mb-1">
-        Place Bid
-      </h3>
-      <p class="text-xs text-lavender-500 dark:text-lavender-400 mb-4">
-        {{ reward.title }}
-      </p>
+  <KinModalSheet :model-value="true" title="Place Bid" size="sm" @close="$emit('close')">
+    <p class="text-xs text-ink-tertiary mb-4">
+      {{ reward.title }}
+    </p>
 
-      <!-- Current status -->
-      <div class="space-y-2 mb-4">
-        <div v-if="reward.highest_bid" class="flex justify-between text-sm">
-          <span class="text-lavender-500 dark:text-lavender-400">Highest bid</span>
-          <span class="font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ reward.highest_bid }} pts</span>
-        </div>
-        <div v-if="reward.min_bid && !reward.highest_bid" class="flex justify-between text-sm">
-          <span class="text-lavender-500 dark:text-lavender-400">Minimum bid</span>
-          <span class="font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ reward.min_bid }} pts</span>
-        </div>
-        <div v-if="reward.my_bid" class="flex justify-between text-sm">
-          <span class="text-lavender-500 dark:text-lavender-400">Your current bid</span>
-          <span class="font-bold font-mono text-golden-600 dark:text-golden-400">{{ reward.my_bid }} pts (held)</span>
-        </div>
-        <div class="flex justify-between text-sm">
-          <span class="text-lavender-500 dark:text-lavender-400">Available points</span>
-          <span class="font-bold font-mono">{{ availablePoints }} pts</span>
-        </div>
-        <div class="flex justify-between text-sm">
-          <span class="text-lavender-500 dark:text-lavender-400">Total bids</span>
-          <span class="font-medium">{{ reward.total_bids || 0 }}</span>
-        </div>
+    <!-- Current status -->
+    <div class="space-y-2 mb-4">
+      <div v-if="reward.highest_bid" class="flex justify-between text-sm">
+        <span class="text-ink-tertiary">Highest bid</span>
+        <span class="font-bold font-mono text-accent-lavender-bold">{{ reward.highest_bid }} pts</span>
       </div>
-
-      <!-- Bid input -->
-      <div class="mb-4">
-        <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">Your Bid</label>
-        <input
-          v-model.number="bidAmount"
-          type="number"
-          :min="minimumBid"
-          class="input-base w-full"
-          :placeholder="`Min: ${minimumBid} pts`"
-          aria-label="Bid amount"
-        />
-        <p class="text-[10px] text-lavender-400 dark:text-lavender-500 mt-1">
-          Points will be held until the auction ends. Released if outbid.
-        </p>
+      <div v-if="reward.min_bid && !reward.highest_bid" class="flex justify-between text-sm">
+        <span class="text-ink-tertiary">Minimum bid</span>
+        <span class="font-bold font-mono text-accent-lavender-bold">{{ reward.min_bid }} pts</span>
       </div>
+      <div v-if="reward.my_bid" class="flex justify-between text-sm">
+        <span class="text-ink-tertiary">Your current bid</span>
+        <span class="font-bold font-mono text-golden-600 dark:text-golden-400">{{ reward.my_bid }} pts (held)</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-ink-tertiary">Available points</span>
+        <span class="font-bold font-mono">{{ availablePoints }} pts</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-ink-tertiary">Total bids</span>
+        <span class="font-medium">{{ reward.total_bids || 0 }}</span>
+      </div>
+    </div>
 
-      <!-- Error -->
-      <p v-if="error" class="text-xs text-red-500 mb-3">{{ error }}</p>
+    <!-- Bid input -->
+    <KinInput
+      v-model.number="bidAmount"
+      type="number"
+      label="Your Bid"
+      :placeholder="`Min: ${minimumBid} pts`"
+      helper="Points will be held until the auction ends. Released if outbid."
+      :error="error"
+      aria-label="Bid amount"
+    />
 
-      <!-- Actions -->
+    <template #actions>
       <div class="flex justify-end gap-2">
-        <button class="btn-ghost btn-sm" @click="$emit('close')">Cancel</button>
-        <button
+        <KinButton variant="ghost" size="sm" @click="$emit('close')">Cancel</KinButton>
+        <KinButton
+          variant="primary"
+          size="sm"
           :disabled="!isValid || submitting"
-          class="btn-primary btn-sm"
+          :loading="submitting"
           @click="submitBid"
         >
           {{ submitting ? 'Placing...' : (reward.my_bid ? 'Update Bid' : 'Place Bid') }}
-        </button>
+        </KinButton>
       </div>
-    </div>
-  </div>
+    </template>
+  </KinModalSheet>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { usePointsStore } from '@/stores/points'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 
 const props = defineProps({
   reward: {
@@ -84,12 +77,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'bid-placed'])
 
 const pointsStore = usePointsStore()
-const backdrop = ref(null)
 const bidAmount = ref(null)
-
-onMounted(() => {
-  backdrop.value?.focus()
-})
 const error = ref('')
 const submitting = ref(false)
 

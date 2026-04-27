@@ -1,49 +1,49 @@
 <template>
   <div class="p-4 md:p-6 max-w-4xl">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Badges</h1>
-      <button v-if="isParent" class="btn-primary btn-sm" @click="showCreateForm = !showCreateForm">
-        {{ showCreateForm ? 'Cancel' : '+ Create Badge' }}
-      </button>
+    <div class="flex items-center justify-between mb-6 gap-3 flex-wrap">
+      <h1 class="text-2xl font-bold font-heading text-ink-primary">Achievements</h1>
+      <KinButton v-if="isParent" variant="primary" size="sm" @click="showCreateForm = !showCreateForm">
+        <template v-if="!showCreateForm" #leading>
+          <PlusIcon class="w-4 h-4" />
+        </template>
+        {{ showCreateForm ? 'Cancel' : 'Create Badge' }}
+      </KinButton>
     </div>
 
     <!-- Create Form (parent only) -->
-    <div v-if="showCreateForm" class="card p-4 mb-6">
-      <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 mb-3">New Badge</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input v-model="newBadge.name" class="input-base" placeholder="Badge name" />
-        <input v-model="newBadge.description" class="input-base" placeholder="Description" />
+    <KinFlatCard v-if="showCreateForm" padding="md" class="mb-6">
+      <h3 class="text-sm font-semibold text-ink-primary mb-4">New Badge</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <KinInput v-model="newBadge.name" label="Name" placeholder="Badge name" />
+        <KinInput v-model="newBadge.description" label="Description" placeholder="What earns this badge?" />
+
+        <KinSelect
+          v-model="newBadge.trigger_type"
+          label="Trigger Type"
+          :options="triggerTypeOptions"
+        />
+
+        <KinInput
+          v-if="newBadge.trigger_type !== 'custom'"
+          v-model.number="newBadge.trigger_threshold"
+          label="Threshold"
+          type="number"
+          min="1"
+          placeholder="e.g. 10"
+        />
 
         <div>
-          <label class="block text-xs text-lavender-500 mb-1">Trigger Type</label>
-          <select v-model="newBadge.trigger_type" class="input-base w-full">
-            <option value="custom">Custom (Manual Award)</option>
-            <option value="tasks_completed">Tasks Completed</option>
-            <option value="points_earned">Points Earned</option>
-            <option value="task_streak">Task Streak (Days)</option>
-            <option value="kudos_received">Kudos Received</option>
-            <option value="kudos_given">Kudos Given</option>
-            <option value="rewards_purchased">Rewards Purchased</option>
-            <option value="login_streak">Login Streak</option>
-          </select>
-        </div>
-
-        <div v-if="newBadge.trigger_type !== 'custom'">
-          <label class="block text-xs text-lavender-500 mb-1">Threshold</label>
-          <input v-model.number="newBadge.trigger_threshold" type="number" min="1" class="input-base w-full" placeholder="e.g. 10" />
-        </div>
-
-        <div>
-          <label class="block text-xs text-lavender-500 mb-1">Icon</label>
+          <label class="block text-[13px] font-medium text-ink-secondary mb-2">Icon</label>
           <div class="flex flex-wrap gap-2">
             <button
               v-for="iconName in iconNames"
               :key="iconName"
+              type="button"
               class="p-1.5 rounded-lg border transition-colors"
               :class="newBadge.icon === iconName
-                ? 'border-wisteria-400 bg-wisteria-50 dark:bg-wisteria-900/30'
-                : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-300'"
+                ? 'border-accent-lavender-bold bg-accent-lavender-soft/30'
+                : 'border-border-subtle hover:border-accent-lavender-bold/60'"
               @click="newBadge.icon = iconName"
             >
               <BadgeIcon :icon="iconName" :color="newBadge.color" size="sm" />
@@ -52,16 +52,17 @@
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block text-xs text-lavender-500 mb-1">Color</label>
+          <label class="block text-[13px] font-medium text-ink-secondary mb-2">Color</label>
           <div class="flex flex-wrap gap-2">
             <button
               v-for="c in badgeColorPalette"
               :key="c.value"
               type="button"
               :title="c.label"
+              :aria-label="c.label"
               class="w-8 h-8 rounded-full border-2 transition-all duration-150 flex-shrink-0"
               :class="newBadge.color === c.value
-                ? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 scale-110'
+                ? 'ring-2 ring-offset-2 ring-offset-surface-raised scale-110'
                 : 'border-transparent hover:scale-110'"
               :style="{
                 backgroundColor: c.value,
@@ -73,89 +74,106 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-2">
-          <input id="is_hidden" v-model="newBadge.is_hidden" type="checkbox" class="rounded" />
-          <label for="is_hidden" class="text-sm text-prussian-500 dark:text-lavender-300">Hidden badge (surprise!)</label>
+        <div class="flex items-center gap-2 sm:col-span-2">
+          <KinCheckbox v-model="newBadge.is_hidden" />
+          <label class="text-sm text-ink-primary cursor-pointer" @click="newBadge.is_hidden = !newBadge.is_hidden">
+            Hidden badge (surprise!)
+          </label>
         </div>
       </div>
 
-      <div class="flex justify-end mt-4">
-        <button :disabled="!newBadge.name || !newBadge.description" class="btn-primary btn-sm" @click="createBadge">
+      <div class="flex justify-end mt-5">
+        <KinButton
+          variant="primary"
+          size="sm"
+          :disabled="!newBadge.name || !newBadge.description"
+          @click="createBadge"
+        >
           Create Badge
-        </button>
+        </KinButton>
       </div>
-    </div>
+    </KinFlatCard>
 
     <!-- Tabs -->
-    <div class="flex gap-1 bg-lavender-100 dark:bg-prussian-700 rounded-lg p-1 mb-6 w-fit">
-      <button
-        v-for="tab in ['All', 'Earned', 'Locked']"
-        :key="tab"
-        :class="[
-          'px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-150',
-          activeTab === tab
-            ? 'bg-wisteria-600 text-white shadow-sm'
-            : 'text-prussian-500 dark:text-lavender-300 hover:bg-lavender-200 dark:hover:bg-prussian-600',
-        ]"
-        @click="activeTab = tab"
-      >
-        {{ tab }}
-      </button>
-    </div>
+    <KinTabPillGroup
+      v-model:active-key="activeTab"
+      :tabs="tabOptions"
+      variant="tinted"
+      size="sm"
+      class="mb-6"
+    />
 
-    <!-- Badges Grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-      <BadgeCard
+    <!-- Achievements Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-6">
+      <KinAchievementTile
         v-for="badge in filteredBadges"
         :key="badge.id"
-        :badge="badge"
+        :state="stateFor(badge)"
+        :icon="iconComponentFor(badge.icon)"
+        :title="badge.name"
+        :description="badge.description"
+        :meta="metaFor(badge)"
+        :accent-color="accentColorFor(badge.color)"
+        :progress="progressFor(badge)"
       />
     </div>
 
-    <div v-if="filteredBadges.length === 0 && !badgesStore.isLoading" class="card p-8 text-center">
-      <p class="text-lavender-500 dark:text-lavender-400">
-        {{ activeTab === 'Earned' ? 'No badges earned yet. Keep going!' : activeTab === 'Locked' ? 'All badges unlocked!' : 'No badges available.' }}
-      </p>
-    </div>
+    <!-- Empty state -->
+    <KinEmptyState
+      v-if="filteredBadges.length === 0 && !badgesStore.isLoading"
+      :icon="ShieldCheckIcon"
+      :title="emptyTitle"
+      :description="emptyDescription"
+      accent-color="lavender"
+      size="md"
+      class="mt-8"
+    />
 
     <!-- Parent Award Section -->
-    <div v-if="isParent && activeTab === 'All'" class="mt-8 card p-4">
-      <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 mb-3">Manually Award Badge</h3>
-      <div class="flex gap-3 items-end flex-wrap">
-        <div>
-          <label class="block text-xs text-lavender-500 mb-1">Badge</label>
-          <select v-model="awardBadgeId" class="input-base">
-            <option value="">Select badge...</option>
-            <option v-for="b in badgesStore.badges.filter(b => b.name !== '???')" :key="b.id" :value="b.id">
-              {{ b.name }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs text-lavender-500 mb-1">Member</label>
-          <select v-model="awardUserId" class="input-base">
-            <option value="">Select member...</option>
-            <option v-for="m in familyMembers" :key="m.id" :value="m.id">
-              {{ m.name }}
-            </option>
-          </select>
-        </div>
-        <button :disabled="!awardBadgeId || !awardUserId" class="btn-primary btn-sm" @click="handleAward">
+    <KinFlatCard v-if="isParent && activeTab === 'All'" padding="md" class="mt-8">
+      <h3 class="text-sm font-semibold text-ink-primary mb-4">Manually Award Badge</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+        <KinSelect
+          v-model="awardBadgeId"
+          label="Badge"
+          placeholder="Select badge…"
+          :options="awardableBadgeOptions"
+        />
+        <KinSelect
+          v-model="awardUserId"
+          label="Member"
+          placeholder="Select member…"
+          :options="memberOptions"
+        />
+        <KinButton
+          variant="primary"
+          size="md"
+          :disabled="!awardBadgeId || !awardUserId"
+          @click="handleAward"
+        >
           Award
-        </button>
+        </KinButton>
       </div>
-    </div>
+    </KinFlatCard>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, h } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useBadgesStore } from '@/stores/badges'
 import { useAuthStore } from '@/stores/auth'
-import BadgeCard from '@/components/badges/BadgeCard.vue'
 import BadgeIcon from '@/components/badges/BadgeIcon.vue'
-import { badgeIconNames } from '@/components/badges/badgeIcons'
+import { badgeIconNames, badgeIconPaths } from '@/components/badges/badgeIcons'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinSelect from '@/components/design-system/KinSelect.vue'
+import KinCheckbox from '@/components/design-system/KinCheckbox.vue'
+import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
+import KinTabPillGroup from '@/components/design-system/KinTabPillGroup.vue'
+import KinAchievementTile from '@/components/design-system/KinAchievementTile.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import { PlusIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline'
 
 const badgesStore = useBadgesStore()
 const authStore = useAuthStore()
@@ -167,6 +185,23 @@ const awardBadgeId = ref('')
 const awardUserId = ref('')
 
 const iconNames = badgeIconNames
+
+const tabOptions = [
+  { key: 'All', label: 'All' },
+  { key: 'Earned', label: 'Earned' },
+  { key: 'Locked', label: 'Locked' },
+]
+
+const triggerTypeOptions = [
+  { value: 'custom',            label: 'Custom (Manual Award)' },
+  { value: 'tasks_completed',   label: 'Tasks Completed' },
+  { value: 'points_earned',     label: 'Points Earned' },
+  { value: 'task_streak',       label: 'Task Streak (Days)' },
+  { value: 'kudos_received',    label: 'Kudos Received' },
+  { value: 'kudos_given',       label: 'Kudos Given' },
+  { value: 'rewards_purchased', label: 'Rewards Purchased' },
+  { value: 'login_streak',      label: 'Login Streak' },
+]
 
 const badgeColorPalette = [
   { value: '#7d57a8', label: 'Wisteria' },
@@ -203,6 +238,87 @@ const filteredBadges = computed(() => {
   if (activeTab.value === 'Locked') return badges.filter(b => !b.is_earned)
   return badges
 })
+
+const awardableBadgeOptions = computed(() =>
+  badgesStore.badges
+    .filter((b) => b.name !== '???')
+    .map((b) => ({ value: b.id, label: b.name }))
+)
+
+const memberOptions = computed(() =>
+  (familyMembers.value || []).map((m) => ({ value: m.id, label: m.name }))
+)
+
+const emptyTitle = computed(() => {
+  if (activeTab.value === 'Earned') return 'No badges earned yet'
+  if (activeTab.value === 'Locked') return 'All badges unlocked!'
+  return 'No badges available'
+})
+
+const emptyDescription = computed(() => {
+  if (activeTab.value === 'Earned') return 'Keep at it — your first achievement is waiting.'
+  if (activeTab.value === 'Locked') return 'Nice work — you\'ve earned every available badge.'
+  return ''
+})
+
+// ── KinAchievementTile adapters ─────────────────────────────────────────────
+
+const stateFor = (badge) => {
+  if (badge.is_earned) return 'earned'
+  if (badge.name === '???' || badge.is_hidden) return 'hidden'
+  if (badge.trigger_threshold && (badge.progress || 0) > 0) return 'in-progress'
+  return 'locked'
+}
+
+const progressFor = (badge) => {
+  if (!badge.trigger_threshold) return 0
+  return Math.max(0, Math.min(1, (badge.progress || 0) / badge.trigger_threshold))
+}
+
+const metaFor = (badge) => {
+  if (badge.is_earned) return badge.earned_at_label || 'Earned'
+  if (badge.trigger_threshold && badge.progress != null) {
+    return `${badge.progress} / ${badge.trigger_threshold}`
+  }
+  return ''
+}
+
+// Map a hex color to one of the four Kin accent families. Hue-based bucketing.
+const accentColorFor = (hex) => {
+  if (!hex) return 'lavender'
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  // Crude family detection — fall back to lavender for cool / unknown.
+  if (r > g && r > b && Math.abs(g - b) < 60) return 'peach'   // red / pink / orange
+  if (g > r && g > b) return 'mint'                              // green / turquoise
+  if (r > 200 && g > 150 && b < 120) return 'sun'                // yellow / gold / sand
+  return 'lavender'                                              // purple / blue / slate
+}
+
+// Memoised functional icon components — KinAchievementTile expects a component
+// reference. We render just the inner SVG path; the tile applies the hex shell
+// and color via currentColor.
+const iconComponentCache = new Map()
+const iconComponentFor = (iconName) => {
+  if (iconComponentCache.has(iconName)) return iconComponentCache.get(iconName)
+  const path = badgeIconPaths[iconName] || badgeIconPaths.trophy
+  const Comp = {
+    name: `BadgeIcon_${iconName}`,
+    render() {
+      return h('svg', {
+        viewBox: '0 0 24 24',
+        fill: 'none',
+        stroke: 'currentColor',
+        'stroke-width': 1.5,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+      }, [h('path', { d: path })])
+    },
+  }
+  iconComponentCache.set(iconName, Comp)
+  return Comp
+}
 
 const createBadge = async () => {
   const result = await badgesStore.createBadge(newBadge.value)

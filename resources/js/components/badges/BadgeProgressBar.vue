@@ -1,10 +1,10 @@
 <template>
   <div class="w-full">
-    <div class="flex justify-between text-xs text-lavender-400 dark:text-lavender-500 mb-1">
+    <div class="flex justify-between text-xs text-ink-tertiary mb-1">
       <span>{{ progress }} / {{ threshold }} {{ label }}</span>
       <span>{{ Math.round((progress / threshold) * 100) }}%</span>
     </div>
-    <div class="w-full h-2 bg-lavender-200 dark:bg-prussian-700 rounded-full overflow-hidden">
+    <div class="w-full h-2 bg-surface-sunken rounded-full overflow-hidden">
       <div
         class="h-full rounded-full transition-all duration-200"
         :style="{

@@ -1,24 +1,21 @@
 <template>
   <div class="flex flex-col h-full">
-    <!-- Balance section -->
-    <div class="flex items-center gap-4 pb-3 border-b border-lavender-200 dark:border-prussian-700">
-      <div class="w-12 h-12 rounded-xl bg-wisteria-100 dark:bg-wisteria-900/30 flex items-center justify-center flex-shrink-0">
-        <TrophyIcon class="w-6 h-6 text-wisteria-600 dark:text-wisteria-400" />
-      </div>
-      <div class="min-w-0">
-        <p class="text-xs text-lavender-500 dark:text-lavender-400">{{ config.title || 'Points Balance' }}</p>
-        <div v-if="bankLoading" class="h-8 w-16 bg-lavender-200 dark:bg-prussian-700 rounded animate-pulse mt-1"></div>
-        <p v-else class="text-2xl font-bold font-mono text-prussian-500 dark:text-lavender-200">
-          {{ balance.toLocaleString() }}<span class="text-sm font-normal ml-1 text-lavender-500 dark:text-lavender-400">pts</span>
-        </p>
-      </div>
+    <!-- Hero metric -->
+    <div class="pb-3 border-b border-border-subtle">
+      <p class="text-[10px] font-semibold uppercase tracking-widest text-ink-tertiary">
+        {{ config.title || 'Your Points' }}
+      </p>
+      <KinSkeleton v-if="bankLoading" shape="rect" :width="'120px'" :height="'40px'" rounded="4px" class="mt-1" />
+      <p v-else class="text-4xl font-bold font-mono text-ink-primary mt-1">
+        {{ balance.toLocaleString() }}<span class="text-base font-normal ml-1 text-ink-tertiary">pts</span>
+      </p>
     </div>
 
     <!-- Recent activity -->
     <div class="flex-1 min-h-0 pt-2">
-      <p class="text-[10px] uppercase tracking-wider font-semibold text-lavender-400 dark:text-lavender-500 mb-1.5">Recent</p>
+      <p class="text-[10px] uppercase tracking-wider font-semibold text-ink-tertiary mb-1.5">Recent</p>
       <div v-if="feedLoading" class="space-y-2">
-        <div v-for="n in 3" :key="n" class="h-6 bg-lavender-100 dark:bg-prussian-700 rounded animate-pulse"></div>
+        <KinSkeleton v-for="n in 3" :key="n" shape="rect" :height="'24px'" rounded="4px" />
       </div>
       <div v-else class="space-y-1.5">
         <div
@@ -26,12 +23,12 @@
           :key="item.id"
           class="flex items-center justify-between gap-2"
         >
-          <p class="text-xs text-prussian-500 dark:text-lavender-300 truncate flex-1">
+          <p class="text-xs text-ink-secondary truncate flex-1">
             {{ item.description }}
           </p>
           <span
-            class="text-[10px] font-bold font-mono flex-shrink-0"
-            :class="item.points > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'"
+            class="text-[10px] font-bold font-mono flex-shrink-0 px-2 py-0.5 rounded-full"
+            :class="item.points > 0 ? 'text-status-success bg-status-success/10' : 'text-status-failed bg-status-failed/10'"
           >
             {{ item.points > 0 ? '+' : '' }}{{ item.points }}
           </span>
@@ -44,7 +41,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useWidgetData } from '@/composables/useWidgetData'
-import { TrophyIcon } from '@heroicons/vue/24/solid'
+import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
 
 defineProps({
   config: { type: Object, required: true },

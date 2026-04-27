@@ -3,51 +3,51 @@
     <form class="space-y-4" @submit.prevent="handleSubmit">
       <!-- Title -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
-          Title <span class="text-red-500">*</span>
+        <label class="block text-sm font-medium text-ink-secondary mb-1">
+          Title <span class="text-status-failed">*</span>
         </label>
         <input
           v-model="form.title"
           type="text"
           placeholder="Birthday, Game Day, Vacation..."
-          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 dark:placeholder-lavender-500 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+          class="w-full px-3 py-2 rounded-[10px] border border-border-subtle bg-surface-raised text-ink-primary placeholder-ink-tertiary focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
           required
         />
       </div>
 
       <!-- Date -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
-          Date <span class="text-red-500">*</span>
+        <label class="block text-sm font-medium text-ink-secondary mb-1">
+          Date <span class="text-status-failed">*</span>
         </label>
         <input
           v-model="form.event_date"
           type="date"
-          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+          class="w-full px-3 py-2 rounded-[10px] border border-border-subtle bg-surface-raised text-ink-primary focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
           required
         />
       </div>
 
       <!-- Time (optional) -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
-          Time <span class="text-lavender-400 dark:text-lavender-500 text-xs">(optional)</span>
+        <label class="block text-sm font-medium text-ink-secondary mb-1">
+          Time <span class="text-ink-tertiary text-xs">(optional)</span>
         </label>
         <input
           v-model="form.event_time"
           type="time"
-          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+          class="w-full px-3 py-2 rounded-[10px] border border-border-subtle bg-surface-raised text-ink-primary focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
         />
       </div>
 
       <!-- Recurrence -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
+        <label class="block text-sm font-medium text-ink-secondary mb-1">
           Repeats
         </label>
         <select
           v-model="form.recurrence"
-          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+          class="w-full px-3 py-2 rounded-[10px] border border-border-subtle bg-surface-raised text-ink-primary focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
         >
           <option value="none">One-time event</option>
           <option value="yearly">Every year (birthdays, anniversaries)</option>
@@ -58,20 +58,20 @@
 
       <!-- Description (optional) -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
-          Description <span class="text-lavender-400 dark:text-lavender-500 text-xs">(optional)</span>
+        <label class="block text-sm font-medium text-ink-secondary mb-1">
+          Description <span class="text-ink-tertiary text-xs">(optional)</span>
         </label>
         <textarea
           v-model="form.description"
           rows="2"
           placeholder="Add details..."
-          class="w-full px-3 py-2 rounded-[10px] border border-lavender-300 dark:border-prussian-600 bg-white dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 dark:placeholder-lavender-500 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent resize-none"
+          class="w-full px-3 py-2 rounded-[10px] border border-border-subtle bg-surface-raised text-ink-primary placeholder-ink-tertiary focus:ring-2 focus:ring-wisteria-400 focus:border-transparent resize-none"
         ></textarea>
       </div>
 
       <!-- Icon picker -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-2">
+        <label class="block text-sm font-medium text-ink-secondary mb-2">
           Icon
         </label>
         <IconPicker v-model="form.icon" />
@@ -79,7 +79,7 @@
 
       <!-- Color picker -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-2">
+        <label class="block text-sm font-medium text-ink-secondary mb-2">
           Color
         </label>
         <div class="flex flex-wrap gap-2">
@@ -97,19 +97,19 @@
       </div>
 
       <!-- Error -->
-      <p v-if="error" class="text-sm text-red-600 dark:text-red-400">{{ error }}</p>
+      <p v-if="error" class="text-sm text-status-failed">{{ error }}</p>
     </form>
 
     <template #footer>
       <button
-        class="px-4 py-2 text-sm font-medium text-lavender-600 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-[10px] transition-colors"
+        class="px-4 py-2 text-sm font-medium text-ink-secondary hover:bg-surface-sunken rounded-[10px] transition-colors"
         @click="$emit('close')"
       >
         Cancel
       </button>
       <button
         :disabled="!form.title || !form.event_date || isSaving"
-        class="px-4 py-2 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-700 rounded-[10px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="px-4 py-2 text-sm font-medium text-white bg-accent-lavender-bold hover:bg-accent-lavender-bold rounded-[10px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         @click="handleSubmit"
       >
         {{ isSaving ? 'Saving...' : (event ? 'Update' : 'Create') }}

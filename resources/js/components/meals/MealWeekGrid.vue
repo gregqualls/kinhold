@@ -27,7 +27,7 @@
     </div>
 
     <div
-      class="grid gap-px bg-lavender-200/50 dark:bg-prussian-700/50 rounded-xl overflow-hidden"
+      class="grid gap-px bg-surface-sunken rounded-xl overflow-hidden"
       :style="gridStyle"
     >
       <!-- Header row: corner cell + day headers -->

@@ -9,14 +9,15 @@
         <Transition name="slide">
           <div
             v-if="show"
-            class="bg-white dark:bg-prussian-800 rounded-t-[12px] md:rounded-[12px] w-full md:max-w-md max-h-[85vh] flex flex-col"
+            class="bg-surface-raised rounded-t-card md:rounded-card w-full md:max-w-md max-h-[85vh] flex flex-col shadow-elevated"
             @click.stop
           >
             <!-- Header -->
-            <div class="px-6 py-4 border-b border-lavender-200 dark:border-prussian-700 flex items-center justify-between">
-              <h2 class="text-xl font-semibold text-prussian-500 dark:text-lavender-200">Choose Avatar</h2>
+            <div class="px-6 py-4 border-b border-border-subtle flex items-center justify-between">
+              <h2 class="text-xl font-semibold text-ink-primary">Choose Avatar</h2>
               <button
-                class="p-2 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-lg transition-colors text-lavender-500 dark:text-lavender-400"
+                type="button"
+                class="p-2 hover:bg-surface-sunken rounded-lg transition-colors text-ink-tertiary hover:text-ink-primary"
                 aria-label="Close"
                 @click="$emit('close')"
               >
@@ -26,28 +27,37 @@
 
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6">
-              <!-- Preview -->
+              <!-- Preview — uses KinAvatar to match what the rest of the app
+                   renders. `previewUser.avatar` is either a real URL, a
+                   `phosphor:<key>` preset, or null (initials fallback). -->
               <div class="flex flex-col items-center mb-6">
-                <UserAvatar :user="previewUser" size="xl" />
-                <p class="text-sm text-lavender-600 dark:text-lavender-400 mt-2">{{ targetUser?.name }}</p>
+                <KinAvatar
+                  :name="previewUser?.name"
+                  :src="previewUser?.avatar"
+                  :color="kinAccent"
+                  size="xl"
+                />
+                <p class="text-sm text-ink-secondary mt-2">{{ targetUser?.name }}</p>
               </div>
 
-              <!-- Color Picker -->
+              <!-- Color Picker — Kin accent families only -->
               <div class="mb-6">
-                <p class="text-xs font-medium text-lavender-600 dark:text-lavender-400 uppercase tracking-wider mb-2">Color</p>
-                <div class="flex flex-wrap gap-2 justify-center">
+                <p class="text-xs font-medium text-ink-tertiary uppercase tracking-wider mb-2">Color</p>
+                <div class="flex flex-wrap gap-3 justify-center">
                   <button
-                    v-for="color in allColors"
+                    v-for="color in KIN_AVATAR_ACCENTS"
                     :key="color.name"
+                    type="button"
                     :disabled="loading || !canChange"
-                    :title="color.name"
-                    class="w-8 h-8 rounded-full transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                    :title="color.label"
+                    class="w-9 h-9 rounded-full transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-transparent"
                     :class="[
                       color.bg,
-                      selectedColor === color.name
-                        ? 'ring-2 ring-[#C4975A] ring-offset-2 dark:ring-offset-prussian-800 scale-110'
+                      kinAccent === color.name
+                        ? 'ring-2 ring-offset-2 ring-offset-surface-raised scale-110'
                         : 'hover:scale-110',
                     ]"
+                    :style="kinAccent === color.name ? { '--tw-ring-color': color.hex } : {}"
                     @click="selectColor(color.name)"
                   ></button>
                 </div>
@@ -58,16 +68,18 @@
                 <!-- Use Google Photo (only shown if available and not already using it) -->
                 <button
                   v-if="targetUser?.google_avatar && !isUsingGoogleAvatar"
+                  type="button"
                   :disabled="loading || !canChange"
-                  class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-xl text-sm font-medium text-prussian-500 dark:text-lavender-200 hover:border-[#C4975A] hover:text-[#C4975A] dark:hover:border-[#C4975A] dark:hover:text-[#C4975A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-surface-sunken border border-border-subtle rounded-xl text-sm font-medium text-ink-primary hover:border-accent-lavender-bold hover:text-accent-lavender-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   @click="useGoogleAvatar"
                 >
                   <img :src="targetUser.google_avatar" class="w-5 h-5 rounded-full object-cover" alt="" />
                   Use Google Photo
                 </button>
                 <button
+                  type="button"
                   :disabled="loading || !canChange"
-                  class="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-lavender-300 dark:border-prussian-600 rounded-xl text-sm font-medium text-prussian-400 dark:text-lavender-300 hover:border-[#C4975A] hover:text-[#C4975A] dark:hover:border-[#C4975A] dark:hover:text-[#C4975A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-border-subtle rounded-xl text-sm font-medium text-ink-secondary hover:border-accent-lavender-bold hover:text-accent-lavender-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   @click="triggerUpload"
                 >
                   <CameraIcon class="w-5 h-5" />
@@ -80,28 +92,30 @@
                   class="hidden"
                   @change="handleUpload"
                 />
-                <p v-if="uploadError" class="text-xs text-red-500 dark:text-red-400 mt-2 text-center">{{ uploadError }}</p>
+                <p v-if="uploadError" class="text-xs text-status-failed mt-2 text-center">{{ uploadError }}</p>
               </div>
 
               <!-- Preset Grid -->
               <div v-for="(presets, category) in presetsByCategory" :key="category" class="mb-5">
-                <p class="text-xs font-medium text-lavender-600 dark:text-lavender-400 uppercase tracking-wider mb-2">{{ category }}</p>
+                <p class="text-xs font-medium text-ink-tertiary uppercase tracking-wider mb-2">{{ category }}</p>
                 <div class="grid grid-cols-5 gap-2">
                   <button
                     v-for="preset in presets"
                     :key="preset.key"
+                    type="button"
                     :disabled="loading || !canChange"
                     :title="preset.label"
                     class="relative aspect-square rounded-full flex items-center justify-center transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                     :class="[
                       isSelected(preset.key)
-                        ? 'ring-2 ring-[#C4975A] ring-offset-2 dark:ring-offset-prussian-800'
-                        : 'hover:ring-2 hover:ring-lavender-300 dark:hover:ring-prussian-500 hover:ring-offset-2 dark:hover:ring-offset-prussian-800',
+                        ? 'ring-2 ring-offset-2 ring-offset-surface-raised'
+                        : 'hover:ring-2 hover:ring-border-subtle hover:ring-offset-2 hover:ring-offset-surface-raised',
                       colorClasses,
                     ]"
+                    :style="isSelected(preset.key) ? { '--tw-ring-color': KIN_AVATAR_ACCENTS.find(c => c.name === kinAccent)?.hex } : {}"
                     @click="selectPreset(preset.key)"
                   >
-                    <component :is="preset.component" weight="duotone" class="text-white w-1/2 h-1/2" />
+                    <component :is="preset.component" weight="duotone" :class="['w-1/2 h-1/2', presetIconColor]" />
                   </button>
                 </div>
               </div>
@@ -127,8 +141,9 @@
 import { ref, computed, watch } from 'vue'
 import { XMarkIcon, CameraIcon } from '@heroicons/vue/24/outline'
 import UserAvatar from '@/components/common/UserAvatar.vue'
+import KinAvatar from '@/components/design-system/KinAvatar.vue'
 import { getPresetsByCategory } from '@/components/common/avatarPresets'
-import { useFamilyColors } from '@/composables/useFamilyColors'
+import { useFamilyColors, KIN_AVATAR_ACCENTS, kinAccentFor } from '@/composables/useFamilyColors'
 import api from '@/services/api'
 
 const props = defineProps({
@@ -151,21 +166,34 @@ const removing = ref(false)
 const localAvatar = ref(null)
 const uploadError = ref(null)
 
-const { getColorForUser, getAllColors } = useFamilyColors()
+const { getColorForUser } = useFamilyColors()
 
 const loading = computed(() => uploading.value || removing.value)
 const localColor = ref(null)
 
 const presetsByCategory = getPresetsByCategory()
-const allColors = getAllColors()
+// Bold accent text class — drives icon color on the preset tiles so the
+// icon contrasts against its soft-tinted background.
+const presetIconColor = computed(() => ({
+  lavender: 'text-accent-lavender-bold',
+  peach:    'text-accent-peach-bold',
+  mint:     'text-accent-mint-bold',
+  sun:      'text-accent-sun-bold',
+}[kinAccent.value] ?? 'text-accent-lavender-bold'))
 
 const selectedColor = computed(() =>
   localColor.value || props.targetUser?.avatar_color || null
 )
 
+// Resolved Kin accent family for the currently-previewed color. Drives both
+// the preview KinAvatar tint and the preset-grid background tint.
+const kinAccent = computed(() => kinAccentFor(selectedColor.value))
+
 const colorClasses = computed(() => {
-  const color = getColorForUser(props.targetUser?.id, props.targetUser?.name, selectedColor.value)
-  return color.bg
+  // Used by the preset grid to tint the icon background. Map the Kin accent
+  // family to its `-soft` token class so each preset tile carries the
+  // selected family's wash.
+  return KIN_AVATAR_ACCENTS.find((c) => c.name === kinAccent.value)?.bg ?? 'bg-accent-lavender-soft'
 })
 
 const previewUser = computed(() => ({

@@ -18,16 +18,16 @@
         <!-- Autocomplete dropdown -->
         <div
           v-if="showDropdown && catalogResults.length > 0"
-          class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-prussian-800 border border-lavender-200 dark:border-prussian-700 rounded-[10px] shadow-lg z-20 py-1 max-h-48 overflow-y-auto"
+          class="absolute top-full left-0 right-0 mt-1 bg-surface-raised border border-border-subtle rounded-[10px] shadow-lg z-20 py-1 max-h-48 overflow-y-auto"
         >
           <button
             v-for="result in catalogResults"
             :key="result.name"
-            class="w-full px-3 py-2 text-left hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors flex items-center justify-between gap-2"
+            class="w-full px-3 py-2 text-left hover:bg-surface-sunken transition-colors flex items-center justify-between gap-2"
             @mousedown.prevent="selectSuggestion(result)"
           >
-            <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ result.name }}</span>
-            <span v-if="result.category" class="text-xs text-lavender-400 dark:text-lavender-500 flex-shrink-0">{{ result.category }}</span>
+            <span class="text-sm text-ink-primary">{{ result.name }}</span>
+            <span v-if="result.category" class="text-xs text-ink-tertiary flex-shrink-0">{{ result.category }}</span>
           </button>
         </div>
       </div>
@@ -49,7 +49,7 @@
         class="flex-shrink-0 flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all"
         :class="isRecurring
           ? 'bg-[#C4975A]/15 text-[#C4975A] border border-[#C4975A]/30'
-          : 'text-lavender-400 dark:text-lavender-500 hover:bg-lavender-100 dark:hover:bg-prussian-700 border border-transparent'"
+          : 'text-ink-tertiary hover:bg-surface-sunken border border-transparent'"
         :title="isRecurring
           ? 'Recurring is ON — this item will reappear every time you clear bought items'
           : 'Make recurring — great for staples like milk, bread, eggs that you always need'"
@@ -61,19 +61,20 @@
         <span>{{ isRecurring ? 'Recurring' : 'Repeat' }}</span>
       </button>
 
-      <button
-        class="flex-shrink-0 px-4 py-2.5 text-sm font-medium text-white bg-[#C4975A] hover:bg-[#D4A96A] rounded-[10px] transition-colors disabled:opacity-50"
+      <KinButton
+        variant="primary"
         :disabled="!itemName.trim()"
         @click="submitItem"
       >
         Add
-      </button>
+      </KinButton>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 
 defineProps({
   listId: {

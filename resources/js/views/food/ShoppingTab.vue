@@ -50,16 +50,21 @@
         <!-- Add from Recipe (parent only) -->
         <button
           v-if="isParent && activeList"
-          class="w-full text-left px-3 py-2 text-sm text-[#C4975A] hover:bg-lavender-50 dark:hover:bg-prussian-700/50 rounded-lg transition-colors"
+          class="w-full text-left px-3 py-2 text-sm text-[#C4975A] hover:bg-surface-sunken rounded-lg transition-colors"
           @click="showRecipePicker = true"
         >
           + Add ingredients from a recipe
         </button>
 
         <!-- Empty state -->
-        <div v-if="Object.keys(shoppingStore.filteredItemsByCategory).length === 0 && shoppingStore.checkedCount === 0" class="text-center py-12">
-          <p class="text-lavender-400 dark:text-lavender-500">No items yet. Start adding things you need!</p>
-        </div>
+        <KinEmptyState
+          v-if="Object.keys(shoppingStore.filteredItemsByCategory).length === 0 && shoppingStore.checkedCount === 0"
+          :icon="ShoppingCartIcon"
+          title="No items yet"
+          description="Start adding things you need!"
+          accent-color="lavender"
+          size="sm"
+        />
 
         <!-- Items grouped by category -->
         <details
@@ -68,9 +73,9 @@
           open
           class="group"
         >
-          <summary class="flex items-center justify-between cursor-pointer py-1.5 text-xs font-semibold uppercase tracking-wider text-lavender-500 dark:text-lavender-400">
+          <summary class="flex items-center justify-between cursor-pointer py-1.5 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
             <span>{{ category }}</span>
-            <span class="text-lavender-400 dark:text-lavender-500">{{ items.length }}</span>
+            <span class="text-ink-tertiary">{{ items.length }}</span>
           </summary>
           <div class="space-y-1 mt-1">
             <ShoppingListItem
@@ -92,7 +97,7 @@
 
         <!-- Checked / In Cart -->
         <details v-if="shoppingStore.checkedCount > 0" class="mt-6">
-          <summary class="flex items-center justify-between cursor-pointer py-1.5 text-xs font-semibold uppercase tracking-wider text-lavender-400 dark:text-lavender-500">
+          <summary class="flex items-center justify-between cursor-pointer py-1.5 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
             <span>In Cart</span>
             <span>{{ shoppingStore.checkedCount }}</span>
           </summary>
@@ -117,100 +122,96 @@
     </template>
 
     <!-- New List Modal -->
-    <Teleport to="body">
-      <Transition name="fade">
-        <div v-if="showNewListModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showNewListModal = false">
-          <div class="bg-white dark:bg-prussian-800 rounded-xl shadow-xl p-6 w-full max-w-sm">
-            <h3 class="text-lg font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Add a Store</h3>
-            <input
-              v-model="newStoreName"
-              type="text"
-              placeholder="e.g. Tesco, Costco..."
-              class="input-base w-full mb-4"
-              @keydown.enter="handleCreateNewList"
-            />
-            <div class="flex justify-end gap-2">
-              <button class="btn-secondary" @click="showNewListModal = false">Cancel</button>
-              <button :disabled="!newStoreName.trim()" class="btn-primary" @click="handleCreateNewList">Create</button>
-            </div>
-          </div>
-        </div>
-      </Transition>
-    </Teleport>
+    <KinModalSheet
+      :model-value="showNewListModal"
+      title="Add a Store"
+      @update:model-value="(v) => !v && (showNewListModal = false)"
+    >
+      <KinInput
+        v-model="newStoreName"
+        type="text"
+        placeholder="e.g. Tesco, Costco..."
+        class="mb-4"
+        @keydown.enter="handleCreateNewList"
+      />
+      <div class="flex justify-end gap-2">
+        <KinButton variant="secondary" size="sm" @click="showNewListModal = false">Cancel</KinButton>
+        <KinButton variant="primary" size="sm" :disabled="!newStoreName.trim()" @click="handleCreateNewList">Create</KinButton>
+      </div>
+    </KinModalSheet>
 
     <!-- Recipe Picker Modal (two-step: pick recipe → select ingredients) -->
-    <Teleport to="body">
-      <Transition name="fade">
-        <div v-if="showRecipePicker" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="closeRecipePicker">
-          <div class="bg-white dark:bg-prussian-800 rounded-xl shadow-xl p-6 w-full max-w-md max-h-[80vh] flex flex-col">
-            <!-- Step 1: Pick a recipe -->
-            <template v-if="!selectedRecipeForIngredients">
-              <h3 class="text-lg font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Add from Recipe</h3>
-              <div class="flex-1 overflow-y-auto space-y-1">
-                <button
-                  v-for="recipe in recipeList"
-                  :key="recipe.id"
-                  class="w-full text-left px-4 py-3 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
-                  @click="selectRecipeForIngredients(recipe)"
-                >
-                  <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">{{ recipe.title }}</span>
-                </button>
-                <p v-if="recipeList.length === 0" class="text-sm text-lavender-400 py-4 text-center">No recipes yet</p>
-              </div>
-              <button class="btn-secondary mt-4 w-full" @click="closeRecipePicker">Cancel</button>
-            </template>
-
-            <!-- Step 2: Select ingredients -->
-            <template v-else>
-              <div class="flex items-center gap-2 mb-4">
-                <button
-                  class="p-1 rounded-md text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
-                  title="Back to recipes"
-                  @click="selectedRecipeForIngredients = null"
-                >
-                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                  </svg>
-                </button>
-                <h3 class="text-lg font-bold font-heading text-prussian-500 dark:text-lavender-200">{{ selectedRecipeForIngredients.title }}</h3>
-              </div>
-
-              <!-- Loading -->
-              <div v-if="loadingIngredients" class="flex items-center justify-center py-8">
-                <div class="animate-spin rounded-full h-6 w-6 border-2 border-[#C4975A] border-t-transparent"></div>
-              </div>
-
-              <!-- Ingredient list with checkboxes -->
-              <template v-else>
-                <div class="flex-1 overflow-y-auto mb-4">
-                  <RecipeIngredientPicker
-                    v-model="selectedIngredientIds"
-                    :ingredients="recipeIngredients"
-                    default-select-all
-                  />
-                </div>
-
-                <div class="flex gap-2">
-                  <button class="btn-secondary flex-1" @click="closeRecipePicker">Cancel</button>
-                  <button
-                    class="btn-primary flex-1"
-                    :disabled="selectedIngredientIds.length === 0"
-                    @click="handleAddSelectedIngredients"
-                  >
-                    Add {{ selectedIngredientIds.length }} item{{ selectedIngredientIds.length === 1 ? '' : 's' }}
-                  </button>
-                </div>
-              </template>
-            </template>
-          </div>
+    <KinModalSheet
+      :model-value="showRecipePicker"
+      :title="selectedRecipeForIngredients ? selectedRecipeForIngredients.title : 'Add from Recipe'"
+      @update:model-value="(v) => !v && closeRecipePicker()"
+    >
+      <!-- Step 1: Pick a recipe -->
+      <template v-if="!selectedRecipeForIngredients">
+        <div class="flex-1 overflow-y-auto space-y-1 max-h-[60vh]">
+          <button
+            v-for="recipe in recipeList"
+            :key="recipe.id"
+            class="w-full text-left px-4 py-3 rounded-lg hover:bg-surface-sunken transition-colors"
+            @click="selectRecipeForIngredients(recipe)"
+          >
+            <span class="text-sm font-medium text-ink-primary">{{ recipe.title }}</span>
+          </button>
+          <p v-if="recipeList.length === 0" class="text-sm text-ink-tertiary py-4 text-center">No recipes yet</p>
         </div>
-      </Transition>
-    </Teleport>
+        <KinButton variant="secondary" size="sm" class="mt-4 w-full" @click="closeRecipePicker">Cancel</KinButton>
+      </template>
+
+      <!-- Step 2: Select ingredients -->
+      <template v-else>
+        <div class="flex items-center gap-2 mb-4">
+          <button
+            class="p-1 rounded-md text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken transition-colors"
+            title="Back to recipes"
+            @click="selectedRecipeForIngredients = null"
+          >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Loading -->
+        <div v-if="loadingIngredients" class="flex items-center justify-center py-8">
+          <div class="animate-spin rounded-full h-6 w-6 border-2 border-[#C4975A] border-t-transparent"></div>
+        </div>
+
+        <!-- Ingredient list with checkboxes -->
+        <template v-else>
+          <div class="flex-1 overflow-y-auto mb-4 max-h-[50vh]">
+            <RecipeIngredientPicker
+              v-model="selectedIngredientIds"
+              :ingredients="recipeIngredients"
+              default-select-all
+            />
+          </div>
+
+          <div class="flex gap-2">
+            <KinButton variant="secondary" size="sm" class="flex-1" @click="closeRecipePicker">Cancel</KinButton>
+            <KinButton
+              variant="primary"
+              size="sm"
+              class="flex-1"
+              :disabled="selectedIngredientIds.length === 0"
+              @click="handleAddSelectedIngredients"
+            >
+              Add {{ selectedIngredientIds.length }} item{{ selectedIngredientIds.length === 1 ? '' : 's' }}
+            </KinButton>
+          </div>
+        </template>
+      </template>
+    </KinModalSheet>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { ShoppingCartIcon } from '@heroicons/vue/24/outline'
 import { useShoppingStore } from '@/stores/shopping'
 import { useAuthStore } from '@/stores/auth'
 import { useRecipesStore } from '@/stores/recipes'
@@ -221,6 +222,10 @@ import AddItemInput from '@/components/shopping/AddItemInput.vue'
 import ShoppingListItem from '@/components/shopping/ShoppingListItem.vue'
 import PreShopChecklist from '@/components/shopping/PreShopChecklist.vue'
 import RecipeIngredientPicker from '@/components/food/RecipeIngredientPicker.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
 const shoppingStore = useShoppingStore()
 const authStore = useAuthStore()

@@ -4,13 +4,15 @@
       v-for="action in actions"
       :key="action.path"
       :to="action.path"
-      class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-lavender-50 dark:bg-prussian-700/50 hover:bg-wisteria-50 dark:hover:bg-wisteria-900/20 transition-colors group"
+      class="flex flex-col items-center gap-1.5 p-3 rounded-card bg-surface-raised border border-border-subtle hover:border-accent-lavender-bold/40 hover:shadow-resting transition-all group"
     >
-      <component
-        :is="iconFor(action.icon)"
-        class="w-5 h-5 text-wisteria-500 dark:text-wisteria-400 group-hover:text-wisteria-600 dark:group-hover:text-wisteria-300 transition-colors"
-      />
-      <span class="text-xs font-medium text-prussian-600 dark:text-lavender-300 text-center">
+      <div class="w-8 h-8 rounded-full bg-accent-lavender-soft/50 flex items-center justify-center">
+        <component
+          :is="iconFor(action.icon)"
+          class="w-4 h-4 text-accent-lavender-bold"
+        />
+      </div>
+      <span class="text-xs font-medium text-ink-primary text-center mt-1">
         {{ action.label }}
       </span>
     </RouterLink>

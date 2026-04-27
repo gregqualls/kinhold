@@ -1,36 +1,40 @@
 <template>
   <div class="flex items-center gap-2">
-    <select
-      v-model="selectedUser"
-      class="input-base text-sm py-2 flex-shrink-0 w-32"
-    >
-      <option value="">Select...</option>
-      <option v-for="member in otherMembers" :key="member.id" :value="member.id">
-        {{ member.name }}
-      </option>
-    </select>
+    <div class="flex-shrink-0 w-32">
+      <KinSelect
+        v-model="selectedUser"
+        placeholder="Select..."
+        :options="memberOptions"
+      />
+    </div>
 
-    <input
-      v-model="reason"
-      type="text"
-      placeholder="Kudos for..."
-      class="input-base text-sm py-2 flex-1"
-      @keydown.enter="submit"
-    />
+    <div class="flex-1">
+      <KinInput
+        v-model="reason"
+        type="text"
+        placeholder="Kudos for..."
+        @keydown.enter="submit"
+      />
+    </div>
 
-    <button
+    <KinButton
+      variant="primary"
+      size="sm"
       :disabled="!selectedUser || !reason.trim()"
-      class="btn-primary btn-sm flex-shrink-0"
+      class="flex-shrink-0"
       @click="submit"
     >
       Give Kudos
-    </button>
+    </KinButton>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinSelect from '@/components/design-system/KinSelect.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 
 const props = defineProps({
   members: {
@@ -44,6 +48,10 @@ const authStore = useAuthStore()
 // Filter out the current user so they can't give kudos to themselves
 const otherMembers = computed(() =>
   props.members.filter(m => m.id !== authStore.currentUser?.id)
+)
+
+const memberOptions = computed(() =>
+  otherMembers.value.map((m) => ({ value: m.id, label: m.name }))
 )
 
 const emit = defineEmits(['kudos'])

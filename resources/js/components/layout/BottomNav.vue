@@ -1,7 +1,8 @@
 <template>
+  <div>
   <nav
     ref="navRef"
-    class="md:hidden bg-prussian-500 dark:bg-prussian-900 border-t border-prussian-400/30 dark:border-prussian-700/50 flex justify-around shrink-0 relative"
+    class="bg-prussian-500 dark:bg-prussian-900 border-t border-prussian-400/30 dark:border-prussian-700/50 flex justify-around shrink-0 relative"
     :style="{ paddingBottom: 'max(0px, env(safe-area-inset-bottom))' }"
   >
     <template v-for="(slot, idx) in slots" :key="slot.label">
@@ -85,6 +86,7 @@
       ></div>
     </Transition>
   </Teleport>
+  </div>
 </template>
 
 <script setup>
