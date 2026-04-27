@@ -2,6 +2,10 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-27 — Removed landing page from SPA (#134)
+
+`LandingView.vue` and its five screenshot assets deleted. `/` now redirects to `/login` via a Vue Router redirect; the `meta.isPublic` guard branch (dead code) removed. The existing `requiresGuest` guard on Login already handles authenticated visitors (→ Dashboard) and first-boot (→ Register). Inbound links in PrivacyPolicyView, TermsView, and NotFoundView updated from `to="/"` to `to="/login"`. The server-side email-verification-error redirect in `routes/web.php` updated from `/?verify_error=invalid` to `/login?verify_error=invalid`; minimal `onMounted` handling added to LoginView to surface the error message. README landing-page bullet removed; LAUNCH-PLAN.md marked archival.
+
 ## 2026-04-27 — Dashboard widgets revisited: full Kin treatment
 
 When 6.1 Dashboard shipped earlier, the *shell* (DashboardView, DashboardWidget, DashboardToolbar, WidgetPickerModal) got the Kin treatment but the individual widgets only got mechanical KinSkeleton/KinEmptyState swaps. After every other view caught up, the widgets stuck out as the visually-stale pocket of the app. This pass closes that gap.

@@ -25,7 +25,7 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, string $id, 
     $user = User::findOrFail($id);
 
     if (! hash_equals(sha1($user->getEmailForVerification()), $hash)) {
-        return redirect('/?verify_error=invalid');
+        return redirect('/login?verify_error=invalid');
     }
 
     if (! $user->hasVerifiedEmail()) {

@@ -61,7 +61,6 @@ Turn chores into a game your kids actually want to play.
 - **Parent/Child Roles** — Parents get full control; children see only what's shared with them
 - **Managed Accounts** — Parents can create child accounts without email and switch into them
 - **Google OAuth** — Sign in with Google, or use email/password
-- **Landing Page** — Public homepage at `/` for unauthenticated visitors
 - **Easter Eggs** — Hidden surprises scattered throughout the app. Find them all to unlock secret badges.
 
 ## Screenshots

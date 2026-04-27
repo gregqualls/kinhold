@@ -6,7 +6,6 @@ import LoginView from '@/views/auth/LoginView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
 
 // Public Views
-import LandingView from '@/views/LandingView.vue'
 const PrivacyPolicyView = () => import('@/views/PrivacyPolicyView.vue')
 const TermsView = () => import('@/views/TermsView.vue')
 
@@ -42,7 +41,7 @@ const NotFoundView = () => import('@/views/NotFoundView.vue')
 const DesignSystemView = () => import('@/views/design-system/DesignSystemView.vue')
 
 const routes = [
-  { path: '/', name: 'Landing', component: LandingView, meta: { isPublic: true } },
+  { path: '/', redirect: { name: 'Login' } },
   { path: '/privacy', name: 'Privacy', component: PrivacyPolicyView, meta: { isOpen: true } },
   { path: '/terms', name: 'Terms', component: TermsView, meta: { isOpen: true } },
   { path: '/login', name: 'Login', component: LoginView, meta: { requiresGuest: true } },
@@ -84,12 +83,6 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.meta.isOpen) return next()
-
-  if (to.meta.isPublic) {
-    if (authStore.isAuthenticated) return next({ name: 'Dashboard' })
-    if (authStore.appConfig?.self_hosted) return next({ name: 'Login' })
-    return next()
-  }
 
   if (to.name === 'Login' && authStore.appConfig?.first_boot) {
     return next({ name: 'Register' })
