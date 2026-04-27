@@ -146,8 +146,8 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { reactive, ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import { useNotification } from '@/composables/useNotification'
@@ -158,6 +158,7 @@ import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
 import DemoModal from '@/components/common/DemoModal.vue'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const { isLoading } = storeToRefs(authStore)
 const { error: notificationError } = useNotification()
@@ -179,6 +180,12 @@ const errors = reactive({
   email: '',
   password: '',
   general: '',
+})
+
+onMounted(() => {
+  if (route.query.verify_error === 'invalid') {
+    errors.general = 'Email verification link is invalid or has expired. Please sign in and request a new verification email.'
+  }
 })
 
 const validateForm = () => {

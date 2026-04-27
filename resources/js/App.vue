@@ -126,7 +126,7 @@ provide('easterEggs', easterEggsRef)
 // `isAuthPage` doubles as "chromeless" — no sidebar/topbar/bottomnav wraps these routes.
 // The design system is chromeless by design: it owns its full viewport with its own sidebar.
 const isAuthPage = computed(() => {
-  return ['Login', 'Register', 'Landing', 'Privacy', 'Terms', 'Onboarding', 'DesignSystem'].includes(route.name)
+  return ['Login', 'Register', 'Privacy', 'Terms', 'Onboarding', 'DesignSystem'].includes(route.name)
 })
 
 // Email verification banner
