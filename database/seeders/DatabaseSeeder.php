@@ -202,7 +202,9 @@ class DatabaseSeeder extends Seeder
             DemoVaultSeeder::class,     // vault entries
             DemoChatSeeder::class,      // chat messages
             DemoCalendarSeeder::class,  // featured events + calendar events
-            DemoMealPlanSeeder::class,  // meal presets, restaurants, weekly meal plan
+            DemoRecipeSeeder::class,    // recipes + ingredients (must run before MealPlan)
+            DemoMealPlanSeeder::class,  // meal presets, restaurants, weekly meal plan (links to recipes)
+            DemoShoppingSeeder::class,  // shopping lists + items
         ]);
     }
 }

@@ -21,8 +21,8 @@
       <p
         class="text-sm leading-relaxed pt-0.5 transition-colors"
         :class="completedSteps.has(index)
-          ? 'line-through text-lavender-400 dark:text-lavender-500'
-          : 'text-prussian-500 dark:text-lavender-200'"
+          ? 'line-through text-ink-tertiary'
+          : 'text-ink-primary'"
       >
         {{ step }}
       </p>

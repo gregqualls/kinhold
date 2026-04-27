@@ -50,6 +50,7 @@ class DemoMealPlanSeeder extends Seeder
             'name' => 'Gusto Pizzeria',
             'address' => '123 Elm Street',
             'phone' => '555-0101',
+            'image_url' => 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80',
         ]);
         FamilyRestaurant::create([
             'family_id' => $family->id,

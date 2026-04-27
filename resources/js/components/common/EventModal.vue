@@ -3,8 +3,8 @@
     <form class="space-y-4" @submit.prevent="handleSubmit">
       <!-- Title -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
-          Title <span class="text-red-500">*</span>
+        <label class="block text-sm font-medium text-ink-primary mb-1">
+          Title <span class="text-status-failed">*</span>
         </label>
         <input
           v-model="form.title"
@@ -17,15 +17,15 @@
 
       <!-- All-day toggle (calendar mode only) -->
       <div v-if="mode === 'calendar'" class="flex items-center justify-between">
-        <label class="text-sm font-medium text-prussian-500 dark:text-lavender-300">All-day event</label>
+        <label class="text-sm font-medium text-ink-primary">All-day event</label>
         <ToggleSwitch v-model="form.all_day" />
       </div>
 
       <!-- Date & Time row -->
       <div class="grid gap-3" :class="mode === 'calendar' && !form.all_day ? 'grid-cols-2' : 'grid-cols-1'">
         <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
-            {{ mode === 'calendar' ? 'Start Date' : 'Date' }} <span class="text-red-500">*</span>
+          <label class="block text-sm font-medium text-ink-primary mb-1">
+            {{ mode === 'calendar' ? 'Start Date' : 'Date' }} <span class="text-status-failed">*</span>
           </label>
           <input
             v-model="form.start_date"
@@ -35,7 +35,7 @@
           />
         </div>
         <div v-if="mode === 'calendar' && !form.all_day">
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
+          <label class="block text-sm font-medium text-ink-primary mb-1">
             Start Time
           </label>
           <input
@@ -49,7 +49,7 @@
       <!-- End date/time (calendar mode, non-all-day) -->
       <div v-if="mode === 'calendar' && !form.all_day" class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
+          <label class="block text-sm font-medium text-ink-primary mb-1">
             End Date
           </label>
           <input
@@ -59,7 +59,7 @@
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
+          <label class="block text-sm font-medium text-ink-primary mb-1">
             End Time
           </label>
           <input
@@ -72,8 +72,8 @@
 
       <!-- Time (featured mode only — optional) -->
       <div v-if="mode === 'featured'">
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
-          Time <span class="text-lavender-400 dark:text-lavender-500 text-xs">(optional)</span>
+        <label class="block text-sm font-medium text-ink-primary mb-1">
+          Time <span class="text-ink-tertiary text-xs">(optional)</span>
         </label>
         <input
           v-model="form.event_time"
@@ -84,8 +84,8 @@
 
       <!-- Location (calendar mode only) -->
       <div v-if="mode === 'calendar'">
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
-          Location <span class="text-lavender-400 dark:text-lavender-500 text-xs">(optional)</span>
+        <label class="block text-sm font-medium text-ink-primary mb-1">
+          Location <span class="text-ink-tertiary text-xs">(optional)</span>
         </label>
         <input
           v-model="form.location"
@@ -97,7 +97,7 @@
 
       <!-- Recurrence -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
+        <label class="block text-sm font-medium text-ink-primary mb-1">
           Repeats
         </label>
         <select v-model="form.recurrence" class="input-base">
@@ -110,7 +110,7 @@
 
       <!-- Visibility (calendar mode only) -->
       <div v-if="mode === 'calendar'">
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
+        <label class="block text-sm font-medium text-ink-primary mb-1">
           Who can see this?
         </label>
         <select v-model="form.visibility" class="input-base">
@@ -123,15 +123,15 @@
       <!-- Feature this event toggle (calendar mode) -->
       <div v-if="mode === 'calendar'" class="flex items-center justify-between">
         <div>
-          <label class="text-sm font-medium text-prussian-500 dark:text-lavender-300">Feature this event</label>
-          <p class="text-xs text-lavender-500 dark:text-lavender-400">Show on dashboard with countdown</p>
+          <label class="text-sm font-medium text-ink-primary">Feature this event</label>
+          <p class="text-xs text-ink-tertiary">Show on dashboard with countdown</p>
         </div>
         <ToggleSwitch v-model="form.is_featured" />
       </div>
 
       <!-- Featured scope (when featured is enabled, or in featured mode) -->
       <div v-if="form.is_featured || mode === 'featured'">
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
+        <label class="block text-sm font-medium text-ink-primary mb-1">
           Feature for
         </label>
         <select v-model="form.featured_scope" class="input-base">
@@ -142,8 +142,8 @@
 
       <!-- Description -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">
-          Description <span class="text-lavender-400 dark:text-lavender-500 text-xs">(optional)</span>
+        <label class="block text-sm font-medium text-ink-primary mb-1">
+          Description <span class="text-ink-tertiary text-xs">(optional)</span>
         </label>
         <textarea
           v-model="form.description"
@@ -155,7 +155,7 @@
 
       <!-- Icon picker (featured mode or when featured enabled) -->
       <div v-if="form.is_featured || mode === 'featured'">
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-2">
+        <label class="block text-sm font-medium text-ink-primary mb-2">
           Icon
         </label>
         <IconPicker v-model="form.icon" />
@@ -163,7 +163,7 @@
 
       <!-- Color picker -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-2">
+        <label class="block text-sm font-medium text-ink-primary mb-2">
           Color
         </label>
         <div class="flex flex-wrap gap-2">
@@ -172,7 +172,7 @@
             :key="color.value"
             type="button"
             class="w-8 h-8 rounded-full transition-all"
-            :class="form.color === color.value ? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-prussian-800 scale-110' : 'hover:scale-105'"
+            :class="form.color === color.value ? 'ring-2 ring-offset-2 ring-offset-surface-raised scale-110' : 'hover:scale-105'"
             :style="{ backgroundColor: color.value, ringColor: color.value }"
             :title="color.label"
             @click="form.color = color.value"
@@ -181,19 +181,19 @@
       </div>
 
       <!-- Error -->
-      <p v-if="error" class="text-sm text-red-600 dark:text-red-400">{{ error }}</p>
+      <p v-if="error" class="text-sm text-status-failed">{{ error }}</p>
     </form>
 
     <template #footer>
       <button
-        class="px-4 py-2 text-sm font-medium text-lavender-600 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-[10px] transition-colors"
+        class="px-4 py-2 text-sm font-medium text-ink-secondary hover:bg-surface-sunken rounded-[10px] transition-colors"
         @click="$emit('close')"
       >
         Cancel
       </button>
       <button
         :disabled="!isValid || isSaving"
-        class="px-4 py-2 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-700 rounded-[10px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="px-4 py-2 text-sm font-medium text-white bg-accent-lavender-bold hover:brightness-110 rounded-[10px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         @click="handleSubmit"
       >
         {{ isSaving ? 'Saving...' : (event ? 'Update' : 'Create') }}

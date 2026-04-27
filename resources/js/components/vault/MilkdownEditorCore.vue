@@ -207,11 +207,11 @@ watch(
 
 <style>
 .milkdown-wrapper {
-  @apply rounded-xl border border-lavender-200 dark:border-prussian-600 bg-white dark:bg-prussian-800;
+  @apply rounded-xl border border-border-subtle bg-surface-raised;
 }
 
 .milkdown-wrapper:focus-within {
-  @apply ring-2 ring-wisteria-400 border-wisteria-300;
+  @apply ring-2 ring-accent-lavender-bold border-accent-lavender-bold;
 }
 
 .milkdown-readonly {
@@ -224,20 +224,20 @@ watch(
 
 /* Toolbar */
 .milkdown-toolbar {
-  @apply flex items-center gap-0.5 px-2 py-1.5 border-b border-lavender-200 dark:border-prussian-600 bg-lavender-50/50 dark:bg-prussian-900/30;
+  @apply flex items-center gap-0.5 px-2 py-1.5 border-b border-border-subtle bg-surface-sunken;
 }
 
 .milkdown-toolbar button {
-  @apply w-7 h-7 flex items-center justify-center rounded-md text-lavender-500 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors text-xs;
+  @apply w-7 h-7 flex items-center justify-center rounded-md text-ink-tertiary hover:bg-surface-overlay hover:text-ink-primary transition-colors text-xs;
 }
 
 .milkdown-toolbar-divider {
-  @apply w-px h-4 bg-lavender-200 dark:bg-prussian-600 mx-1;
+  @apply w-px h-4 bg-border-subtle mx-1;
 }
 
 /* Editor */
 .milkdown-editor {
-  @apply px-4 py-3 text-sm text-prussian-500 dark:text-lavender-200 outline-none min-h-[160px];
+  @apply px-4 py-3 text-sm text-ink-primary outline-none min-h-[160px];
 }
 
 .milkdown-readonly .milkdown-editor {
@@ -247,7 +247,7 @@ watch(
 /* Placeholder */
 .milkdown-editor.ProseMirror-empty::before {
   content: attr(data-placeholder);
-  @apply text-lavender-400 dark:text-lavender-500 pointer-events-none float-left h-0;
+  @apply text-ink-tertiary pointer-events-none float-left h-0;
 }
 
 /* Typography */

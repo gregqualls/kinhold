@@ -1,92 +1,120 @@
+<!--
+  FoodCard — image-focused card for recipes / restaurants.
+  Wraps KinPhotoCard with a recipe/restaurant-specific overlay (title + meta + tags).
+  Falls back to a per-card gradient when no image is set.
+-->
 <template>
-  <div
-    class="bg-white dark:bg-[#1C1C20] border border-[#E8E4DF] dark:border-[#2E2E32] rounded-xl overflow-hidden cursor-pointer transition-colors hover:border-[#C4975A]/40"
+  <KinPhotoCard
+    :src="resolvedSrc"
+    :alt="title"
+    aspect="tall"
+    :fallback-gradient="fallbackGradient"
+    :as="as"
+    interactive
+    overlay-size="sm"
     @click="$emit('click')"
   >
-    <!-- Image -->
-    <div class="aspect-[4/3] bg-lavender-100 dark:bg-prussian-700 relative overflow-hidden">
-      <img
-        v-if="imageUrl && !imgError"
-        :src="imageUrl"
-        :alt="title"
-        class="w-full h-full object-cover"
-        @error="imgError = true"
-      />
-      <div v-else class="w-full h-full flex items-center justify-center">
-        <component :is="placeholderIcon" class="w-12 h-12 text-lavender-300 dark:text-prussian-600" />
-      </div>
-
-      <!-- Favorite heart -->
+    <!-- Favorite heart in the top-right -->
+    <template v-if="showFavorite" #actions>
       <button
-        v-if="showFavorite"
-        class="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+        type="button"
+        class="w-9 h-9 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm"
         :class="isFavorite
-          ? 'bg-red-500/90 text-white'
-          : 'bg-black/30 text-white/80 hover:bg-black/50'"
-        aria-label="Toggle favorite"
+          ? 'bg-status-failed/90 text-white hover:bg-status-failed'
+          : 'bg-black/35 text-white/85 hover:bg-black/55'"
+        :aria-label="isFavorite ? 'Remove favorite' : 'Mark as favorite'"
         @click.stop="$emit('toggle-favorite')"
       >
         <HeartIconSolid v-if="isFavorite" class="w-4 h-4" />
         <HeartIcon v-else class="w-4 h-4" />
       </button>
-    </div>
+    </template>
 
-    <!-- Content -->
-    <div class="p-3">
-      <!-- Title -->
-      <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 line-clamp-2 leading-tight">
-        {{ title }}
-      </h3>
-
-      <!-- Meta row -->
-      <div v-if="metaItems.length" class="flex items-center gap-3 mt-2 text-xs text-lavender-500 dark:text-lavender-400">
-        <span
-          v-for="(item, i) in metaItems"
-          :key="i"
-          class="flex items-center gap-1"
+    <!-- Custom overlay: title + meta row + tag chips -->
+    <template #overlay="{ showPhoto }">
+      <div
+        class="space-y-1.5"
+        :class="showPhoto ? 'text-white' : 'text-ink-primary'"
+      >
+        <h3
+          class="text-[15px] font-semibold leading-tight line-clamp-2"
+          :style="showPhoto ? 'text-shadow: 0 1px 3px rgba(0,0,0,0.45);' : ''"
         >
-          <component :is="item.icon" class="w-3.5 h-3.5" :class="item.iconClass || ''" />
-          {{ item.text }}
-        </span>
+          {{ title }}
+        </h3>
+
+        <div
+          v-if="metaItems.length"
+          class="flex items-center gap-3 text-[11px]"
+          :class="showPhoto ? 'text-white/85' : 'text-ink-secondary'"
+          :style="showPhoto ? 'text-shadow: 0 1px 2px rgba(0,0,0,0.40);' : ''"
+        >
+          <span
+            v-for="(item, i) in metaItems"
+            :key="i"
+            class="flex items-center gap-1"
+          >
+            <component :is="item.icon" class="w-3.5 h-3.5" :class="item.iconClass || ''" />
+            {{ item.text }}
+          </span>
+        </div>
+
+        <div v-if="tags.length" class="flex items-center gap-1 flex-wrap">
+          <span
+            v-for="(tag, i) in tags.slice(0, 3)"
+            :key="i"
+            class="px-2 py-0.5 text-[10px] font-medium rounded-full backdrop-blur-sm"
+            :class="showPhoto ? 'bg-white/25 text-white' : 'bg-surface-raised/80 text-ink-secondary border border-border-subtle'"
+          >
+            {{ typeof tag === 'string' ? tag : tag.name }}
+          </span>
+          <span
+            v-if="tags.length > 3"
+            class="text-[10px]"
+            :class="showPhoto ? 'text-white/75' : 'text-ink-tertiary'"
+          >
+            +{{ tags.length - 3 }}
+          </span>
+        </div>
       </div>
-
-      <!-- Tags / pills -->
-      <div v-if="tags.length" class="flex items-center gap-1 mt-2 flex-wrap">
-        <span
-          v-for="(tag, i) in tags.slice(0, 3)"
-          :key="i"
-          class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400"
-        >
-          {{ typeof tag === 'string' ? tag : tag.name }}
-        </span>
-        <span
-          v-if="tags.length > 3"
-          class="text-[10px] text-lavender-400 dark:text-lavender-500"
-        >
-          +{{ tags.length - 3 }}
-        </span>
-      </div>
-    </div>
-  </div>
+    </template>
+  </KinPhotoCard>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { computed } from 'vue'
 import { HeartIcon } from '@heroicons/vue/24/outline'
 import { HeartIcon as HeartIconSolid } from '@heroicons/vue/24/solid'
+import KinPhotoCard from '@/components/design-system/KinPhotoCard.vue'
 
 const props = defineProps({
   title: { type: String, required: true },
+  /**
+   * Image URL. Accepts:
+   *   • Absolute URL (https://… or /images/…)         — used as-is
+   *   • Relative storage path (recipes/abc.jpg)        — prefixed with `/storage/`
+   */
   imageUrl: { type: String, default: null },
-  placeholderIcon: { type: [Object, Function], required: true },
+  /**
+   * Gradient family for the no-image fallback.
+   * One of: iridescent | warm | lavender | peach | mint | sun | cool
+   */
+  fallbackGradient: { type: String, default: 'warm' },
   isFavorite: { type: Boolean, default: false },
   showFavorite: { type: Boolean, default: true },
   metaItems: { type: Array, default: () => [] },
   tags: { type: Array, default: () => [] },
+  as: { type: String, default: 'article' },
 })
 
 defineEmits(['click', 'toggle-favorite'])
 
-const imgError = ref(false)
-watch(() => props.imageUrl, () => { imgError.value = false })
+// Pass-through: absolute URLs (http/https/leading-slash) untouched, anything
+// else gets the `/storage/` prefix the Laravel public-disk symlink exposes.
+const resolvedSrc = computed(() => {
+  const url = props.imageUrl
+  if (!url) return null
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) return url
+  return `/storage/${url}`
+})
 </script>

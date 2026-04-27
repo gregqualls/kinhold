@@ -1,94 +1,55 @@
 <template>
-  <aside
-    class="bg-prussian-500 dark:bg-prussian-900 flex flex-col overflow-hidden rounded-r-2xl transition-all duration-300"
-    :class="isCollapsed ? 'w-[72px]' : 'w-64'"
+  <KinSidebar
+    v-model:collapsed="isCollapsed"
+    :brand="familyName"
+    :items="filteredNavItems"
+    :active-key="activeKey"
+    class="rounded-r-2xl"
   >
-    <!-- Logo/Family Name -->
-    <div class="px-3 py-5" :class="isCollapsed ? 'flex justify-center' : 'px-5'">
-      <div class="flex items-center" :class="isCollapsed ? 'justify-center' : 'gap-3'">
-        <div
-          class="w-9 h-9 rounded-[10px] overflow-hidden cursor-pointer select-none flex-shrink-0"
-          @click="onLogoClick"
-        >
-          <img src="/images/logo-100.png" alt="Kinhold" class="w-full h-full object-cover" />
-        </div>
-        <div v-if="!isCollapsed" class="min-w-0">
-          <h1 class="text-sm font-heading font-bold text-white truncate">{{ familyName }}</h1>
-          <p class="text-[10px] text-wisteria-300 uppercase tracking-wider font-medium">Family Hub</p>
-        </div>
+    <template #brand-icon>
+      <div
+        class="w-7 h-7 rounded-[8px] overflow-hidden cursor-pointer select-none flex-shrink-0"
+        @click="onLogoClick"
+      >
+        <img src="/images/logo-100.png" alt="Kinhold" class="w-full h-full object-cover" />
       </div>
-    </div>
+    </template>
 
-    <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto px-2 py-2 space-y-1" :class="isCollapsed ? 'px-2' : 'px-3'">
-      <RouterLink
-        v-for="item in filteredNavItems"
-        :key="item.name"
-        :to="item.path"
-        class="flex items-center rounded-[12px] text-sm font-medium transition-all duration-150"
-        :class="[
-          isCollapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5',
-          isActive(item.path)
-            ? 'bg-wisteria-400/15 text-wisteria-400'
-            : 'text-lavender-200 hover:bg-prussian-400/40 hover:text-white'
-        ]"
-        :title="isCollapsed ? item.label : undefined"
-      >
-        <component
-          :is="item.icon"
-          class="w-5 h-5 flex-shrink-0"
-          :class="isActive(item.path) ? 'text-wisteria-400' : 'text-lavender-400'"
-        />
-        <span v-if="!isCollapsed">{{ item.label }}</span>
-      </RouterLink>
-    </nav>
-
-    <!-- Collapse Toggle -->
-    <div class="px-2 py-2" :class="isCollapsed ? 'flex justify-center' : 'px-3'">
-      <button
-        class="flex items-center justify-center w-full py-2 rounded-[10px] text-lavender-400 hover:bg-prussian-400/40 hover:text-white transition-colors"
-        :class="isCollapsed ? 'px-0' : 'gap-2 px-3'"
-        :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-        @click="toggleCollapsed"
-      >
-        <ChevronDoubleLeftIcon v-if="!isCollapsed" class="w-4 h-4" />
-        <ChevronDoubleRightIcon v-else class="w-4 h-4" />
-        <span v-if="!isCollapsed" class="text-xs">Collapse</span>
-      </button>
-    </div>
-
-    <!-- User Section -->
-    <div class="p-2 border-t border-prussian-400/20 dark:border-prussian-700/50" :class="isCollapsed ? 'px-2' : 'p-3'">
-      <RouterLink
-        to="/settings"
-        class="flex items-center rounded-[12px] hover:bg-prussian-400/40 transition-colors"
-        :class="isCollapsed ? 'justify-center py-2.5 px-0' : 'gap-3 px-3 py-2.5'"
-        :title="isCollapsed ? currentUser?.name : undefined"
-      >
-        <UserAvatar :user="currentUser" size="sm" class="flex-shrink-0" />
-        <div v-if="!isCollapsed" class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-white truncate">{{ currentUser?.name }}</p>
-          <p class="text-[11px] text-lavender-400 truncate capitalize">{{ currentUser?.family_role || 'member' }}</p>
-        </div>
-      </RouterLink>
-      <button
-        class="flex items-center mt-1 w-full rounded-[12px] text-sm text-lavender-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
-        :class="isCollapsed ? 'justify-center py-2 px-0' : 'gap-3 px-3 py-2'"
-        :title="isCollapsed ? 'Sign Out' : undefined"
-        @click="handleLogout"
-      >
-        <ArrowRightOnRectangleIcon class="w-5 h-5 flex-shrink-0" />
-        <span v-if="!isCollapsed">Sign Out</span>
-      </button>
-    </div>
-  </aside>
+    <template #user="{ collapsed }">
+      <div class="w-full flex flex-col gap-1">
+        <RouterLink
+          to="/settings"
+          class="flex items-center rounded-[12px] hover:bg-surface-sunken transition-colors"
+          :class="collapsed ? 'justify-center py-2 px-0' : 'gap-3 px-2 py-2'"
+          :title="collapsed ? currentUser?.name : undefined"
+        >
+          <UserAvatar :user="currentUser" size="sm" />
+          <div v-if="!collapsed" class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-ink-primary truncate">{{ currentUser?.name }}</p>
+            <p class="text-[11px] text-ink-tertiary truncate capitalize">{{ currentUser?.family_role || 'member' }}</p>
+          </div>
+        </RouterLink>
+        <button
+          type="button"
+          class="flex items-center w-full rounded-[12px] text-sm text-ink-tertiary hover:bg-status-failed/10 hover:text-status-failed transition-colors"
+          :class="collapsed ? 'justify-center py-2 px-0' : 'gap-3 px-2 py-2'"
+          :title="collapsed ? 'Sign Out' : undefined"
+          @click="handleLogout"
+        >
+          <ArrowRightOnRectangleIcon class="w-5 h-5 flex-shrink-0" />
+          <span v-if="!collapsed">Sign Out</span>
+        </button>
+      </div>
+    </template>
+  </KinSidebar>
 </template>
 
 <script setup>
-import { computed, ref, inject } from 'vue'
+import { computed, ref, inject, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
+import KinSidebar from '@/components/design-system/KinSidebar.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
 import {
   HomeIcon,
@@ -102,8 +63,6 @@ import {
   ShieldCheckIcon,
   FireIcon,
   ArrowRightOnRectangleIcon,
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -111,13 +70,11 @@ const router = useRouter()
 const authStore = useAuthStore()
 const { family, currentUser, enabledModules } = storeToRefs(authStore)
 
-// Collapse state with localStorage persistence
 const isCollapsed = ref(localStorage.getItem('kinhold-sidebar-collapsed') === 'true')
 
-const toggleCollapsed = () => {
-  isCollapsed.value = !isCollapsed.value
-  localStorage.setItem('kinhold-sidebar-collapsed', isCollapsed.value.toString())
-}
+watch(isCollapsed, (v) => {
+  localStorage.setItem('kinhold-sidebar-collapsed', v.toString())
+})
 
 const handleLogout = async () => {
   await authStore.logout()
@@ -132,31 +89,29 @@ const onLogoClick = () => {
 }
 
 const navItems = [
-  { label: 'Dashboard', path: '/dashboard', icon: HomeIcon, name: 'Dashboard', module: null },
-  { label: 'Assistant', path: '/chat', icon: CpuChipIcon, name: 'Chat', module: 'chat' },
-  { label: 'Calendar', path: '/calendar', icon: CalendarIcon, name: 'Calendar', module: 'calendar' },
-  { label: 'Tasks', path: '/tasks', icon: CheckCircleIcon, name: 'Tasks', module: 'tasks' },
-  { label: 'Meals', path: '/food', icon: FireIcon, name: 'Food', module: 'food' },
-  { label: 'Shopping', path: '/shopping', icon: ClipboardDocumentListIcon, name: 'Shopping', module: 'food' },
-  { label: 'Points', path: '/points', icon: TrophyIcon, name: 'Points', module: 'points' },
-  { label: 'Rewards', path: '/points/rewards', icon: GiftIcon, name: 'Rewards', module: 'points' },
-  { label: 'Badges', path: '/badges', icon: ShieldCheckIcon, name: 'Badges', module: 'badges' },
-  { label: 'Vault', path: '/vault', icon: LockClosedIcon, name: 'Vault', module: 'vault' },
+  { key: 'dashboard', label: 'Dashboard', to: '/dashboard', icon: HomeIcon, module: null },
+  { key: 'chat',      label: 'Assistant', to: '/chat',      icon: CpuChipIcon, module: 'chat' },
+  { key: 'calendar',  label: 'Calendar',  to: '/calendar',  icon: CalendarIcon, module: 'calendar' },
+  { key: 'tasks',     label: 'Tasks',     to: '/tasks',     icon: CheckCircleIcon, module: 'tasks' },
+  { key: 'food',      label: 'Meals',     to: '/food',      icon: FireIcon, module: 'food' },
+  { key: 'shopping',  label: 'Shopping',  to: '/shopping',  icon: ClipboardDocumentListIcon, module: 'food' },
+  { key: 'points',    label: 'Points',    to: '/points',    icon: TrophyIcon, module: 'points' },
+  { key: 'rewards',   label: 'Rewards',   to: '/points/rewards', icon: GiftIcon, module: 'points' },
+  { key: 'badges',    label: 'Badges',    to: '/badges',    icon: ShieldCheckIcon, module: 'badges' },
+  { key: 'vault',     label: 'Vault',     to: '/vault',     icon: LockClosedIcon, module: 'vault' },
 ]
 
-const filteredNavItems = computed(() => {
-  return navItems.filter(item => {
-    if (!item.module) return true
-    return enabledModules.value[item.module] !== false
-  })
-})
+const filteredNavItems = computed(() =>
+  navItems.filter(item => !item.module || enabledModules.value[item.module] !== false)
+)
 
-const isActive = (path) => {
-  if (path === '/') return route.path === '/'
-  // Exact match takes priority over startsWith to avoid parent routes
-  // highlighting when a child route is active (e.g. /points vs /points/rewards)
-  const exactMatch = filteredNavItems.value.find(item => item.path === route.path)
-  if (exactMatch) return path === route.path
-  return route.path.startsWith(path)
-}
+const activeKey = computed(() => {
+  const exact = filteredNavItems.value.find(item => item.to === route.path)
+  if (exact) return exact.key
+  // longest-prefix wins so /points/rewards beats /points
+  const prefix = filteredNavItems.value
+    .filter(item => route.path.startsWith(item.to))
+    .sort((a, b) => b.to.length - a.to.length)[0]
+  return prefix?.key ?? null
+})
 </script>

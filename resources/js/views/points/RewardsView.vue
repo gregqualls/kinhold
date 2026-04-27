@@ -1,20 +1,23 @@
 <template>
   <div class="p-4 md:p-6 max-w-3xl">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-6 gap-3 flex-wrap">
       <div class="flex items-center gap-3">
-        <RouterLink to="/points" class="btn-ghost btn-sm rounded-lg">
+        <KinButton variant="ghost" size="sm" icon-only aria-label="Back to Points" to="/points">
           <ChevronLeftIcon class="w-5 h-5" />
-        </RouterLink>
-        <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Rewards</h1>
+        </KinButton>
+        <h1 class="text-2xl font-bold font-heading text-ink-primary">Rewards</h1>
       </div>
       <div class="flex items-center gap-3">
-        <span class="text-sm font-bold font-mono text-wisteria-600 dark:text-wisteria-400">
+        <span class="text-sm font-bold font-mono text-accent-lavender-bold">
           {{ pointsStore.bank }} pts
         </span>
-        <button v-if="isParent && !showForm" class="btn-primary btn-sm" @click="openCreateForm">
-          + Add Reward
-        </button>
+        <KinButton v-if="isParent && !showForm" variant="primary" size="sm" @click="openCreateForm">
+          <template #leading>
+            <PlusIcon class="w-4 h-4" />
+          </template>
+          Add Reward
+        </KinButton>
       </div>
     </div>
 
@@ -31,35 +34,34 @@
     <!-- Search & Filter Toolbar -->
     <div v-if="pointsStore.rewards.length > 0" class="mb-4 space-y-3">
       <!-- Search -->
-      <input
+      <KinSearch
         v-model="searchQuery"
-        type="text"
-        class="input-base w-full"
         placeholder="Search rewards..."
         aria-label="Search rewards"
       />
 
       <!-- Filter chips + Sort -->
       <div class="flex flex-wrap items-center gap-2">
-        <button
+        <KinChip
           v-for="f in filterOptions"
           :key="f.value"
-          class="px-3 py-1 rounded-full text-xs font-medium transition-colors"
-          :class="activeFilter === f.value
-            ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/40 dark:text-wisteria-300 ring-1 ring-wisteria-300 dark:ring-wisteria-600'
-            : 'bg-lavender-100 text-lavender-600 dark:bg-prussian-700 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+          variant="filter"
+          size="sm"
+          color="lavender"
+          :active="activeFilter === f.value"
           @click="activeFilter = f.value"
         >
           {{ f.label }}
-        </button>
+        </KinChip>
 
-        <select v-model="sortBy" class="input-base ml-auto text-xs py-1 w-auto" aria-label="Sort rewards">
-          <option value="sort_order">Default</option>
-          <option value="price_asc">Price: Low → High</option>
-          <option value="price_desc">Price: High → Low</option>
-          <option value="name">Name A-Z</option>
-          <option value="newest">Newest</option>
-        </select>
+        <div class="ml-auto w-44">
+          <KinSelect
+            v-model="sortBy"
+            size="sm"
+            :options="sortOptions"
+            aria-label="Sort rewards"
+          />
+        </div>
       </div>
     </div>
 
@@ -89,15 +91,26 @@
       @bid-placed="handleBidPlaced"
     />
 
-    <!-- Empty state -->
-    <div v-if="filteredRewards.length === 0 && pointsStore.rewards.length > 0" class="card p-8 text-center">
-      <p class="text-lavender-500 dark:text-lavender-400">No rewards match your filters.</p>
-    </div>
+    <!-- Empty states -->
+    <KinEmptyState
+      v-if="filteredRewards.length === 0 && pointsStore.rewards.length > 0"
+      :icon="MagnifyingGlassIcon"
+      title="No rewards match your filters"
+      description="Try adjusting your search or filters."
+      accent-color="lavender"
+      size="md"
+      class="mt-6"
+    />
 
-    <div v-if="pointsStore.rewards.length === 0 && !showForm" class="card p-8 text-center">
-      <p class="text-lavender-500 dark:text-lavender-400">No rewards yet.</p>
-      <p v-if="isParent" class="text-sm text-lavender-400 mt-1">Create some rewards for your family!</p>
-    </div>
+    <KinEmptyState
+      v-if="pointsStore.rewards.length === 0 && !showForm"
+      :icon="GiftIcon"
+      title="No rewards yet"
+      :description="isParent ? 'Create some rewards for your family!' : 'Check back soon — rewards are coming.'"
+      accent-color="peach"
+      size="md"
+      class="mt-6"
+    />
   </div>
 </template>
 
@@ -109,8 +122,13 @@ import { useAuthStore } from '@/stores/auth'
 import RewardCard from '@/components/points/RewardCard.vue'
 import RewardForm from '@/components/points/RewardForm.vue'
 import BidModal from '@/components/points/BidModal.vue'
-import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
+import { ChevronLeftIcon, PlusIcon, GiftIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import { useNotification } from '@/composables/useNotification'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
+import KinSearch from '@/components/design-system/KinSearch.vue'
+import KinSelect from '@/components/design-system/KinSelect.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
 const pointsStore = usePointsStore()
 const authStore = useAuthStore()
@@ -218,6 +236,14 @@ const filterOptions = [
   { label: 'All', value: 'all' },
   { label: 'Affordable', value: 'affordable' },
   { label: 'Available', value: 'available' },
+]
+
+const sortOptions = [
+  { value: 'sort_order', label: 'Default' },
+  { value: 'price_asc',  label: 'Price: Low → High' },
+  { value: 'price_desc', label: 'Price: High → Low' },
+  { value: 'name',       label: 'Name A–Z' },
+  { value: 'newest',     label: 'Newest' },
 ]
 
 const filteredRewards = computed(() => {

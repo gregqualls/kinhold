@@ -1,6 +1,6 @@
 <template>
   <div
-    class="animate-spin rounded-full border-2 border-lavender-300 dark:border-prussian-600 flex-shrink-0"
+    class="animate-spin rounded-full border-2 border-border-subtle flex-shrink-0"
     :class="[sizeClasses, colorClasses]"
     :style="{ borderTopColor: `var(--spinner-color)` }"
   ></div>
@@ -32,9 +32,9 @@ const sizeClasses = computed(() => {
 
 const colorClasses = computed(() => {
   const colors = {
-    primary: 'border-wisteria-200 dark:border-wisteria-700',
+    primary: 'border-accent-lavender-soft',
     white: 'border-white/30',
-    gray: 'border-lavender-300 dark:border-prussian-600',
+    gray: 'border-border-subtle',
   }
   return colors[props.color] || colors.primary
 })

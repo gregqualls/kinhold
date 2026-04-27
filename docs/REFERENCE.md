@@ -1,0 +1,208 @@
+# Kinhold — Technical Reference
+
+> Detailed module state, database schema, API routes, and file layout.
+> CLAUDE.md is the slim briefing; this is the deep dive. Read this when you need specifics.
+
+## Modules — Current State
+
+### 1. Authentication (MVP — SCAFFOLDED)
+- Email/password with Sanctum
+- Family creation on registration OR join via invite code
+- Roles: `parent` (full access) and `child` (restricted)
+- Google OAuth login via Laravel Socialite (redirect → callback → Sanctum token → SPA pickup)
+- Email verification sent on registration; dismissable banner for unverified users; existing users grandfathered
+- Google account linking from Settings or on Google sign-in attempt (password confirmation)
+- **Future:** passkeys, 2FA
+
+### 2. Family Calendar (IMPLEMENTED — Unified Events)
+- **Unified event model:** `FeaturedEvent` and `FamilyEvent` merged into single `family_events` table. Any calendar event can optionally be "featured" on the dashboard (personal or family scope).
+- **Manual events:** Full CRUD from calendar UI. "Add Event" button, click-a-day to pre-fill, click-to-edit. Title, date/time, all-day, end time, location, color.
+- **Recurrence:** Weekly/monthly/yearly events expand into all occurrences within the view's date range via `occurrencesInRange()`.
+- **Visibility:** `visible` (full details), `busy` (others see "Busy"), or `private` (creator only). Enforced at API + MCP.
+- **Featured scope:** `personal` (just creator's dashboard) or `family` (everyone's dashboard). Parent-only to set.
+- **Countdown banner:** Dismiss persists in localStorage, auto-hides past events, parent management actions.
+- **Source styling:** Tasks = dashed amber borders, manual = solid colored, Google/ICS = calendar connection colors.
+- **View mode persistence:** Month/week/day selection saved in localStorage.
+- Google Calendar + ICS aggregation works alongside manual events. Tasks with due dates appear as all-day events.
+- **Note:** `FeaturedEvent` model/table still exists but is deprecated — all new code uses `FamilyEvent`.
+- **Future:** Two-way Google sync, more providers (Outlook, iCloud), drop `featured_events` table.
+
+### 3. Tasks & To-Dos (MVP — SCAFFOLDED + GAMIFICATION)
+- Task lists (e.g., "Grocery", "House Projects", "School")
+- Tasks with: title, description, assignee, due date, priority (low/medium/high), points
+- Family tasks (anyone can complete) vs personal tasks
+- Recurring tasks via RRULE (daily, weekly+day, monthly+date) — artisan command generates instances 7 days ahead
+- Points awarded on completion, reversed on uncomplete
+- **Future:** Categories, kanban boards, subtasks, dependencies
+
+### 4. Family Vault (IMPLEMENTED — Markdown + Sensitive Fields)
+- **WYSIWYG markdown editor** (Milkdown) for entry content — headings, bold, italic, lists, code, blockquotes
+- Optional **sensitive fields** section for passwords, SSNs, account numbers (masked, tap to reveal, auto-clear clipboard)
+- Custom categories (CRUD) with 10 icon options. Defaults: Medical, Financial, Insurance, Legal, Education, Personal
+- **Kids personal vault:** `is_personal` flag — children can create/edit/delete their own entries. Parents see everything.
+- Document uploads (PDFs, images) with download
+- **Permissions model:** Parent/child base roles + per-item overrides (view/edit). Share UI with family member dropdown.
+- **Vault playbooks:** 5 `.md` skill files in `playbooks/vault/` for AI-guided data entry (house manual, medical, vehicle, school, emergency). Community-contributable via PR.
+- Data format: `encrypted_data` stores `{ body: "markdown", sensitive_fields: { key: value } }`. Legacy flat key/value format has fallback rendering.
+- **Future:** RAG search tool, version history, audit log
+
+### 5. AI Assistant (IMPLEMENTED — Agent Architecture)
+- Natural language interface to all 20 MCP tools via Claude's tool_use API
+- `AgentService` orchestrates: user message → Claude decides tool calls → `ToolRegistry` executes → results fed back → loop until text response (max 10 iterations)
+- **Hallucination guard:** Server-side `claimsAction()` check rejects responses claiming actions taken without tool calls. Logs warning and forces retry.
+- Safety guardrails: tool-only scope, no off-topic, no prompt injection, no physical tasks. Asks clarifying questions for incomplete requests.
+- Markdown rendering in assistant responses (marked + DOMPurify for XSS safety)
+- Only Anthropic supported for agent mode (tool_use is provider-specific). BYOK + platform key modes both work.
+- **Future:** RAG for vault data, proactive reminders, multi-step workflows
+
+### 6. MCP Server (IMPLEMENTED — Laravel-Native)
+- Laravel-native via `laravel/mcp` package — runs at `/mcp` endpoint, no separate process
+- 20 consolidated tools (action-based) covering all modules
+- Authenticates with Sanctum bearer token
+- Direct model/service access (no HTTP round-trips)
+- `ScopesToFamily` trait scopes all queries to authenticated user's family
+- Parent-only write actions enforced at tool level
+- **Legacy:** `mcp-server/` TypeScript directory still exists but is superseded
+- **Future:** Webhooks, real-time sync
+
+### 7. Points & Gamification (IMPLEMENTED)
+- **Ledger-based:** Point Bank = SUM(all transactions). Never mutate a balance — append transactions.
+- Transaction types: task_completion, task_reversal, kudos, deduction, redemption, adjustment
+- Kudos: any family member can give +1 pt with a reason
+- Deductions: parents only, negative points with reason
+- **Leaderboard:** Ranked by positive points within configurable period (daily/weekly/monthly). Resets each period. Does NOT affect the bank.
+- **Rewards store:** Parent-created prizes with marketplace features: limited stock, expiration dates, visibility controls (everyone/parent-only/child-only/specific people/age range), search/filter/sort. Reusable RewardForm component.
+- **Auction system:** Two modes — timed (auto-resolve via `rewards:resolve-auctions` command) and parent-called. Points held on bid, released when outbid/cancelled, converted to purchase on win. One bid per user per auction. `AuctionService` with DB transaction locking.
+- **Activity feed:** Family-wide scrollable feed showing all point events
+- **Feature toggles:** Parents can enable/disable points and badges modules in Settings
+
+### 8. Badges (IMPLEMENTED)
+- Steam-style achievements — purely for fun
+- Auto-triggered by thresholds: points_earned, tasks_completed, task_streak, kudos_received/given, rewards_purchased, login_streak
+- Custom badges: manually awarded by parents
+- Hidden badges: show as "???" until earned
+- Hexagonal badge icons with accent color glow, 20 preset SVG icons
+- 10 preset badges seeded per family + parents can create more
+- BadgeService checks thresholds after every point/task event
+
+### 9. Food & Meal Planning (IN PROGRESS — Steps 1–7 done)
+- Recipe backend + module gating (Step 1, Issue #148)
+- Recipe import service: URL scraping + photo AI (Step 2, Issue #149)
+- Recipe frontend UI (Step 3, PR #158)
+- Shopping backend + product catalog (Step 4, PR #159)
+- Shopping frontend + UX (Step 5, PR #162)
+- Meal plan backend live pipeline (Step 6, PR #165)
+- Meal plan frontend: weekly calendar, restaurants tab, settings (Step 7, Session 35)
+- **Step 8 remaining:** MCP tools for food/meals, AI integrations (Issue #65+)
+- See `docs/FOOD-FEATURES-SPEC.md` and `docs/FOOD-IMPLEMENTATION-PLAN.md`
+
+## Database Schema (Key Tables)
+
+- `families` — id, name, slug, invite_code, settings (JSON)
+- `users` — id, family_id, name, email, password, family_role (enum), avatar, avatar_color, google_avatar, date_of_birth, timezone
+- `tasks` — id, family_id, created_by, assigned_to, title, description, due_date, completed_at, priority (enum), is_family_task, points, recurrence_rule, recurrence_end, parent_task_id
+- `vault_categories` — id, family_id, name, slug, icon, description
+- `vault_entries` — id, family_id, vault_category_id, created_by, title, encrypted_data (encrypted JSON), notes, metadata (JSON)
+- `vault_permissions` — id, vault_entry_id, user_id, permission_level (enum: view/edit)
+- `documents` — id, documentable_type/id (polymorphic), uploaded_by, original_filename, stored_filename, mime_type, size, disk, path, encrypted
+- `calendar_connections` — id, user_id, provider, access_token (encrypted), refresh_token (encrypted), calendar_id, color, is_active
+- `chat_messages` — id, user_id, family_id, message, role (user/assistant)
+- `point_transactions` — id, family_id, user_id, type (enum), points (int), description, source_type/id (polymorphic), awarded_by
+- `rewards` — id, family_id, created_by, title, description, point_cost, icon, quantity, quantity_purchased, expires_at, visibility (enum), visible_to (JSON), min_age, max_age, reward_type (enum: standard/auction), min_bid, bid_start_at, bid_end_at, is_active, sort_order
+- `reward_purchases` — id, family_id, reward_id, user_id, points_spent, purchased_at
+- `reward_bids` — id (UUID), family_id, reward_id, user_id, bid_amount, held_points, is_winning, resolved_at (unique: reward_id+user_id)
+- `badges` — id, family_id, created_by, name, description, icon, color, trigger_type, trigger_threshold, is_hidden, is_active
+- `user_badges` — id, user_id, badge_id, earned_at, awarded_by (unique: user_id+badge_id)
+
+## API Route Map
+
+All routes prefixed with `/api/v1/`. Auth routes are public; everything else requires Sanctum auth.
+
+- **Auth:** `POST /register`, `POST /login`, `POST /logout`, `GET /user`
+- **Tasks:** CRUD on `/tasks` and `/task-lists`, plus `PATCH /tasks/{id}/toggle`
+- **Vault:** CRUD on `/vault/entries` and `/vault/categories`, permissions at `/vault/entries/{id}/permissions`, documents at `/vault/entries/{id}/documents`
+- **Calendar:** `GET /calendar/events`, `GET /calendar/connections`, `POST /calendar/connect`, `POST /calendar/sync`
+- **Family:** `GET /family`, `GET /family/members`, `POST /family/invite`, `PUT /family/settings`
+- **Chat:** `POST /chat`, `GET /chat/history`
+- **Settings:** `GET /settings`, `PUT /settings`
+- **Points:** `GET /points/bank`, `GET /points/leaderboard`, `GET /points/feed`, `POST /points/kudos`, `POST /points/deduct`
+- **Rewards:** CRUD on `/rewards`, `POST /rewards/{id}/purchase`, `GET /rewards/purchases`
+- **Badges:** CRUD on `/badges`, `POST /badges/{id}/award`, `DELETE /badges/{id}/revoke/{user}`, `GET /badges/earned`
+- **Config:** `GET /config` (public, pre-auth service detection)
+
+## File Structure (Key Directories)
+
+```
+kinhold/
+├── app/
+│   ├── Http/Controllers/Api/V1/   # Auth, Task, TaskList, Vault, Calendar, Chat, Family, Settings, Points, Rewards, Badges
+│   ├── Http/Requests/             # Form request validation (Auth/, Task/, Vault/)
+│   ├── Http/Resources/            # API response transformers
+│   ├── Models/                    # Eloquent models (incl. PointTransaction, Reward, RewardPurchase, Badge)
+│   ├── Services/                  # Business logic (GoogleCalendar, VaultEncryption, Agent, Points, Badge)
+│   ├── Policies/                  # Authorization (Task, TaskList, VaultEntry, Family, Badge, Tag, Reward, FeaturedEvent)
+│   ├── Console/Commands/          # Artisan (GenerateRecurringTasks, rewards:resolve-auctions)
+│   ├── Enums/                     # FamilyRole, TaskPriority, PermissionLevel, PointTransactionType, BadgeTriggerType
+│   └── Mcp/                       # Laravel-native MCP server (Servers/, Tools/, Tools/Concerns/)
+├── database/migrations/           # Timestamped migrations
+├── resources/js/
+│   ├── components/                # Vue components (layout/, common/, calendar/, tasks/, vault/, chat/, points/, badges/)
+│   ├── views/                     # Page-level components (auth/, dashboard/, calendar/, tasks/, vault/, chat/, settings/, points/, badges/)
+│   ├── stores/                    # Pinia stores (auth, tasks, vault, calendar, chat, points, badges)
+│   ├── services/                  # API client (axios)
+│   ├── composables/               # useNotification, useFamilyColors, useDarkMode
+│   └── router/                    # Vue Router config
+├── routes/ai.php                  # MCP route registration (/mcp endpoint)
+├── docker/                        # Nginx, PHP config, entrypoint
+├── docs/                          # Architecture, roadmap, conventions, this file
+└── .upsun/                        # Production deployment config
+```
+
+## Dark Mode Architecture
+
+- `darkMode: 'class'` in Tailwind config — `<html class="dark">` toggles it
+- `useDarkMode` composable handles toggling + localStorage persistence
+- Toggle currently lives in Settings > Appearance only — needs TopBar/mobile toggle
+- CSS architecture: dark mode defaults for component classes (`.card`, `.input-base`, `.btn-*`) live in `@layer components` in `app.css`. Explicit `dark:` Tailwind utilities override these when needed. **Do NOT put dark overrides outside `@layer`** — they will beat Tailwind utilities due to CSS cascade rules.
+- If dark mode appears visually broken, restart the Vite dev server first — stale Vite processes won't generate custom color utilities.
+
+## Known Issues
+
+- `CalendarEventResource` receives raw arrays (from Google API), not Eloquent models — may need adjustment
+- Vault route conflict possible: `/vault/entry/:id` vs `/vault/:categorySlug`
+- Google Calendar OAuth flow needs real credentials from Google Cloud Console
+- AI Assistant needs `ANTHROPIC_API_KEY` in `.env`
+- VaultEncryptionService uses simple encrypt/decrypt — verify round-trip on first real entry
+- Vite dev server can go stale with high CPU — kill and restart if CSS isn't generating correctly
+
+## Local Development Setup
+
+**Preferred: Native (Homebrew on Mac)**
+```bash
+brew install php@8.3 composer postgresql@16 redis
+brew services start postgresql@16
+brew services start redis
+createdb kinhold
+cp .env.example .env
+# Edit .env: DB_HOST=127.0.0.1, DB_DATABASE=kinhold, DB_USERNAME=<mac-username>, DB_PASSWORD=
+composer install && npm install
+php artisan key:generate
+php artisan migrate && php artisan db:seed
+# Tab 1: npm run dev    Tab 2: php artisan serve
+# Open http://localhost:8000
+```
+
+**Alternative: Docker**
+```bash
+chmod +x setup.sh && ./setup.sh
+```
+
+## Deployment (Upsun)
+
+- Repo: https://github.com/gregqualls/kinhold (Greg owns; Upsun auto-deploys from `main`)
+- Project ID: `2rozcvqjtjdta` (Terra Nova org)
+- Domain: kinhold.app via Cloudflare; SSL automatic
+- Env vars (APP_KEY, DB, Redis, Google OAuth, Anthropic key) set on Upsun, never in repo
+- PRs auto-create preview environments
+- **Never use `upsun push`** — just push to GitHub
+- Forks: connect own Upsun project, set own env vars, `git pull upstream main` for updates

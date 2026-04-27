@@ -6,12 +6,12 @@
         class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
         @click.self="$emit('close')"
       >
-        <div class="bg-white dark:bg-prussian-800 rounded-xl shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col">
+        <div class="bg-surface-raised rounded-xl shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col">
           <!-- Header -->
-          <div class="flex items-center justify-between px-6 pt-5 pb-3 border-b border-lavender-200 dark:border-prussian-700">
-            <h3 class="text-lg font-bold font-heading text-prussian-500 dark:text-lavender-200">Add to Shopping List</h3>
+          <div class="flex items-center justify-between px-6 pt-5 pb-3 border-b border-border-subtle">
+            <h3 class="text-lg font-bold font-heading text-ink-primary">Add to Shopping List</h3>
             <button
-              class="p-1 rounded text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors"
+              class="p-1 rounded text-ink-tertiary hover:text-ink-primary transition-colors"
               aria-label="Close"
               @click="$emit('close')"
             >
@@ -20,10 +20,10 @@
           </div>
 
           <!-- Controls -->
-          <div class="px-6 pt-4 pb-3 border-b border-lavender-200 dark:border-prussian-700 space-y-4">
+          <div class="px-6 pt-4 pb-3 border-b border-border-subtle space-y-4">
             <!-- Days picker -->
             <div>
-              <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-2 uppercase tracking-wide">
+              <label class="block text-xs font-medium text-ink-tertiary mb-2 uppercase tracking-wide">
                 Shop for the next
               </label>
               <div class="flex flex-wrap gap-2">
@@ -33,26 +33,26 @@
                   class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
                   :class="days === opt.value
                     ? 'bg-[#C4975A] text-white'
-                    : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+                    : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
                   @click="days = opt.value"
                 >
                   {{ opt.label }}
                 </button>
               </div>
-              <p v-if="rangeLabel" class="text-xs text-lavender-400 dark:text-lavender-500 mt-2">
+              <p v-if="rangeLabel" class="text-xs text-ink-tertiary mt-2">
                 {{ rangeLabel }}
               </p>
             </div>
 
             <!-- Shopping list selector -->
             <div>
-              <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-2 uppercase tracking-wide">
+              <label class="block text-xs font-medium text-ink-tertiary mb-2 uppercase tracking-wide">
                 Add to list
               </label>
               <div class="flex items-center gap-2">
                 <select
                   v-model="targetListId"
-                  class="flex-1 text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+                  class="flex-1 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
                 >
                   <option v-if="lists.length === 0" :value="null">Auto-create from meal plan</option>
                   <option
@@ -71,7 +71,7 @@
                   + New list
                 </button>
               </div>
-              <p v-if="lists.length === 0 && !isCreatingList" class="text-[11px] text-lavender-400 dark:text-lavender-500 mt-1.5">
+              <p v-if="lists.length === 0 && !isCreatingList" class="text-[11px] text-ink-tertiary mt-1.5">
                 No shopping lists yet — items will land in a new "{{ defaultListName }}" list.
               </p>
 
@@ -82,7 +82,7 @@
                   v-model="newListName"
                   type="text"
                   placeholder="e.g. Trader Joe's"
-                  class="flex-1 text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A]"
+                  class="flex-1 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A]"
                   @keydown.enter.prevent="createList"
                   @keydown.escape="cancelCreateList"
                 />
@@ -93,7 +93,7 @@
                 >
                   Create
                 </button>
-                <button class="text-xs text-lavender-500" @click="cancelCreateList">Cancel</button>
+                <button class="text-xs text-ink-tertiary" @click="cancelCreateList">Cancel</button>
               </div>
             </div>
           </div>
@@ -105,10 +105,10 @@
             </div>
 
             <div v-else-if="entries.length === 0" class="py-8 text-center">
-              <p class="text-sm text-lavender-500 dark:text-lavender-400">
+              <p class="text-sm text-ink-tertiary">
                 No recipes scheduled in this range.
               </p>
-              <p class="text-xs text-lavender-400 dark:text-lavender-500 mt-1">
+              <p class="text-xs text-ink-tertiary mt-1">
                 Add some meals to your plan or extend the range.
               </p>
             </div>
@@ -117,7 +117,7 @@
               <div
                 v-for="entry in entries"
                 :key="entry.entry_id"
-                class="border border-lavender-200 dark:border-prussian-700 rounded-lg p-3"
+                class="border border-border-subtle rounded-lg p-3"
               >
                 <RecipeIngredientPicker
                   v-model="selectionsByEntry[entry.entry_id]"
@@ -132,8 +132,8 @@
           </div>
 
           <!-- Footer -->
-          <div class="px-6 py-4 border-t border-lavender-200 dark:border-prussian-700">
-            <div class="flex items-center justify-between mb-3 text-xs text-lavender-500 dark:text-lavender-400">
+          <div class="px-6 py-4 border-t border-border-subtle">
+            <div class="flex items-center justify-between mb-3 text-xs text-ink-tertiary">
               <span>{{ totalSelected }} item{{ totalSelected === 1 ? '' : 's' }} from {{ entriesWithSelection }} recipe{{ entriesWithSelection === 1 ? '' : 's' }}</span>
               <button
                 v-if="entries.length"
@@ -144,14 +144,16 @@
               </button>
             </div>
             <div class="flex gap-2">
-              <button class="btn-secondary flex-1" @click="$emit('close')">Cancel</button>
-              <button
-                class="btn-primary flex-1"
+              <KinButton variant="secondary" class="flex-1" @click="$emit('close')">Cancel</KinButton>
+              <KinButton
+                variant="primary"
+                class="flex-1"
+                :loading="isSaving"
                 :disabled="totalSelected === 0 || isSaving"
                 @click="handleAdd"
               >
                 {{ isSaving ? 'Adding…' : `Add ${totalSelected} item${totalSelected === 1 ? '' : 's'}` }}
-              </button>
+              </KinButton>
             </div>
           </div>
         </div>
@@ -169,6 +171,7 @@ import { useShoppingStore } from '@/stores/shopping'
 import { useNotification } from '@/composables/useNotification'
 import RecipeIngredientPicker from '@/components/food/RecipeIngredientPicker.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 
 const props = defineProps({
   show: { type: Boolean, default: false },

@@ -1,12 +1,12 @@
 <template>
   <div
     v-if="label"
-    class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
+    class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg"
     :class="{ 'opacity-50 cursor-not-allowed': disabled }"
   >
     <div class="flex-1 mr-4">
-      <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ label }}</p>
-      <p v-if="description" class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">{{ description }}</p>
+      <p class="font-medium text-ink-primary">{{ label }}</p>
+      <p v-if="description" class="text-xs text-ink-secondary mt-0.5">{{ description }}</p>
     </div>
     <button
       type="button"
@@ -14,8 +14,8 @@
       :aria-checked="modelValue"
       :disabled="disabled"
       :class="[
-        'relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-wisteria-400 focus:ring-offset-2 dark:focus:ring-offset-prussian-700',
-        modelValue ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-600',
+        'relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-accent-lavender-bold focus:ring-offset-2 focus:ring-offset-surface-raised',
+        modelValue ? 'bg-accent-lavender-bold' : 'bg-border-subtle',
         disabled ? 'cursor-not-allowed' : '',
         size === 'sm' ? 'h-6 w-11' : 'h-7 w-12',
       ]"

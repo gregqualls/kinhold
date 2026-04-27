@@ -11,14 +11,14 @@
     <Transition name="slide-panel">
       <div
         v-if="show"
-        class="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] md:w-[480px] bg-white dark:bg-prussian-800 shadow-2xl flex flex-col"
+        class="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] md:w-[480px] bg-surface-raised shadow-2xl flex flex-col"
         @click.stop
       >
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-lavender-200 dark:border-prussian-700">
-          <h2 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">{{ title }}</h2>
+        <div class="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
+          <h2 class="text-lg font-semibold text-ink-primary">{{ title }}</h2>
           <button
-            class="p-2 -mr-2 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-lg transition-colors"
+            class="p-2 -mr-2 text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken rounded-lg transition-colors"
             @click="$emit('close')"
           >
             <XMarkIcon class="w-5 h-5" />
@@ -31,7 +31,7 @@
         </div>
 
         <!-- Footer -->
-        <div v-if="$slots.footer" class="border-t border-lavender-200 dark:border-prussian-700 px-6 py-4">
+        <div v-if="$slots.footer" class="border-t border-border-subtle px-6 py-4">
           <slot name="footer"></slot>
         </div>
       </div>

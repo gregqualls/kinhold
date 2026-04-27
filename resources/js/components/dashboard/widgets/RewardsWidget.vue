@@ -1,20 +1,20 @@
 <template>
   <div>
     <div class="flex items-center justify-between mb-3">
-      <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-        <GiftIcon class="w-4 h-4 text-sand-500" />
+      <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
+        <GiftIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || 'Rewards Shop' }}
       </h3>
       <RouterLink
         to="/points/rewards"
-        class="text-wisteria-600 dark:text-wisteria-400 text-xs font-medium hover:text-wisteria-500"
+        class="text-xs font-medium text-accent-lavender-bold hover:opacity-80 transition-opacity"
       >
         View All
       </RouterLink>
     </div>
 
     <div v-if="loading" :class="gridClass">
-      <div v-for="n in displayLimit" :key="n" class="h-24 bg-lavender-100 dark:bg-prussian-700 rounded-xl animate-pulse"></div>
+      <KinSkeleton v-for="n in displayLimit" :key="n" shape="rect" :height="'96px'" rounded="12px" />
     </div>
 
     <FeaturedRewards
@@ -35,6 +35,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useWidgetData } from '@/composables/useWidgetData'
 import FeaturedRewards from '@/components/points/FeaturedRewards.vue'
 import { GiftIcon } from '@heroicons/vue/24/outline'
+import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
 
 const props = defineProps({
   config: { type: Object, required: true },

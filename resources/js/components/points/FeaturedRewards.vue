@@ -1,74 +1,74 @@
+<!--
+  FeaturedRewards — small list of the cheapest purchasable rewards, surfaced
+  on the dashboard as a vertical stack of rows. Each row carries a colored
+  gradient swatch (the same per-reward fallback gradient used everywhere else),
+  the title, and the cost pill — so the row reads at a glance without a tiny
+  thumbnail-card needing to do double-duty.
+-->
 <template>
-  <div v-if="featuredRewards.length > 0">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+  <div v-if="featuredRewards.length > 0" class="space-y-1">
+    <button
+      v-for="reward in featuredRewards"
+      :key="reward.id"
+      type="button"
+      class="group w-full flex items-center gap-3 px-3 py-2.5 rounded-[12px] bg-surface-raised border border-border-subtle hover:border-accent-lavender-bold/40 hover:bg-surface-sunken/60 transition-all text-left"
+      @click="$emit('navigate')"
+    >
+      <!-- Gradient swatch + icon -->
       <div
-        v-for="reward in featuredRewards"
-        :key="reward.id"
-        class="relative group flex flex-col items-center text-center p-4 rounded-[12px] border-2 transition-all duration-200"
-        :class="canAfford(reward)
-          ? 'border-wisteria-300 dark:border-wisteria-600 bg-gradient-to-b from-wisteria-50 to-white dark:from-wisteria-900/20 dark:to-prussian-800 hover:shadow-lg hover:border-wisteria-400 dark:hover:border-wisteria-500 cursor-pointer'
-          : 'border-lavender-200 dark:border-prussian-700 bg-lavender-50/50 dark:bg-prussian-800/50'"
-        @click="$emit('navigate')"
+        class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 relative overflow-hidden"
+        :style="rewardSwatchStyle(reward)"
       >
-        <!-- Icon -->
-        <span class="mb-2 text-wisteria-500 dark:text-wisteria-400">
-          <IconRenderer v-if="reward.icon" :icon="reward.icon" :size="32" color="currentColor" />
-          <GiftIcon v-else class="w-8 h-8" />
-        </span>
-
-        <!-- Title -->
-        <h4 class="text-sm font-bold text-prussian-500 dark:text-lavender-200 leading-tight mb-1 line-clamp-2">
-          {{ reward.title }}
-        </h4>
-
-        <!-- Cost badge -->
-        <span
-          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold mt-auto"
-          :class="canAfford(reward)
-            ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/40 dark:text-wisteria-300'
-            : 'bg-lavender-100 text-lavender-600 dark:bg-prussian-700 dark:text-lavender-400'"
-        >
-          <StarIcon class="w-3.5 h-3.5" />
-          {{ reward.point_cost }} pts
-        </span>
-
-        <!-- Affordable indicator -->
-        <span
-          v-if="canAfford(reward)"
-          class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center shadow-sm"
-        >
-          <CheckIcon class="w-3 h-3 text-white" />
+        <span class="text-accent-lavender-bold relative">
+          <IconRenderer v-if="reward.icon" :icon="reward.icon" :size="20" color="currentColor" />
+          <GiftIcon v-else class="w-5 h-5" />
         </span>
       </div>
-    </div>
+
+      <!-- Title (1-line truncate) -->
+      <p class="flex-1 min-w-0 text-sm font-semibold text-ink-primary truncate">
+        {{ reward.title }}
+      </p>
+
+      <!-- Cost pill — affordable variant carries the lavender accent -->
+      <span
+        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold flex-shrink-0"
+        :class="canAfford(reward)
+          ? 'bg-accent-lavender-soft/60 text-accent-lavender-bold'
+          : 'bg-surface-sunken text-ink-tertiary'"
+      >
+        <StarIcon class="w-3 h-3" />
+        {{ reward.point_cost }} pts
+      </span>
+    </button>
   </div>
 
-  <div v-else class="text-center py-6">
-    <GiftIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mx-auto mb-2" />
-    <p class="text-sm font-medium text-prussian-500 dark:text-lavender-300 mb-1">No rewards yet</p>
-    <p v-if="isParent" class="text-xs text-lavender-500 dark:text-lavender-400 mb-3">
-      Create rewards your family can earn with points!
-    </p>
-    <p v-else class="text-xs text-lavender-500 dark:text-lavender-400">
-      Ask a parent to add some rewards to the shop.
-    </p>
-    <RouterLink
-      v-if="isParent"
-      to="/points/rewards"
-      class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-lg transition-colors"
-    >
-      <PlusIcon class="w-3.5 h-3.5" />
-      Create Rewards
-    </RouterLink>
-  </div>
+  <KinEmptyState
+    v-else
+    :icon="GiftIcon"
+    title="No rewards yet"
+    :description="isParent ? 'Create rewards your family can earn with points!' : 'Ask a parent to add some rewards to the shop.'"
+    accent-color="peach"
+    size="sm"
+  >
+    <template v-if="isParent" #cta>
+      <KinButton variant="primary" size="sm" to="/points/rewards">
+        <template #leading>
+          <PlusIcon class="w-4 h-4" />
+        </template>
+        Create Rewards
+      </KinButton>
+    </template>
+  </KinEmptyState>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
-import { StarIcon, CheckIcon, PlusIcon } from '@heroicons/vue/24/solid'
+import { StarIcon, PlusIcon } from '@heroicons/vue/24/solid'
 import { GiftIcon } from '@heroicons/vue/24/outline'
 import IconRenderer from '@/components/common/IconRenderer.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 
 const props = defineProps({
   rewards: {
@@ -81,7 +81,7 @@ const props = defineProps({
   },
   limit: {
     type: Number,
-    default: 3,
+    default: 4,
   },
   isParent: {
     type: Boolean,
@@ -100,4 +100,23 @@ const featuredRewards = computed(() => {
 })
 
 const canAfford = (reward) => props.bank >= reward.point_cost
+
+// Stable per-reward gradient swatch — hashes the title across the four accent
+// families so the row is visually identifiable without a real thumbnail.
+const SWATCH_BG = {
+  warm:     'var(--gradient-iridescent-warm)',
+  lavender: 'radial-gradient(circle at 30% 30%, rgb(var(--accent-lavender-soft) / 0.95) 0%, rgb(var(--accent-lavender-soft) / 0.55) 100%)',
+  peach:    'radial-gradient(circle at 30% 30%, rgb(var(--accent-peach-soft) / 0.95) 0%, rgb(var(--accent-peach-soft) / 0.55) 100%)',
+  mint:     'radial-gradient(circle at 30% 30%, rgb(var(--accent-mint-soft) / 0.95) 0%, rgb(var(--accent-mint-soft) / 0.55) 100%)',
+  sun:      'radial-gradient(circle at 30% 30%, rgb(var(--accent-sun-soft) / 0.95) 0%, rgb(var(--accent-sun-soft) / 0.55) 100%)',
+  cool:     'radial-gradient(circle at 30% 30%, rgb(var(--accent-mint-soft) / 0.85) 0%, rgb(var(--accent-lavender-soft) / 0.55) 100%)',
+}
+const SWATCH_FAMILIES = ['warm', 'lavender', 'peach', 'mint', 'sun', 'cool']
+const rewardSwatchStyle = (reward) => {
+  const s = reward.title || ''
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
+  const family = SWATCH_FAMILIES[Math.abs(h) % SWATCH_FAMILIES.length]
+  return { backgroundImage: SWATCH_BG[family] }
+}
 </script>

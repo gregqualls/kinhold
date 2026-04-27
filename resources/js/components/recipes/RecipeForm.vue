@@ -4,7 +4,7 @@
     <div class="space-y-4">
       <!-- Title -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1">Title <span class="text-red-500">*</span></label>
+        <label class="block text-sm font-medium text-ink-primary mb-1">Title <span class="text-status-failed">*</span></label>
         <input
           v-model="form.title"
           type="text"
@@ -16,7 +16,7 @@
 
       <!-- Description -->
       <div>
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1">Description</label>
+        <label class="block text-sm font-medium text-ink-primary mb-1">Description</label>
         <textarea
           v-model="form.description"
           rows="2"
@@ -28,7 +28,7 @@
       <!-- Row: Servings / Prep / Cook -->
       <div class="grid grid-cols-3 gap-3">
         <div>
-          <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-200 mb-1">Servings</label>
+          <label class="block text-xs font-medium text-ink-primary mb-1">Servings</label>
           <input
             v-model.number="form.servings"
             type="number"
@@ -39,7 +39,7 @@
           />
         </div>
         <div>
-          <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-200 mb-1">Prep (min)</label>
+          <label class="block text-xs font-medium text-ink-primary mb-1">Prep (min)</label>
           <input
             v-model.number="form.prep_time_minutes"
             type="number"
@@ -49,7 +49,7 @@
           />
         </div>
         <div>
-          <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-200 mb-1">Cook (min)</label>
+          <label class="block text-xs font-medium text-ink-primary mb-1">Cook (min)</label>
           <input
             v-model.number="form.cook_time_minutes"
             type="number"
@@ -62,12 +62,12 @@
 
       <!-- Source URL (readonly if imported) -->
       <div v-if="form.source_url">
-        <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1">Source</label>
+        <label class="block text-sm font-medium text-ink-primary mb-1">Source</label>
         <input
           v-model="form.source_url"
           type="url"
           readonly
-          class="input-base bg-lavender-100 dark:bg-prussian-800 cursor-not-allowed"
+          class="input-base bg-surface-sunken cursor-not-allowed"
         />
       </div>
 
@@ -78,7 +78,7 @@
     <!-- Ingredients -->
     <div>
       <div class="flex items-center justify-between mb-2">
-        <label class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">Ingredients</label>
+        <label class="text-sm font-semibold text-ink-primary">Ingredients</label>
         <button
           type="button"
           class="text-xs font-medium text-[#C4975A] hover:text-[#D4A96A] transition-colors"
@@ -91,7 +91,7 @@
         <div
           v-for="(ing, index) in form.ingredients"
           :key="index"
-          class="flex items-start gap-2 p-3 bg-lavender-50 dark:bg-prussian-700/50 rounded-xl"
+          class="flex items-start gap-2 p-3 bg-surface-sunken rounded-xl"
         >
           <div class="flex-1 grid grid-cols-12 gap-2">
             <!-- Quantity -->
@@ -127,7 +127,7 @@
           <!-- Remove -->
           <button
             type="button"
-            class="p-1.5 text-lavender-400 hover:text-red-500 transition-colors flex-shrink-0 mt-1"
+            class="p-1.5 text-ink-tertiary hover:text-status-failed transition-colors flex-shrink-0 mt-1"
             aria-label="Remove ingredient"
             @click="removeIngredient(index)"
           >
@@ -138,7 +138,7 @@
       <button
         v-if="form.ingredients.length === 0"
         type="button"
-        class="w-full mt-2 py-3 text-sm text-lavender-400 dark:text-lavender-500 border border-dashed border-lavender-300 dark:border-prussian-600 rounded-xl hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+        class="w-full mt-2 py-3 text-sm text-ink-tertiary border border-dashed border-border-subtle rounded-xl hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
         @click="addIngredient"
       >
         + Add your first ingredient
@@ -148,7 +148,7 @@
     <!-- Instructions -->
     <div>
       <div class="flex items-center justify-between mb-2">
-        <label class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">Instructions</label>
+        <label class="text-sm font-semibold text-ink-primary">Instructions</label>
         <button
           type="button"
           class="text-xs font-medium text-[#C4975A] hover:text-[#D4A96A] transition-colors"
@@ -177,7 +177,7 @@
           <!-- Remove -->
           <button
             type="button"
-            class="p-1.5 text-lavender-400 hover:text-red-500 transition-colors flex-shrink-0 mt-1"
+            class="p-1.5 text-ink-tertiary hover:text-status-failed transition-colors flex-shrink-0 mt-1"
             aria-label="Remove step"
             @click="removeInstruction(index)"
           >
@@ -188,7 +188,7 @@
       <button
         v-if="form.instructions.length === 0"
         type="button"
-        class="w-full mt-2 py-3 text-sm text-lavender-400 dark:text-lavender-500 border border-dashed border-lavender-300 dark:border-prussian-600 rounded-xl hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+        class="w-full mt-2 py-3 text-sm text-ink-tertiary border border-dashed border-border-subtle rounded-xl hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
         @click="addInstruction"
       >
         + Add your first step
@@ -197,7 +197,7 @@
 
     <!-- Tags -->
     <div v-if="allTags.length > 0">
-      <label class="block text-sm font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Tags</label>
+      <label class="block text-sm font-semibold text-ink-primary mb-2">Tags</label>
       <div class="flex flex-wrap gap-2">
         <button
           v-for="tag in recipeTags"
@@ -206,7 +206,7 @@
           class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
           :class="form.tag_ids.includes(tag.id)
             ? 'text-white'
-            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+            : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
           :style="form.tag_ids.includes(tag.id) ? { backgroundColor: tag.color || '#C4975A' } : {}"
           @click="toggleTag(tag.id)"
         >
@@ -217,7 +217,7 @@
 
     <!-- Notes -->
     <div>
-      <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1">Notes</label>
+      <label class="block text-sm font-medium text-ink-primary mb-1">Notes</label>
       <textarea
         v-model="form.notes"
         rows="3"
@@ -230,7 +230,7 @@
     <div class="flex gap-3 justify-end pt-2">
       <button
         type="button"
-        class="px-4 py-2.5 text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-lavender-100 dark:bg-prussian-700 hover:bg-lavender-200 dark:hover:bg-prussian-600 rounded-[10px] transition-colors"
+        class="px-4 py-2.5 text-sm font-medium text-ink-primary bg-surface-sunken hover:bg-surface-overlay rounded-[10px] transition-colors"
         @click="$emit('cancel')"
       >
         Cancel

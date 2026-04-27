@@ -1,28 +1,22 @@
 <template>
-  <div class="space-y-1">
-    <label v-if="label" class="block text-sm font-medium text-prussian-500 dark:text-lavender-200">
-      {{ label }}
-      <span v-if="required" class="text-red-500">*</span>
-    </label>
-    <input
-      :type="type"
-      :value="modelValue"
-      :placeholder="placeholder"
-      :disabled="disabled"
-      :class="[
-        'input-base',
-        error && 'input-error',
-        disabled && 'bg-lavender-50 dark:bg-prussian-700 cursor-not-allowed',
-      ]"
-      @input="$emit('update:modelValue', $event.target.value)"
-      @blur="$emit('blur')"
-    />
-    <p v-if="error" class="text-xs text-red-600">{{ error }}</p>
-  </div>
+  <KinInput
+    :model-value="modelValue"
+    :label="labelWithRequired"
+    :type="type"
+    :placeholder="placeholder"
+    :disabled="disabled"
+    :required="required"
+    :error="error"
+    @update:model-value="$emit('update:modelValue', $event)"
+    @blur="$emit('blur')"
+  />
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+
+const props = defineProps({
   label: String,
   type: {
     type: String,
@@ -39,4 +33,8 @@ defineProps({
 })
 
 defineEmits(['update:modelValue', 'blur'])
+
+// KinInput renders the required asterisk itself when `required` is true and a label exists.
+// Just forward the label string straight through.
+const labelWithRequired = computed(() => props.label || '')
 </script>

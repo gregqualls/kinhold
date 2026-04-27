@@ -1,29 +1,29 @@
 <template>
   <div class="flex-1 flex flex-col">
     <div class="text-center mb-6">
-      <h1 class="text-2xl font-heading font-bold text-kin-black dark:text-kin-off-white mb-2">
+      <h1 class="text-2xl font-heading font-bold text-ink-primary mb-2">
         Organize With Tags
       </h1>
-      <p class="text-base text-kin-gray-500 dark:text-kin-gray-400">
+      <p class="text-base text-ink-secondary">
         Tags help you filter and group tasks. Pick some to get started.
       </p>
     </div>
 
     <!-- How it works -->
-    <div class="mb-6 p-4 rounded-xl bg-kin-cream dark:bg-kin-surface-dark border border-kin-border dark:border-kin-border-dark">
-      <p class="text-xs text-kin-gray-500 dark:text-kin-gray-400 leading-relaxed">
+    <KinFlatCard padding="sm" class="mb-6 bg-surface-sunken">
+      <p class="text-xs text-ink-secondary leading-relaxed">
         Every task can have one or more tags. Use the tag bar at the top of your Tasks page to quickly filter what you're looking at — tap "Groceries" to see your shopping list, "Chores" for household tasks.
       </p>
-    </div>
+    </KinFlatCard>
 
     <div class="grid grid-cols-2 gap-3">
       <button
         v-for="preset in presets"
         :key="preset.name"
-        class="p-4 rounded-xl border-2 transition-all duration-200 text-left cursor-pointer"
+        class="p-4 rounded-card border-2 transition-all duration-200 text-left cursor-pointer"
         :class="isSelected(preset.name)
-          ? 'border-kin-gold bg-kin-gold/5 dark:bg-kin-gold/10'
-          : 'border-kin-border dark:border-kin-border-dark bg-white dark:bg-kin-surface-dark hover:border-kin-gray-300 dark:hover:border-kin-gray-600'"
+          ? 'border-accent-lavender-bold bg-accent-lavender-soft/40'
+          : 'border-border-subtle bg-surface-raised hover:border-border-strong'"
         @click="togglePreset(preset.name)"
       >
         <div class="flex items-center gap-2 mb-1">
@@ -31,13 +31,13 @@
             class="w-2.5 h-2.5 rounded-full flex-shrink-0"
             :style="{ backgroundColor: preset.color }"
           ></span>
-          <p class="text-sm font-semibold text-kin-black dark:text-kin-off-white">{{ preset.name }}</p>
+          <p class="text-sm font-semibold text-ink-primary">{{ preset.name }}</p>
         </div>
-        <p class="text-xs text-kin-gray-500 dark:text-kin-gray-400">{{ preset.description }}</p>
+        <p class="text-xs text-ink-secondary">{{ preset.description }}</p>
       </button>
     </div>
 
-    <p v-if="error" class="text-sm text-kin-error text-center mt-4">{{ error }}</p>
+    <p v-if="error" class="text-sm text-status-failed text-center mt-4">{{ error }}</p>
   </div>
 </template>
 
@@ -45,6 +45,7 @@
 import { ref, inject } from 'vue'
 import { useOnboardingStore } from '@/stores/onboarding'
 import api from '@/services/api'
+import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
 
 const store = useOnboardingStore()
 const { setStepLoading, registerContinue } = inject('onboarding')

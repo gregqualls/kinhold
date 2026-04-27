@@ -7,64 +7,68 @@
   >
     <!-- Full-width widgets (welcome, countdown) — no card wrapper, auto height -->
     <template v-if="isAutoHeight">
-      <div :class="editMode ? 'ring-2 ring-dashed ring-wisteria-300 dark:ring-wisteria-600 rounded-card p-2' : ''">
+      <div :class="editMode ? 'ring-2 ring-dashed ring-accent-lavender-bold/60 rounded-card p-2' : ''">
         <div v-if="editMode" class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
             <button
-              class="drag-handle cursor-grab active:cursor-grabbing p-1 rounded hover:bg-lavender-100 dark:hover:bg-prussian-700"
+              class="drag-handle cursor-grab active:cursor-grabbing p-1 rounded hover:bg-surface-sunken"
               aria-label="Drag to reorder widget"
             >
-              <Bars3Icon class="w-4 h-4 text-lavender-500" />
+              <Bars3Icon class="w-4 h-4 text-ink-tertiary" />
             </button>
-            <span class="text-xs font-medium text-lavender-500">{{ config.title || widgetName }}</span>
+            <span class="text-xs font-medium text-ink-tertiary">{{ config.title || widgetName }}</span>
           </div>
           <div class="flex items-center gap-1">
             <SizeToggle :size="config.size" :supported-sizes="supportedSizes" @resize="$emit('resize', $event)" />
-            <button
-              class="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-lavender-400 hover:text-red-500 transition-colors"
+            <KinButton
+              variant="ghost"
+              size="sm"
+              icon-only
               aria-label="Remove widget"
               @click.stop="$emit('remove')"
             >
               <XMarkIcon class="w-4 h-4" />
-            </button>
+            </KinButton>
           </div>
         </div>
 
         <Suspense>
           <component :is="widgetComponent" :config="config" :edit-mode="editMode" />
           <template #fallback>
-            <div class="h-12 bg-lavender-100 dark:bg-prussian-700 rounded animate-pulse"></div>
+            <KinSkeleton shape="rect" height="48px" />
           </template>
         </Suspense>
       </div>
     </template>
 
-    <!-- Regular widgets — BaseCard with dynamic height -->
+    <!-- Regular widgets — KinFlatCard with dynamic height -->
     <template v-else>
-      <BaseCard
-        shadow="lg"
+      <KinFlatCard
+        padding="sm"
         :class="[
           'flex flex-col',
-          editMode ? 'ring-2 ring-dashed ring-wisteria-300 dark:ring-wisteria-600' : '',
+          editMode ? 'ring-2 ring-dashed ring-accent-lavender-bold/60' : '',
         ]"
         :style="{ height: widgetHeight }"
       >
         <div v-if="editMode" class="flex items-center justify-between mb-2 -mt-1 flex-shrink-0">
           <button
-            class="drag-handle cursor-grab active:cursor-grabbing p-1 rounded hover:bg-lavender-100 dark:hover:bg-prussian-700"
+            class="drag-handle cursor-grab active:cursor-grabbing p-1 rounded hover:bg-surface-sunken"
             aria-label="Drag to reorder widget"
           >
-            <Bars3Icon class="w-4 h-4 text-lavender-500" />
+            <Bars3Icon class="w-4 h-4 text-ink-tertiary" />
           </button>
           <div class="flex items-center gap-1">
             <SizeToggle :size="config.size" :supported-sizes="supportedSizes" @resize="$emit('resize', $event)" />
-            <button
-              class="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-lavender-400 hover:text-red-500 transition-colors"
+            <KinButton
+              variant="ghost"
+              size="sm"
+              icon-only
               aria-label="Remove widget"
               @click.stop="$emit('remove')"
             >
               <XMarkIcon class="w-4 h-4" />
-            </button>
+            </KinButton>
           </div>
         </div>
 
@@ -72,11 +76,11 @@
           <Suspense>
             <component :is="widgetComponent" :config="config" :edit-mode="editMode" />
             <template #fallback>
-              <div class="h-20 bg-lavender-100 dark:bg-prussian-700 rounded animate-pulse"></div>
+              <KinSkeleton shape="rect" height="80px" />
             </template>
           </Suspense>
         </div>
-      </BaseCard>
+      </KinFlatCard>
     </template>
   </div>
 </template>
@@ -84,7 +88,9 @@
 <script setup>
 import { computed, defineAsyncComponent } from 'vue'
 import { getWidgetComponent, getWidgetHeight, getSupportedSizes, widgetTypes } from './widgetRegistry'
-import BaseCard from '@/components/common/BaseCard.vue'
+import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
 import SizeToggle from './SizeToggle.vue'
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 

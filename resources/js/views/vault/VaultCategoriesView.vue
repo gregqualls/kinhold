@@ -4,39 +4,25 @@
     <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Vault</h1>
-          <p class="text-sm text-lavender-500 dark:text-lavender-400 mt-0.5">Secure family information</p>
+          <h1 class="text-2xl font-bold font-heading text-ink-primary">Vault</h1>
+          <p class="text-sm text-ink-tertiary mt-0.5">Secure family information</p>
         </div>
         <div v-if="isParent" class="hidden md:flex items-center gap-2">
-          <button
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-lavender-100 dark:bg-prussian-700 hover:bg-lavender-200 dark:hover:bg-prussian-600 rounded-xl transition-colors"
-            @click="openCategoryModal()"
-          >
+          <KinButton variant="secondary" size="md" @click="openCategoryModal()">
             <FolderPlusIcon class="w-4 h-4" />
             New Category
-          </button>
-          <button
-            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-xl transition-colors"
-            @click="showCreateEntry = true"
-          >
+          </KinButton>
+          <KinButton variant="primary" size="md" @click="showCreateEntry = true">
             <PlusIcon class="w-4 h-4" />
             Add Entry
-          </button>
+          </KinButton>
         </div>
       </div>
     </div>
 
     <!-- Search -->
     <div class="px-4 md:px-6 py-3">
-      <div class="relative">
-        <MagnifyingGlassIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-lavender-400" />
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search vault..."
-          class="w-full pl-9 pr-4 py-2.5 bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-xl text-sm placeholder-lavender-400 dark:placeholder-lavender-500 text-prussian-500 dark:text-lavender-200 focus:bg-white dark:focus:bg-prussian-800 focus:ring-2 focus:ring-wisteria-400 transition-all outline-none"
-        />
-      </div>
+      <KinSearch v-model="searchQuery" placeholder="Search vault..." />
     </div>
 
     <!-- Loading -->
@@ -50,7 +36,7 @@
         <div
           v-for="category in filteredCategories"
           :key="category.id"
-          class="group flex items-center gap-4 p-4 bg-white dark:bg-prussian-800 rounded-xl shadow-card hover:shadow-card-lg border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-300 dark:hover:border-wisteria-700 cursor-pointer transition-all"
+          class="group flex items-center gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-all"
           @click="$router.push(`/vault/${category.slug}`)"
         >
           <!-- Icon -->
@@ -67,14 +53,14 @@
 
           <!-- Info -->
           <div class="flex-1 min-w-0">
-            <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 text-sm">{{ category.name }}</h3>
-            <p class="text-xs text-lavender-500 dark:text-lavender-400 mt-0.5 truncate">{{ category.description }}</p>
+            <h3 class="font-semibold text-ink-primary text-sm">{{ category.name }}</h3>
+            <p class="text-xs text-ink-tertiary mt-0.5 truncate">{{ category.description }}</p>
           </div>
 
           <!-- Entry count -->
           <span
             v-if="getEntryCount(category.id) > 0"
-            class="text-xs font-medium text-lavender-500 dark:text-lavender-400 bg-lavender-100 dark:bg-prussian-700 px-2 py-0.5 rounded-full"
+            class="text-xs font-medium text-ink-tertiary bg-surface-sunken px-2 py-0.5 rounded-full"
           >
             {{ getEntryCount(category.id) }}
           </span>
@@ -84,51 +70,47 @@
             <ContextMenu :items="getCategoryMenuItems(category)" />
           </div>
 
-          <ChevronRightIcon class="w-4 h-4 text-lavender-300 dark:text-lavender-500 flex-shrink-0" />
+          <ChevronRightIcon class="w-4 h-4 text-ink-tertiary flex-shrink-0" />
         </div>
       </div>
 
       <!-- Empty State -->
-      <EmptyState
+      <KinEmptyState
         v-if="!isLoading && categories.length === 0"
         :icon="ShieldCheckIcon"
         title="Vault is empty"
         description="Create a category to start organizing your family's information."
-        action-text="New Category"
-        @action="openCategoryModal()"
-      />
+      >
+        <template #cta>
+          <KinButton variant="primary" size="md" @click="openCategoryModal()">New Category</KinButton>
+        </template>
+      </KinEmptyState>
     </div>
 
     <!-- Mobile FAB -->
     <FloatingActionButton v-if="isParent" @click="showCreateEntry = true" />
 
     <!-- Create/Edit Category Modal -->
-    <BaseModal
-      :show="showCategoryModal"
+    <KinModalSheet
+      :model-value="showCategoryModal"
       :title="editingCategory ? 'Edit Category' : 'New Category'"
       @close="closeCategoryModal"
     >
       <form class="space-y-5" @submit.prevent="handleSaveCategory">
-        <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Name</label>
-          <input
-            v-model="categoryForm.name"
-            placeholder="e.g., House, Vehicle, School"
-            class="input-base"
-          />
-        </div>
+        <KinInput
+          v-model="categoryForm.name"
+          label="Name"
+          placeholder="e.g., House, Vehicle, School"
+        />
+
+        <KinInput
+          v-model="categoryForm.description"
+          label="Description (optional)"
+          placeholder="What goes in this category?"
+        />
 
         <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Description (optional)</label>
-          <input
-            v-model="categoryForm.description"
-            placeholder="What goes in this category?"
-            class="input-base"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-2">Icon</label>
+          <label class="block text-sm font-medium text-ink-primary mb-2">Icon</label>
           <div class="flex flex-wrap gap-2">
             <button
               v-for="icon in availableIcons"
@@ -136,25 +118,25 @@
               type="button"
               class="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
               :class="categoryForm.icon === icon.key
-                ? 'bg-wisteria-100 dark:bg-wisteria-900/30 ring-2 ring-wisteria-500'
-                : 'bg-lavender-50 dark:bg-prussian-700 hover:bg-lavender-100 dark:hover:bg-prussian-600'"
+                ? 'bg-accent-lavender-soft/40 ring-2 ring-accent-lavender-bold'
+                : 'bg-surface-sunken hover:bg-surface-overlay'"
               @click="categoryForm.icon = icon.key"
             >
-              <component :is="icon.component" class="w-5 h-5 text-prussian-500 dark:text-lavender-300" />
+              <component :is="icon.component" class="w-5 h-5 text-ink-secondary" />
             </button>
           </div>
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button type="button" class="flex-1 btn-secondary btn-md rounded-xl" @click="closeCategoryModal">
+          <KinButton type="button" variant="secondary" size="md" class="flex-1" @click="closeCategoryModal">
             Cancel
-          </button>
-          <button type="submit" :disabled="!categoryForm.name?.trim() || savingCategory" class="flex-1 btn-primary btn-md rounded-xl disabled:opacity-40">
+          </KinButton>
+          <KinButton type="submit" variant="primary" size="md" class="flex-1" :disabled="!categoryForm.name?.trim() || savingCategory">
             {{ savingCategory ? 'Saving...' : (editingCategory ? 'Save Changes' : 'Create Category') }}
-          </button>
+          </KinButton>
         </div>
       </form>
-    </BaseModal>
+    </KinModalSheet>
 
     <!-- Delete Category Confirmation -->
     <ConfirmDialog
@@ -167,39 +149,30 @@
     />
 
     <!-- Create Entry Modal -->
-    <BaseModal
-      :show="showCreateEntry"
+    <KinModalSheet
+      :model-value="showCreateEntry"
       title="New Vault Entry"
       size="xl"
       @close="closeCreateModal"
     >
       <form class="space-y-5" @submit.prevent="handleCreateEntry">
         <div class="flex gap-3">
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Title</label>
-            <input
-              v-model="entryForm.title"
-              placeholder="e.g., Family Doctor, WiFi Info"
-              class="input-base"
-            />
-          </div>
-          <div class="w-40">
-            <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Category</label>
-            <select v-model="entryForm.category_id" class="input-base">
-              <option :value="null">Select...</option>
-              <option
-                v-for="cat in categories"
-                :key="cat.id"
-                :value="cat.id"
-              >
-                {{ cat.name }}
-              </option>
-            </select>
-          </div>
+          <KinInput
+            v-model="entryForm.title"
+            label="Title"
+            placeholder="e.g., Family Doctor, WiFi Info"
+            class="flex-1"
+          />
+          <KinSelect
+            v-model="entryForm.category_id"
+            label="Category"
+            class="w-40"
+            :options="[{ value: null, label: 'Select...' }, ...categories.map((c) => ({ value: c.id, label: c.name }))]"
+          />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Content</label>
+          <label class="block text-sm font-medium text-ink-primary mb-1.5">Content</label>
           <MarkdownEditor
             v-model="entryForm.body"
             placeholder="Start typing... Use **bold**, *italic*, lists, and more."
@@ -210,7 +183,7 @@
         <div>
           <button
             type="button"
-            class="flex items-center gap-1.5 text-xs font-medium text-lavender-500 dark:text-lavender-400 hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors"
+            class="flex items-center gap-1.5 text-xs font-medium text-ink-tertiary hover:text-accent-lavender-bold transition-colors"
             @click="showSensitiveFields = !showSensitiveFields"
           >
             <LockClosedIcon class="w-3.5 h-3.5" />
@@ -233,7 +206,7 @@
               />
               <button
                 type="button"
-                class="p-2 text-lavender-400 hover:text-red-500 transition-colors"
+                class="p-2 text-ink-tertiary hover:text-status-failed transition-colors"
                 @click="entryForm.sensitiveFields.splice(i, 1)"
               >
                 <XMarkIcon class="w-4 h-4" />
@@ -241,7 +214,7 @@
             </div>
             <button
               type="button"
-              class="flex items-center gap-1.5 text-xs font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500"
+              class="flex items-center gap-1.5 text-xs font-medium text-accent-lavender-bold hover:opacity-80"
               @click="entryForm.sensitiveFields.push({ key: '', value: '' })"
             >
               <PlusIcon class="w-3.5 h-3.5" />
@@ -251,15 +224,15 @@
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button type="button" class="flex-1 btn-secondary btn-md rounded-xl" @click="closeCreateModal">
+          <KinButton type="button" variant="secondary" size="md" class="flex-1" @click="closeCreateModal">
             Cancel
-          </button>
-          <button type="submit" :disabled="!entryForm.title?.trim() || !entryForm.category_id || savingEntry" class="flex-1 btn-primary btn-md rounded-xl disabled:opacity-40">
+          </KinButton>
+          <KinButton type="submit" variant="primary" size="md" class="flex-1" :disabled="!entryForm.title?.trim() || !entryForm.category_id || savingEntry">
             {{ savingEntry ? 'Saving...' : 'Create Entry' }}
-          </button>
+          </KinButton>
         </div>
       </form>
-    </BaseModal>
+    </KinModalSheet>
   </div>
 </template>
 
@@ -269,13 +242,17 @@ import { storeToRefs } from 'pinia'
 import { useVaultStore } from '@/stores/vault'
 import { useAuthStore } from '@/stores/auth'
 import { useNotification } from '@/composables/useNotification'
-import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import BaseModal from '@/components/common/BaseModal.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import ContextMenu from '@/components/common/ContextMenu.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
 import MarkdownEditor from '@/components/vault/MarkdownEditor.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinSelect from '@/components/design-system/KinSelect.vue'
+import KinSearch from '@/components/design-system/KinSearch.vue'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -381,13 +358,13 @@ const getCategoryBgClass = (iconType) => {
     shield: 'bg-sand-50 dark:bg-sand-900/20',
     briefcase: 'bg-blue-50 dark:bg-blue-900/20',
     book: 'bg-wisteria-50 dark:bg-wisteria-900/20',
-    lock: 'bg-lavender-50 dark:bg-prussian-700',
+    lock: 'bg-surface-sunken',
     home: 'bg-amber-50 dark:bg-amber-900/20',
     truck: 'bg-cyan-50 dark:bg-cyan-900/20',
     wrench: 'bg-orange-50 dark:bg-orange-900/20',
     id: 'bg-pink-50 dark:bg-pink-900/20',
   }
-  return classes[iconType] || 'bg-lavender-50 dark:bg-prussian-700'
+  return classes[iconType] || 'bg-surface-sunken'
 }
 
 const getCategoryTextClass = (iconType) => {
@@ -403,13 +380,13 @@ const getCategoryTextClass = (iconType) => {
     shield: 'text-sand-500',
     briefcase: 'text-blue-500',
     book: 'text-wisteria-500',
-    lock: 'text-lavender-500',
+    lock: 'text-ink-tertiary',
     home: 'text-amber-500',
     truck: 'text-cyan-500',
     wrench: 'text-orange-500',
     id: 'text-pink-500',
   }
-  return classes[iconType] || 'text-lavender-500'
+  return classes[iconType] || 'text-ink-tertiary'
 }
 
 const getCategoryMenuItems = (category) => [

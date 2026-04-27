@@ -9,11 +9,11 @@
         v-for="member in members"
         :key="member.key"
         :disabled="loadingMember !== null"
-        class="relative flex flex-col items-center gap-2 p-4 rounded-xl border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-400 dark:hover:border-wisteria-500 hover:bg-lavender-50 dark:hover:bg-wisteria-500/10 transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
+        class="relative flex flex-col items-center gap-2 p-4 rounded-xl border border-border-subtle hover:border-accent-lavender-bold hover:bg-surface-sunken transition-all text-left disabled:opacity-50 disabled:cursor-not-allowed"
         @click="handleSelect(member.key)"
       >
         <!-- Loading overlay -->
-        <div v-if="loadingMember === member.key" class="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-prussian-800/60 rounded-xl">
+        <div v-if="loadingMember === member.key" class="absolute inset-0 flex items-center justify-center bg-surface-raised/60 rounded-xl">
           <LoadingSpinner size="sm" />
         </div>
 
@@ -27,10 +27,10 @@
 
         <!-- Name & role -->
         <div class="text-center">
-          <div class="font-semibold text-sm text-prussian-500 dark:text-lavender-200">{{ member.name }}</div>
+          <div class="font-semibold text-sm text-ink-primary">{{ member.name }}</div>
           <span
             class="inline-block mt-1 text-xs px-2 py-0.5 rounded-full"
-            :class="member.role === 'Parent' ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/30 dark:text-wisteria-300' : 'bg-sand-100 text-sand-700 dark:bg-sand-900/30 dark:text-sand-300'"
+            :class="member.role === 'Parent' ? 'bg-accent-lavender-soft/40 text-accent-lavender-bold' : 'bg-accent-sun-soft/40 text-accent-sun-bold'"
           >
             {{ member.role }}
           </span>
@@ -39,7 +39,7 @@
       </button>
     </div>
 
-    <p v-if="errorMsg" class="mt-4 text-sm text-red-600 dark:text-red-400 text-center">{{ errorMsg }}</p>
+    <p v-if="errorMsg" class="mt-4 text-sm text-status-failed text-center">{{ errorMsg }}</p>
   </BaseModal>
 </template>
 

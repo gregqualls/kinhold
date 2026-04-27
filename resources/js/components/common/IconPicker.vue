@@ -6,8 +6,8 @@
       type="button"
       class="w-9 h-9 rounded-lg flex items-center justify-center transition-all"
       :class="modelValue === key
-        ? 'bg-wisteria-100 dark:bg-wisteria-900/40 ring-2 ring-wisteria-400 scale-110 text-wisteria-600 dark:text-wisteria-400'
-        : 'bg-lavender-50 dark:bg-prussian-700 hover:bg-lavender-100 dark:hover:bg-prussian-600 text-prussian-400 dark:text-lavender-400'"
+        ? 'bg-accent-lavender-soft/40 ring-2 ring-accent-lavender-bold scale-110 text-accent-lavender-bold'
+        : 'bg-surface-sunken hover:bg-surface-overlay text-ink-secondary'"
       :title="key"
       @click="$emit('update:modelValue', key)"
     >

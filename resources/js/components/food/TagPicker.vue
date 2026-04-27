@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label class="block text-sm font-semibold text-prussian-500 dark:text-lavender-200 mb-2">{{ label }}</label>
+    <label class="block text-sm font-semibold text-ink-primary mb-2">{{ label }}</label>
 
     <div class="flex flex-wrap gap-2">
       <button
@@ -10,7 +10,7 @@
         class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
         :class="isSelected(tag.id)
           ? 'text-white'
-          : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+          : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
         :style="isSelected(tag.id) ? { backgroundColor: tag.color || '#C4975A' } : {}"
         @click="toggle(tag.id)"
       >
@@ -18,12 +18,12 @@
       </button>
 
       <!-- Inline create -->
-      <div v-if="isCreating" class="flex items-center gap-1.5 bg-lavender-50 dark:bg-prussian-700 rounded-full pl-3 pr-1 py-1">
+      <div v-if="isCreating" class="flex items-center gap-1.5 bg-surface-sunken rounded-full pl-3 pr-1 py-1">
         <input
           ref="createInput"
           v-model="newTagName"
           type="text"
-          class="bg-transparent text-xs text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 focus:outline-none w-28"
+          class="bg-transparent text-xs text-ink-primary placeholder:text-ink-tertiary focus:outline-none w-28"
           placeholder="New tag name"
           @keydown.enter.prevent="confirmCreate"
           @keydown.escape="cancelCreate"
@@ -39,7 +39,7 @@
         </button>
         <button
           type="button"
-          class="p-1 rounded-full text-lavender-500 hover:bg-lavender-200 dark:hover:bg-prussian-600"
+          class="p-1 rounded-full text-ink-tertiary hover:bg-surface-overlay"
           aria-label="Cancel"
           @click="cancelCreate"
         >
@@ -50,7 +50,7 @@
       <button
         v-else-if="onCreate"
         type="button"
-        class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-full border border-dashed border-lavender-300 dark:border-prussian-600 text-lavender-500 dark:text-lavender-400 hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+        class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-full border border-dashed border-border-subtle text-ink-tertiary hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
         @click="startCreate"
       >
         <PlusIcon class="w-3 h-3" />

@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white dark:bg-prussian-800 rounded-card shadow-card border border-lavender-200 dark:border-prussian-700 overflow-hidden">
+  <div class="bg-surface-raised rounded-card shadow-resting border border-border-subtle overflow-hidden">
     <!-- All-day events -->
-    <div v-if="allDayEvents.length > 0" class="border-b border-lavender-200 dark:border-prussian-700 p-3">
-      <p class="text-[10px] font-semibold text-lavender-500 dark:text-lavender-400 uppercase tracking-wide mb-2">All Day</p>
+    <div v-if="allDayEvents.length > 0" class="border-b border-border-subtle p-3">
+      <p class="text-[10px] font-semibold text-ink-tertiary uppercase tracking-wider mb-2">All Day</p>
       <div class="flex flex-wrap gap-1.5">
         <div
           v-for="event in allDayEvents"
@@ -23,10 +23,10 @@
         <div
           v-for="hour in hours"
           :key="hour"
-          class="absolute left-0 right-0 border-t border-lavender-100 dark:border-prussian-700/50"
+          class="absolute left-0 right-0 border-t border-border-subtle"
           :style="{ top: getHourOffset(hour) + 'px' }"
         >
-          <span class="absolute -top-2.5 left-2 text-[10px] font-medium text-lavender-500 dark:text-lavender-400 bg-white dark:bg-prussian-800 pr-1">
+          <span class="absolute -top-2.5 left-2 text-[10px] font-medium text-ink-tertiary bg-surface-raised pr-1">
             {{ formatHourLabel(hour) }}
           </span>
         </div>
@@ -34,10 +34,10 @@
         <!-- Current time indicator -->
         <div
           v-if="showNowLine"
-          class="absolute left-12 right-0 border-t-2 border-wisteria-500 z-20 pointer-events-none"
+          class="absolute left-12 right-0 border-t-2 border-accent-lavender-bold z-20 pointer-events-none"
           :style="{ top: nowOffset + 'px' }"
         >
-          <span class="absolute -top-1.5 -left-1.5 w-3 h-3 rounded-full bg-wisteria-500"></span>
+          <span class="absolute -top-1.5 -left-1.5 w-3 h-3 rounded-full bg-accent-lavender-bold"></span>
         </div>
 
         <!-- Events container (offset for time labels) -->
@@ -48,35 +48,30 @@
               v-for="(dayEvents, colIdx) in columnEvents"
               :key="colIdx"
               class="relative flex-1 min-w-0"
-              :class="dayLabels[colIdx]?.isPast && !dayLabels[colIdx]?.isToday ? 'bg-lavender-100/60 dark:bg-prussian-950/70 [&>*:not(:first-child)]:opacity-55 hover:[&>*:not(:first-child)]:opacity-100' : ''"
+              :class="dayLabels[colIdx]?.isPast && !dayLabels[colIdx]?.isToday ? 'bg-surface-sunken/40 [&>*:not(:first-child)]:opacity-55 hover:[&>*:not(:first-child)]:opacity-100' : ''"
             >
               <!-- Day header for week view -->
               <div
                 v-if="columns > 1"
-                class="sticky top-0 z-10 bg-white dark:bg-prussian-800 text-center py-1 border-b border-lavender-100 dark:border-prussian-700/50"
-                :class="dayLabels[colIdx]?.isPast && !dayLabels[colIdx]?.isToday ? 'bg-lavender-50 dark:bg-prussian-900/60' : ''"
+                class="sticky top-0 z-10 bg-surface-raised text-center py-1 border-b border-border-subtle"
+                :class="dayLabels[colIdx]?.isPast && !dayLabels[colIdx]?.isToday ? 'bg-surface-sunken' : ''"
               >
-                <p
-                  class="text-[10px] font-semibold uppercase"
-                  :class="dayLabels[colIdx]?.isPast && !dayLabels[colIdx]?.isToday
-                    ? 'text-lavender-400/70 dark:text-lavender-500/70'
-                    : 'text-lavender-500 dark:text-lavender-400'"
-                >
+                <p class="text-[10px] font-semibold uppercase tracking-wider text-ink-tertiary">
                   {{ dayLabels[colIdx]?.weekday }}
                 </p>
                 <p
                   :class="[
                     'text-sm font-bold',
                     dayLabels[colIdx]?.isToday
-                      ? 'text-wisteria-600 dark:text-wisteria-400'
+                      ? 'text-accent-lavender-bold'
                       : dayLabels[colIdx]?.isPast
-                        ? 'text-lavender-400 dark:text-lavender-500'
-                        : 'text-prussian-500 dark:text-lavender-200',
+                        ? 'text-ink-tertiary'
+                        : 'text-ink-primary',
                   ]"
                 >
                   <span
                     v-if="dayLabels[colIdx]?.isToday"
-                    class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-wisteria-600 text-white"
+                    class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-accent-lavender-bold text-ink-inverse"
                   >
                     {{ dayLabels[colIdx]?.day }}
                   </span>

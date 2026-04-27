@@ -2,13 +2,13 @@
   <div class="flex flex-col h-full">
     <!-- Fixed header -->
     <div class="flex items-center justify-between mb-3 flex-shrink-0">
-      <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-        <ShieldCheckIcon class="w-4 h-4 text-wisteria-600" />
+      <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
+        <ShieldCheckIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || 'Badges' }}
       </h3>
       <RouterLink
         to="/badges"
-        class="text-wisteria-600 dark:text-wisteria-400 text-xs font-medium hover:text-wisteria-500"
+        class="text-xs font-medium text-accent-lavender-bold hover:opacity-80 transition-opacity"
       >
         View All
       </RouterLink>
@@ -16,16 +16,18 @@
 
     <!-- Loading -->
     <div v-if="loading" class="grid grid-cols-6 gap-1 flex-1">
-      <div v-for="n in 12" :key="n" class="aspect-square bg-lavender-100 dark:bg-prussian-700 rounded animate-pulse"></div>
+      <KinSkeleton v-for="n in 12" :key="n" shape="rect" :height="'100%'" rounded="4px" />
     </div>
 
     <!-- Empty -->
-    <div v-else-if="allBadges.length === 0" class="flex-1 flex items-center justify-center">
-      <div class="text-center">
-        <ShieldCheckIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mx-auto mb-1" />
-        <p class="text-xs text-lavender-500 dark:text-lavender-400">No badges available</p>
-      </div>
-    </div>
+    <KinEmptyState
+      v-else-if="allBadges.length === 0"
+      :icon="ShieldCheckIcon"
+      title="No badges available"
+      size="sm"
+      accent-color="lavender"
+      class="flex-1"
+    />
 
     <!-- Scrollable badge grid -->
     <div v-else class="flex-1 min-h-0 overflow-y-auto">
@@ -42,7 +44,7 @@
             :size="iconSize"
             :locked="!badge.is_earned"
           />
-          <p class="text-[9px] text-lavender-500 dark:text-lavender-400 mt-0.5 text-center truncate w-full leading-tight">
+          <p class="text-[9px] text-ink-tertiary mt-0.5 text-center truncate w-full leading-tight">
             {{ badge.is_hidden && !badge.is_earned ? '???' : badge.name }}
           </p>
         </div>
@@ -50,7 +52,7 @@
     </div>
 
     <!-- Footer -->
-    <p v-if="!loading && earnedCount > 0" class="text-[10px] text-lavender-400 dark:text-lavender-500 mt-2 text-center flex-shrink-0">
+    <p v-if="!loading && earnedCount > 0" class="text-[10px] text-ink-tertiary mt-2 text-center flex-shrink-0">
       {{ earnedCount }} / {{ allBadges.length }} earned
     </p>
   </div>
@@ -61,6 +63,8 @@ import { computed } from 'vue'
 import { useWidgetData } from '@/composables/useWidgetData'
 import BadgeIcon from '@/components/badges/BadgeIcon.vue'
 import { ShieldCheckIcon } from '@heroicons/vue/24/outline'
+import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
 const props = defineProps({
   config: { type: Object, required: true },

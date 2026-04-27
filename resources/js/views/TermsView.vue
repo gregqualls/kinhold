@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-lavender-50 dark:bg-prussian-900">
+  <div class="min-h-screen bg-surface-app">
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-prussian-800/80 backdrop-blur-md border-b border-lavender-200 dark:border-prussian-700">
+    <nav class="sticky top-0 z-50 bg-surface-raised/80 backdrop-blur-md border-b border-border-subtle">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <RouterLink to="/" class="flex items-center gap-2">
             <span class="text-2xl">&#x1F3E0;</span>
-            <span class="text-xl font-bold text-wisteria-600 dark:text-wisteria-400">Kinhold</span>
+            <span class="text-xl font-bold text-accent-lavender-bold">Kinhold</span>
           </RouterLink>
           <div class="flex items-center gap-3">
             <RouterLink to="/login" class="btn-ghost btn-sm">Sign In</RouterLink>
@@ -18,16 +18,16 @@
 
     <!-- Content -->
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 class="text-3xl font-bold text-prussian-500 dark:text-lavender-100 mb-2">Terms of Service</h1>
-      <p class="text-sm text-prussian-400 dark:text-lavender-400 mb-10">Last updated: March 22, 2026</p>
+      <h1 class="text-3xl font-bold text-ink-primary mb-2">Terms of Service</h1>
+      <p class="text-sm text-ink-secondary mb-10">Last updated: March 22, 2026</p>
 
-      <div class="prose-container space-y-8 text-prussian-500 dark:text-lavender-300">
+      <div class="prose-container space-y-8 text-ink-secondary">
         <section>
           <h2>1. What Kinhold Is</h2>
           <p>
             Kinhold is an open-source family management application that helps households organize tasks,
             calendars, sensitive documents, and family activities. It is provided as-is under the
-            <a href="https://github.com/gregqualls/kinhold/blob/main/LICENSE" target="_blank" rel="noopener" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Elastic License 2.0</a>.
+            <a href="https://github.com/gregqualls/kinhold/blob/main/LICENSE" target="_blank" rel="noopener" class="text-accent-lavender-bold hover:underline">Elastic License 2.0</a>.
           </p>
         </section>
 
@@ -36,7 +36,7 @@
           <p>
             By creating an account or using Kinhold at <strong>kinhold.app</strong>,
             you agree to these Terms of Service and our
-            <RouterLink to="/privacy" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Privacy Policy</RouterLink>.
+            <RouterLink to="/privacy" class="text-accent-lavender-bold hover:underline">Privacy Policy</RouterLink>.
             If you do not agree, do not use the service.
           </p>
         </section>
@@ -70,7 +70,7 @@
             you store in Kinhold (tasks, vault entries, chat messages, etc.).
           </p>
           <p>
-            See our <RouterLink to="/privacy" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Privacy Policy</RouterLink>
+            See our <RouterLink to="/privacy" class="text-accent-lavender-bold hover:underline">Privacy Policy</RouterLink>
             for details on how we collect, store, and protect your data.
           </p>
         </section>
@@ -79,7 +79,7 @@
           <h2>6. Third-Party Services</h2>
           <p>Kinhold integrates with third-party services that have their own terms:</p>
           <ul>
-            <li><strong>Google</strong> — For OAuth sign-in and Google Calendar integration. Subject to <a href="https://policies.google.com/terms" target="_blank" rel="noopener" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Google's Terms of Service</a>.</li>
+            <li><strong>Google</strong> — For OAuth sign-in and Google Calendar integration. Subject to <a href="https://policies.google.com/terms" target="_blank" rel="noopener" class="text-accent-lavender-bold hover:underline">Google's Terms of Service</a>.</li>
             <li><strong>Anthropic</strong> — For AI chat features. Your chat queries and relevant family data are sent to Anthropic's API to generate responses.</li>
           </ul>
           <p>
@@ -92,7 +92,7 @@
           <h2>7. Google API Services</h2>
           <p>
             Kinhold's use and transfer of information received from Google APIs adheres to the
-            <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Google API Services User Data Policy</a>,
+            <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener" class="text-accent-lavender-bold hover:underline">Google API Services User Data Policy</a>,
             including the Limited Use requirements.
           </p>
           <p>Specifically:</p>
@@ -136,7 +136,7 @@
           <h2>11. Account Termination</h2>
           <p>
             You may delete your account at any time by contacting
-            <a href="mailto:glqualls@gmail.com" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">glqualls@gmail.com</a>.
+            <a href="mailto:glqualls@gmail.com" class="text-accent-lavender-bold hover:underline">glqualls@gmail.com</a>.
             We reserve the right to suspend or terminate accounts that violate these terms.
           </p>
         </section>
@@ -163,22 +163,22 @@
           <h2>14. Contact</h2>
           <p>
             Questions about these terms? Email
-            <a href="mailto:glqualls@gmail.com" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">glqualls@gmail.com</a>.
+            <a href="mailto:glqualls@gmail.com" class="text-accent-lavender-bold hover:underline">glqualls@gmail.com</a>.
           </p>
         </section>
       </div>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-lavender-200 dark:border-prussian-700 mt-16 py-8 text-center text-sm text-prussian-400 dark:text-lavender-500">
+    <footer class="border-t border-border-subtle mt-16 py-8 text-center text-sm text-ink-tertiary">
       <div class="max-w-4xl mx-auto px-4">
         <p>&copy; {{ new Date().getFullYear() }} Kinhold &mdash; Open source under the Elastic License 2.0</p>
         <div class="mt-2 flex items-center justify-center gap-4">
-          <RouterLink to="/" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Home</RouterLink>
+          <RouterLink to="/" class="hover:text-accent-lavender-bold transition-colors">Home</RouterLink>
           <span>&bull;</span>
-          <RouterLink to="/privacy" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Privacy</RouterLink>
+          <RouterLink to="/privacy" class="hover:text-accent-lavender-bold transition-colors">Privacy</RouterLink>
           <span>&bull;</span>
-          <a href="https://github.com/gregqualls/kinhold" target="_blank" rel="noopener" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">GitHub</a>
+          <a href="https://github.com/gregqualls/kinhold" target="_blank" rel="noopener" class="hover:text-accent-lavender-bold transition-colors">GitHub</a>
         </div>
       </div>
     </footer>
@@ -187,10 +187,10 @@
 
 <style scoped>
 .prose-container h2 {
-  @apply text-xl font-semibold text-prussian-500 dark:text-lavender-100 mt-8 mb-3;
+  @apply text-xl font-semibold text-ink-primary mt-8 mb-3;
 }
 .prose-container h3 {
-  @apply text-base font-semibold text-prussian-500 dark:text-lavender-200 mt-4 mb-2;
+  @apply text-base font-semibold text-ink-primary mt-4 mb-2;
 }
 .prose-container p {
   @apply leading-relaxed mb-3;

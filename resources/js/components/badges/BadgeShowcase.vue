@@ -7,7 +7,7 @@
       :style="{ width: itemWidth }"
     >
       <BadgeIcon :icon="badge.icon" :color="badge.color" size="sm" />
-      <p class="text-[10px] text-lavender-500 dark:text-lavender-400 mt-1 text-center truncate w-full">
+      <p class="text-[10px] text-ink-tertiary mt-1 text-center truncate w-full">
         {{ badge.name }}
       </p>
     </div>
@@ -16,12 +16,12 @@
       class="flex flex-col items-center justify-center"
       :style="{ width: itemWidth }"
     >
-      <div class="w-10 h-10 rounded-full bg-lavender-100 dark:bg-prussian-700 flex items-center justify-center">
-        <span class="text-xs font-medium text-lavender-500 dark:text-lavender-400">+{{ badges.length - maxDisplay }}</span>
+      <div class="w-10 h-10 rounded-full bg-surface-sunken flex items-center justify-center">
+        <span class="text-xs font-medium text-ink-tertiary">+{{ badges.length - maxDisplay }}</span>
       </div>
     </div>
   </div>
-  <div v-else class="text-xs text-lavender-400 dark:text-lavender-500 py-2">
+  <div v-else class="text-xs text-ink-tertiary py-2">
     No badges earned yet
   </div>
 </template>

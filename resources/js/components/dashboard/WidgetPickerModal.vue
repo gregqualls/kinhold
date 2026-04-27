@@ -1,26 +1,31 @@
 <template>
-  <BaseModal :show="show" :title="step === 'pick' ? 'Add Widget' : 'Configure'" @close="handleClose">
+  <KinModalSheet
+    :model-value="show"
+    :title="step === 'pick' ? 'Add Widget' : 'Configure'"
+    size="md"
+    @update:model-value="(v) => !v && handleClose()"
+  >
     <!-- Step 1: Pick widget type -->
     <div v-if="step === 'pick'" class="space-y-6">
       <div v-for="(widgets, category) in groupedTypes" :key="category">
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-lavender-500 dark:text-lavender-400 mb-2">
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-ink-tertiary mb-2">
           {{ categoryLabel(category) }}
         </h3>
         <div class="grid grid-cols-2 gap-2">
           <button
             v-for="wt in widgets"
             :key="wt.key"
-            class="flex flex-col items-center gap-2 p-4 rounded-xl border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-400 dark:hover:border-wisteria-500 hover:bg-wisteria-50 dark:hover:bg-wisteria-900/10 transition-colors text-center"
+            class="flex flex-col items-center gap-2 p-4 rounded-xl border border-border-subtle hover:border-accent-lavender-bold hover:bg-accent-lavender-soft/30 transition-colors text-center"
             :aria-label="`Add ${wt.name} widget`"
             @click="pickType(wt)"
           >
             <component
               :is="iconFor(wt.icon)"
-              class="w-6 h-6 text-wisteria-500 dark:text-wisteria-400"
+              class="w-6 h-6 text-accent-lavender-bold"
             />
             <div>
-              <p class="text-sm font-medium text-prussian-600 dark:text-lavender-200">{{ wt.name }}</p>
-              <p class="text-[11px] text-lavender-500 dark:text-lavender-400 mt-0.5">{{ wt.description }}</p>
+              <p class="text-sm font-medium text-ink-primary">{{ wt.name }}</p>
+              <p class="text-[11px] text-ink-tertiary mt-0.5">{{ wt.description }}</p>
             </div>
           </button>
         </div>
@@ -29,38 +34,34 @@
 
     <!-- Step 2: Configure -->
     <div v-else-if="step === 'configure'" class="space-y-5">
-      <button
-        class="flex items-center gap-1 text-sm text-lavender-500 dark:text-lavender-400 hover:text-wisteria-500 transition-colors"
-        @click="step = 'pick'"
-      >
-        <ArrowLeftIcon class="w-4 h-4" />
+      <KinButton variant="ghost" size="sm" @click="step = 'pick'">
+        <template #leading>
+          <ArrowLeftIcon class="w-4 h-4" />
+        </template>
         Back
-      </button>
+      </KinButton>
 
       <div class="text-center">
-        <component :is="iconFor(selectedType.icon)" class="w-8 h-8 text-wisteria-500 dark:text-wisteria-400 mx-auto mb-2" />
-        <h4 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">{{ selectedType.name }}</h4>
+        <component :is="iconFor(selectedType.icon)" class="w-8 h-8 text-accent-lavender-bold mx-auto mb-2" />
+        <h4 class="text-lg font-semibold text-ink-primary">{{ selectedType.name }}</h4>
       </div>
 
       <!-- Title -->
-      <div>
-        <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1">Title</label>
-        <input
-          v-model="widgetTitle"
-          class="w-full px-3 py-2 text-sm rounded-lg border border-lavender-200 dark:border-prussian-700 bg-white dark:bg-prussian-800 text-prussian-600 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
-          placeholder="Widget title"
-        />
-      </div>
+      <KinInput
+        v-model="widgetTitle"
+        label="Title"
+        size="sm"
+        placeholder="Widget title"
+      />
 
       <!-- Filtered Tasks config -->
       <template v-if="selectedType.key === 'filtered-tasks'">
         <!-- Tag filter -->
-        <div>
-          <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">Filter by Tags</label>
+        <KinFormGroup label="Filter by Tags">
           <div v-if="tagsLoading" class="flex gap-2">
-            <div v-for="n in 3" :key="n" class="h-7 w-16 bg-lavender-100 dark:bg-prussian-700 rounded-full animate-pulse"></div>
+            <KinSkeleton v-for="n in 3" :key="n" shape="pill" width="64px" />
           </div>
-          <p v-else-if="tagsError" class="text-xs text-red-500 dark:text-red-400">Failed to load tags. Try again later.</p>
+          <p v-else-if="tagsError" class="text-xs text-status-failed">Failed to load tags. Try again later.</p>
           <div v-else class="flex flex-wrap gap-1.5">
             <button
               v-for="tag in availableTags"
@@ -68,70 +69,64 @@
               class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border transition-colors"
               :class="selectedTagIds.has(tag.id)
                 ? 'border-transparent text-white'
-                : 'border-lavender-200 dark:border-prussian-700 text-lavender-600 dark:text-lavender-400 hover:border-wisteria-400'"
+                : 'border-border-subtle text-ink-secondary hover:border-accent-lavender-bold'"
               :style="selectedTagIds.has(tag.id) ? { backgroundColor: tag.color } : {}"
               @click="toggleTag(tag.id)"
             >
               {{ tag.name }}
             </button>
-            <p v-if="availableTags.length === 0" class="text-xs text-lavender-400 dark:text-lavender-500">No tags created yet</p>
+            <p v-if="availableTags.length === 0" class="text-xs text-ink-tertiary">No tags created yet</p>
           </div>
-        </div>
+        </KinFormGroup>
 
         <!-- Due date filter -->
-        <div>
-          <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1">Due Within</label>
+        <KinFormGroup label="Due Within">
           <select
             v-model="dueWithin"
-            class="w-full px-3 py-2 text-sm rounded-lg border border-lavender-200 dark:border-prussian-700 bg-white dark:bg-prussian-800 text-prussian-600 dark:text-lavender-200 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent"
+            class="w-full h-8 px-3 text-[13px] rounded-[10px] border-0 bg-surface-sunken text-ink-primary focus:outline-none focus:ring-2 focus:ring-accent-lavender-bold"
           >
             <option value="">Any time</option>
             <option value="today">Today</option>
             <option value="week">This week</option>
             <option value="month">This month</option>
           </select>
-        </div>
+        </KinFormGroup>
       </template>
 
       <!-- Size -->
-      <div v-if="sizeOptions.length > 1">
-        <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-2">Size</label>
+      <KinFormGroup v-if="sizeOptions.length > 1" label="Size">
         <div class="flex gap-2">
           <button
             v-for="s in sizeOptions"
             :key="s.value"
             class="flex-1 py-3 text-sm font-medium rounded-lg border transition-colors"
             :class="selectedSize === s.value
-              ? 'border-wisteria-400 bg-wisteria-50 dark:bg-wisteria-900/20 text-wisteria-700 dark:text-wisteria-300'
-              : 'border-lavender-200 dark:border-prussian-700 text-lavender-500 dark:text-lavender-400 hover:border-wisteria-300'"
+              ? 'border-accent-lavender-bold bg-accent-lavender-soft/30 text-accent-lavender-bold'
+              : 'border-border-subtle text-ink-secondary hover:border-accent-lavender-bold'"
             @click="selectedSize = s.value"
           >
             {{ s.label }}
           </button>
         </div>
-      </div>
-
-      <div class="flex justify-end gap-2 pt-2">
-        <button
-          class="px-4 py-2 text-sm font-medium rounded-lg text-lavender-600 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
-          @click="step = 'pick'"
-        >
-          Cancel
-        </button>
-        <button
-          class="px-4 py-2 text-sm font-medium rounded-lg bg-wisteria-600 text-white hover:bg-wisteria-700 transition-colors"
-          @click="addWidget"
-        >
-          Add to Dashboard
-        </button>
-      </div>
+      </KinFormGroup>
     </div>
-  </BaseModal>
+
+    <template v-if="step === 'configure'" #actions>
+      <div class="flex justify-end gap-2">
+        <KinButton variant="ghost" size="sm" @click="step = 'pick'">Cancel</KinButton>
+        <KinButton variant="primary" size="sm" @click="addWidget">Add to Dashboard</KinButton>
+      </div>
+    </template>
+  </KinModalSheet>
 </template>
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
-import BaseModal from '@/components/common/BaseModal.vue'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinFormGroup from '@/components/design-system/KinFormGroup.vue'
+import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
 import { widgetTypesByCategory } from './widgetRegistry'
 import {
   HandRaisedIcon,

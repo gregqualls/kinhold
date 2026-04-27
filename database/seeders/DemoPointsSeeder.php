@@ -21,6 +21,13 @@ class DemoPointsSeeder extends Seeder
         //  KUDOS (sprinkled throughout 3 months)
         // ─────────────────────────────────────────────
 
+        // Compute "days ago" values that land within the current week so the
+        // leaderboard (default = weekly period) has data to render.
+        $startOfWeek = $now->copy()->startOfWeek();
+        $daysSinceWeekStart = (int) $startOfWeek->diffInDays($now);
+        $thisWeek0 = max(0, $daysSinceWeekStart);          // today
+        $thisWeek1 = max(0, $daysSinceWeekStart - 1);      // yesterday (clamped)
+
         $kudosDefs = [
             // Parents giving kudos to kids
             ['from' => $this->mike, 'to' => $this->emma, 'reason' => 'Great job on the SAT prep!', 'days_ago' => 20],
@@ -41,6 +48,12 @@ class DemoPointsSeeder extends Seeder
             // Parents to parents
             ['from' => $this->mike, 'to' => $this->sarah, 'reason' => 'Amazing meal prep this week', 'days_ago' => 24],
             ['from' => $this->sarah, 'to' => $this->mike, 'reason' => 'Driveway looks incredible!', 'days_ago' => 22],
+            // ── This week (so the weekly leaderboard has live data) ──
+            ['from' => $this->mike,  'to' => $this->emma, 'reason' => 'Crushing it on the AP Chem study guide',  'days_ago' => $thisWeek0],
+            ['from' => $this->sarah, 'to' => $this->lily, 'reason' => 'Practiced piano without a reminder',       'days_ago' => $thisWeek0],
+            ['from' => $this->mike,  'to' => $this->jake, 'reason' => 'Mowed the lawn before being asked',        'days_ago' => $thisWeek1],
+            ['from' => $this->emma,  'to' => $this->lily, 'reason' => 'Read your book to me, that was sweet',     'days_ago' => $thisWeek1],
+            ['from' => $this->sarah, 'to' => $this->mike, 'reason' => 'Thanks for handling carpool today',        'days_ago' => $thisWeek0],
         ];
 
         foreach ($kudosDefs as $k) {

@@ -1,68 +1,118 @@
 <template>
-  <div class="p-4 md:p-6 max-w-3xl flex flex-col h-full">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200">Points</h1>
-      <div class="flex gap-2">
-        <RouterLink to="/points/rewards" class="btn-secondary btn-sm">Rewards</RouterLink>
-        <RouterLink to="/points/history" class="btn-ghost btn-sm">History</RouterLink>
+  <div class="flex h-full">
+    <!-- Main column -->
+    <div class="flex-1 min-w-0 flex flex-col p-4 md:p-6 gap-4 overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
+        <h1 class="text-2xl font-bold font-heading text-ink-primary">Points</h1>
+        <!-- Mobile-only quick links (rail handles this on desktop) -->
+        <div class="flex gap-2 lg:hidden">
+          <KinButton variant="secondary" size="sm" to="/points/rewards">Rewards</KinButton>
+          <KinButton variant="ghost" size="sm" to="/points/history">History</KinButton>
+        </div>
       </div>
+
+      <!-- Pending Point Requests (parents only) -->
+      <PendingRequests
+        v-if="isParent"
+        :requests="pointsStore.pointRequests"
+        @approve="handleApprove"
+        @deny="handleDeny"
+      />
+
+      <!-- Hero balance card -->
+      <KinHeroMetricCard
+        variant="iridescent"
+        label="Your Balance"
+        :value="pointsStore.bank"
+        cta-label="Spend"
+        cta-to="/points/rewards"
+        min-height="180px"
+        class="flex-shrink-0"
+      />
+
+      <!-- Mobile-only leaderboard (rail handles this on desktop) -->
+      <KinFlatCard padding="md" class="lg:hidden flex-shrink-0">
+        <p class="text-xs text-ink-tertiary uppercase tracking-widest font-semibold mb-3">
+          {{ pointsStore.leaderboardPeriod }} Leaderboard
+        </p>
+        <LeaderboardStrip :leaderboard="pointsStore.leaderboard" />
+      </KinFlatCard>
+
+      <!-- Activity Feed — fills remaining vertical space -->
+      <KinFlatCard padding="none" class="flex-1 overflow-hidden flex flex-col min-h-0">
+        <div class="px-4 pt-3 pb-2 border-b border-border-subtle flex-shrink-0">
+          <p class="text-sm font-semibold text-ink-primary">Activity</p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto divide-y divide-border-subtle">
+          <FeedItem
+            v-for="item in pointsStore.feed"
+            :key="item.id"
+            :item="item"
+          />
+          <KinEmptyState
+            v-if="pointsStore.feed.length === 0 && !pointsStore.isLoading"
+            :icon="SparklesIcon"
+            title="No activity yet"
+            description="Complete tasks or give kudos to get started!"
+            accent-color="lavender"
+            size="sm"
+          />
+        </div>
+
+        <!-- Kudos compose strip -->
+        <div class="p-3 border-t border-border-subtle flex-shrink-0">
+          <KudosInput :members="familyMembers" @kudos="handleKudos" />
+        </div>
+      </KinFlatCard>
     </div>
 
-    <!-- Pending Point Requests (parents only) -->
-    <PendingRequests
-      v-if="isParent"
-      :requests="pointsStore.pointRequests"
-      @approve="handleApprove"
-      @deny="handleDeny"
-    />
+    <!-- Right utility rail (desktop only) -->
+    <KinUtilityRail
+      class="hidden lg:flex"
+      width="280px"
+      :labels="{ 'saved-views': pointsStore.leaderboardPeriod + ' Leaderboard' }"
+    >
+      <!-- Leaderboard -->
+      <template #saved-views>
+        <LeaderboardStrip :leaderboard="pointsStore.leaderboard" size="sm" />
+      </template>
 
-    <!-- Bank Balance + Leaderboard -->
-    <div class="card p-4 mb-4">
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <p class="text-xs text-lavender-500 dark:text-lavender-400 uppercase tracking-wide font-medium">Your Balance</p>
-          <p class="text-3xl font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ pointsStore.bank }}</p>
-        </div>
-        <div class="text-right">
-          <p class="text-xs text-lavender-500 dark:text-lavender-400 uppercase tracking-wide font-medium mb-1">
-            {{ pointsStore.leaderboardPeriod }} Leaderboard
-          </p>
-        </div>
-      </div>
-      <LeaderboardStrip :leaderboard="pointsStore.leaderboard" />
-    </div>
-
-    <!-- Activity Feed -->
-    <div class="card flex-1 overflow-hidden flex flex-col">
-      <div class="px-4 pt-3 pb-2 border-b border-lavender-200 dark:border-prussian-700">
-        <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">Activity</p>
-      </div>
-
-      <div class="flex-1 overflow-y-auto px-4 divide-y divide-lavender-100 dark:divide-prussian-700">
-        <FeedItem
-          v-for="item in pointsStore.feed"
-          :key="item.id"
-          :item="item"
-        />
-        <div v-if="pointsStore.feed.length === 0 && !pointsStore.isLoading" class="py-8 text-center text-lavender-500 dark:text-lavender-400 text-sm">
-          No activity yet. Complete tasks or give kudos to get started!
-        </div>
-      </div>
-
-      <!-- Kudos Input -->
-      <div class="p-3 border-t border-lavender-200 dark:border-prussian-700 bg-lavender-50 dark:bg-prussian-900">
-        <KudosInput :members="familyMembers" @kudos="handleKudos" />
-        <div class="mt-2 flex justify-end gap-3">
-          <button v-if="!isParent" class="text-xs text-wisteria-600 hover:text-wisteria-700 dark:text-wisteria-400 dark:hover:text-wisteria-300 font-medium" @click="showRequestModal = true">
+      <!-- Actions -->
+      <template #actions>
+        <div class="flex flex-col gap-2 items-stretch">
+          <KinButton variant="secondary" size="sm" to="/points/rewards">
+            <template #leading>
+              <GiftIcon class="w-4 h-4" />
+            </template>
+            Browse Rewards
+          </KinButton>
+          <KinButton variant="ghost" size="sm" to="/points/history">
+            <template #leading>
+              <ClockIcon class="w-4 h-4" />
+            </template>
+            History
+          </KinButton>
+          <KinButton
+            v-if="!isParent"
+            variant="ghost"
+            size="sm"
+            @click="showRequestModal = true"
+          >
             Request Points
-          </button>
-          <button v-if="isParent" class="text-xs text-red-500 hover:text-red-600 font-medium" @click="showDeductModal = true">
+          </KinButton>
+          <KinButton
+            v-if="isParent"
+            variant="ghost"
+            size="sm"
+            @click="showDeductModal = true"
+          >
             Deduct Points
-          </button>
+          </KinButton>
         </div>
-      </div>
-    </div>
+      </template>
+    </KinUtilityRail>
 
     <!-- Deduct Modal -->
     <DeductModal
@@ -92,6 +142,12 @@ import KudosInput from '@/components/points/KudosInput.vue'
 import DeductModal from '@/components/points/DeductModal.vue'
 import RequestPointsModal from '@/components/points/RequestPointsModal.vue'
 import PendingRequests from '@/components/points/PendingRequests.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinHeroMetricCard from '@/components/design-system/KinHeroMetricCard.vue'
+import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinUtilityRail from '@/components/design-system/KinUtilityRail.vue'
+import { SparklesIcon, GiftIcon, ClockIcon } from '@heroicons/vue/24/outline'
 
 const pointsStore = usePointsStore()
 const authStore = useAuthStore()

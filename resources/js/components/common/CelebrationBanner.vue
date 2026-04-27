@@ -56,20 +56,20 @@
   <Transition name="celebration-slide">
     <div
       v-if="showHoliday && !holidayDismissed"
-      class="relative mb-4 overflow-hidden rounded-[12px] bg-lavender-100 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 px-4 py-3 shadow-sm"
+      class="relative mb-4 overflow-hidden rounded-[12px] bg-surface-sunken border border-border-subtle px-4 py-3 shadow-sm"
     >
       <div class="flex items-center justify-between gap-3">
-        <p class="text-sm md:text-base font-semibold text-prussian-600 dark:text-lavender-200">
+        <p class="text-sm md:text-base font-semibold text-ink-primary">
           <component :is="holidayIconComponent" class="w-4 h-4 inline-block mr-1 align-text-bottom" />
           {{ holiday.message }}
         </p>
 
         <button
-          class="flex-shrink-0 w-6 h-6 rounded-full hover:bg-lavender-200 dark:hover:bg-prussian-600 flex items-center justify-center transition-colors"
+          class="flex-shrink-0 w-6 h-6 rounded-full hover:bg-surface-overlay flex items-center justify-center transition-colors"
           aria-label="Dismiss holiday banner"
           @click="dismissHoliday"
         >
-          <XMarkIcon class="w-4 h-4 text-prussian-400 dark:text-lavender-400" />
+          <XMarkIcon class="w-4 h-4 text-ink-tertiary" />
         </button>
       </div>
     </div>

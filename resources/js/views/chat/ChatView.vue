@@ -2,52 +2,45 @@
   <div class="h-full flex flex-col">
     <!-- Setup Prompt: No API Key -->
     <div v-if="!checkingKey && !hasApiKey" class="flex-1 flex items-center justify-center px-4 md:px-6 py-4">
-      <div class="text-center max-w-sm">
-        <div class="w-16 h-16 rounded-2xl bg-golden-50 dark:bg-golden-900/20 flex items-center justify-center mx-auto mb-4">
-          <Cog6ToothIcon class="w-8 h-8 text-golden-500" />
-        </div>
-        <h2 class="text-xl font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-2">
-          {{ isParent ? 'Set Up Assistant' : 'Assistant Not Available' }}
-        </h2>
-        <p class="text-sm text-lavender-500 dark:text-lavender-400 mb-6">
-          <template v-if="isParent">
-            The assistant needs an API key to work. Add your Anthropic API key in
-            <strong>Settings &gt; API Configuration</strong> to activate this feature.
-          </template>
-          <template v-else>
-            This feature hasn't been set up yet. Ask a parent to configure it in Settings.
-          </template>
-        </p>
-        <router-link
-          v-if="isParent"
-          to="/settings"
-          class="inline-flex items-center gap-2 px-5 py-2.5 bg-wisteria-600 text-white rounded-xl hover:bg-wisteria-500 transition-colors text-sm font-medium"
-        >
-          Go to Settings
-          <ArrowRightIcon class="w-4 h-4" />
-        </router-link>
-      </div>
+      <KinEmptyState
+        :icon="Cog6ToothIcon"
+        :title="isParent ? 'Set Up Assistant' : 'Assistant Not Available'"
+        :description="isParent
+          ? 'The assistant needs an API key to work. Add your Anthropic API key in Settings to activate this feature.'
+          : `This feature hasn't been set up yet. Ask a parent to configure it in Settings.`"
+        accent-color="sun"
+        size="md"
+      >
+        <template v-if="isParent" #cta>
+          <KinButton variant="primary" size="md" to="/settings">
+            Go to Settings
+            <template #trailing>
+              <ArrowRightIcon class="w-4 h-4" />
+            </template>
+          </KinButton>
+        </template>
+      </KinEmptyState>
     </div>
 
     <!-- Messages Container -->
     <div v-else-if="!checkingKey" ref="messagesContainer" class="flex-1 overflow-y-auto px-4 md:px-6 py-4">
       <!-- Welcome / Empty State -->
       <div v-if="messages.length === 0 && !loading" class="flex items-center justify-center h-full">
-        <div class="text-center max-w-sm">
-          <div class="w-16 h-16 rounded-2xl bg-wisteria-50 dark:bg-wisteria-900/20 flex items-center justify-center mx-auto mb-4">
-            <CpuChipIcon class="w-8 h-8 text-wisteria-500" />
-          </div>
-          <h2 class="text-xl font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Kinhold Assistant</h2>
-          <p class="text-sm text-lavender-500 dark:text-lavender-400 mb-8">
-            Tell me what you need and I'll take care of it — tasks, points, calendar, and more.
-          </p>
+        <div class="text-center max-w-sm w-full">
+          <KinEmptyState
+            :icon="CpuChipIcon"
+            title="Kinhold Assistant"
+            description="Tell me what you need and I'll take care of it — tasks, points, calendar, and more."
+            accent-color="lavender"
+            size="md"
+          />
 
           <!-- Suggested Actions -->
-          <div class="space-y-2">
+          <div class="space-y-2 mt-2">
             <button
               v-for="(q, idx) in suggestedQuestions"
               :key="idx"
-              class="w-full text-left px-4 py-3 bg-white dark:bg-prussian-800 border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-300 dark:hover:border-wisteria-700 hover:bg-wisteria-50 dark:hover:bg-wisteria-900/10 rounded-xl transition-all text-sm text-prussian-500 dark:text-lavender-200"
+              class="w-full text-left px-4 py-3 bg-surface-raised border border-border-subtle hover:border-accent-lavender-bold/50 hover:bg-surface-sunken rounded-xl transition-all text-sm text-ink-primary"
               @click="quickSend(q)"
             >
               {{ q }}
@@ -55,7 +48,7 @@
           </div>
 
           <!-- Disclaimer -->
-          <p class="text-[11px] text-lavender-400 dark:text-lavender-500 mt-6">
+          <p class="text-[11px] text-ink-tertiary mt-6">
             The assistant can make mistakes. Always verify important information.
           </p>
         </div>
@@ -72,17 +65,17 @@
           <!-- Assistant Avatar -->
           <div
             v-if="message.sender !== 'user'"
-            class="w-8 h-8 rounded-full bg-wisteria-100 dark:bg-wisteria-900/30 flex items-center justify-center flex-shrink-0 mt-1"
+            class="w-8 h-8 rounded-full bg-accent-lavender-bold/15 flex items-center justify-center flex-shrink-0 mt-1"
           >
-            <CpuChipIcon class="w-4 h-4 text-wisteria-600 dark:text-wisteria-400" />
+            <CpuChipIcon class="w-4 h-4 text-accent-lavender-bold" />
           </div>
 
           <!-- Bubble -->
           <div
             class="max-w-[75%] rounded-2xl px-4 py-3"
             :class="message.sender === 'user'
-              ? 'bg-wisteria-600 text-white rounded-br-md'
-              : 'bg-lavender-100 dark:bg-prussian-700 text-prussian-500 dark:text-lavender-200 rounded-bl-md'"
+              ? 'bg-accent-lavender-bold text-white rounded-br-md'
+              : 'bg-surface-sunken text-ink-primary rounded-bl-md'"
           >
             <!-- User messages: plain text -->
             <p v-if="message.sender === 'user'" class="text-sm whitespace-pre-wrap leading-relaxed">{{ message.text }}</p>
@@ -94,7 +87,7 @@
             ></div>
             <p
               class="text-[10px] mt-1.5"
-              :class="message.sender === 'user' ? 'text-wisteria-200' : 'text-lavender-400 dark:text-lavender-500'"
+              :class="message.sender === 'user' ? 'text-white/70' : 'text-ink-tertiary'"
             >
               {{ formatTime(message.created_at) }}
             </p>
@@ -103,7 +96,7 @@
           <!-- User Avatar -->
           <div
             v-if="message.sender === 'user'"
-            class="w-8 h-8 rounded-full bg-wisteria-600 flex items-center justify-center flex-shrink-0 mt-1"
+            class="w-8 h-8 rounded-full bg-accent-lavender-bold flex items-center justify-center flex-shrink-0 mt-1"
           >
             <span class="text-white font-semibold text-xs">
               {{ currentUser?.name?.charAt(0)?.toUpperCase() || '?' }}
@@ -113,14 +106,14 @@
 
         <!-- Typing indicator -->
         <div v-if="loading" class="flex gap-3">
-          <div class="w-8 h-8 rounded-full bg-wisteria-100 dark:bg-wisteria-900/30 flex items-center justify-center flex-shrink-0 mt-1">
-            <CpuChipIcon class="w-4 h-4 text-wisteria-600 dark:text-wisteria-400" />
+          <div class="w-8 h-8 rounded-full bg-accent-lavender-bold/15 flex items-center justify-center flex-shrink-0 mt-1">
+            <CpuChipIcon class="w-4 h-4 text-accent-lavender-bold" />
           </div>
-          <div class="bg-lavender-100 dark:bg-prussian-700 rounded-2xl rounded-bl-md px-4 py-3">
+          <div class="bg-surface-sunken rounded-2xl rounded-bl-md px-4 py-3">
             <div class="flex gap-1">
-              <span class="w-2 h-2 bg-lavender-400 dark:bg-lavender-500 rounded-full animate-bounce" style="animation-delay: 0ms"></span>
-              <span class="w-2 h-2 bg-lavender-400 dark:bg-lavender-500 rounded-full animate-bounce" style="animation-delay: 150ms"></span>
-              <span class="w-2 h-2 bg-lavender-400 dark:bg-lavender-500 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
+              <span class="w-2 h-2 bg-ink-tertiary rounded-full animate-bounce" style="animation-delay: 0ms"></span>
+              <span class="w-2 h-2 bg-ink-tertiary rounded-full animate-bounce" style="animation-delay: 150ms"></span>
+              <span class="w-2 h-2 bg-ink-tertiary rounded-full animate-bounce" style="animation-delay: 300ms"></span>
             </div>
           </div>
         </div>
@@ -128,27 +121,30 @@
     </div>
 
     <!-- Input Area -->
-    <div v-if="!checkingKey && hasApiKey" class="border-t border-lavender-200 dark:border-prussian-700 bg-white dark:bg-prussian-800 px-4 md:px-6 py-3 pb-safe-bottom">
+    <div v-if="!checkingKey && hasApiKey" class="border-t border-border-subtle bg-surface-raised px-4 md:px-6 py-3 pb-safe-bottom">
       <form class="max-w-2xl mx-auto flex gap-2 items-end" @submit.prevent="handleSend">
         <textarea
           ref="chatInput"
           v-model="messageInput"
           rows="1"
           placeholder="Tell Kinhold what to do..."
-          class="flex-1 px-4 py-2.5 bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-xl text-sm placeholder-lavender-400 dark:placeholder-lavender-500 text-prussian-500 dark:text-lavender-200 focus:bg-white dark:focus:bg-prussian-800 focus:ring-2 focus:ring-wisteria-400 transition-all outline-none resize-none max-h-32 overflow-y-auto"
+          class="flex-1 px-4 py-2.5 bg-surface-sunken border border-border-subtle rounded-xl text-sm placeholder-ink-tertiary text-ink-primary focus:bg-surface-raised focus:ring-2 focus:ring-accent-lavender-bold/40 transition-all outline-none resize-none max-h-32 overflow-y-auto"
           :disabled="loading"
           @keydown.enter.exact.prevent="handleSend"
           @input="autoResize"
         ></textarea>
-        <button
+        <KinButton
+          variant="primary"
+          size="md"
           type="submit"
+          icon-only
+          aria-label="Send message"
           :disabled="!messageInput.trim() || loading"
-          class="p-2.5 rounded-xl bg-wisteria-600 text-white hover:bg-wisteria-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <PaperAirplaneIcon class="w-5 h-5" />
-        </button>
+        </KinButton>
       </form>
-      <p class="max-w-2xl mx-auto text-[10px] text-lavender-400 dark:text-lavender-500 mt-1.5 text-center">
+      <p class="max-w-2xl mx-auto text-[10px] text-ink-tertiary mt-1.5 text-center">
         The assistant can make mistakes. Always verify important information.
       </p>
     </div>
@@ -169,6 +165,8 @@ import {
   Cog6ToothIcon,
   ArrowRightIcon,
 } from '@heroicons/vue/24/outline'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
 // Configure marked for safe, compact output
 marked.setOptions({
