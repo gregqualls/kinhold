@@ -157,7 +157,7 @@ npm run dev              # Terminal 2: Vite at localhost:5173
 git clone https://github.com/gregqualls/kinhold.git
 cd kinhold
 cp .env.example .env
-chmod +x setup.sh && ./setup.sh
+chmod +x scripts/setup-dev.sh && ./scripts/setup-dev.sh
 ```
 
 ### Demo Accounts
@@ -314,7 +314,7 @@ Found a bug or have an idea? Open an issue on [GitHub Issues](https://github.com
 | Document | Purpose |
 |----------|---------|
 | [SELF-HOSTING.md](SELF-HOSTING.md) | Complete self-hosting guide |
-| [PRINCIPLES.md](PRINCIPLES.md) | Core product principles that guide every decision |
+| [PRINCIPLES.md](docs/PRINCIPLES.md) | Core product principles that guide every decision |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [CLAUDE.md](CLAUDE.md) | Project context for AI assistants |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical decisions and reasoning |

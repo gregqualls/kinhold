@@ -52,7 +52,7 @@ Best for: multiple families, higher traffic, background jobs, better performance
 ```bash
 cp .env.example .env
 # Edit .env with your database credentials
-chmod +x setup.sh && ./setup.sh
+chmod +x scripts/setup-dev.sh && ./scripts/setup-dev.sh
 ```
 
 ### Option C: Native (No Docker)

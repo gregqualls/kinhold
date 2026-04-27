@@ -29,7 +29,7 @@ class GetPlaybook extends Tool
         // Sanitize slug to prevent path traversal
         $slug = preg_replace('/[^a-zA-Z0-9\-_]/', '', $slug);
 
-        $file = base_path("playbooks/vault/{$slug}.md");
+        $file = resource_path("playbooks/vault/{$slug}.md");
 
         if (! file_exists($file)) {
             return Response::error("Playbook \"{$slug}\" not found. Use list-playbooks to see available playbooks.");

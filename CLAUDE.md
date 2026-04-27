@@ -1,14 +1,16 @@
 # Kinhold — Project Briefing
 
 > Auto-loaded at session start. Keep this lean. Detail lives in `docs/`.
+>
+> Personal owner/instance details (project IDs, deployment specifics, family context) live in `CLAUDE.local.md` (gitignored). Read both if working on this checkout.
 
 ## What is Kinhold?
 
-Open-source family hub at **kinhold.app** — calendar, tasks, vault, AI assistant, gamification for the Qualls family (and other families who self-host).
+Open-source family hub at **kinhold.app** — calendar, tasks, vault, AI assistant, gamification for families (and other families who self-host).
 
 ## Owner
 
-Greg Qualls. ADHD — capture stray ideas in `docs/ROADMAP.md`, stay on the agreed session goal. Strong Laravel; frame Vue/Tailwind in Laravel/PHP analogues. Personal context in `CLAUDE.local.md`.
+Personal context, identity, and instance specifics live in `CLAUDE.local.md` (gitignored). Read it alongside this file. Owner has ADHD — capture stray ideas in `docs/ROADMAP.md` and stay on the agreed session goal. Strong Laravel background; frame Vue/Tailwind in Laravel/PHP analogues.
 
 ## Tech Stack
 
