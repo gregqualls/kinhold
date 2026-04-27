@@ -1,12 +1,17 @@
 <template>
-  <BaseModal :show="show" title="Import Recipe" size="xl" @close="handleClose">
+  <KinModalSheet
+    :model-value="show"
+    title="Import Recipe"
+    size="lg"
+    @update:model-value="(v) => !v && handleClose()"
+  >
     <!-- Tab switcher (only before preview) -->
-    <div v-if="!previewData" class="flex gap-1 mb-4 border-b border-lavender-200 dark:border-prussian-700 -mx-6 px-6">
+    <div v-if="!previewData" class="flex gap-1 mb-4 border-b border-border-subtle -mx-6 px-6">
       <button
         class="px-4 py-2.5 text-sm font-medium transition-colors relative"
         :class="activeTab === 'url'
           ? 'text-[#C4975A]'
-          : 'text-lavender-500 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200'"
+          : 'text-ink-tertiary hover:text-ink-primary'"
         @click="activeTab = 'url'"
       >
         From URL
@@ -16,7 +21,7 @@
         class="px-4 py-2.5 text-sm font-medium transition-colors relative"
         :class="activeTab === 'photo'
           ? 'text-[#C4975A]'
-          : 'text-lavender-500 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200'"
+          : 'text-ink-tertiary hover:text-ink-primary'"
         @click="activeTab = 'photo'"
       >
         From Photo
@@ -27,16 +32,13 @@
     <!-- URL import tab -->
     <div v-if="activeTab === 'url' && !previewData">
       <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1">Recipe URL</label>
-          <input
-            v-model="importUrl"
-            type="url"
-            placeholder="https://example.com/recipe/..."
-            class="input-base"
-            @keydown.enter.prevent="handleImportUrl"
-          />
-        </div>
+        <KinInput
+          v-model="importUrl"
+          type="url"
+          label="Recipe URL"
+          placeholder="https://example.com/recipe/..."
+          @keydown.enter.prevent="handleImportUrl"
+        />
 
         <!-- Duplicate warning -->
         <div
@@ -46,7 +48,7 @@
           <ExclamationTriangleIcon class="w-5 h-5 text-[#C48B3F] flex-shrink-0 mt-0.5" />
           <div class="text-sm">
             <p class="font-medium text-[#C48B3F]">Duplicate detected</p>
-            <p class="text-lavender-600 dark:text-lavender-400">
+            <p class="text-ink-secondary">
               You already have "{{ duplicateWarning.title }}" imported from this URL.
               You can still save it as a new recipe.
             </p>
@@ -56,27 +58,28 @@
         <!-- Error -->
         <div
           v-if="importError"
-          class="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-xl"
+          class="flex items-start gap-2 p-3 bg-status-failed/10 border border-status-failed/20 rounded-xl"
         >
-          <ExclamationCircleIcon class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <ExclamationCircleIcon class="w-5 h-5 text-status-failed flex-shrink-0 mt-0.5" />
           <div class="text-sm">
-            <p class="font-medium text-red-600 dark:text-red-400">Import failed</p>
-            <p class="text-lavender-600 dark:text-lavender-400">{{ importError }}</p>
+            <p class="font-medium text-status-failed">Import failed</p>
+            <p class="text-ink-secondary">{{ importError }}</p>
           </div>
         </div>
 
-        <p class="text-xs text-lavender-400 dark:text-lavender-500">
+        <p class="text-xs text-ink-tertiary">
           Most recipe sites import for free. Pages without structured data use AI (counts toward API usage).
         </p>
 
         <div class="flex gap-3">
-          <button
-            class="px-6 py-2.5 text-sm font-medium text-white bg-[#C4975A] hover:bg-[#D4A96A] rounded-[10px] transition-colors disabled:opacity-50"
+          <KinButton
+            variant="primary"
             :disabled="!importUrl || importing"
+            :loading="importing"
             @click="handleImportUrl"
           >
             {{ importing ? 'Importing...' : 'Preview Recipe' }}
-          </button>
+          </KinButton>
         </div>
       </div>
     </div>
@@ -85,16 +88,16 @@
     <div v-if="activeTab === 'photo' && !previewData">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1">Recipe Photo</label>
+          <label class="block text-sm font-medium text-ink-primary mb-1">Recipe Photo</label>
           <div
-            class="border-2 border-dashed border-lavender-300 dark:border-prussian-600 rounded-xl p-8 text-center hover:border-[#C4975A] transition-colors cursor-pointer"
+            class="border-2 border-dashed border-border-subtle rounded-xl p-8 text-center hover:border-[#C4975A] transition-colors cursor-pointer"
             @click="$refs.photoInput.click()"
           >
-            <CameraIcon class="w-8 h-8 mx-auto text-lavender-400 dark:text-lavender-500 mb-2" />
-            <p class="text-sm text-lavender-500 dark:text-lavender-400">
+            <CameraIcon class="w-8 h-8 mx-auto text-ink-tertiary mb-2" />
+            <p class="text-sm text-ink-tertiary">
               {{ selectedFile ? selectedFile.name : 'Click to upload a photo of a recipe' }}
             </p>
-            <p class="text-xs text-lavender-400 dark:text-lavender-500 mt-1">JPEG, PNG, or HEIC · Max 10 MB · Uses AI (counts toward API usage)</p>
+            <p class="text-xs text-ink-tertiary mt-1">JPEG, PNG, or HEIC · Max 10 MB · Uses AI (counts toward API usage)</p>
           </div>
           <input
             ref="photoInput"
@@ -108,23 +111,24 @@
         <!-- Error -->
         <div
           v-if="importError"
-          class="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 rounded-xl"
+          class="flex items-start gap-2 p-3 bg-status-failed/10 border border-status-failed/20 rounded-xl"
         >
-          <ExclamationCircleIcon class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <ExclamationCircleIcon class="w-5 h-5 text-status-failed flex-shrink-0 mt-0.5" />
           <div class="text-sm">
-            <p class="font-medium text-red-600 dark:text-red-400">Import failed</p>
-            <p class="text-lavender-600 dark:text-lavender-400">{{ importError }}</p>
+            <p class="font-medium text-status-failed">Import failed</p>
+            <p class="text-ink-secondary">{{ importError }}</p>
           </div>
         </div>
 
         <div class="flex gap-3">
-          <button
-            class="px-6 py-2.5 text-sm font-medium text-white bg-[#C4975A] hover:bg-[#D4A96A] rounded-[10px] transition-colors disabled:opacity-50"
+          <KinButton
+            variant="primary"
             :disabled="!selectedFile || importing"
+            :loading="importing"
             @click="handleImportPhoto"
           >
             {{ importing ? 'Analyzing...' : 'Preview Recipe' }}
-          </button>
+          </KinButton>
         </div>
       </div>
     </div>
@@ -132,7 +136,7 @@
     <!-- Loading overlay -->
     <div v-if="importing" class="flex flex-col items-center justify-center py-8">
       <LoadingSpinner size="lg" />
-      <p class="mt-3 text-sm text-lavender-500 dark:text-lavender-400">
+      <p class="mt-3 text-sm text-ink-tertiary">
         {{ activeTab === 'url' ? 'Extracting recipe data...' : 'Analyzing photo with AI...' }}
       </p>
     </div>
@@ -152,14 +156,16 @@
         @cancel="resetPreview"
       />
     </div>
-  </BaseModal>
+  </KinModalSheet>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
 import { useRecipesStore } from '@/stores/recipes'
 import { useNotification } from '@/composables/useNotification'
-import BaseModal from '@/components/common/BaseModal.vue'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import RecipeForm from './RecipeForm.vue'
 import {

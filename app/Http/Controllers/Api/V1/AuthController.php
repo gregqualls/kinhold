@@ -213,7 +213,9 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'timezone' => 'nullable|string|timezone',
-            'avatar_color' => 'nullable|string|in:teal,amber,sage,steel,plum,rose,sienna,lavender,cyan,olive,berry,forest',
+            // Kin accent families are the canonical set going forward.
+            // Legacy values kept for backwards compatibility with existing user data.
+            'avatar_color' => 'nullable|string|in:lavender,peach,mint,sun,teal,amber,sage,steel,plum,rose,sienna,cyan,olive,berry,forest',
             'user_id' => 'nullable|string|exists:users,id',
         ]);
 

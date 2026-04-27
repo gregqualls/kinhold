@@ -9,29 +9,30 @@
   >
     <div
       v-if="countdownEvent && !isDismissed && !isPast"
-      class="relative overflow-hidden rounded-[12px] p-4 md:p-5 mb-4 md:mb-6"
-      :style="bannerStyle"
+      class="kin-countdown relative overflow-hidden rounded-card border border-border-subtle p-4 md:p-5 mb-4 md:mb-6 bg-surface-raised"
     >
       <!-- Background shimmer effect -->
-      <div class="absolute inset-0 opacity-20 pointer-events-none">
-        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+      <div class="absolute inset-0 opacity-30 pointer-events-none">
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer"></div>
       </div>
 
       <div class="relative flex items-center gap-3 md:gap-4">
         <!-- Event icon -->
         <div
-          class="flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-white/20 backdrop-blur-sm shadow-sm text-white"
+          class="kin-countdown__icon flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-accent-peach-soft text-accent-peach-bold shadow-resting"
           :class="{ 'animate-bounce-gentle': isToday }"
         >
           <IconRenderer :icon="countdownEvent.icon || 'confetti'" :size="28" />
         </div>
 
-        <!-- Countdown content -->
+        <!-- Countdown content. Text colors are pinned (kin-countdown__title /
+             __value / __date) because the card itself is a "light pastel
+             island" in both themes — see scoped styles. -->
         <div class="flex-1 min-w-0">
-          <p class="text-sm md:text-base font-bold text-white truncate">
+          <p class="kin-countdown__title text-sm md:text-base font-semibold truncate">
             {{ countdownEvent.title }}
           </p>
-          <p class="text-lg md:text-xl font-extrabold text-white/95 leading-tight">
+          <p class="kin-countdown__value text-lg md:text-xl font-extrabold leading-tight">
             <template v-if="isToday">
               {{ countdownEvent.title }} is TODAY!
             </template>
@@ -42,14 +43,15 @@
         </div>
 
         <!-- Celebration icon for today -->
-        <div v-if="isToday" class="flex-shrink-0 animate-bounce-gentle text-white">
+        <div v-if="isToday" class="flex-shrink-0 animate-bounce-gentle text-accent-sun-bold">
           <IconRenderer icon="confetti" :size="32" />
         </div>
 
         <!-- Parent actions menu -->
         <div v-if="isParent" class="flex-shrink-0 relative">
           <button
-            class="p-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors text-white/80 hover:text-white"
+            type="button"
+            class="kin-countdown__action p-1.5 rounded-full transition-colors"
             aria-label="Manage countdown"
             @click.stop="showMenu = !showMenu"
           >
@@ -57,22 +59,25 @@
           </button>
           <div
             v-if="showMenu"
-            class="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-prussian-800 rounded-lg shadow-lg border border-lavender-200 dark:border-prussian-700 z-10 py-1"
+            class="absolute right-0 top-full mt-1 w-40 bg-surface-raised rounded-lg shadow-elevated border border-border-subtle z-10 py-1"
           >
             <button
-              class="w-full text-left px-3 py-1.5 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700"
+              type="button"
+              class="w-full text-left px-3 py-1.5 text-sm text-ink-primary hover:bg-surface-sunken"
               @click="handleEdit"
             >
               Edit Event
             </button>
             <button
-              class="w-full text-left px-3 py-1.5 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700"
+              type="button"
+              class="w-full text-left px-3 py-1.5 text-sm text-ink-primary hover:bg-surface-sunken"
               @click="handleRemoveCountdown"
             >
               Remove Countdown
             </button>
             <button
-              class="w-full text-left px-3 py-1.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+              type="button"
+              class="w-full text-left px-3 py-1.5 text-sm text-status-failed hover:bg-status-failed/10"
               @click="handleDelete"
             >
               Delete Event
@@ -82,7 +87,8 @@
 
         <!-- Dismiss button -->
         <button
-          class="flex-shrink-0 p-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors text-white/80 hover:text-white"
+          type="button"
+          class="flex-shrink-0 p-1.5 rounded-full bg-surface-sunken hover:bg-surface-overlay text-ink-secondary hover:text-ink-primary transition-colors"
           aria-label="Dismiss countdown"
           @click="dismiss"
         >
@@ -92,7 +98,7 @@
 
       <!-- Date line below countdown -->
       <div class="relative mt-1 ml-[60px] md:ml-[72px]">
-        <p class="text-xs text-white/70">
+        <p class="kin-countdown__date text-xs">
           {{ formatEventDate(countdownEvent.event_date) }}
           <span v-if="countdownEvent.event_time"> at {{ formatTime(countdownEvent.event_time) }}</span>
         </p>
@@ -231,13 +237,6 @@ const countdownText = computed(() => {
   return parts.join(', ') + ' to go!'
 })
 
-const bannerStyle = computed(() => {
-  const color = props.countdownEvent?.color || '#8B5CF6'
-  return {
-    background: `linear-gradient(135deg, ${color}, ${adjustColor(color, -30)})`,
-  }
-})
-
 const dismiss = () => {
   isDismissed.value = true
   if (dismissKey.value) {
@@ -285,16 +284,6 @@ const formatTime = (timeStr) => {
   return DateTime.fromObject({ hour: parseInt(h), minute: parseInt(m) }).toFormat('h:mm a')
 }
 
-function adjustColor(hex, amount) {
-  let r = parseInt(hex.slice(1, 3), 16)
-  let g = parseInt(hex.slice(3, 5), 16)
-  let b = parseInt(hex.slice(5, 7), 16)
-  r = Math.max(0, Math.min(255, r + amount))
-  g = Math.max(0, Math.min(255, g + amount))
-  b = Math.max(0, Math.min(255, b + amount))
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
-}
-
 // Close menu on click outside
 if (typeof document !== 'undefined') {
   document.addEventListener('click', () => {
@@ -304,6 +293,42 @@ if (typeof document !== 'undefined') {
 </script>
 
 <style scoped>
+/*
+  Warm iridescent gradient — same wash KinGradientCard variant="warm" uses.
+  This card is a "lightness island" — it always reads as a pastel-warm
+  surface with dark text, in both themes. That's because the gradient is
+  inherently bright (peach + sun overlays) and dark text on the warm wash
+  is the readable combo regardless of the surrounding theme.
+*/
+.kin-countdown {
+  /* Light/cream base in both themes so the warm overlays land on a bright
+     surface. In dark mode this means the card visibly "lifts" from the
+     deep charcoal page like a celebration card should. */
+  background-color: #FBF6EE;
+  background-image: var(--gradient-iridescent-warm);
+}
+
+/* Pinned text colors — dark on light wash, regardless of theme. */
+.kin-countdown__title { color: rgba(28, 28, 30, 0.65); }
+.kin-countdown__value { color: #1C1C1E; }
+.kin-countdown__date  { color: rgba(28, 28, 30, 0.55); }
+
+/* Border + icon shadow tweaks for the pinned-light surface in dark mode. */
+.dark .kin-countdown {
+  border-color: rgba(0, 0, 0, 0.10);
+}
+
+/* Dismiss / menu buttons — pinned to a translucent dark fill so they read
+   on the warm pastel base in both themes. */
+.kin-countdown__action {
+  background-color: rgba(28, 28, 30, 0.08);
+  color: rgba(28, 28, 30, 0.65);
+}
+.kin-countdown__action:hover {
+  background-color: rgba(28, 28, 30, 0.16);
+  color: #1C1C1E;
+}
+
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);

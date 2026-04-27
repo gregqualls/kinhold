@@ -8,7 +8,7 @@
       'border-lavender-400 bg-lavender-400': checked && priority === 'low',
       'border-red-300': !checked && priority === 'high',
       'border-orange-300': !checked && priority === 'medium',
-      'border-lavender-300 dark:border-lavender-500': !checked && (priority === 'low' || !priority),
+      'border-border-subtle': !checked && (priority === 'low' || !priority),
     }"
     role="checkbox"
     :aria-checked="checked"

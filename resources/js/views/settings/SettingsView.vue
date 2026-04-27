@@ -1,19 +1,19 @@
 <template>
   <div class="p-4 md:p-6 max-w-4xl">
     <!-- Header -->
-    <h1 class="text-2xl font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-6">{{ isParent ? 'Family Settings' : 'My Settings' }}</h1>
+    <h1 class="text-2xl font-bold font-heading text-ink-primary mb-6">{{ isParent ? 'Family Settings' : 'My Settings' }}</h1>
 
     <!-- Kid-friendly Profile Section (shown for non-parent users) -->
     <div v-if="!isParent" class="card-lg mb-6">
-      <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">My Profile</h2>
-      <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-        <button class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-prussian-700 transition-all" title="Change avatar" @click="openAvatarEditor(currentUser)">
+      <h2 class="text-lg font-semibold font-heading text-ink-primary mb-4">My Profile</h2>
+      <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
+        <button class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-surface-sunken transition-all" title="Change avatar" @click="openAvatarEditor(currentUser)">
           <UserAvatar :user="currentUser" size="lg" />
         </button>
         <div>
-          <p class="text-lg font-semibold text-prussian-500 dark:text-lavender-200">{{ currentUser?.name }}</p>
-          <p v-if="currentUser?.email" class="text-sm text-lavender-700 dark:text-lavender-400">{{ currentUser?.email }}</p>
-          <p v-if="family" class="text-sm text-lavender-600 dark:text-lavender-400 mt-1">{{ family?.name }}</p>
+          <p class="text-lg font-semibold text-ink-primary">{{ currentUser?.name }}</p>
+          <p v-if="currentUser?.email" class="text-sm text-ink-secondary">{{ currentUser?.email }}</p>
+          <p v-if="family" class="text-sm text-ink-secondary mt-1">{{ family?.name }}</p>
         </div>
       </div>
     </div>
@@ -46,14 +46,14 @@
         </form>
 
         <!-- Invite Code -->
-        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
-          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Family Invite Code</h3>
-          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        <div class="border-t border-border-subtle pt-4 mb-6">
+          <h3 class="font-semibold text-ink-primary mb-2">Family Invite Code</h3>
+          <p class="text-sm text-ink-secondary mb-4">
             Share this code with family members so they can join during registration.
           </p>
 
           <div class="flex items-center gap-3">
-            <div class="flex-1 px-4 py-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg font-mono text-lg tracking-widest text-prussian-500 dark:text-lavender-200 text-center">
+            <div class="flex-1 px-4 py-3 bg-surface-sunken rounded-lg font-mono text-lg tracking-widest text-ink-primary text-center">
               {{ inviteCode || '...' }}
             </div>
             <BaseButton variant="secondary" size="sm" :disabled="!inviteCode" @click="copyInviteCode">
@@ -63,15 +63,14 @@
           </div>
 
           <!-- Send invite by email -->
-          <div class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
-            <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">Send Invite by Email</p>
+          <div class="mt-4 pt-4 border-t border-border-subtle">
+            <p class="text-sm font-medium text-ink-secondary mb-2">Send Invite by Email</p>
             <form class="flex items-end gap-3" @submit.prevent="handleSendInviteEmail">
               <div class="flex-1">
-                <input
+                <KinInput
                   v-model="inviteEmail"
                   type="email"
                   placeholder="name@example.com"
-                  class="input-base"
                   required
                 />
               </div>
@@ -80,16 +79,16 @@
                 Send
               </BaseButton>
             </form>
-            <p v-if="inviteEmailSent" class="text-sm text-green-600 dark:text-green-400 mt-2">
+            <p v-if="inviteEmailSent" class="text-sm text-status-success dark:text-status-success mt-2">
               Invite sent!
             </p>
           </div>
         </div>
 
         <!-- Family Members -->
-        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
+        <div class="border-t border-border-subtle pt-4 mb-6">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="font-semibold text-prussian-500 dark:text-lavender-200">Family Members</h3>
+            <h3 class="font-semibold text-ink-primary">Family Members</h3>
             <BaseButton variant="secondary" size="sm" @click="openAddMemberModal">
               <PlusIcon class="w-4 h-4 mr-2" />
               Add Member
@@ -100,32 +99,32 @@
             <div
               v-for="member in familyMembers"
               :key="member.id"
-              class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
+              class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg"
             >
               <div class="flex items-center gap-3">
                 <button
-                  class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-prussian-700 transition-all"
+                  class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-surface-sunken transition-all"
                   title="Change avatar"
                   @click="openAvatarEditor(member)"
                 >
-                  <UserAvatar :user="member" size="md" />
+                  <KinAvatar :name="member.name" :src="member.avatar" size="md" color="lavender" />
                 </button>
                 <div>
-                  <p class="font-semibold text-prussian-500 dark:text-lavender-200">{{ member.name }}</p>
-                  <p v-if="member.email" class="text-xs text-lavender-700 dark:text-lavender-400">{{ member.email }}</p>
-                  <p v-else class="text-xs text-lavender-600 dark:text-lavender-500 italic">Managed account</p>
+                  <p class="font-semibold text-ink-primary">{{ member.name }}</p>
+                  <p v-if="member.email" class="text-xs text-ink-secondary">{{ member.email }}</p>
+                  <p v-else class="text-xs text-ink-secondary italic">Managed account</p>
                   <div class="flex items-center gap-2 mt-1">
                     <span
                       :class="[
                         'text-xs px-2 py-0.5 rounded-full font-medium',
                         member.family_role === 'parent' || member.role === 'parent'
-                          ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/30 dark:text-wisteria-300'
-                          : 'bg-lavender-200 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-300'
+                          ? 'bg-accent-lavender-soft/40 text-accent-lavender-bold dark:bg-accent-lavender-soft/40 dark:text-accent-lavender-bold'
+                          : 'bg-surface-sunken text-ink-secondary dark:bg-surface-overlay dark:text-ink-tertiary'
                       ]"
                     >
                       {{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}
                     </span>
-                    <span v-if="member.is_managed" class="text-xs px-2 py-0.5 rounded-full bg-sand-100 text-sand-700 dark:bg-sand-900/30 dark:text-sand-300 font-medium">
+                    <span v-if="member.is_managed" class="text-xs px-2 py-0.5 rounded-full bg-accent-peach-soft/60 text-accent-peach-bold font-medium">
                       Managed
                     </span>
                   </div>
@@ -135,25 +134,25 @@
               <div v-if="member.id !== currentUser?.id" class="flex items-center gap-1">
                 <button
                   v-if="member.is_managed"
-                  class="p-2 hover:bg-wisteria-100 dark:hover:bg-wisteria-900/20 rounded-lg transition-colors"
+                  class="p-2 hover:bg-accent-lavender-soft/40 rounded-lg transition-colors"
                   title="Switch to this profile"
                   @click="openSwitchToModal(member)"
                 >
-                  <ArrowsRightLeftIcon class="w-4 h-4 text-wisteria-600 dark:text-wisteria-400" />
+                  <ArrowsRightLeftIcon class="w-4 h-4 text-accent-lavender-bold" />
                 </button>
                 <button
-                  class="p-2 hover:bg-lavender-100 dark:hover:bg-prussian-600 rounded-lg transition-colors"
+                  class="p-2 hover:bg-surface-overlay rounded-lg transition-colors"
                   title="Edit member"
                   @click="openEditMemberModal(member)"
                 >
-                  <PencilIcon class="w-4 h-4 text-prussian-400 dark:text-lavender-400" />
+                  <PencilIcon class="w-4 h-4 text-ink-secondary dark:text-ink-tertiary" />
                 </button>
                 <button
                   class="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                   title="Remove member"
                   @click="confirmRemoveMember(member)"
                 >
-                  <TrashIcon class="w-4 h-4 text-red-600" />
+                  <TrashIcon class="w-4 h-4 text-status-failed" />
                 </button>
               </div>
             </div>
@@ -161,9 +160,9 @@
         </div>
 
         <!-- Setup Wizard (relocated here from bottom) -->
-        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4">
-          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Setup Wizard</h3>
-          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        <div class="border-t border-border-subtle pt-4">
+          <h3 class="font-semibold text-ink-primary mb-2">Setup Wizard</h3>
+          <p class="text-sm text-ink-secondary mb-4">
             Re-run the setup wizard to invite members, connect calendars, or configure features.
           </p>
           <BaseButton variant="secondary" @click="$router.push({ name: 'Onboarding' })">
@@ -187,34 +186,34 @@
           <div
             v-for="module in tasksPointsModules"
             :key="module.id"
-            class="p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg mb-3"
+            class="p-4 bg-surface-sunken rounded-lg mb-3"
           >
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
               <div>
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ module.name }}</p>
-                <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ module.description }}</p>
+                <p class="font-medium text-ink-primary">{{ module.name }}</p>
+                <p class="text-xs text-ink-secondary">{{ module.description }}</p>
               </div>
               <div class="flex gap-1.5 shrink-0">
                 <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
                   @click="setModuleMode(module.id, 'all')"
                 >
                   Everyone
                 </button>
                 <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
                   @click="setModuleMode(module.id, 'roles', ['parent'])"
                 >
                   Parents Only
                 </button>
                 <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-red-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-status-failed text-white shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
                   @click="setModuleMode(module.id, 'off')"
                 >
                   Off
                 </button>
                 <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
                   @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
                 >
                   Custom
@@ -223,23 +222,23 @@
             </div>
 
             <!-- Per-member checkboxes -->
-            <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-lavender-200 dark:border-prussian-600">
-              <p class="text-xs font-medium text-prussian-400 dark:text-lavender-300 mb-2">Select family members:</p>
+            <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-border-subtle dark:border-border-subtle">
+              <p class="text-xs font-medium text-ink-secondary mb-2">Select family members:</p>
               <div class="flex flex-wrap gap-2">
                 <label
                   v-for="member in familyMembers"
                   :key="member.id"
-                  class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-prussian-800 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+                  class="flex items-center gap-2 px-3 py-2 bg-surface-raised rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
                 >
                   <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
-                  <UserAvatar :user="member" size="xs" />
-                  <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ member.name }}</span>
-                  <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-lavender-500 dark:text-lavender-400 italic">(always)</span>
+                  <KinAvatar :name="member.name" :src="member.avatar" size="xs" color="lavender" />
+                  <span class="text-sm text-ink-primary">{{ member.name }}</span>
+                  <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-ink-tertiary italic">(always)</span>
                 </label>
               </div>
             </div>
 
-            <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-2">
+            <p class="text-xs text-ink-primary mt-2">
               <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
               <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
               <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
@@ -249,66 +248,71 @@
         </div>
 
         <!-- Leaderboard Period -->
-        <div v-if="moduleToggles.points" class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-4">
-          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
+        <div v-if="moduleToggles.points" class="border-t border-border-subtle pt-4 mb-4">
+          <label class="block text-sm font-medium text-ink-secondary mb-2">
             Leaderboard Reset Period
           </label>
-          <select v-model="leaderboardPeriod" class="input-base w-full max-w-xs">
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-          </select>
-          <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+          <KinSelect
+            v-model="leaderboardPeriod"
+            class="w-full max-w-xs"
+            :options="leaderboardPeriodOptions"
+          />
+          <p class="text-xs text-ink-secondary mt-1">
             How often the leaderboard resets. Does not affect point balances.
           </p>
 
           <!-- Kudos Cost Toggle -->
           <div class="mt-4">
-            <ToggleSwitch
-              :model-value="kudosCostEnabled"
-              label="Kudos cost points"
-              description="Giving kudos deducts 1 point from the giver's bank. Prevents trading kudos back and forth."
-              @update:model-value="kudosCostEnabled = $event"
-            />
+            <div class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg gap-4">
+              <div class="flex-1">
+                <p class="font-medium text-ink-primary">Kudos cost points</p>
+                <p class="text-xs text-ink-secondary mt-0.5">Giving kudos deducts 1 point from the giver's bank. Prevents trading kudos back and forth.</p>
+              </div>
+              <KinSwitch
+                :model-value="kudosCostEnabled"
+                color="lavender"
+                @update:model-value="kudosCostEnabled = $event"
+              />
+            </div>
           </div>
         </div>
 
         <!-- Default Task Points -->
-        <div v-if="moduleToggles.tasks && moduleToggles.points" class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-4">
-          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Default Task Points</h3>
-          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        <div v-if="moduleToggles.tasks && moduleToggles.points" class="border-t border-border-subtle pt-4 mb-4">
+          <h3 class="font-semibold text-ink-primary mb-2">Default Task Points</h3>
+          <p class="text-sm text-ink-secondary mb-4">
             Set how many points are awarded by default for each task priority level. Tasks with explicitly set points are not affected.
           </p>
 
           <div class="space-y-3">
-            <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+            <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Low Priority</label>
+                <label class="block text-sm font-medium text-ink-secondary">Low Priority</label>
               </div>
-              <input v-model.number="defaultPoints.low" type="number" min="0" max="1000" class="input-base w-24 text-center" />
-              <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+              <KinInput v-model.number="defaultPoints.low" type="number" min="0" max="1000" class="w-24 text-center" />
+              <span class="text-sm text-ink-secondary">pts</span>
             </div>
-            <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+            <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Medium Priority</label>
+                <label class="block text-sm font-medium text-ink-secondary">Medium Priority</label>
               </div>
-              <input v-model.number="defaultPoints.medium" type="number" min="0" max="1000" class="input-base w-24 text-center" />
-              <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+              <KinInput v-model.number="defaultPoints.medium" type="number" min="0" max="1000" class="w-24 text-center" />
+              <span class="text-sm text-ink-secondary">pts</span>
             </div>
-            <div class="flex items-center gap-4 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+            <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">High Priority</label>
+                <label class="block text-sm font-medium text-ink-secondary">High Priority</label>
               </div>
-              <input v-model.number="defaultPoints.high" type="number" min="0" max="1000" class="input-base w-24 text-center" />
-              <span class="text-sm text-lavender-600 dark:text-lavender-400">pts</span>
+              <KinInput v-model.number="defaultPoints.high" type="number" min="0" max="1000" class="w-24 text-center" />
+              <span class="text-sm text-ink-secondary">pts</span>
             </div>
           </div>
         </div>
 
         <!-- Task Assignment -->
-        <div v-if="moduleToggles.tasks" class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-4">
-          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Task Assignment</h3>
-          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        <div v-if="moduleToggles.tasks" class="border-t border-border-subtle pt-4 mb-4">
+          <h3 class="font-semibold text-ink-primary mb-2">Task Assignment</h3>
+          <p class="text-sm text-ink-secondary mb-4">
             Control which family members can assign tasks to others. Parents can always assign tasks to anyone.
           </p>
 
@@ -316,28 +320,28 @@
             <label
               v-for="option in taskAssignmentOptions"
               :key="option.value"
-              class="flex items-start gap-3 p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+              class="flex items-start gap-3 p-4 bg-surface-sunken rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
             >
               <input v-model="taskAssignment.mode" type="radio" :value="option.value" name="task_assignment_mode" class="mt-0.5 rounded-full" />
               <div class="flex-1">
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ option.label }}</p>
-                <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ option.description }}</p>
+                <p class="font-medium text-ink-primary">{{ option.label }}</p>
+                <p class="text-xs text-ink-secondary">{{ option.description }}</p>
               </div>
             </label>
           </div>
 
-          <div v-if="taskAssignment.mode === 'users'" class="mt-4 pl-4 border-l-2 border-wisteria-300 dark:border-wisteria-700">
-            <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-3">Select which children can assign tasks to others:</p>
+          <div v-if="taskAssignment.mode === 'users'" class="mt-4 pl-4 border-l-2 border-accent-lavender-soft">
+            <p class="text-sm font-medium text-ink-secondary mb-3">Select which children can assign tasks to others:</p>
             <div class="space-y-2">
               <label
                 v-for="child in childMembers"
                 :key="child.id"
-                class="flex items-center gap-3 p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+                class="flex items-center gap-3 p-3 bg-surface-sunken rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
               >
                 <input v-model="taskAssignment.users" type="checkbox" :value="child.id" class="rounded" />
-                <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">{{ child.name }}</span>
+                <span class="text-sm font-medium text-ink-primary">{{ child.name }}</span>
               </label>
-              <p v-if="childMembers.length === 0" class="text-sm text-lavender-600 dark:text-lavender-400 italic">
+              <p v-if="childMembers.length === 0" class="text-sm text-ink-secondary italic">
                 No child members in the family yet.
               </p>
             </div>
@@ -345,7 +349,7 @@
         </div>
 
         <!-- Save button -->
-        <div class="flex justify-end pt-4 border-t border-lavender-200 dark:border-prussian-700">
+        <div class="flex justify-end pt-4 border-t border-border-subtle">
           <BaseButton variant="primary" :loading="savingTasksPoints" @click="saveTasksPointsSection">
             Save Changes
           </BaseButton>
@@ -363,7 +367,7 @@
       >
         <!-- AI Mode Toggle -->
         <div class="mb-6">
-          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-3">
+          <label class="block text-sm font-medium text-ink-secondary mb-3">
             AI Access
           </label>
 
@@ -374,23 +378,23 @@
               :class="[
                 'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
                 aiMode === 'kinhold'
-                  ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 bg-lavender-50 dark:bg-prussian-800'
-                  : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 bg-white dark:bg-prussian-800/50',
+                  ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
+                  : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
               ]"
               @click="aiMode = 'kinhold'"
             >
-              <div v-if="aiMode === 'kinhold'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 flex items-center justify-center">
+              <div v-if="aiMode === 'kinhold'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <div class="w-8 h-8 rounded-lg bg-wisteria-100 dark:bg-wisteria-900/40 flex items-center justify-center mb-2">
-                <svg class="w-4 h-4 text-wisteria-600 dark:text-wisteria-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-8 h-8 rounded-lg bg-accent-lavender-soft/40 flex items-center justify-center mb-2">
+                <svg class="w-4 h-4 text-accent-lavender-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">Use Kinhold AI</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">Powered by Claude · Free in beta</p>
+              <p class="text-sm font-semibold text-ink-primary">Use Kinhold AI</p>
+              <p class="text-xs text-ink-secondary mt-0.5">Powered by Claude · Free in beta</p>
             </button>
 
             <!-- BYOK tab -->
@@ -398,12 +402,12 @@
               :class="[
                 'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
                 aiMode === 'byok'
-                  ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 bg-lavender-50 dark:bg-prussian-800'
-                  : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 bg-white dark:bg-prussian-800/50',
+                  ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
+                  : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
               ]"
               @click="aiMode = 'byok'"
             >
-              <div v-if="aiMode === 'byok'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 flex items-center justify-center">
+              <div v-if="aiMode === 'byok'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
@@ -413,20 +417,20 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
               </div>
-              <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">My Own API Key</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">Anthropic, OpenAI, or Google</p>
+              <p class="text-sm font-semibold text-ink-primary">My Own API Key</p>
+              <p class="text-xs text-ink-secondary mt-0.5">Anthropic, OpenAI, or Google</p>
             </button>
           </div>
 
           <!-- Kinhold AI panel -->
-          <div v-if="aiMode === 'kinhold'" class="p-4 bg-wisteria-50 dark:bg-wisteria-900/20 border border-wisteria-200 dark:border-wisteria-800 rounded-lg">
+          <div v-if="aiMode === 'kinhold'" class="p-4 bg-accent-lavender-soft/30 border border-accent-lavender-soft rounded-lg">
             <div class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-wisteria-600 dark:text-wisteria-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-accent-lavender-bold mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div>
-                <p class="text-sm font-medium text-wisteria-800 dark:text-wisteria-200">You're all set</p>
-                <p class="text-xs text-wisteria-700 dark:text-wisteria-300 mt-0.5">
+                <p class="text-sm font-medium text-accent-lavender-bold">You're all set</p>
+                <p class="text-xs text-accent-lavender-bold mt-0.5">
                   Kinhold AI is powered by Anthropic's Claude. No API key needed — we handle it for you.
                   This is free during the beta period.
                 </p>
@@ -444,39 +448,38 @@
                 :class="[
                   'relative flex flex-col items-center p-3 rounded-xl border-2 transition-all duration-200 text-center',
                   aiConfig.provider === provider.slug
-                    ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 bg-lavender-50 dark:bg-prussian-800'
-                    : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 bg-white dark:bg-prussian-800/50',
+                    ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
+                    : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
                 ]"
                 @click="selectAiProvider(provider.slug)"
               >
                 <div class="w-8 h-8 mb-1.5 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
                   <span class="text-base font-bold">{{ providerIcon(provider.slug) }}</span>
                 </div>
-                <p class="text-xs font-semibold text-prussian-500 dark:text-lavender-200">{{ provider.name }}</p>
+                <p class="text-xs font-semibold text-ink-primary">{{ provider.name }}</p>
               </button>
             </div>
 
             <!-- API Key -->
             <div>
-              <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1.5">
+              <label class="block text-sm font-medium text-ink-secondary mb-1.5">
                 {{ selectedProviderName }} API Key
               </label>
               <div class="relative">
-                <input
+                <KinInput
                   v-model="aiConfig.apiKey"
                   :type="showAiKey ? 'text' : 'password'"
                   :placeholder="selectedProviderPlaceholder"
-                  class="input-base pr-20"
                 />
                 <button
-                  type="button" class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs font-medium text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 transition-colors"
+                  type="button" class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs font-medium text-ink-secondary hover:text-ink-primary transition-colors z-10"
                   @click="showAiKey = !showAiKey"
                 >
                   {{ showAiKey ? 'Hide' : 'Show' }}
                 </button>
               </div>
               <div class="flex items-center justify-between mt-1">
-                <p class="text-xs text-lavender-700 dark:text-lavender-400">
+                <p class="text-xs text-ink-secondary">
                   <template v-if="aiConfig.hasSavedKey && !aiConfig.apiKey">
                     Current key: <span class="font-mono">{{ aiConfig.maskedKey }}</span>
                   </template>
@@ -484,7 +487,7 @@
                 </p>
                 <a
                   :href="selectedProviderHelpUrl" target="_blank" rel="noopener noreferrer"
-                  class="text-xs text-wisteria-600 dark:text-wisteria-400 hover:underline whitespace-nowrap ml-2"
+                  class="text-xs text-accent-lavender-bold hover:underline whitespace-nowrap ml-2"
                 >
                   Get API key →
                 </a>
@@ -493,11 +496,11 @@
 
             <!-- Model override -->
             <div>
-              <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1.5">
-                Model Override <span class="font-normal text-lavender-500">(optional)</span>
+              <label class="block text-sm font-medium text-ink-secondary mb-1.5">
+                Model Override <span class="font-normal text-ink-tertiary">(optional)</span>
               </label>
-              <input v-model="aiConfig.model" type="text" :placeholder="selectedProviderDefaultModel" class="input-base" />
-              <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-1">
+              <KinInput v-model="aiConfig.model" type="text" :placeholder="selectedProviderDefaultModel" />
+              <p class="text-xs text-ink-secondary mt-1">
                 Leave blank to use {{ selectedProviderDefaultModel }}.
               </p>
             </div>
@@ -510,47 +513,47 @@
         </div>
 
         <!-- Connect AI Assistant (MCP Token) -->
-        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
-          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-2">Connect AI Assistant</h3>
-          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        <div class="border-t border-border-subtle pt-4 mb-6">
+          <h3 class="font-semibold text-ink-primary mb-2">Connect AI Assistant</h3>
+          <p class="text-sm text-ink-secondary mb-4">
             Connect any MCP-compatible AI assistant to manage your family hub.
           </p>
 
           <!-- OAuth quick-connect info -->
-          <div class="p-4 bg-wisteria-50 dark:bg-wisteria-900/20 border border-wisteria-200 dark:border-wisteria-800 rounded-lg mb-4">
-            <p class="text-sm font-medium text-wisteria-800 dark:text-wisteria-200 mb-1">Quick Connect (Claude Desktop / ChatGPT)</p>
-            <p class="text-xs text-wisteria-700 dark:text-wisteria-300 mb-2">
+          <div class="p-4 bg-accent-lavender-soft/30 border border-accent-lavender-soft rounded-lg mb-4">
+            <p class="text-sm font-medium text-accent-lavender-bold mb-1">Quick Connect (Claude Desktop / ChatGPT)</p>
+            <p class="text-xs text-accent-lavender-bold mb-2">
               Add Kinhold as a custom connector using OAuth — no token needed:
             </p>
-            <div class="space-y-1 text-xs text-wisteria-600 dark:text-wisteria-300">
+            <div class="space-y-1 text-xs text-accent-lavender-bold dark:text-accent-lavender-bold">
               <div class="flex items-start gap-2">
                 <span class="font-medium min-w-[40px]">Name</span>
-                <code class="font-mono bg-wisteria-100 dark:bg-wisteria-900/40 px-1.5 py-0.5 rounded">Kinhold</code>
+                <code class="font-mono bg-accent-lavender-soft/40 px-1.5 py-0.5 rounded">Kinhold</code>
               </div>
               <div class="flex items-start gap-2">
                 <span class="font-medium min-w-[40px]">URL</span>
-                <code class="font-mono bg-wisteria-100 dark:bg-wisteria-900/40 px-1.5 py-0.5 rounded break-all">{{ mcpGenerated.mcpUrl || (appOrigin + '/mcp') }}</code>
+                <code class="font-mono bg-accent-lavender-soft/40 px-1.5 py-0.5 rounded break-all">{{ mcpGenerated.mcpUrl || (appOrigin + '/mcp') }}</code>
               </div>
             </div>
-            <p class="text-xs text-wisteria-600 dark:text-wisteria-300 mt-2">
+            <p class="text-xs text-accent-lavender-bold dark:text-accent-lavender-bold mt-2">
               Leave OAuth fields blank. You'll be prompted to sign in with Google when you connect.
             </p>
           </div>
 
           <!-- Bearer token fallback (Claude Code / manual) -->
-          <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-2 font-medium">Advanced: Bearer Token (for Claude Code / manual setup)</p>
-          <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+          <p class="text-xs text-ink-secondary mb-2 font-medium">Advanced: Bearer Token (for Claude Code / manual setup)</p>
+          <div class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg">
             <div>
               <div class="flex items-center gap-2">
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">MCP Connection</p>
-                <span v-if="mcpToken.hasToken" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                <p class="font-medium text-ink-primary">MCP Connection</p>
+                <span v-if="mcpToken.hasToken" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-status-success">
                   Connected
                 </span>
-                <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-lavender-100 text-lavender-700 dark:bg-prussian-600 dark:text-lavender-400">
+                <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-sunken text-ink-secondary dark:bg-surface-overlay dark:text-ink-tertiary">
                   Not Connected
                 </span>
               </div>
-              <p v-if="mcpToken.lastUsedAt" class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+              <p v-if="mcpToken.lastUsedAt" class="text-xs text-ink-secondary mt-1">
                 Last used: {{ new Date(mcpToken.lastUsedAt).toLocaleDateString() }}
               </p>
             </div>
@@ -574,27 +577,27 @@
 
             <div>
               <div class="flex items-center justify-between mb-1">
-                <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300">Bearer Token</label>
+                <label class="block text-sm font-medium text-ink-secondary">Bearer Token</label>
                 <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('token', mcpGenerated.plainToken)">
                   <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
                   {{ mcpCopied.token ? 'Copied!' : 'Copy' }}
                 </BaseButton>
               </div>
-              <div class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-green-400 p-3 rounded-lg overflow-x-auto">
+              <div class="font-mono text-sm bg-surface-raised dark:bg-surface-app text-status-success p-3 rounded-lg overflow-x-auto">
                 {{ mcpGenerated.plainToken }}
               </div>
             </div>
 
             <div>
-              <div class="flex flex-wrap gap-1 border-b border-lavender-200 dark:border-prussian-700 mb-3">
+              <div class="flex flex-wrap gap-1 border-b border-border-subtle mb-3">
                 <button
                   v-for="client in mcpGenerated.clients"
                   :key="client.id"
                   :class="[
                     'px-3 py-1.5 text-sm font-medium rounded-t-lg transition-colors -mb-px',
                     mcpActiveClient === client.id
-                      ? 'border border-b-white dark:border-b-prussian-800 border-lavender-200 dark:border-prussian-700 text-prussian-500 dark:text-lavender-200 bg-white dark:bg-prussian-800'
-                      : 'text-lavender-600 dark:text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200',
+                      ? 'border border-b-surface-raised border-border-subtle text-ink-primary bg-surface-raised'
+                      : 'text-ink-secondary hover:text-ink-primary',
                   ]"
                   @click="mcpActiveClient = client.id"
                 >
@@ -603,10 +606,10 @@
               </div>
 
               <div v-for="client in mcpGenerated.clients" v-show="mcpActiveClient === client.id" :key="client.id">
-                <p class="text-xs text-lavender-600 dark:text-lavender-400 mb-2">{{ client.instructions }}</p>
+                <p class="text-xs text-ink-secondary mb-2">{{ client.instructions }}</p>
 
                 <template v-if="client.steps">
-                  <ol class="list-decimal list-inside space-y-2 text-sm text-prussian-500 dark:text-lavender-200 mb-3">
+                  <ol class="list-decimal list-inside space-y-2 text-sm text-ink-primary mb-3">
                     <li v-for="(step, i) in client.steps" :key="i" class="leading-relaxed">{{ step }}</li>
                   </ol>
                 </template>
@@ -614,8 +617,8 @@
                 <template v-else-if="client.details">
                   <div class="space-y-2 mb-2">
                     <div v-for="(value, label) in client.details" :key="label" class="flex items-start gap-2">
-                      <span class="text-xs font-medium text-lavender-600 dark:text-lavender-400 uppercase min-w-[80px]">{{ label.replace('_', ' ') }}</span>
-                      <code class="text-sm font-mono text-prussian-500 dark:text-lavender-200 break-all">{{ value }}</code>
+                      <span class="text-xs font-medium text-ink-secondary uppercase min-w-[80px]">{{ label.replace('_', ' ') }}</span>
+                      <code class="text-sm font-mono text-ink-primary break-all">{{ value }}</code>
                     </div>
                   </div>
                   <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, Object.entries(client.details).map(([k, v]) => k + ': ' + v).join('\n'))">
@@ -631,7 +634,7 @@
                       {{ mcpCopied[client.id] ? 'Copied!' : 'Copy' }}
                     </BaseButton>
                   </div>
-                  <pre class="font-mono text-sm bg-prussian-800 dark:bg-prussian-900 text-lavender-200 p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
+                  <pre class="font-mono text-sm bg-surface-raised dark:bg-surface-app text-ink-secondary p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
                 </template>
               </div>
             </div>
@@ -639,40 +642,40 @@
         </div>
 
         <!-- Google Account Linking -->
-        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
-          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-3">Google Account</h3>
-          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        <div class="border-t border-border-subtle pt-4 mb-6">
+          <h3 class="font-semibold text-ink-primary mb-3">Google Account</h3>
+          <p class="text-sm text-ink-secondary mb-4">
             Link your Google account for quick sign-in. Your Google email must match your account email.
           </p>
 
-          <div v-if="currentUser?.google_id" class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+          <div v-if="currentUser?.google_id" class="flex items-center justify-between p-3 bg-status-success/10 rounded-lg">
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+              <svg class="w-5 h-5 text-status-success dark:text-status-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
               <span class="text-sm font-medium text-green-800 dark:text-green-300">Google account linked</span>
             </div>
             <BaseButton variant="ghost" size="sm" :loading="unlinkingGoogle" @click="handleUnlinkGoogle">Unlink</BaseButton>
           </div>
 
-          <div v-else class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+          <div v-else class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
             <div>
-              <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Not linked</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">Sign in faster with Google</p>
+              <p class="text-sm font-medium text-ink-primary">Not linked</p>
+              <p class="text-xs text-ink-secondary mt-0.5">Sign in faster with Google</p>
             </div>
             <BaseButton variant="secondary" size="sm" :loading="linkingGoogle" @click="handleLinkGoogle">Link Google</BaseButton>
           </div>
 
-          <div v-if="googleLinkError" class="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p class="text-xs text-red-700 dark:text-red-300">{{ googleLinkError }}</p>
+          <div v-if="googleLinkError" class="mt-2 p-2 bg-status-failed/10 border border-status-failed/30 rounded-lg">
+            <p class="text-xs text-status-failed">{{ googleLinkError }}</p>
           </div>
-          <div v-if="googleLinked" class="mt-2 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <p class="text-xs text-green-700 dark:text-green-300">Google account linked successfully!</p>
+          <div v-if="googleLinked" class="mt-2 p-2 bg-status-success/10 border border-green-200 dark:border-green-800 rounded-lg">
+            <p class="text-xs text-status-success dark:text-green-300">Google account linked successfully!</p>
           </div>
         </div>
 
         <!-- Google Calendar -->
-        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4 mb-6">
-          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-3">Google Calendar Sync</h3>
-          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        <div class="border-t border-border-subtle pt-4 mb-6">
+          <h3 class="font-semibold text-ink-primary mb-3">Google Calendar Sync</h3>
+          <p class="text-sm text-ink-secondary mb-4">
             Connect your Google Calendar to sync events into the family hub.
           </p>
 
@@ -689,19 +692,19 @@
             <div
               v-for="conn in userCalendarConnections"
               :key="conn.id"
-              class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
+              class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg"
             >
               <div>
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ conn.calendar_name || 'Google Calendar' }}</p>
-                <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">{{ currentUser?.name }}</p>
+                <p class="font-medium text-ink-primary">{{ conn.calendar_name || 'Google Calendar' }}</p>
+                <p class="text-xs text-ink-secondary mt-0.5">{{ currentUser?.name }}</p>
               </div>
               <BaseButton variant="ghost" size="sm" @click="handleDisconnectCalendar(conn.id)">Disconnect</BaseButton>
             </div>
 
-            <div v-if="userCalendarConnections.length === 0" class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
+            <div v-if="userCalendarConnections.length === 0" class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
               <div>
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ currentUser?.name }}</p>
-                <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">
+                <p class="font-medium text-ink-primary">{{ currentUser?.name }}</p>
+                <p class="text-xs text-ink-secondary mt-0.5">
                   <span class="badge badge-warning">Not Connected</span>
                 </p>
               </div>
@@ -717,56 +720,56 @@
             <div
               v-for="conn in otherMemberConnections"
               :key="conn.id"
-              class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
+              class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg"
             >
               <div>
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ conn.calendar_name || 'Google Calendar' }}</p>
-                <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">{{ conn.user?.name || 'Family Member' }}</p>
+                <p class="font-medium text-ink-primary">{{ conn.calendar_name || 'Google Calendar' }}</p>
+                <p class="text-xs text-ink-secondary mt-0.5">{{ conn.user?.name || 'Family Member' }}</p>
               </div>
             </div>
           </div>
 
-          <div v-if="calendarError" class="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p class="text-sm text-red-700 dark:text-red-300">{{ calendarError }}</p>
+          <div v-if="calendarError" class="mt-3 p-3 bg-status-failed/10 border border-status-failed/30 rounded-lg">
+            <p class="text-sm text-status-failed">{{ calendarError }}</p>
           </div>
         </div>
 
         <!-- ICS URL Subscription -->
-        <div class="border-t border-lavender-200 dark:border-prussian-700 pt-4">
-          <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 mb-3">Subscribe via URL</h3>
-          <p class="text-sm text-lavender-700 dark:text-lavender-400 mb-4">
+        <div class="border-t border-border-subtle pt-4">
+          <h3 class="font-semibold text-ink-primary mb-3">Subscribe via URL</h3>
+          <p class="text-sm text-ink-secondary mb-4">
             Add a calendar by pasting its ICS feed URL (works with any .ics calendar link).
           </p>
 
           <form class="space-y-3" @submit.prevent="handleSubscribeUrl">
             <div>
-              <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1">Calendar URL</label>
-              <input v-model="icsForm.url" type="url" placeholder="https://example.com/calendar.ics" class="input-base" required />
+              <label class="block text-sm font-medium text-ink-secondary mb-1">Calendar URL</label>
+              <KinInput v-model="icsForm.url" type="url" placeholder="https://example.com/calendar.ics" required />
             </div>
             <div>
-              <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-1">Calendar Name (optional)</label>
-              <input v-model="icsForm.name" type="text" placeholder="My Calendar" class="input-base" />
-              <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">If left blank, the name will be auto-detected from the calendar data.</p>
+              <label class="block text-sm font-medium text-ink-secondary mb-1">Calendar Name (optional)</label>
+              <KinInput v-model="icsForm.name" type="text" placeholder="My Calendar" />
+              <p class="text-xs text-ink-secondary mt-1">If left blank, the name will be auto-detected from the calendar data.</p>
             </div>
             <div class="flex justify-end">
               <BaseButton variant="secondary" size="sm" :loading="subscribingUrl">Subscribe</BaseButton>
             </div>
           </form>
 
-          <div v-if="icsError" class="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p class="text-sm text-red-700 dark:text-red-300">{{ icsError }}</p>
+          <div v-if="icsError" class="mt-3 p-3 bg-status-failed/10 border border-status-failed/30 rounded-lg">
+            <p class="text-sm text-status-failed">{{ icsError }}</p>
           </div>
 
           <div v-if="icsConnections.length > 0" class="mt-4 space-y-2">
-            <p class="text-sm font-medium text-prussian-400 dark:text-lavender-300">Subscribed Calendars</p>
+            <p class="text-sm font-medium text-ink-secondary">Subscribed Calendars</p>
             <div
               v-for="conn in icsConnections"
               :key="conn.id"
-              class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
+              class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg"
             >
               <div>
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ conn.calendar_name || 'ICS Calendar' }}</p>
-                <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-0.5">URL subscription</p>
+                <p class="font-medium text-ink-primary">{{ conn.calendar_name || 'ICS Calendar' }}</p>
+                <p class="text-xs text-ink-secondary mt-0.5">URL subscription</p>
               </div>
               <BaseButton variant="ghost" size="sm" @click="handleDisconnectCalendar(conn.id)">Unsubscribe</BaseButton>
             </div>
@@ -788,34 +791,34 @@
           <div
             v-for="module in otherModules"
             :key="module.id"
-            class="p-4 bg-lavender-50 dark:bg-prussian-700 rounded-lg"
+            class="p-4 bg-surface-sunken rounded-lg"
           >
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
               <div>
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">{{ module.name }}</p>
-                <p class="text-xs text-lavender-700 dark:text-lavender-400">{{ module.description }}</p>
+                <p class="font-medium text-ink-primary">{{ module.name }}</p>
+                <p class="text-xs text-ink-secondary">{{ module.description }}</p>
               </div>
               <div class="flex gap-1.5 shrink-0">
                 <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
                   @click="setModuleMode(module.id, 'all')"
                 >
                   Everyone
                 </button>
                 <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
                   @click="setModuleMode(module.id, 'roles', ['parent'])"
                 >
                   Parents Only
                 </button>
                 <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-red-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-status-failed text-white shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
                   @click="setModuleMode(module.id, 'off')"
                 >
                   Off
                 </button>
                 <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-wisteria-500 text-white' : 'bg-lavender-200 dark:bg-prussian-600 text-lavender-700 dark:text-lavender-300 hover:bg-lavender-300 dark:hover:bg-prussian-500']"
+                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
                   @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
                 >
                   Custom
@@ -823,23 +826,23 @@
               </div>
             </div>
 
-            <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-lavender-200 dark:border-prussian-600">
-              <p class="text-xs font-medium text-prussian-400 dark:text-lavender-300 mb-2">Select family members:</p>
+            <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-border-subtle dark:border-border-subtle">
+              <p class="text-xs font-medium text-ink-secondary mb-2">Select family members:</p>
               <div class="flex flex-wrap gap-2">
                 <label
                   v-for="member in familyMembers"
                   :key="member.id"
-                  class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-prussian-800 rounded-lg cursor-pointer hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+                  class="flex items-center gap-2 px-3 py-2 bg-surface-raised rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
                 >
                   <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
-                  <UserAvatar :user="member" size="xs" />
-                  <span class="text-sm text-prussian-500 dark:text-lavender-200">{{ member.name }}</span>
-                  <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-lavender-500 dark:text-lavender-400 italic">(always)</span>
+                  <KinAvatar :name="member.name" :src="member.avatar" size="xs" color="lavender" />
+                  <span class="text-sm text-ink-primary">{{ member.name }}</span>
+                  <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-ink-tertiary italic">(always)</span>
                 </label>
               </div>
             </div>
 
-            <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-2">
+            <p class="text-xs text-ink-primary mt-2">
               <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
               <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
               <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
@@ -848,7 +851,7 @@
           </div>
         </div>
 
-        <div class="flex gap-3 justify-end pt-4 border-t border-lavender-200 dark:border-prussian-700 mt-4">
+        <div class="flex gap-3 justify-end pt-4 border-t border-border-subtle mt-4">
           <BaseButton variant="primary" :loading="savingModules" @click="saveModuleSettings">
             Save Preferences
           </BaseButton>
@@ -865,19 +868,20 @@
         @update:model-value="val => toggleSection('food', val)"
       >
         <div class="mb-4">
-          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
+          <label class="block text-sm font-medium text-ink-secondary mb-2">
             Week Starts On
           </label>
-          <select v-model="weekStartDay" class="input-base w-full max-w-xs">
-            <option value="monday">Monday</option>
-            <option value="sunday">Sunday</option>
-          </select>
-          <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+          <KinSelect
+            v-model="weekStartDay"
+            class="w-full max-w-xs"
+            :options="weekStartDayOptions"
+          />
+          <p class="text-xs text-ink-secondary mt-1">
             Controls the meal planner calendar and weekly shopping list boundaries.
           </p>
         </div>
         <div class="mb-4">
-          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">
+          <label class="block text-sm font-medium text-ink-secondary mb-2">
             Visible Meal Slots
           </label>
           <div class="flex flex-wrap gap-2">
@@ -887,14 +891,14 @@
               class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors"
               :class="mealSlots.includes(slot.key)
                 ? 'bg-[#C4975A]/10 border-[#C4975A]/40 text-[#C4975A]'
-                : 'bg-lavender-50 dark:bg-prussian-700 border-lavender-200 dark:border-prussian-600 text-lavender-500 dark:text-lavender-400 hover:border-[#C4975A]/30'"
+                : 'bg-surface-sunken border-border-subtle dark:border-border-subtle text-ink-tertiary hover:border-[#C4975A]/30'"
               @click="toggleMealSlot(slot.key)"
             >
               <component :is="slot.icon" class="w-3.5 h-3.5" />
               {{ slot.label }}
             </button>
           </div>
-          <p class="text-xs text-lavender-600 dark:text-lavender-400 mt-1">
+          <p class="text-xs text-ink-secondary mt-1">
             Choose which meals to show on your planner. Hidden slots keep their data.
           </p>
         </div>
@@ -913,23 +917,23 @@
         @update:model-value="val => toggleSection('appearance', val)"
       >
         <!-- Dark Mode -->
-        <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-800 rounded-lg">
+        <div class="flex items-center justify-between p-4 bg-surface-sunken dark:bg-surface-raised rounded-lg">
           <div>
-            <p class="font-medium text-prussian-500 dark:text-lavender-200">Dark Mode</p>
-            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">Switch between light and dark themes</p>
+            <p class="font-medium text-ink-primary">Dark Mode</p>
+            <p class="text-xs text-ink-secondary mt-0.5">Switch between light and dark themes</p>
           </div>
           <ToggleSwitch :model-value="isDark" @update:model-value="toggleDarkMode">
             <template #thumb>
-              <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-wisteria-500" />
+              <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-accent-lavender-bold" />
               <SunIcon v-else class="w-3.5 h-3.5 text-sand-500" />
             </template>
           </ToggleSwitch>
         </div>
 
         <!-- Color Theme Picker -->
-        <div class="mt-4 pt-4 border-t border-lavender-200 dark:border-prussian-700">
-          <p class="font-medium text-prussian-500 dark:text-lavender-200 mb-1">Color Theme</p>
-          <p class="text-xs text-lavender-700 dark:text-lavender-400 mb-3">Choose a color palette for the app</p>
+        <div class="mt-4 pt-4 border-t border-border-subtle">
+          <p class="font-medium text-ink-primary mb-1">Color Theme</p>
+          <p class="text-xs text-ink-secondary mb-3">Choose a color palette for the app</p>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <button
@@ -938,14 +942,14 @@
               :class="[
                 'relative flex flex-col p-3 rounded-xl border-2 transition-all duration-200 text-left',
                 currentTheme === theme.id
-                  ? 'border-wisteria-500 dark:border-wisteria-400 ring-2 ring-wisteria-500/20 dark:ring-wisteria-400/20 bg-lavender-50 dark:bg-prussian-800'
-                  : 'border-lavender-200 dark:border-prussian-700 hover:border-lavender-400 dark:hover:border-prussian-500 bg-white dark:bg-prussian-800/50',
+                  ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 dark:ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
+                  : 'border-border-subtle hover:border-border-strong dark:hover:border-border-strong bg-surface-raised/50',
               ]"
               @click="selectTheme(theme.id)"
             >
               <div
                 v-if="currentTheme === theme.id"
-                class="absolute top-2 right-2 w-5 h-5 rounded-full bg-wisteria-500 dark:bg-wisteria-400 flex items-center justify-center"
+                class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center"
               >
                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
@@ -957,8 +961,8 @@
                 <span class="w-8 h-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600" :style="{ backgroundColor: theme.colors.surface }"></span>
                 <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.highlight }"></span>
               </div>
-              <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ theme.name }}</p>
-              <p class="text-xs text-lavender-600 dark:text-lavender-400">{{ theme.description }}</p>
+              <p class="text-sm font-semibold text-ink-primary">{{ theme.name }}</p>
+              <p class="text-xs text-ink-secondary">{{ theme.description }}</p>
             </button>
           </div>
         </div>
@@ -975,17 +979,22 @@
         @update:model-value="val => toggleSection('notifications', val)"
       >
         <div class="space-y-3">
-          <ToggleSwitch
+          <div
             v-for="pref in emailPreferenceOptions"
             :key="pref.key"
-            :model-value="emailPrefs[pref.key]"
-            :label="pref.label"
-            :description="pref.description"
-            @update:model-value="emailPrefs[pref.key] = $event"
-          />
+            class="p-4 bg-surface-sunken rounded-lg"
+          >
+            <KinSwitch
+              :model-value="emailPrefs[pref.key]"
+              :label="pref.label"
+              :description="pref.description"
+              color="lavender"
+              @update:model-value="emailPrefs[pref.key] = $event"
+            />
+          </div>
         </div>
 
-        <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
+        <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-border-subtle">
           <BaseButton variant="primary" :loading="savingEmailPrefs" @click="saveEmailPreferences">
             Save Email Preferences
           </BaseButton>
@@ -1017,7 +1026,7 @@
               :href="updateAvailable.url"
               target="_blank"
               rel="noopener"
-              class="inline-flex items-center gap-1 text-sm font-medium text-wisteria-600 dark:text-wisteria-400 hover:underline mt-2"
+              class="inline-flex items-center gap-1 text-sm font-medium text-accent-lavender-bold hover:underline mt-2"
             >
               View release notes
               <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
@@ -1034,20 +1043,20 @@
 
         <!-- Version Info -->
         <div class="space-y-3">
-          <div class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-            <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Version</span>
-            <span class="text-sm font-mono text-lavender-700 dark:text-lavender-400">v{{ appVersion }}</span>
+          <div class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
+            <span class="text-sm font-medium text-ink-primary">Version</span>
+            <span class="text-sm font-mono text-ink-secondary">v{{ appVersion }}</span>
           </div>
-          <div class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-            <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">License</span>
-            <span class="text-sm text-lavender-700 dark:text-lavender-400">Elastic License 2.0</span>
+          <div class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
+            <span class="text-sm font-medium text-ink-primary">License</span>
+            <span class="text-sm text-ink-secondary">Elastic License 2.0</span>
           </div>
           <div class="flex items-center gap-4 pt-2">
             <a
               :href="`https://github.com/${githubRepo}`"
               target="_blank"
               rel="noopener"
-              class="inline-flex items-center gap-1.5 text-sm text-wisteria-600 dark:text-wisteria-400 hover:underline"
+              class="inline-flex items-center gap-1.5 text-sm text-accent-lavender-bold hover:underline"
             >
               GitHub
               <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
@@ -1056,7 +1065,7 @@
               :href="`https://github.com/${githubRepo}/releases`"
               target="_blank"
               rel="noopener"
-              class="inline-flex items-center gap-1.5 text-sm text-wisteria-600 dark:text-wisteria-400 hover:underline"
+              class="inline-flex items-center gap-1.5 text-sm text-accent-lavender-bold hover:underline"
             >
               Release Notes
               <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
@@ -1065,7 +1074,7 @@
               href="https://kinhold.app"
               target="_blank"
               rel="noopener"
-              class="inline-flex items-center gap-1.5 text-sm text-wisteria-600 dark:text-wisteria-400 hover:underline"
+              class="inline-flex items-center gap-1.5 text-sm text-accent-lavender-bold hover:underline"
             >
               Website
               <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
@@ -1084,11 +1093,11 @@
         @update:model-value="val => toggleSection('danger', val)"
       >
         <div class="space-y-4">
-          <div class="p-4 border border-red-200 dark:border-red-800 rounded-lg">
+          <div class="p-4 border border-status-failed/30 rounded-lg">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">Delete My Account</p>
-                <p class="text-sm text-lavender-600 dark:text-lavender-400 mt-1">
+                <p class="font-medium text-ink-primary">Delete My Account</p>
+                <p class="text-sm text-ink-secondary mt-1">
                   Permanently delete your account and all your personal data (tasks, vault entries, chat history).
                   <span v-if="managedChildrenNames.length"> Your managed children ({{ managedChildrenNames.join(', ') }}) will also be deleted.</span>
                 </p>
@@ -1099,11 +1108,11 @@
             </div>
           </div>
 
-          <div class="p-4 border border-red-200 dark:border-red-800 rounded-lg">
+          <div class="p-4 border border-status-failed/30 rounded-lg">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="font-medium text-prussian-500 dark:text-lavender-200">Delete Entire Family</p>
-                <p class="text-sm text-lavender-600 dark:text-lavender-400 mt-1">
+                <p class="font-medium text-ink-primary">Delete Entire Family</p>
+                <p class="text-sm text-ink-secondary mt-1">
                   Permanently delete the <strong>{{ family?.name }}</strong> family, all members, and all shared data. This cannot be undone.
                 </p>
               </div>
@@ -1122,15 +1131,15 @@
     <template v-if="!isParent">
       <!-- Appearance -->
       <div class="card-lg mb-6">
-        <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200 mb-4">Appearance</h2>
-        <div class="flex items-center justify-between p-4 bg-lavender-50 dark:bg-prussian-800 rounded-lg">
+        <h2 class="text-lg font-semibold font-heading text-ink-primary mb-4">Appearance</h2>
+        <div class="flex items-center justify-between p-4 bg-surface-sunken dark:bg-surface-raised rounded-lg">
           <div>
-            <p class="font-medium text-prussian-500 dark:text-lavender-200">Dark Mode</p>
-            <p class="text-xs text-lavender-700 dark:text-lavender-400 mt-0.5">Switch between light and dark themes</p>
+            <p class="font-medium text-ink-primary">Dark Mode</p>
+            <p class="text-xs text-ink-secondary mt-0.5">Switch between light and dark themes</p>
           </div>
           <ToggleSwitch :model-value="isDark" @update:model-value="toggleDarkMode">
             <template #thumb>
-              <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-wisteria-500" />
+              <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-accent-lavender-bold" />
               <SunIcon v-else class="w-3.5 h-3.5 text-sand-500" />
             </template>
           </ToggleSwitch>
@@ -1140,20 +1149,25 @@
       <!-- Email Notifications (if they have an email) -->
       <div v-if="currentUser?.email" class="card-lg mb-6">
         <div class="flex items-center gap-2 mb-4">
-          <EnvelopeIcon class="w-5 h-5 text-wisteria-500 dark:text-wisteria-400" />
-          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200">Email Notifications</h2>
+          <EnvelopeIcon class="w-5 h-5 text-accent-lavender-bold" />
+          <h2 class="text-lg font-semibold font-heading text-ink-primary">Email Notifications</h2>
         </div>
         <div class="space-y-3">
-          <ToggleSwitch
+          <div
             v-for="pref in emailPreferenceOptions"
             :key="pref.key"
-            :model-value="emailPrefs[pref.key]"
-            :label="pref.label"
-            :description="pref.description"
-            @update:model-value="emailPrefs[pref.key] = $event"
-          />
+            class="p-4 bg-surface-sunken rounded-lg"
+          >
+            <KinSwitch
+              :model-value="emailPrefs[pref.key]"
+              :label="pref.label"
+              :description="pref.description"
+              color="lavender"
+              @update:model-value="emailPrefs[pref.key] = $event"
+            />
+          </div>
         </div>
-        <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-lavender-200 dark:border-prussian-700">
+        <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-border-subtle">
           <BaseButton variant="primary" :loading="savingEmailPrefs" @click="saveEmailPreferences">
             Save Email Preferences
           </BaseButton>
@@ -1163,23 +1177,23 @@
       <!-- About (child version — just version number) -->
       <div class="card-lg mb-6">
         <div class="flex items-center gap-2 mb-3">
-          <InformationCircleIcon class="w-5 h-5 text-wisteria-500 dark:text-wisteria-400" />
-          <h2 class="text-lg font-semibold font-heading text-prussian-500 dark:text-lavender-200">About</h2>
+          <InformationCircleIcon class="w-5 h-5 text-accent-lavender-bold" />
+          <h2 class="text-lg font-semibold font-heading text-ink-primary">About</h2>
         </div>
-        <div class="flex items-center justify-between p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg">
-          <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Version</span>
-          <span class="text-sm font-mono text-lavender-700 dark:text-lavender-400">v{{ appVersion }}</span>
+        <div class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
+          <span class="text-sm font-medium text-ink-primary">Version</span>
+          <span class="text-sm font-mono text-ink-secondary">v{{ appVersion }}</span>
         </div>
       </div>
 
       <!-- Danger Zone (child version — account deletion only, not managed accounts) -->
-      <div v-if="!currentUser?.is_managed" class="card-lg mb-6 border border-red-200 dark:border-red-800">
+      <div v-if="!currentUser?.is_managed" class="card-lg mb-6 border border-status-failed/30">
         <div class="flex items-center gap-2 mb-3">
-          <ExclamationTriangleIcon class="w-5 h-5 text-red-500 dark:text-red-400" />
-          <h2 class="text-lg font-semibold font-heading text-red-600 dark:text-red-400">Danger Zone</h2>
+          <ExclamationTriangleIcon class="w-5 h-5 text-status-failed dark:text-status-failed" />
+          <h2 class="text-lg font-semibold font-heading text-status-failed dark:text-status-failed">Danger Zone</h2>
         </div>
         <div class="flex items-start justify-between gap-4">
-          <p class="text-sm text-lavender-600 dark:text-lavender-400">
+          <p class="text-sm text-ink-secondary">
             Permanently delete your account and all your data. This cannot be undone.
           </p>
           <BaseButton variant="danger" size="sm" @click="isDemoFamily ? showDemoDeletePopup = true : showDeleteAccountModal = true">
@@ -1215,7 +1229,7 @@
           placeholder="email@example.com"
           :error="memberErrors.email"
         />
-        <p class="text-xs text-lavender-600 dark:text-lavender-400 -mt-2">
+        <p class="text-xs text-ink-secondary -mt-2">
           Leave blank for young kids — creates a managed account you can switch into.
         </p>
 
@@ -1230,21 +1244,23 @@
 
         <label
           v-if="!editingMember && memberForm.email"
-          class="flex items-center gap-3 p-3 bg-lavender-50 dark:bg-prussian-700 rounded-lg cursor-pointer"
+          class="flex items-center gap-3 p-3 bg-surface-sunken rounded-lg cursor-pointer"
         >
           <input v-model="memberForm.sendEmail" type="checkbox" class="rounded" />
           <div>
-            <p class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Send welcome email</p>
-            <p class="text-xs text-lavender-600 dark:text-lavender-400">Send an email with login instructions</p>
+            <p class="text-sm font-medium text-ink-primary">Send welcome email</p>
+            <p class="text-xs text-ink-secondary">Send an email with login instructions</p>
           </div>
         </label>
 
         <div>
-          <label class="block text-sm font-medium text-prussian-400 dark:text-lavender-300 mb-2">Role</label>
-          <select v-model="memberForm.role" class="input-base w-full" required>
-            <option value="child">Child</option>
-            <option value="parent">Parent</option>
-          </select>
+          <label class="block text-sm font-medium text-ink-secondary mb-2">Role</label>
+          <KinSelect
+            v-model="memberForm.role"
+            class="w-full"
+            required
+            :options="memberRoleOptions"
+          />
         </div>
 
         <BaseInput
@@ -1268,13 +1284,13 @@
       title="Remove Family Member"
       @close="showRemoveConfirm = false"
     >
-      <p class="text-prussian-500 dark:text-lavender-300">
+      <p class="text-ink-primary dark:text-ink-tertiary">
         Are you sure you want to remove <strong>{{ removingMember?.name }}</strong> from your family?
       </p>
-      <p v-if="removingMember?.is_managed" class="text-sm text-red-600 dark:text-red-400 mt-2">
+      <p v-if="removingMember?.is_managed" class="text-sm text-status-failed dark:text-status-failed mt-2">
         This is a managed account and will be permanently deleted.
       </p>
-      <p v-else class="text-sm text-lavender-600 dark:text-lavender-400 mt-2">
+      <p v-else class="text-sm text-ink-secondary mt-2">
         Their account will be unlinked from your family but not deleted.
       </p>
       <div class="flex gap-2 justify-end pt-4">
@@ -1290,7 +1306,7 @@
       @close="closeSwitchToModal"
     >
       <div class="space-y-3">
-        <p class="text-sm text-prussian-500 dark:text-lavender-300">
+        <p class="text-sm text-ink-primary dark:text-ink-tertiary">
           You're about to switch this device to <strong>{{ switchingToMember?.name }}</strong>'s profile.
         </p>
         <div class="p-3 bg-sand-50 dark:bg-sand-900/20 border border-sand-200 dark:border-sand-800 rounded-lg">
@@ -1325,10 +1341,10 @@
       title="Demo Family"
       @close="showDemoDeletePopup = false"
     >
-      <p class="text-sm text-lavender-600 dark:text-lavender-400">
+      <p class="text-sm text-ink-secondary">
         Account and family deletion is disabled for the demo family.
       </p>
-      <p class="text-sm text-lavender-600 dark:text-lavender-400 mt-2">
+      <p class="text-sm text-ink-secondary mt-2">
         Create your own family to try all features!
       </p>
       <template #footer>
@@ -1343,9 +1359,9 @@
       @close="closeDeleteAccountModal"
     >
       <div class="space-y-4">
-        <div class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p class="text-sm text-red-800 dark:text-red-200 font-medium">This action is permanent and cannot be undone.</p>
-          <ul class="text-sm text-red-700 dark:text-red-300 mt-2 space-y-1 list-disc list-inside">
+        <div class="p-3 bg-status-failed/10 border border-status-failed/30 rounded-lg">
+          <p class="text-sm text-status-failed font-medium">This action is permanent and cannot be undone.</p>
+          <ul class="text-sm text-status-failed mt-2 space-y-1 list-disc list-inside">
             <li>All your tasks, vault entries, and chat history will be deleted</li>
             <li>Your calendar connections will be revoked</li>
             <li>Your uploaded documents will be permanently removed</li>
@@ -1384,11 +1400,11 @@
       @close="closeDeleteFamilyModal"
     >
       <div class="space-y-4">
-        <div class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p class="text-sm text-red-800 dark:text-red-200 font-medium">
+        <div class="p-3 bg-status-failed/10 border border-status-failed/30 rounded-lg">
+          <p class="text-sm text-status-failed font-medium">
             This will permanently delete the "{{ family?.name }}" family and ALL data.
           </p>
-          <ul class="text-sm text-red-700 dark:text-red-300 mt-2 space-y-1 list-disc list-inside">
+          <ul class="text-sm text-status-failed mt-2 space-y-1 list-disc list-inside">
             <li>All {{ familyMembers?.length || 0 }} family members will be removed</li>
             <li>All tasks, vault entries, calendar events, and chat history</li>
             <li>All points, rewards, badges, and achievements</li>
@@ -1440,8 +1456,12 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BaseInput from '@/components/common/BaseInput.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
+import KinAvatar from '@/components/design-system/KinAvatar.vue'
 import AvatarEditor from '@/components/common/AvatarEditor.vue'
 import ToggleSwitch from '@/components/common/ToggleSwitch.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinSelect from '@/components/design-system/KinSelect.vue'
+import KinSwitch from '@/components/design-system/KinSwitch.vue'
 import SettingsSection from '@/components/settings/SettingsSection.vue'
 import {
   PlusIcon,
@@ -1478,6 +1498,21 @@ const { currentTheme, setTheme: selectTheme } = useTheme()
 
 const { family, familyMembers, currentUser, isParent, appConfig } = storeToRefs(authStore)
 const { connections } = storeToRefs(calendarStore)
+
+// ---- KinSelect option arrays ----
+const leaderboardPeriodOptions = [
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+]
+const weekStartDayOptions = [
+  { value: 'monday', label: 'Monday' },
+  { value: 'sunday', label: 'Sunday' },
+]
+const memberRoleOptions = [
+  { value: 'child', label: 'Child' },
+  { value: 'parent', label: 'Parent' },
+]
 
 // ---- Version & Update Check ----
 const appVersion = computed(() => appConfig.value?.version ?? '—')
@@ -2060,10 +2095,10 @@ const providerIcon = (slug) => {
 const providerIconClass = (slug) => {
   const classes = {
     anthropic: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
-    openai: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+    openai: 'bg-emerald-100 text-status-success dark:bg-emerald-900/30 dark:text-emerald-300',
     google: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
   }
-  return classes[slug] || 'bg-lavender-100 text-lavender-700'
+  return classes[slug] || 'bg-surface-sunken text-ink-secondary'
 }
 
 const selectAiProvider = (slug) => {

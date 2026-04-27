@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white dark:bg-prussian-800 border-b border-lavender-200 dark:border-prussian-700 px-4 py-3 space-y-2.5">
+  <div class="bg-surface-raised border-b border-border-subtle px-4 py-3 space-y-2.5">
     <!-- Row 1: Store selector + List actions + New List -->
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-2 min-w-0">
@@ -11,29 +11,23 @@
         <!-- Single list: show name. Multiple: dropdown -->
         <span
           v-if="lists.length === 1"
-          class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 truncate"
+          class="text-sm font-semibold text-ink-primary truncate"
         >
           {{ activeList?.name }}
         </span>
-        <select
+        <KinSelect
           v-else
-          :value="activeList?.id"
-          class="input-base py-1 px-2 text-sm font-semibold min-w-0"
-          @change="$emit('select-list', $event.target.value)"
-        >
-          <option
-            v-for="list in lists"
-            :key="list.id"
-            :value="list.id"
-          >
-            {{ list.name }}
-          </option>
-        </select>
+          :model-value="activeList?.id"
+          :options="listOptions"
+          size="sm"
+          class="min-w-0"
+          @update:model-value="(v) => $emit('select-list', v)"
+        />
 
         <!-- List actions menu (rename / delete) -->
         <div v-if="activeList" class="relative">
           <button
-            class="p-1 rounded-md text-lavender-400 dark:text-lavender-500 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 transition-colors"
+            class="p-1 rounded-md text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken transition-colors"
             title="List options"
             aria-label="List options"
             @click="showListMenu = !showListMenu"
@@ -46,17 +40,17 @@
           <!-- Dropdown menu -->
           <div
             v-if="showListMenu"
-            class="absolute left-0 top-full mt-1 bg-white dark:bg-prussian-800 border border-lavender-200 dark:border-prussian-700 rounded-lg shadow-lg z-20 py-1 min-w-[140px]"
+            class="absolute left-0 top-full mt-1 bg-surface-raised border border-border-subtle rounded-lg shadow-lg z-20 py-1 min-w-[140px]"
           >
             <button
-              class="w-full text-left px-3 py-2 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700 transition-colors"
+              class="w-full text-left px-3 py-2 text-sm text-ink-primary hover:bg-surface-sunken transition-colors"
               @click="startRename"
             >
               Rename
             </button>
             <button
               v-if="lists.length > 1"
-              class="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              class="w-full text-left px-3 py-2 text-sm text-status-failed hover:bg-status-failed/10 transition-colors"
               @click="handleDeleteRequest"
             >
               Delete list
@@ -65,12 +59,14 @@
         </div>
       </div>
 
-      <button
-        class="btn-secondary text-xs px-3 py-1.5 flex-shrink-0"
+      <KinButton
+        variant="secondary"
+        size="sm"
+        class="flex-shrink-0"
         @click="$emit('new-list')"
       >
         + New List
-      </button>
+      </KinButton>
     </div>
 
     <!-- Rename inline input (replaces row 1 content when active) -->
@@ -83,8 +79,8 @@
         @keydown.enter="saveRename"
         @keydown.escape="cancelRename"
       />
-      <button class="btn-primary text-xs px-3 py-1.5" @click="saveRename">Save</button>
-      <button class="btn-secondary text-xs px-3 py-1.5" @click="cancelRename">Cancel</button>
+      <KinButton variant="primary" size="sm" @click="saveRename">Save</KinButton>
+      <KinButton variant="secondary" size="sm" @click="cancelRename">Cancel</KinButton>
     </div>
 
     <!-- Row 2: Window pills + Pre-Shop + Clear -->
@@ -97,7 +93,7 @@
           class="px-2.5 py-1 text-xs rounded-full whitespace-nowrap transition-colors"
           :class="shoppingWindow === w.value
             ? 'bg-[#C4975A] text-white'
-            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-300 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+            : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
           @click="$emit('set-window', w.value)"
         >
           {{ w.label }}
@@ -109,8 +105,8 @@
         <button
           class="px-2.5 py-1 text-xs rounded-full transition-colors"
           :class="preShopMode
-            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-            : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-300 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+            ? 'bg-status-success/10 text-status-success'
+            : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
           @click="$emit('toggle-preshop')"
         >
           Pre-Shop
@@ -119,7 +115,7 @@
         <!-- Clear Checked button -->
         <button
           v-if="checkedCount > 0"
-          class="flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-300 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-colors"
+          class="flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-surface-sunken text-ink-secondary hover:bg-status-failed/10 hover:text-status-failed transition-colors"
           @click="$emit('clear-checked')"
         >
           <!-- Trash icon -->
@@ -135,14 +131,14 @@
     <Teleport to="body">
       <Transition name="fade">
         <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="showDeleteConfirm = false">
-          <div class="bg-white dark:bg-prussian-800 rounded-xl shadow-xl p-6 w-full max-w-sm">
-            <h3 class="text-lg font-bold font-heading text-prussian-500 dark:text-lavender-200 mb-2">Delete list?</h3>
-            <p class="text-sm text-lavender-500 dark:text-lavender-400 mb-4">
+          <div class="bg-surface-raised rounded-xl shadow-xl p-6 w-full max-w-sm">
+            <h3 class="text-lg font-bold font-heading text-ink-primary mb-2">Delete list?</h3>
+            <p class="text-sm text-ink-tertiary mb-4">
               "{{ activeList?.name }}" and all its items will be permanently removed.
             </p>
             <div class="flex justify-end gap-2">
-              <button class="btn-secondary" @click="showDeleteConfirm = false">Cancel</button>
-              <button class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors" @click="confirmDelete">Delete</button>
+              <KinButton variant="secondary" @click="showDeleteConfirm = false">Cancel</KinButton>
+              <KinButton variant="danger" @click="confirmDelete">Delete</KinButton>
             </div>
           </div>
         </div>
@@ -152,7 +148,9 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, computed, nextTick } from 'vue'
+import KinSelect from '@/components/design-system/KinSelect.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 
 const props = defineProps({
   lists: {
@@ -185,6 +183,8 @@ const windows = [
   { value: '3days', label: 'Next 3d' },
   { value: 'week', label: 'This week' },
 ]
+
+const listOptions = computed(() => props.lists.map(l => ({ value: l.id, label: l.name })))
 
 // List menu
 const showListMenu = ref(false)

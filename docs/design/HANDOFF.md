@@ -9,8 +9,21 @@
 
 **Scaffolding phase:** complete (34 demo pages locked).
 **Extraction phase:** 34 `Kin*` components extracted into `resources/js/components/design-system/`. Each is a real, reusable Vue SFC.
-**Integration phase:** in progress — see "Per-component status" below.
-**Tier 6 (view refactors):** not started.
+**Integration phase:** complete — all Kin previews approved and bespoke demos stripped (commit `cc4a0a0`).
+**Tier 6 (view refactors):** in progress.
+- **6.0 App shell done (2026-04-26)** — Sidebar onto `KinSidebar`, TopBar avatars onto `KinAvatar`. BottomNav stays bespoke (5-slot grouped pattern doesn't map onto `KinBottomNav`'s 4+FAB convention); fragment-root warning fixed.
+- **6.1 Dashboard done (2026-04-26).**
+- **6.2 Calendar Phase 1 done (2026-04-26)** — KinTabPillGroup view-mode tabs, KinButton actions, full token restyle on month grid + TimeGrid.
+- **6.3 Tasks Phase 1 done (2026-04-26)** — KinModalSheet for tag manager, KinInput/KinTextarea/KinSwitch/KinSegmentedFilter/KinButton inside TaskDetailPanel, full token restyle.
+- **Phase 2 done (2026-04-27)** — added `KinSelect` to the library (1.8); added `customColor` escape-hatch to `KinChip`; migrated calendar month view to `KinMonthGrid` (dots density, source→accent mapping); swapped `TaskDetailPanel` to `KinModalSheet`; replaced TaskDetailPanel `<select>` fields with `KinSelect`; tag filter chips and calendar legend now use `KinChip` with `customColor`.
+- **Phase 3 done (2026-04-27)** — Calendar + Tasks gained the right utility rail (`KinUtilityRail`, desktop ≥`lg`). Calendar Day view now uses `KinDayHeader` size="md" as the centerpiece (editorial-scale day number, TODAY badge, event count). Calendar source filters live in the rail with toggle state piped through `passesSourceFilter`. Tasks tag filter chips moved into the rail (mobile keeps the horizontal strip).
+- **6.4 Points + Achievements done (2026-04-27)** — BadgesView grid now uses `KinAchievementTile` directly with state/progress/accent adapters; PointsFeedView + PointsHistoryView use `KinHeroMetricCard` for balance + `KinFlatCard` for sub-sections; RewardsView uses `KinSearch` + `KinChip` filters + `KinSelect` sort; all 3 point modals → `KinModalSheet`; KudosInput → KinSelect+KinInput+KinButton. Deferred: LeaderboardStrip podium, RewardCard auction logic, RewardForm branching form (Phase 2 of 6.4).
+- **6.5 Food Phase 1 done (2026-04-27)** — biggest tier (~6,000 LOC). FoodView tab shell → `KinTabPillGroup` underline; each tab (Recipes / Restaurants / Meals / Shopping) refactored with `KinSearch` + `KinChip` filters + `KinButton` actions + `KinEmptyState`; CookLogEntry / RecipeImportModal modals → `KinModalSheet`; ListHeader gets `KinSelect`. Full token sweep across all 19 child components. RecipeCard + Restaurant card + MealEntryCard now use `KinPhotoCard` with per-type gradient fallback. Deferred to Phase 2: RecipeForm (489 LOC), MealEntryPicker (350), MealPlanShoppingModal (344), MealWeekGrid (281).
+- **6.6–6.10 Phase 1 done (2026-04-27)** — Vault, Chat, Settings, Onboarding, Auth all refactored in parallel. ~6,300 LOC across 5 view areas. Common deferrals: `BaseModal`/`BaseButton`/`BaseInput` project wrappers (need their own coordinated pass — they're used everywhere), `class="card-lg"` global utility, vault category icon palette, Settings ToggleSwitch dark-mode rows (need thumb slot on KinSwitch or design call).
+
+**Tier 6 is now feature-complete** for the visual overhaul. Phase 2 follow-ups: wrapper components (`BaseModal` / `BaseButton` / `BaseInput`), deferred heavyweights (RecipeForm, MealEntryPicker, MealPlanShoppingModal, MealWeekGrid, LeaderboardStrip, RewardCard, RewardForm, TaskDetailPanel SlidePanel→ModalSheet), and `class="card-lg"` global utility.
+
+- **Dashboard widgets done (2026-04-27)** — final pass. All 11 widgets (WelcomeWidget, PointsSummaryWidget, BadgesWidget, ActivityFeedWidget, FamilyTasksWidget, MyTasksWidget, FilteredTasksWidget, LeaderboardWidget, TodaysScheduleWidget, QuickActionsWidget, RewardsWidget) refactored to match Kin aesthetic. Notable upgrades: PointsSummaryWidget now a small KinHeroMetricCard-style hero, QuickActionsWidget tiles upgraded to proper Kin cards with lavender icon circles, task widgets gained hairline row separators matching the Tasks-view rhythm. BadgesWidget kept `BadgeIcon` (KinAchievementTile too big for dashboard grids).
 
 ### Pipeline status
 

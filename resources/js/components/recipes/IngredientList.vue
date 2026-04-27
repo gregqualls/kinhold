@@ -2,19 +2,19 @@
   <div class="space-y-4">
     <!-- Servings adjuster -->
     <div class="flex items-center gap-3">
-      <span class="text-sm font-medium text-prussian-500 dark:text-lavender-200">Servings:</span>
+      <span class="text-sm font-medium text-ink-primary">Servings:</span>
       <div class="flex items-center gap-2">
         <button
-          class="w-7 h-7 rounded-full border border-lavender-200 dark:border-prussian-600 flex items-center justify-center text-lavender-500 dark:text-lavender-400 hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+          class="w-7 h-7 rounded-full border border-border-subtle flex items-center justify-center text-ink-tertiary hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
           aria-label="Decrease servings"
           :disabled="localServings <= 1"
           @click="localServings = Math.max(1, localServings - 1)"
         >
           <MinusIcon class="w-3.5 h-3.5" />
         </button>
-        <span class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 w-6 text-center">{{ localServings }}</span>
+        <span class="text-sm font-semibold text-ink-primary w-6 text-center">{{ localServings }}</span>
         <button
-          class="w-7 h-7 rounded-full border border-lavender-200 dark:border-prussian-600 flex items-center justify-center text-lavender-500 dark:text-lavender-400 hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+          class="w-7 h-7 rounded-full border border-border-subtle flex items-center justify-center text-ink-tertiary hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
           aria-label="Increase servings"
           @click="localServings++"
         >
@@ -23,7 +23,7 @@
       </div>
       <span
         v-if="localServings !== originalServings"
-        class="text-xs text-lavender-400 dark:text-lavender-500"
+        class="text-xs text-ink-tertiary"
       >
         (originally {{ originalServings }})
       </span>
@@ -33,7 +33,7 @@
     <div v-for="(group, groupName) in groupedIngredients" :key="groupName" class="space-y-1">
       <h4
         v-if="groupName !== '__default__'"
-        class="text-xs font-semibold uppercase tracking-wider text-lavender-400 dark:text-lavender-500 mt-3 mb-1"
+        class="text-xs font-semibold uppercase tracking-wider text-ink-tertiary mt-3 mb-1"
       >
         {{ groupName }}
       </h4>
@@ -47,7 +47,7 @@
           class="mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
           :class="checkedIngredients.has(ingredient.id)
             ? 'bg-[#C4975A] border-[#C4975A] text-white'
-            : 'border-lavender-300 dark:border-prussian-600 hover:border-[#C4975A]'"
+            : 'border-border-subtle hover:border-[#C4975A]'"
           :aria-label="`Toggle ${ingredient.name}`"
           @click="toggleChecked(ingredient.id)"
         >
@@ -58,14 +58,14 @@
         <span
           class="text-sm leading-relaxed transition-colors"
           :class="checkedIngredients.has(ingredient.id)
-            ? 'line-through text-lavender-400 dark:text-lavender-500'
-            : 'text-prussian-500 dark:text-lavender-200'"
+            ? 'line-through text-ink-tertiary'
+            : 'text-ink-primary'"
         >
           <span v-if="scaledQuantity(ingredient)" class="font-medium">{{ scaledQuantity(ingredient) }}</span>
           <span v-if="ingredient.unit"> {{ ingredient.unit }}</span>
           {{ ingredient.name }}
-          <span v-if="ingredient.preparation" class="text-lavender-500 dark:text-lavender-400">, {{ ingredient.preparation }}</span>
-          <span v-if="ingredient.is_optional" class="text-lavender-400 dark:text-lavender-500 italic"> (optional)</span>
+          <span v-if="ingredient.preparation" class="text-ink-tertiary">, {{ ingredient.preparation }}</span>
+          <span v-if="ingredient.is_optional" class="text-ink-tertiary italic"> (optional)</span>
         </span>
       </div>
     </div>

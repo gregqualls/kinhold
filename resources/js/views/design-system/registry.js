@@ -42,6 +42,7 @@ export const REGISTRY = [
   { slug: 'selection', tier: 'primitives', title: '1.5 Checkbox · Radio · Switch', description: 'Minimal neutral fill for checkbox + radio; Apple-style pastel-accent toggle for switch.', pagePath: './pages/primitives/SelectionPage.vue', scaffolded: true, chosen: true },
   { slug: 'progress', tier: 'primitives', title: '1.6 Progress bar', description: 'Horizontal solid-fill bars + standalone arc gauge for hero moments.', pagePath: './pages/primitives/ProgressPage.vue', scaffolded: true, chosen: true },
   { slug: 'skeleton', tier: 'primitives', title: '1.7 Skeleton loader', description: 'Shimmer placeholders (text line, circle, pill, field, card block) with 1.8s linear shimmer and prefers-reduced-motion static fallback.', pagePath: './pages/primitives/SkeletonPage.vue', scaffolded: true, chosen: true },
+  { slug: 'select', tier: 'primitives', title: '1.8 Select', description: 'Native <select> wrapped in KinInput\'s borderless inset look — sunken at rest, accent ring on focus. Supports placeholder, optgroup, sizes, and form integration.', pagePath: './pages/primitives/SelectPage.vue', scaffolded: true, chosen: true },
 
   // Tier 2 — Cards
   { slug: 'flat-card', tier: 'cards', title: '2.1 FlatCard', description: 'Standard rounded-corner card with subtle border.', pagePath: './pages/cards/FlatCardPage.vue', scaffolded: true, chosen: true },

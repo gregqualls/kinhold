@@ -9,7 +9,7 @@
         <Transition name="scale">
           <div
             v-if="show"
-            class="bg-white dark:bg-prussian-800 rounded-[12px] w-full max-w-sm shadow-xl"
+            class="bg-surface-raised rounded-[12px] w-full max-w-sm shadow-xl"
             @click.stop
           >
             <!-- Icon -->
@@ -18,21 +18,21 @@
                 class="w-12 h-12 rounded-full flex items-center justify-center"
                 :class="iconBgClass"
               >
-                <ExclamationTriangleIcon v-if="variant === 'danger'" class="w-6 h-6 text-red-600" />
-                <InformationCircleIcon v-else class="w-6 h-6 text-wisteria-600" />
+                <ExclamationTriangleIcon v-if="variant === 'danger'" class="w-6 h-6 text-status-failed" />
+                <InformationCircleIcon v-else class="w-6 h-6 text-accent-lavender-bold" />
               </div>
             </div>
 
             <!-- Content -->
             <div class="px-6 pt-4 pb-2 text-center">
-              <h3 class="text-lg font-semibold text-prussian-500 dark:text-lavender-200 mb-1">{{ title }}</h3>
-              <p class="text-sm text-lavender-600 dark:text-lavender-400">{{ message }}</p>
+              <h3 class="text-lg font-semibold text-ink-primary mb-1">{{ title }}</h3>
+              <p class="text-sm text-ink-secondary">{{ message }}</p>
             </div>
 
             <!-- Actions -->
             <div class="px-6 pb-6 pt-4 flex gap-3">
               <button
-                class="flex-1 px-4 py-2.5 text-sm font-medium text-prussian-500 dark:text-lavender-200 bg-lavender-100 dark:bg-prussian-700 hover:bg-lavender-200 dark:hover:bg-prussian-600 rounded-[10px] transition-colors"
+                class="flex-1 px-4 py-2.5 text-sm font-medium text-ink-primary bg-surface-sunken hover:bg-surface-overlay rounded-[10px] transition-colors"
                 @click="$emit('cancel')"
               >
                 {{ cancelText }}
@@ -77,12 +77,12 @@ const props = defineProps({
 defineEmits(['confirm', 'cancel'])
 
 const iconBgClass = computed(() =>
-  props.variant === 'danger' ? 'bg-red-100 dark:bg-red-900/30' : 'bg-wisteria-100 dark:bg-wisteria-900/30'
+  props.variant === 'danger' ? 'bg-status-failed/10' : 'bg-accent-lavender-soft/40'
 )
 
 const confirmBtnClass = computed(() =>
   props.variant === 'danger'
-    ? 'bg-red-600 hover:bg-red-700'
-    : 'bg-wisteria-600 hover:bg-wisteria-500'
+    ? 'bg-status-failed hover:brightness-110'
+    : 'bg-accent-lavender-bold hover:brightness-110'
 )
 </script>

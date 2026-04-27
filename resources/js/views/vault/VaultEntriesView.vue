@@ -4,37 +4,31 @@
     <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
       <div class="flex items-center gap-3">
         <button
-          class="p-2 -ml-2 text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-xl transition-colors"
+          class="p-2 -ml-2 text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken rounded-xl transition-colors"
           @click="$router.push('/vault')"
         >
           <ChevronLeftIcon class="w-5 h-5" />
         </button>
         <div class="flex-1 min-w-0">
-          <h1 class="text-xl font-bold font-heading text-prussian-500 dark:text-lavender-200 truncate">{{ currentCategory?.name || 'Entries' }}</h1>
-          <p v-if="currentCategory?.description" class="text-xs text-lavender-500 dark:text-lavender-400 mt-0.5 truncate">{{ currentCategory.description }}</p>
+          <h1 class="text-xl font-bold font-heading text-ink-primary truncate">{{ currentCategory?.name || 'Entries' }}</h1>
+          <p v-if="currentCategory?.description" class="text-xs text-ink-tertiary mt-0.5 truncate">{{ currentCategory.description }}</p>
         </div>
-        <button
+        <KinButton
           v-if="isParent"
-          class="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-wisteria-600 hover:bg-wisteria-500 rounded-xl transition-colors"
+          variant="primary"
+          size="md"
+          class="hidden md:flex"
           @click="showCreateEntry = true"
         >
           <PlusIcon class="w-4 h-4" />
           Add
-        </button>
+        </KinButton>
       </div>
     </div>
 
     <!-- Search -->
     <div class="px-4 md:px-6 py-3">
-      <div class="relative">
-        <MagnifyingGlassIcon class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-lavender-400" />
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search entries..."
-          class="w-full pl-9 pr-4 py-2.5 bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-xl text-sm placeholder-lavender-400 dark:placeholder-lavender-500 text-prussian-500 dark:text-lavender-200 focus:bg-white dark:focus:bg-prussian-800 focus:ring-2 focus:ring-wisteria-400 transition-all outline-none"
-        />
-      </div>
+      <KinSearch v-model="searchQuery" placeholder="Search entries..." />
     </div>
 
     <!-- Loading -->
@@ -48,18 +42,18 @@
         <div
           v-for="entry in filteredEntries"
           :key="entry.id"
-          class="group flex items-center gap-4 p-4 bg-white dark:bg-prussian-800 rounded-xl shadow-card hover:shadow-card-lg border border-lavender-200 dark:border-prussian-700 hover:border-wisteria-300 dark:hover:border-wisteria-700 cursor-pointer transition-all"
+          class="group flex items-center gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-all"
           @click="$router.push(`/vault/entry/${entry.id}`)"
         >
           <!-- Lock icon -->
-          <div class="w-10 h-10 rounded-xl bg-lavender-50 dark:bg-prussian-700 flex items-center justify-center flex-shrink-0">
-            <LockClosedIcon class="w-5 h-5 text-lavender-400 dark:text-lavender-500" />
+          <div class="w-10 h-10 rounded-xl bg-surface-sunken flex items-center justify-center flex-shrink-0">
+            <LockClosedIcon class="w-5 h-5 text-ink-tertiary" />
           </div>
 
           <!-- Info -->
           <div class="flex-1 min-w-0">
-            <h3 class="font-semibold text-prussian-500 dark:text-lavender-200 text-sm truncate">{{ entry.title }}</h3>
-            <p class="text-xs text-lavender-400 dark:text-lavender-500 mt-0.5">
+            <h3 class="font-semibold text-ink-primary text-sm truncate">{{ entry.title }}</h3>
+            <p class="text-xs text-ink-tertiary mt-0.5">
               {{ formatDate(entry.updated_at) }}
               <span v-if="entry.notes" class="ml-1">&middot; Has notes</span>
             </p>
@@ -70,19 +64,21 @@
             <ContextMenu :items="getEntryMenuItems(entry)" />
           </div>
 
-          <ChevronRightIcon class="w-4 h-4 text-lavender-300 dark:text-lavender-500 flex-shrink-0 md:hidden" />
+          <ChevronRightIcon class="w-4 h-4 text-ink-tertiary flex-shrink-0 md:hidden" />
         </div>
       </div>
 
       <!-- Empty State -->
-      <EmptyState
+      <KinEmptyState
         v-if="filteredEntries.length === 0 && !isLoading"
         :icon="LockClosedIcon"
         title="No entries yet"
         description="Add your first entry to this category."
-        action-text="Add Entry"
-        @action="showCreateEntry = true"
-      />
+      >
+        <template #cta>
+          <KinButton variant="primary" size="md" @click="showCreateEntry = true">Add Entry</KinButton>
+        </template>
+      </KinEmptyState>
     </div>
 
     <!-- Mobile FAB -->
@@ -99,24 +95,21 @@
     />
 
     <!-- Create Entry Modal -->
-    <BaseModal
-      :show="showCreateEntry"
+    <KinModalSheet
+      :model-value="showCreateEntry"
       title="New Vault Entry"
       size="xl"
       @close="closeCreateModal"
     >
       <form class="space-y-5" @submit.prevent="handleCreateEntry">
-        <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Title</label>
-          <input
-            v-model="entryForm.title"
-            placeholder="e.g., Family Doctor, WiFi Info"
-            class="input-base"
-          />
-        </div>
+        <KinInput
+          v-model="entryForm.title"
+          label="Title"
+          placeholder="e.g., Family Doctor, WiFi Info"
+        />
 
         <div>
-          <label class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1.5">Content</label>
+          <label class="block text-sm font-medium text-ink-primary mb-1.5">Content</label>
           <MarkdownEditor
             v-model="entryForm.body"
             placeholder="Start typing... Use **bold**, *italic*, lists, and more."
@@ -127,7 +120,7 @@
         <div>
           <button
             type="button"
-            class="flex items-center gap-1.5 text-xs font-medium text-lavender-500 dark:text-lavender-400 hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors"
+            class="flex items-center gap-1.5 text-xs font-medium text-ink-tertiary hover:text-accent-lavender-bold transition-colors"
             @click="showSensitiveFields = !showSensitiveFields"
           >
             <LockClosedIcon class="w-3.5 h-3.5" />
@@ -150,7 +143,7 @@
               />
               <button
                 type="button"
-                class="p-2 text-lavender-400 hover:text-red-500 transition-colors"
+                class="p-2 text-ink-tertiary hover:text-status-failed transition-colors"
                 @click="entryForm.sensitiveFields.splice(i, 1)"
               >
                 <XMarkIcon class="w-4 h-4" />
@@ -158,7 +151,7 @@
             </div>
             <button
               type="button"
-              class="flex items-center gap-1.5 text-xs font-medium text-wisteria-600 dark:text-wisteria-400 hover:text-wisteria-500"
+              class="flex items-center gap-1.5 text-xs font-medium text-accent-lavender-bold hover:opacity-80"
               @click="entryForm.sensitiveFields.push({ key: '', value: '' })"
             >
               <PlusIcon class="w-3.5 h-3.5" />
@@ -168,15 +161,15 @@
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button type="button" class="flex-1 btn-secondary btn-md rounded-xl" @click="closeCreateModal">
+          <KinButton type="button" variant="secondary" size="md" class="flex-1" @click="closeCreateModal">
             Cancel
-          </button>
-          <button type="submit" :disabled="!entryForm.title?.trim() || savingEntry" class="flex-1 btn-primary btn-md rounded-xl disabled:opacity-40">
+          </KinButton>
+          <KinButton type="submit" variant="primary" size="md" class="flex-1" :disabled="!entryForm.title?.trim() || savingEntry">
             {{ savingEntry ? 'Saving...' : 'Create Entry' }}
-          </button>
+          </KinButton>
         </div>
       </form>
-    </BaseModal>
+    </KinModalSheet>
   </div>
 </template>
 
@@ -187,19 +180,21 @@ import { storeToRefs } from 'pinia'
 import { useVaultStore } from '@/stores/vault'
 import { useAuthStore } from '@/stores/auth'
 import { useNotification } from '@/composables/useNotification'
-import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ContextMenu from '@/components/common/ContextMenu.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import BaseModal from '@/components/common/BaseModal.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
 import MarkdownEditor from '@/components/vault/MarkdownEditor.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinSearch from '@/components/design-system/KinSearch.vue'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   LockClosedIcon,
   PlusIcon,
-  MagnifyingGlassIcon,
   TrashIcon,
   XMarkIcon,
 } from '@heroicons/vue/24/outline'

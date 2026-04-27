@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-lavender-50 dark:bg-prussian-900">
+  <div class="min-h-screen bg-surface-base">
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-prussian-800/80 backdrop-blur-md border-b border-lavender-200 dark:border-prussian-700">
+    <nav class="sticky top-0 z-50 bg-surface-raised/80 backdrop-blur-md border-b border-border-subtle">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <RouterLink to="/" class="flex items-center gap-2">
             <span class="text-2xl">&#x1F3E0;</span>
-            <span class="text-xl font-bold text-wisteria-600 dark:text-wisteria-400">Kinhold</span>
+            <span class="text-xl font-bold text-accent-lavender-bold">Kinhold</span>
           </RouterLink>
           <div class="flex items-center gap-3">
             <RouterLink to="/login" class="btn-ghost btn-sm">Sign In</RouterLink>
@@ -18,10 +18,10 @@
 
     <!-- Content -->
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 class="text-3xl font-bold text-prussian-500 dark:text-lavender-100 mb-2">Privacy Policy</h1>
-      <p class="text-sm text-prussian-400 dark:text-lavender-400 mb-10">Last updated: March 22, 2026</p>
+      <h1 class="text-3xl font-bold text-ink-primary mb-2">Privacy Policy</h1>
+      <p class="text-sm text-ink-secondary mb-10">Last updated: March 22, 2026</p>
 
-      <div class="prose-container space-y-8 text-prussian-500 dark:text-lavender-300">
+      <div class="prose-container space-y-8 text-ink-secondary">
         <section>
           <h2>Overview</h2>
           <p>
@@ -84,7 +84,7 @@
         <section>
           <h2>Data Storage &amp; Security</h2>
           <ul>
-            <li>The app is hosted on <a href="https://upsun.com" target="_blank" rel="noopener" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Upsun</a> (Platform.sh) with infrastructure in the EU</li>
+            <li>The app is hosted on <a href="https://upsun.com" target="_blank" rel="noopener" class="text-accent-lavender-bold hover:underline">Upsun</a> (Platform.sh) with infrastructure in the EU</li>
             <li>Vault entries containing sensitive information are encrypted at rest using AES-256 via Laravel's encryption</li>
             <li>Google OAuth tokens are encrypted at rest</li>
             <li>Passwords are hashed with bcrypt</li>
@@ -145,7 +145,7 @@
           <p>
             Your data is retained as long as your family account is active.
             To delete your account and all associated data, contact
-            <a href="mailto:glqualls@gmail.com" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">glqualls@gmail.com</a>.
+            <a href="mailto:glqualls@gmail.com" class="text-accent-lavender-bold hover:underline">glqualls@gmail.com</a>.
             We will delete all your family's data within 30 days of the request.
           </p>
         </section>
@@ -158,7 +158,7 @@
             <li>Correct inaccurate data</li>
             <li>Request deletion of your data</li>
             <li>Disconnect Google Calendar at any time from Settings</li>
-            <li>Revoke Google access from your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">Google Account permissions</a></li>
+            <li>Revoke Google access from your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener" class="text-accent-lavender-bold hover:underline">Google Account permissions</a></li>
           </ul>
         </section>
 
@@ -174,22 +174,22 @@
           <h2>Contact</h2>
           <p>
             Questions about this policy? Email
-            <a href="mailto:glqualls@gmail.com" class="text-wisteria-600 dark:text-wisteria-400 hover:underline">glqualls@gmail.com</a>.
+            <a href="mailto:glqualls@gmail.com" class="text-accent-lavender-bold hover:underline">glqualls@gmail.com</a>.
           </p>
         </section>
       </div>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-lavender-200 dark:border-prussian-700 mt-16 py-8 text-center text-sm text-prussian-400 dark:text-lavender-500">
+    <footer class="border-t border-border-subtle mt-16 py-8 text-center text-sm text-ink-tertiary">
       <div class="max-w-4xl mx-auto px-4">
         <p>&copy; {{ new Date().getFullYear() }} Kinhold &mdash; Open source under the Elastic License 2.0</p>
         <div class="mt-2 flex items-center justify-center gap-4">
-          <RouterLink to="/" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Home</RouterLink>
+          <RouterLink to="/" class="hover:text-accent-lavender-bold transition-colors">Home</RouterLink>
           <span>&bull;</span>
-          <RouterLink to="/terms" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">Terms</RouterLink>
+          <RouterLink to="/terms" class="hover:text-accent-lavender-bold transition-colors">Terms</RouterLink>
           <span>&bull;</span>
-          <a href="https://github.com/gregqualls/kinhold" target="_blank" rel="noopener" class="hover:text-wisteria-600 dark:hover:text-wisteria-400 transition-colors">GitHub</a>
+          <a href="https://github.com/gregqualls/kinhold" target="_blank" rel="noopener" class="hover:text-accent-lavender-bold transition-colors">GitHub</a>
         </div>
       </div>
     </footer>
@@ -198,10 +198,10 @@
 
 <style scoped>
 .prose-container h2 {
-  @apply text-xl font-semibold text-prussian-500 dark:text-lavender-100 mt-8 mb-3;
+  @apply text-xl font-semibold text-ink-primary mt-8 mb-3;
 }
 .prose-container h3 {
-  @apply text-base font-semibold text-prussian-500 dark:text-lavender-200 mt-4 mb-2;
+  @apply text-base font-semibold text-ink-primary mt-4 mb-2;
 }
 .prose-container p {
   @apply leading-relaxed mb-3;
@@ -210,15 +210,15 @@
   @apply list-disc pl-6 space-y-1 mb-3;
 }
 .prose-container table {
-  @apply w-full text-sm border border-lavender-200 dark:border-prussian-700 rounded-lg overflow-hidden mb-3;
+  @apply w-full text-sm border border-border-subtle rounded-lg overflow-hidden mb-3;
 }
 .prose-container thead {
-  @apply bg-lavender-100 dark:bg-prussian-800;
+  @apply bg-surface-sunken;
 }
 .prose-container th {
-  @apply px-4 py-2 text-left font-semibold text-prussian-500 dark:text-lavender-200;
+  @apply px-4 py-2 text-left font-semibold text-ink-primary;
 }
 .prose-container td {
-  @apply px-4 py-2 border-t border-lavender-200 dark:border-prussian-700;
+  @apply px-4 py-2 border-t border-border-subtle;
 }
 </style>

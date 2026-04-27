@@ -1,11 +1,11 @@
 <template>
   <div>
-    <label v-if="label" class="block text-sm font-medium text-prussian-500 dark:text-lavender-200 mb-1">{{ label }}</label>
+    <label v-if="label" class="block text-sm font-medium text-ink-primary mb-1">{{ label }}</label>
     <div
       role="button"
       tabindex="0"
       :aria-label="displayUrl ? `Change ${label || 'photo'}` : `Upload ${label || 'photo'}`"
-      class="relative border-2 border-dashed border-lavender-300 dark:border-prussian-600 rounded-xl overflow-hidden cursor-pointer hover:border-[#C4975A] focus:outline-none focus:ring-2 focus:ring-[#C4975A]/40 transition-colors"
+      class="relative border-2 border-dashed border-border-subtle rounded-xl overflow-hidden cursor-pointer hover:border-[#C4975A] focus:outline-none focus:ring-2 focus:ring-[#C4975A]/40 transition-colors"
       :class="displayUrl ? 'h-40' : 'p-6'"
       @click="$refs.input.click()"
       @keydown.enter.prevent="$refs.input.click()"
@@ -19,8 +19,8 @@
         @error="onImgError"
       />
       <div v-else class="flex flex-col items-center gap-1 text-center">
-        <CameraIcon class="w-7 h-7 text-lavender-400 dark:text-lavender-500" />
-        <p class="text-sm text-lavender-500 dark:text-lavender-400">
+        <CameraIcon class="w-7 h-7 text-ink-tertiary" />
+        <p class="text-sm text-ink-tertiary">
           {{ uploading ? 'Uploading...' : placeholder }}
         </p>
       </div>

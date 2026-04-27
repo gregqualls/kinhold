@@ -1,20 +1,20 @@
 <template>
   <div class="h-full flex flex-col overflow-hidden">
     <!-- Week navigation header (desktop only — mobile has infinite scroll) -->
-    <div class="hidden md:flex px-4 md:px-6 pt-4 pb-3 items-center gap-2 border-b border-lavender-200 dark:border-prussian-700">
+    <div class="hidden md:flex px-4 md:px-6 pt-4 pb-3 items-center gap-2 border-b border-border-subtle">
       <button
-        class="p-2 rounded-[10px] bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
+        class="p-2 rounded-[10px] bg-surface-sunken text-ink-secondary hover:bg-surface-overlay transition-colors"
         @click="mealsStore.goToPreviousWeek"
       >
         <ChevronLeftIcon class="w-4 h-4" />
       </button>
 
       <div class="flex-1 text-center">
-        <p class="text-sm font-semibold text-prussian-500 dark:text-lavender-200">{{ weekRangeLabel }}</p>
+        <p class="text-sm font-semibold text-ink-primary">{{ weekRangeLabel }}</p>
       </div>
 
       <button
-        class="p-2 rounded-[10px] bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
+        class="p-2 rounded-[10px] bg-surface-sunken text-ink-secondary hover:bg-surface-overlay transition-colors"
         @click="mealsStore.goToNextWeek"
       >
         <ChevronRightIcon class="w-4 h-4" />
@@ -24,7 +24,7 @@
         class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors whitespace-nowrap"
         :class="mealsStore.isCurrentWeek
           ? 'bg-[#C4975A] text-white'
-          : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+          : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
         @click="mealsStore.goToCurrentWeek"
       >
         This Week
@@ -33,7 +33,7 @@
       <!-- Add to shopping list (preview + select ingredients) -->
       <button
         v-if="mealsStore.currentPlan"
-        class="p-2 rounded-[10px] bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600 transition-colors"
+        class="p-2 rounded-[10px] bg-surface-sunken text-ink-secondary hover:bg-surface-overlay transition-colors"
         title="Add ingredients to shopping list"
         @click="showShoppingModal = true"
       >
@@ -47,12 +47,14 @@
     </div>
 
     <!-- No plan yet -->
-    <EmptyState
+    <KinEmptyState
       v-else-if="!mealsStore.currentPlan && !mobileEntries.size"
       :icon="CalendarDaysIcon"
       title="No meal plan yet"
       description="Start planning your week by adding meals to each day."
       action-text="Plan this week"
+      accent-color="peach"
+      size="md"
       @action="mealsStore.fetchCurrentWeekPlan"
     />
 
@@ -131,7 +133,7 @@
           >
             {{ capitalize(editEntry.type) }}
           </span>
-          <span class="text-sm text-lavender-500 dark:text-lavender-400">
+          <span class="text-sm text-ink-tertiary">
             {{ slotLabel(editEntry.meal_slot) }} · {{ formatDate(editEntry.date) }}
           </span>
         </div>
@@ -143,7 +145,7 @@
             :href="editEntry.restaurant.google_maps_url"
             target="_blank"
             rel="noopener"
-            class="flex items-center gap-2 px-3 py-2.5 rounded-[10px] bg-lavender-50 dark:bg-prussian-700 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+            class="flex items-center gap-2 px-3 py-2.5 rounded-[10px] bg-surface-sunken text-sm text-ink-primary hover:bg-surface-overlay transition-colors"
           >
             <MapPinIcon class="w-4 h-4 text-[#5B7B9C] flex-shrink-0" />
             <span class="flex-1 truncate">Open in Google Maps</span>
@@ -152,7 +154,7 @@
           <a
             v-if="editEntry.restaurant.phone"
             :href="'tel:' + editEntry.restaurant.phone"
-            class="flex items-center gap-2 px-3 py-2.5 rounded-[10px] bg-lavender-50 dark:bg-prussian-700 text-sm text-prussian-500 dark:text-lavender-200 hover:bg-lavender-100 dark:hover:bg-prussian-600 transition-colors"
+            class="flex items-center gap-2 px-3 py-2.5 rounded-[10px] bg-surface-sunken text-sm text-ink-primary hover:bg-surface-overlay transition-colors"
           >
             <PhoneIcon class="w-4 h-4 text-[#5B7B9C] flex-shrink-0" />
             <span>{{ editEntry.restaurant.phone }}</span>
@@ -161,54 +163,53 @@
 
         <!-- Servings -->
         <div>
-          <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Servings</label>
-          <input
+          <label class="block text-xs font-medium text-ink-tertiary mb-1.5 uppercase tracking-wide">Servings</label>
+          <KinInput
             v-model.number="editServings"
             type="number"
-            min="1"
-            max="20"
-            class="w-24 text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+            :min="1"
+            :max="20"
+            class="w-24"
           />
         </div>
 
         <!-- Cooks -->
         <div v-if="familyMembers.length > 0">
-          <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-2 uppercase tracking-wide">Assigned Cooks</label>
+          <label class="block text-xs font-medium text-ink-tertiary mb-2 uppercase tracking-wide">Assigned Cooks</label>
           <div class="flex flex-wrap gap-2">
-            <button
+            <KinChip
               v-for="member in familyMembers"
               :key="member.id"
-              class="flex items-center gap-1.5 px-2 py-1.5 rounded-full border text-xs font-medium transition-colors"
-              :class="editCooks.includes(member.id)
-                ? 'bg-[#C4975A]/10 border-[#C4975A]/40 text-[#C4975A]'
-                : 'bg-lavender-50 dark:bg-prussian-700 border-lavender-200 dark:border-prussian-600 text-lavender-500 dark:text-lavender-400 hover:border-[#C4975A]/30'"
+              variant="filter"
+              size="sm"
+              :custom-color="'#C4975A'"
+              :active="editCooks.includes(member.id)"
               @click="toggleEditCook(member.id)"
             >
               <UserAvatar :user="member" size="xs" />
               {{ member.name.split(' ')[0] }}
-            </button>
+            </KinChip>
           </div>
         </div>
 
         <!-- Notes -->
         <div>
-          <label class="block text-xs font-medium text-lavender-400 dark:text-lavender-500 mb-1.5 uppercase tracking-wide">Notes</label>
-          <textarea
+          <label class="block text-xs font-medium text-ink-tertiary mb-1.5 uppercase tracking-wide">Notes</label>
+          <KinTextarea
             v-model="editNotes"
-            rows="2"
-            class="w-full text-sm bg-lavender-50 dark:bg-prussian-700 border border-lavender-200 dark:border-prussian-600 rounded-[10px] px-3 py-2 text-prussian-500 dark:text-lavender-200 placeholder-lavender-400 focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors resize-none"
+            :rows="2"
             placeholder="Any notes..."
-          ></textarea>
+          />
         </div>
 
         <!-- Save -->
-        <BaseButton variant="primary" :loading="isEditSaving" class="w-full" @click="saveEdit">
+        <KinButton variant="primary" size="sm" :loading="isEditSaving" class="w-full" @click="saveEdit">
           Save Changes
-        </BaseButton>
+        </KinButton>
 
         <!-- Delete -->
         <button
-          class="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 transition-colors w-full justify-center pt-1"
+          class="flex items-center gap-2 text-sm text-status-failed hover:text-status-failed transition-colors w-full justify-center pt-1"
           @click="deleteEntry(editEntry)"
         >
           <TrashIcon class="w-4 h-4" />
@@ -241,10 +242,13 @@ import MealDaySection from '@/components/meals/MealDaySection.vue'
 import MealEntryPicker from '@/components/meals/MealEntryPicker.vue'
 import MealPlanShoppingModal from '@/components/meals/MealPlanShoppingModal.vue'
 import SlidePanel from '@/components/common/SlidePanel.vue'
-import BaseButton from '@/components/common/BaseButton.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
-import EmptyState from '@/components/common/EmptyState.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinTextarea from '@/components/design-system/KinTextarea.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const mealsStore = useMealsStore()
 const authStore = useAuthStore()
@@ -479,7 +483,7 @@ const typeClasses = (type) => {
     case 'recipe': return 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400'
     case 'restaurant': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
     case 'preset': return 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
-    default: return 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400'
+    default: return 'bg-surface-sunken text-ink-secondary'
   }
 }
 

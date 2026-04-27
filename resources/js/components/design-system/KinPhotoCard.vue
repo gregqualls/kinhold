@@ -82,6 +82,16 @@ const props = defineProps({
     default: 'md',
     validator: (v) => ['sm', 'md', 'lg'].includes(v),
   },
+  /**
+   * Gradient family used when no `src` is provided OR the image fails to load.
+   * Mirrors KinGradientCard's variants so a recipe / restaurant / vault entry
+   * without a photo still feels intentional.
+   */
+  fallbackGradient: {
+    type: String,
+    default: 'iridescent',
+    validator: (v) => ['iridescent', 'warm', 'lavender', 'peach', 'mint', 'sun', 'cool'].includes(v),
+  },
 })
 
 // ── Image error fallback ──────────────────────────────────────────────────────
@@ -160,8 +170,8 @@ const overlaySubtitleStyle = computed(() => ({
       :class="[
         'relative w-full',
         aspectClass,
-        // Fallback appearance when no photo
-        !showPhoto && 'bg-surface-raised border border-border-subtle',
+        // Gradient fallback when no photo (or photo fails to load).
+        !showPhoto && `kin-photo-card__fallback kin-photo-card__fallback--${fallbackGradient}`,
       ]"
     >
       <!-- Photo -->
@@ -174,32 +184,8 @@ const overlaySubtitleStyle = computed(() => ({
         @error="onImgError"
       />
 
-      <!-- Fallback: no src or broken src -->
-      <div
-        v-if="!showPhoto"
-        class="absolute inset-0 flex items-center justify-center"
-        aria-hidden="true"
-      >
-        <!-- Muted placeholder icon (image glyph) -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1"
-          stroke="currentColor"
-          class="w-10 h-10 text-ink-tertiary opacity-40"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5
-               1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0
-               0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5
-               1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0
-               1 1-.75 0 .375.375 0 0 1 .75 0Z"
-          />
-        </svg>
-      </div>
+      <!-- Fallback handled entirely via background-image on the wrapper above. -->
+      <!-- The intentional gradient IS the fallback — no glyph. -->
 
       <!-- Scrim — flat translucent black across the entire card for legibility.
            Always rendered when a photo is present; never when fallback is shown.
@@ -227,22 +213,27 @@ const overlaySubtitleStyle = computed(() => ({
         <slot name="actions" />
       </div>
 
-      <!-- Overlay content — bottom-left title/subtitle or fully custom -->
+      <!-- Overlay content — bottom-left title/subtitle or fully custom.
+           Pass the showPhoto flag so consumer slots can adjust legibility
+           (white text over scrim vs. ink-primary over gradient fallback). -->
       <div
         v-if="$slots.overlay || title || subtitle"
         :class="['absolute inset-x-0 bottom-0', overlayPaddingClass]"
       >
-        <slot name="overlay">
-          <!-- Default overlay: title + subtitle -->
+        <slot name="overlay" :show-photo="showPhoto">
+          <!-- Default overlay: title + subtitle.
+               Photo present → white + text-shadow against the scrim.
+               Fallback gradient → ink-primary against the pastel surface. -->
           <p
             v-if="title"
-            class="font-semibold text-white"
-            :style="overlayTitleStyle + ' text-shadow: 0 1px 3px rgba(0,0,0,0.40);'"
+            class="font-semibold"
+            :class="showPhoto ? 'text-white' : 'text-ink-primary'"
+            :style="overlayTitleStyle + (showPhoto ? ' text-shadow: 0 1px 3px rgba(0,0,0,0.40);' : '')"
           >{{ title }}</p>
           <p
             v-if="subtitle"
             class="mt-0.5"
-            :style="overlaySubtitleStyle + ' color: rgba(255,255,255,0.82);'"
+            :style="overlaySubtitleStyle + (showPhoto ? ' color: rgba(255,255,255,0.82);' : ' color: rgb(var(--ink-secondary));')"
           >{{ subtitle }}</p>
         </slot>
       </div>
@@ -325,5 +316,103 @@ const overlaySubtitleStyle = computed(() => ({
   .kin-photo-card__img {
     transition: none;
   }
+}
+
+/* ── Gradient fallbacks ──────────────────────────────────────────────────────
+   Mirror the KinGradientCard variants so a no-photo card is intentional, not
+   empty. surface-raised is the base; the gradient sits on top with the
+   transparent stops well-spaced.
+   ──────────────────────────────────────────────────────────────────────── */
+.kin-photo-card__fallback {
+  background-color: rgb(var(--surface-raised));
+}
+
+.kin-photo-card__fallback--iridescent {
+  background-image: var(--gradient-iridescent-subtle);
+}
+.kin-photo-card__fallback--warm {
+  background-image: var(--gradient-iridescent-warm);
+}
+.kin-photo-card__fallback--lavender {
+  background-image: radial-gradient(
+    ellipse 100% 90% at 30% 20%,
+    rgb(var(--accent-lavender-soft) / 0.85) 0%,
+    transparent 70%
+  );
+}
+.dark .kin-photo-card__fallback--lavender {
+  background-image: radial-gradient(
+    ellipse 100% 90% at 30% 20%,
+    rgb(var(--accent-lavender-bold) / 0.32) 0%,
+    transparent 70%
+  );
+}
+.kin-photo-card__fallback--peach {
+  background-image: radial-gradient(
+    ellipse 100% 90% at 30% 20%,
+    rgb(var(--accent-peach-soft) / 0.85) 0%,
+    transparent 70%
+  );
+}
+.dark .kin-photo-card__fallback--peach {
+  background-image: radial-gradient(
+    ellipse 100% 90% at 30% 20%,
+    rgb(var(--accent-peach-bold) / 0.32) 0%,
+    transparent 70%
+  );
+}
+.kin-photo-card__fallback--mint {
+  background-image: radial-gradient(
+    ellipse 100% 90% at 30% 20%,
+    rgb(var(--accent-mint-soft) / 0.85) 0%,
+    transparent 70%
+  );
+}
+.dark .kin-photo-card__fallback--mint {
+  background-image: radial-gradient(
+    ellipse 100% 90% at 30% 20%,
+    rgb(var(--accent-mint-bold) / 0.32) 0%,
+    transparent 70%
+  );
+}
+.kin-photo-card__fallback--sun {
+  background-image: radial-gradient(
+    ellipse 100% 90% at 30% 20%,
+    rgb(var(--accent-sun-soft) / 0.85) 0%,
+    transparent 70%
+  );
+}
+.dark .kin-photo-card__fallback--sun {
+  background-image: radial-gradient(
+    ellipse 100% 90% at 30% 20%,
+    rgb(var(--accent-sun-bold) / 0.32) 0%,
+    transparent 70%
+  );
+}
+.kin-photo-card__fallback--cool {
+  background-image:
+    radial-gradient(
+      ellipse 80% 70% at 18% 20%,
+      rgb(var(--accent-lavender-soft) / 0.80) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at 82% 80%,
+      rgb(var(--accent-mint-soft) / 0.80) 0%,
+      transparent 70%
+    );
+}
+.dark .kin-photo-card__fallback--cool {
+  background-image:
+    radial-gradient(
+      ellipse 80% 70% at 18% 20%,
+      rgb(var(--accent-lavender-bold) / 0.30) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at 82% 80%,
+      rgb(var(--accent-mint-bold) / 0.30) 0%,
+      transparent 70%
+    );
 }
 </style>

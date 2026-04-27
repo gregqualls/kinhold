@@ -1,26 +1,29 @@
 <template>
   <div class="flex flex-col h-full">
     <div class="flex items-center justify-between mb-3 flex-shrink-0">
-      <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-        <BellIcon class="w-4 h-4 text-wisteria-500" />
+      <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
+        <BellIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || 'Activity' }}
       </h3>
       <RouterLink
         to="/points"
-        class="text-wisteria-600 dark:text-wisteria-400 text-xs font-medium hover:text-wisteria-500"
+        class="text-xs font-medium text-accent-lavender-bold hover:opacity-80 transition-opacity"
       >
         View All
       </RouterLink>
     </div>
 
     <div v-if="loading" class="space-y-3">
-      <div v-for="n in 4" :key="n" class="h-10 bg-lavender-100 dark:bg-prussian-700 rounded-lg animate-pulse"></div>
+      <KinSkeleton v-for="n in 4" :key="n" shape="rect" :height="'40px'" />
     </div>
 
-    <div v-else-if="items.length === 0" class="flex flex-col items-center justify-center py-6">
-      <BellIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mb-1" />
-      <p class="text-sm text-lavender-500 dark:text-lavender-400">No recent activity</p>
-    </div>
+    <KinEmptyState
+      v-else-if="items.length === 0"
+      :icon="BellIcon"
+      title="No recent activity"
+      size="sm"
+      accent-color="lavender"
+    />
 
     <div v-else :class="config.size === 'md' ? 'columns-2 gap-x-6 space-y-2 [&>*]:break-inside-avoid flex-1 min-h-0 overflow-y-auto' : 'space-y-2 flex-1 min-h-0 overflow-y-auto'">
       <div
@@ -35,10 +38,10 @@
           {{ item.points > 0 ? '+' : '' }}{{ item.points }}
         </div>
         <div class="flex-1 min-w-0">
-          <p class="text-sm text-prussian-600 dark:text-lavender-200 leading-snug">
+          <p class="text-sm text-ink-secondary leading-snug">
             {{ item.description }}
           </p>
-          <p class="text-xs text-lavender-500 dark:text-lavender-400 mt-0.5">
+          <p class="text-xs text-ink-tertiary mt-0.5">
             {{ item.user?.name?.split(' ')[0] }}
             <span v-if="item.created_at" class="ml-1">{{ formatTime(item.created_at) }}</span>
           </p>
@@ -53,6 +56,8 @@ import { computed } from 'vue'
 import { DateTime } from 'luxon'
 import { useWidgetData } from '@/composables/useWidgetData'
 import { BellIcon } from '@heroicons/vue/24/outline'
+import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
 const props = defineProps({
   config: { type: Object, required: true },
@@ -69,9 +74,9 @@ const items = computed(() => {
 })
 
 function pointsBadgeClass(points) {
-  if (points > 0) return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-  if (points < 0) return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-  return 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400'
+  if (points > 0) return 'bg-status-success/10 text-status-success'
+  if (points < 0) return 'bg-status-failed/10 text-status-failed'
+  return 'bg-surface-sunken text-ink-tertiary'
 }
 
 function formatTime(dateStr) {

@@ -2,6 +2,314 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-27 — Dashboard widgets revisited: full Kin treatment
+
+When 6.1 Dashboard shipped earlier, the *shell* (DashboardView, DashboardWidget, DashboardToolbar, WidgetPickerModal) got the Kin treatment but the individual widgets only got mechanical KinSkeleton/KinEmptyState swaps. After every other view caught up, the widgets stuck out as the visually-stale pocket of the app. This pass closes that gap.
+
+**11 widgets touched** (CountdownWidget already done):
+
+- **WelcomeWidget** — token sweep on greeting + date.
+- **PointsSummaryWidget** — restructured to a small `KinHeroMetricCard`-style hero: dropped the trophy-icon-square-plus-label-plus-value triplet; replaced with vertical layout — uppercase kicker label + `text-4xl` font-mono hero number + `pts` suffix in tertiary ink. Recent activity row badges use `text-status-success bg-status-success/10` / `text-status-failed bg-status-failed/10` pills.
+- **BadgesWidget** — header standardized; intentionally **kept `BadgeIcon`** (KinAchievementTile's 108×108 hex tiles are too big for dashboard mini-grids) and just token-swept the surrounding chrome.
+- **ActivityFeedWidget** — header standardized; description/meta tokens swept; points-pill rewritten to use status tokens.
+- **FamilyTasksWidget** / **MyTasksWidget** / **FilteredTasksWidget** — header standardized; task rows now have `border-b border-border-subtle last:border-b-0` for visual rhythm (matches the Tasks-view card pattern); checkbox states use status-success + accent-lavender-bold; FilteredTasksWidget tag pills (dynamic `:style`) preserved.
+- **LeaderboardWidget** — header + View Feed link standardized; current-user highlight → `bg-accent-lavender-soft/40`; podium gradients (sand/lavender/amber) intentionally preserved as bespoke domain visuals.
+- **TodaysScheduleWidget** — header standardized; row dividers → `border-border-subtle`; per-event color accent stripe preserved.
+- **QuickActionsWidget** — biggest visual upgrade: each tile is now a proper Kin card (`bg-surface-raised border border-border-subtle rounded-card hover:border-accent-lavender-bold/40 hover:shadow-resting`) with a circular `bg-accent-lavender-soft/50` icon container holding the action's icon. Mirrors the FoodCard / RecipeCard tile philosophy.
+- **RewardsWidget** — header + View All link standardized; `FeaturedRewards` child component left bespoke (separate scope).
+
+**Universal standardization** across all widgets:
+- "View All" / "View Feed" / "View Calendar" links: `class="text-xs font-medium text-accent-lavender-bold hover:opacity-80 transition-opacity"`
+- Widget title row: `text-ink-primary` heading + `text-accent-lavender-bold` leading icon
+- All `prussian-*` / `lavender-*` / `wisteria-*` / `sand-*` / `red-*` / `green-*` / `emerald-*` legacy tokens replaced with their Kin equivalents
+
+**Verified live**: Mike's demo dashboard renders Rewards Shop (Weekend Trip Pick / Extra Allowance / Sweets), Badges (29-tile grid with 4 earned, hex shapes intact), and the upgraded QuickActions 2×3 grid with clean Kin tiles. No console errors.
+
+**Visual overhaul is now end-to-end consistent.** Every authenticated view + every widget + every auth/onboarding surface wears the Kin design system.
+
+## 2026-04-27 — Tier 6.6–6.10 Phase 1: Vault, Chat, Settings, Onboarding, Auth onto Kin
+
+Closed out the rest of Tier 6 in a single dispatch: 5 view areas, ~6,300 LOC, refactored in parallel by sub-agents under strict Phase 1 rules (token sweep + targeted Kin component swaps; no logic changes; structural form/encryption/editor wiring untouched).
+
+### 6.7 Chat ([resources/js/views/chat/ChatView.vue](resources/js/views/chat/ChatView.vue))
+- Setup-prompt empty state ("No API Key") → `KinEmptyState` (sun accent) + `KinButton primary` CTA to /settings.
+- Welcome empty state → `KinEmptyState` (lavender) with the suggested-question rows kept as bespoke prompt cards token-swept.
+- Composer Send button → `KinButton variant="primary" icon-only` carrying `PaperAirplaneIcon`.
+- Full token sweep on message bubbles + composer.
+- Deferred: `<textarea>` kept native (auto-resize relies on direct `scrollHeight` + template ref). Message bubbles stayed bespoke — chat alignment with user/assistant sides differs structurally from `KinActivityRow`.
+
+### 6.8 Settings ([resources/js/views/settings/SettingsView.vue](resources/js/views/settings/SettingsView.vue) + [SettingsSection.vue](resources/js/components/settings/SettingsSection.vue))
+- ~340 token replacements across the 2,440-line view + the section component.
+- 8 native `<input>` → `KinInput` (invite email, AI model + API key, ICS URL/name, default-task-points trio).
+- 3 `<select>` → `KinSelect` (leaderboard period, week-start day, member role) with hoisted option arrays.
+- 3 boolean toggles → `KinSwitch` (kudos-cost + 2× email-preference rows).
+- Deferred: `BaseModal` × 5 (project-wide wrapper — separate refactor pass), 2 `<ToggleSwitch>` instances using `#thumb` slot for Sun/Moon icons (KinSwitch has no thumb slot), `class="card-lg"` global utility, radio-group / multi-select patterns (wrong primitive for KinSwitch).
+
+### 6.9 Onboarding ([resources/js/views/onboarding/](resources/js/views/onboarding/))
+- **OnboardingView shell** — Next/Back/Skip/Finish → `KinButton`; progress dots tokenized to `bg-accent-lavender-bold` / `bg-surface-sunken`.
+- **WelcomeStep** — `KinInput` for name; `KinSelect` for timezone (computed `timezoneOptions`).
+- **FeaturesExplainerStep** — accessible feature cards → `KinGradientCard` with per-feature variant map (sun/mint/warm/cool/lavender). Locked cards → `KinFlatCard`.
+- **FeaturesStep** — feature cards → `KinFlatCard padding="sm"`; per-member access checkboxes → `KinCheckbox`. Mode-pill row left bespoke (4-state segmented).
+- **CalendarStep** — "Connected" success → `KinFlatCard`. Connect-Google OAuth button left bespoke (token-swept).
+- **TagsStep** — "How it works" panel → `KinFlatCard`. Preset grid retained (descriptions don't fit `KinChip`'s label-only API), token-swept.
+- **InviteStep** — Member rows + invite-code panel + non-parent panel → `KinFlatCard`. Inputs/select → `KinInput`/`KinSelect`. Action buttons → `KinButton`.
+- **CompleteStep** — token-swept.
+
+### 6.10 Auth ([resources/js/views/auth/](resources/js/views/auth/))
+- **LoginView.vue** — both forms (login + pending-link) wrapped in `KinFlatCard padding="lg"`. `BaseInput` ×3 → `KinInput`. `BaseButton` ×4 → `KinButton` (Sign In primary, Link & Sign In primary, Cancel ghost, Google secondary with `#leading` SVG slot). `KinCheckbox` for Remember me. Error blocks → `bg-status-failed/10 border-status-failed/30 text-status-failed`. Page wordmark + centered layout untouched.
+- **RegisterView.vue** — same playbook: `KinFlatCard`, 6 `BaseInput` → `KinInput`, primary submit + Google secondary → `KinButton` with `#leading` SVG slot. Family-mode toggle buttons stayed bespoke (active state retains `bg-kin-gold text-white`).
+
+### 6.6 Vault ([resources/js/views/vault/](resources/js/views/vault/) + [resources/js/components/vault/](resources/js/components/vault/))
+- **VaultCategoriesView** (~509 lines) — header KinButtons; KinSearch; KinEmptyState + KinButton CTA; 2× KinModalSheet (add/edit category, delete confirm); 3× KinInput; 1× KinSelect; 4× KinButton (modal actions).
+- **VaultEntriesView** (~313 lines) — header Add → KinButton; KinSearch; KinEmptyState + KinButton; KinModalSheet; KinInput; 2× KinButton.
+- **VaultEntryView** (~626 lines) — token sweep ~30 sites; 2× KinModalSheet (Share, Edit); 2× KinSelect (Share form); KinInput + KinSelect for Edit; 4× KinButton modal actions.
+- **MarkdownEditor.vue** — untouched (passthrough wrapper).
+- **MilkdownEditorCore.vue** — token-sweep on the editor wrapper/toolbar chrome only. Markdown content typography (`prose-vault` styles) intentionally left for a dedicated palette pass.
+- **SensitiveField.vue** — token-sweep on label/masked text/reveal/copy. Encryption/decryption logic untouched.
+- Deferred: sensitive-key/value `<input class="input-base">` inputs (excluded by security rules), category icon color lookup tables (`getCategoryBgClass` / `getCategoryTextClass`) — palette pass needed.
+
+### Verified in preview
+
+- `/chat` — empty state with lavender chip icon, "Kinhold Assistant" hero, suggested-question cards, composer + Send button.
+- `/settings` — Family Settings page with collapsible `SettingsSection` cards (Family / Tasks & Points / AI & Integrations / Feature Access / Food).
+- `/vault` — header + KinSearch + 5 category tiles (Education, Financial, Insurance, Legal, Medical) with their accent-tinted icon squares and count badges.
+- `/login` — KinFlatCard form with KinInput email/password, KinCheckbox Remember me, primary KinButton Sign In, Or-try-demo + Sign-up links.
+- No new console errors after fresh reload on any of the four pages.
+
+### Phase 2 deferrals (carry forward)
+
+- `BaseModal`, `BaseButton`, `BaseInput` are still wrappers used across the codebase. They've been pushed past for now — refactoring them touches API surface (e.g., `:show` → `:model-value`, `#footer` → `#actions`) and warrants a single coordinated pass once every consumer is on Kin tokens.
+- `class="card-lg"` global utility — global CSS class. Either rename to a Kin token utility or wrap callers in `KinFlatCard`.
+- Vault category icon palette tables — domain-specific color set, separate audit.
+- Settings: ToggleSwitch dark-mode rows (need either thumb-slot extension on `KinSwitch` or a design call to drop the icon).
+- Settings: 5 `BaseModal` instances (add-member, remove-confirm, switch-to-profile, demo-delete, delete-account/family).
+
+**Tier 6 is now feature-complete** for the visual overhaul. Every authenticated view + auth onboarding now wears the Kin design system (modulo the wrapper-component deferrals above).
+
+## 2026-04-27 — Tier 6.5 Phase 1: Food module onto Kin design-system
+
+Largest tier yet — ~6,000 LOC across 5 views (FoodView shell + Plans/Recipes/Restaurants/Shopping tabs + RecipeDetailView) and 19 child components. Phase 1 keeps it pragmatic: shell refactor + tab headers onto Kin patterns + a complete token sweep across every Food-related file. Heavy form/picker structural refactors deferred to Phase 2.
+
+### Shell + tabs
+
+- **FoodView.vue** ([resources/js/views/food/FoodView.vue](resources/js/views/food/FoodView.vue)) — bespoke 4-tab pill row replaced with `KinTabPillGroup variant="underline"` (matches the editorial gold-underline pattern the food module already used). 52 lines down to a clean shell.
+- **RecipesTab.vue** — search → `KinSearch`; view-mode toggle stays bespoke icon button (token-swapped); Add Recipe → `KinButton primary`; sort dropdown → `KinSelect`; Favorites filter → `KinChip variant="filter" color="peach"`; tag filter chips → `KinChip` with `customColor` per tag; empty → `KinEmptyState` with `#cta` slot; create form modal → `KinModalSheet`. Net 424 → 366 lines.
+- **RestaurantsTab.vue** — same playbook: KinSearch + KinButton + KinChip filter row + KinEmptyState. Bespoke restaurant cards left intact for Phase 2.
+- **MealsTab.vue** — token sweep on prev/next/today buttons, week-range header, day grid hover states. Layout untouched (the meal-plan grid is heavily domain-specific).
+- **ShoppingTab.vue** + ListHeader / AddItemInput / ShoppingListItem / PreShopChecklist / CreateListInline — token sweep + KinButton on save/done/delete actions; KinSelect on the list-picker dropdown; KinModalSheet on inline editing where it fit.
+- **RecipeDetailView.vue** — token sweep + KinButton on action buttons; bespoke recipe rendering preserved.
+
+### Child components (token-only sweep)
+
+19 component files token-swept by sub-agents — all `prussian-*` / `lavender-*` / `wisteria-*` / `btn-primary` / `BaseModal` references replaced with the Kin equivalents (`text-ink-*`, `bg-surface-*`, `border-border-*`, `KinButton`, `KinModalSheet`). Files touched include: FoodCard, PhotoUpload, RecipeIngredientPicker, TagPicker, CookLogEntry, FamilyRating, IngredientList, RecipeCard, RecipeImportModal, StepList, MealDaySection, MealEntryCard, MealEntryPicker, MealPlanShoppingModal, MealWeekGrid, AddItemInput, CreateListInline, ListHeader, PreShopChecklist, ShoppingListItem.
+
+Some of these got Kin component swaps where the fit was clean (CookLogEntry → `KinModalSheet` + `KinInput` + `KinTextarea` + `KinButton`; RecipeImportModal → `KinModalSheet`; ListHeader → `KinSelect` + `KinButton` set; AddItemInput → `KinButton` for the Add action; CreateListInline → `KinInput` + `KinButton`). The rest are token-only and structurally unchanged.
+
+The intentional food gold accent (`#C4975A`/`#D4A96A`) is preserved everywhere — that's the brand color for the module and shouldn't fold into a Kin accent family.
+
+### Verified in preview
+
+`/food` Plans tab renders the meal-plan week grid with KinTabPillGroup gold underline; Recipes tab shows KinSearch + filter chips (Favorites peach + Breakfast/Lunch/Dinner/Dessert/Snack/Italian custom-color chips) + empty state with FireIcon + "Add Recipe" CTA; Restaurants tab shows the same filter pattern with restaurant cards rendering correctly; `/shopping` shows the empty-list KinEmptyState + KinInput + KinButton create form. No console errors.
+
+### Phase 2 deferrals
+
+These four heavyweights got token sweeps but kept their bespoke form structure:
+- **RecipeForm.vue** (489 LOC) — long branching form with photo upload, ingredient list builder, step list builder, time/serving inputs, tag picker, cook log. Worth a deliberate pass with a `KinForm` row helper if we add one.
+- **MealEntryPicker.vue** (350 LOC) — tabbed picker (recipe / restaurant / quick text) with search and source attribution.
+- **MealPlanShoppingModal.vue** (344 LOC) — preview-and-pick flow with collapsible per-recipe ingredient pickers and target-list selector.
+- **MealWeekGrid.vue** (281 LOC) — the 7-day × 4-meal grid with drag-to-reschedule, copy-day, and per-cell add buttons.
+
+All four would benefit from `KinFormGroup` patterns and a future `KinTabPillGroup` swap on internal sub-tabs. The risk in Phase 1 was high since they couple to multiple stores and have complex local state — better to refactor each in its own session with proper verification.
+
+Tier 6.5 Phase 1 done.
+
+## 2026-04-27 — Tier 6.4: Points + Achievements onto Kin design-system
+
+Big sweep across the Points module (3 views + 6 components) and Achievements / Badges (1 view). Headline change: Achievements now uses `KinAchievementTile` directly — the locked design-system component for badges — replacing bespoke BadgeCard + BadgeIcon stacks per badge.
+
+### Achievements
+
+- **BadgesView.vue** ([resources/js/views/badges/BadgesView.vue](resources/js/views/badges/BadgesView.vue)) — full refactor.
+  - Renamed page heading "Badges" → "Achievements" per the [REDESIGN_BRIEF](docs/design/REDESIGN_BRIEF.md) decision (still routed at `/badges` for now).
+  - Grid swaps `BadgeCard` for `KinAchievementTile` directly. Adapter helpers map badge data → tile props:
+    - `stateFor(badge)` → 'earned' / 'in-progress' / 'locked' / 'hidden'
+    - `progressFor(badge)` → normalized 0–1 from `progress / trigger_threshold`
+    - `metaFor(badge)` → "Earned" / "X / Y"
+    - `accentColorFor(hex)` → hue-bucket map onto lavender / peach / mint / sun (purples → lavender, reds/pinks → peach, greens → mint, yellows/oranges → sun)
+    - `iconComponentFor(name)` → memoised functional component that renders just the inner SVG path (KinAchievementTile applies the hex shell)
+  - Tabs (All / Earned / Locked) → `KinTabPillGroup` variant=tinted.
+  - Create form → `KinFlatCard` wrapper, `KinInput` for name + description + threshold, `KinSelect` for trigger type, `KinCheckbox` for "hidden". Icon + color pickers stay bespoke (custom multi-select grids).
+  - "Manually Award" form → `KinSelect` ×2 + `KinButton` primary inside another `KinFlatCard`.
+  - Empty state → `KinEmptyState` with mode-aware title/description.
+  - Token sweep throughout.
+  - **Note:** the existing bespoke `BadgeCard`, `BadgeIcon`, `BadgeProgressBar`, `BadgeShowcase` files are untouched — still used by `BadgesWidget` on the dashboard and possibly elsewhere. They can be migrated later or deprecated piecemeal.
+
+### Points
+
+- **PointsFeedView.vue** ([resources/js/views/points/PointsFeedView.vue](resources/js/views/points/PointsFeedView.vue))
+  - Header nav `RouterLink`s → `KinButton` (secondary / ghost) with `to=` prop.
+  - Balance section → `KinHeroMetricCard` variant=iridescent with "Spend" CTA routing to /points/rewards. Bank value drives the auto-scaling hero number.
+  - Leaderboard split out into its own `KinFlatCard` (was bundled with the balance card).
+  - Activity feed wrapped in `KinFlatCard padding="none"` so the divider rhythm reads cleanly. Empty state → `KinEmptyState` (sm). Kudos input strip stays at the bottom on a sunken surface.
+  - LeaderboardStrip kept bespoke (267 LOC of podium animations — Phase 2).
+- **PointsHistoryView.vue** ([resources/js/views/points/PointsHistoryView.vue](resources/js/views/points/PointsHistoryView.vue)) — back button → `KinButton` ghost icon-only; balance → `KinHeroMetricCard`; transaction list wrapped in `KinFlatCard padding="none"` with hairline dividers; empty → `KinEmptyState`.
+- **RewardsView.vue** ([resources/js/views/points/RewardsView.vue](resources/js/views/points/RewardsView.vue))
+  - Back + Add Reward buttons → `KinButton`. Bank pill kept inline.
+  - Search input → `KinSearch`.
+  - Filter pills (All / Affordable / Available) → `KinChip` color="lavender" with `:active` state.
+  - Sort dropdown → `KinSelect size="sm"` (with `sortOptions` array).
+  - Both empty states → `KinEmptyState` (search-empty uses MagnifyingGlass / lavender; module-empty uses Gift / peach).
+  - **Deferred:** `RewardCard` (267 LOC, dual-mode standard + auction with stock/expiry/visibility chips) and `RewardForm` (253 LOC, branching form with icon picker + age range + specific-people picker) — too domain-heavy for this session.
+- **BidModal.vue** + **DeductModal.vue** + **RequestPointsModal.vue** — all swapped from inline `BaseModal` patterns to `KinModalSheet`. Inputs → `KinInput`. Member select in DeductModal → `KinSelect`. Action buttons → `KinButton` (Cancel ghost, Submit primary, Deduct danger).
+- **KudosInput.vue** — member `<select>` → `KinSelect`; reason input → `KinInput` (preserves @keydown.enter); Give Kudos → `KinButton` primary.
+- **PendingRequests.vue** + **FeedItem.vue** — token sweep only. Bespoke colored points pill in FeedItem preserved (it's a domain-specific +/- numeric badge).
+
+### Verified in preview
+
+`/badges` shows the new Achievements grid with the four KinAchievementTile states (earned hex / in-progress with arc / locked ghost / hidden ???). `/points` shows the iridescent KinHeroMetricCard hero with the bank balance and Spend CTA, leaderboard in its own card, activity feed in a third. `/points/history` shows the same pattern minus the leaderboard. `/points/rewards` shows the KinSearch + KinChip filter row + KinSelect sort. DeductModal opens as a centered KinModalSheet with KinSelect + KinInputs + KinButton danger. No new console errors after fresh reload.
+
+### Phase 2 deferrals
+
+- `LeaderboardStrip` (267 LOC) — podium with medal/height-based visual + slide-up animations. No Kin equivalent today; would need a new `KinPodium` component or stay bespoke long-term.
+- `RewardCard` (267 LOC) — dual-mode card (standard purchase vs. timed/live auction) with stock / expiry / visibility / countdown badges. Could become `KinPhotoCard` + bespoke meta chips, but the auction state machine deserves a deliberate refactor.
+- `RewardForm` (253 LOC) — long branching form with icon picker, color picker, age range, specific-people multi-select. Needs a `KinForm` row helper or systematic decomposition.
+- Old bespoke `BadgeCard` / `BadgeIcon` / `BadgeProgressBar` / `BadgeShowcase` left intact (still used by dashboard widget). Worth pruning once dashboard widget migrates too.
+
+Tier 6.4 done.
+
+## 2026-04-27 — Tier 6 Phase 3: Utility rail + editorial day header on Calendar/Tasks
+
+Per the original brief — "right utility rail only on data-heavy pages (calendar, tasks, vault, food)" — Calendar and Tasks now wear the rail on desktop (≥`lg`). Calendar also gets the editorial `KinDayHeader` as the centerpiece for Day view.
+
+### Calendar
+
+- **CalendarView.vue** ([resources/js/views/calendar/CalendarView.vue](resources/js/views/calendar/CalendarView.vue))
+  - Two-column desktop layout: main content `flex-1` + `KinUtilityRail` (280px) on the right. Rail collapses on `< lg` (mobile gets a floating Add Event button instead).
+  - **Day view centerpiece:** the small `<h2>EEEE, MMMM d, yyyy</h2>` is replaced with `KinDayHeader` size="md" — editorial-scale day number with `clamp(4rem, 12vw, 8rem)` so it's huge on desktop and proportional on mobile. Includes weekday + month + event count + "TODAY" badge when applicable. Prev/next icon buttons flank the header.
+  - **Month/Week views** keep the compact navigation pill (prev / title / Today / next) — KinDayHeader's hero scale is overkill for a span title.
+  - **Rail content:**
+    - `#mini-month` — bespoke 7-col grid (KinMonthGrid would dominate the 280px rail). Today filled lavender, event days dotted, off-month days dimmed; clicks route through the same `onMonthDaySelect` adapter as the main grid.
+    - `#filters` — `KinChip` per source (Family Events lavender, Tasks sun, plus one per calendar connection using `customColor`). Toggle off to filter that source out of all three view modes simultaneously.
+    - `#actions` — Add Event (primary KinButton) + Today (ghost). Auto-pinned to the rail's bottom by `KinUtilityRail`'s `mt-auto` on `actions`.
+  - New state: `now` (DateTime ref for TODAY badge), `sourceFilters` (computed list — built-ins + connections), `sourceFilterState` (reactive on/off map, default-on as filters appear), `passesSourceFilter()` predicate, and three `filtered*` computeds (`filteredWeekEvents`, `filteredDayEvents`, `filteredMonthEventsMap`) feeding the grids/TimeGrids.
+  - Removed: the bottom legend (sources are now toggleable in the rail). View-mode tabs stay in the top header. Add Event is gone from the top header — moved to the rail's `#actions`. Mobile gets a floating round Add Event button.
+
+### Tasks
+
+- **TasksView.vue** ([resources/js/views/tasks/TasksView.vue](resources/js/views/tasks/TasksView.vue))
+  - Two-column layout matching Calendar: main `flex-1` + `KinUtilityRail` (280px) hidden on `< lg`.
+  - **Mobile:** the existing horizontal tag filter row stays (only shown `< lg`).
+  - **Desktop rail content:**
+    - `#filters` — same chips, but stacked vertically. "All" neutral chip + per-tag chips with `customColor` and incomplete-count.
+    - `#actions` — Add Task (primary KinButton, hooks `focusQuickAdd`) + Manage tags icon-only ghost (cog icon).
+  - Mobile FAB (`FloatingActionButton`) now `lg:hidden` so it doesn't overlap the rail's Add Task button on desktop.
+
+### Verified in preview
+
+Desktop (1400×900): Calendar renders three-column shell — sidebar / main / utility rail. Day view shows the giant "27" / MONDAY / TODAY / APRIL 2026 / · 2 events row. Tasks shows the vertical chip stack in the rail with Add Task at the bottom. Mobile (375×812): rail hidden on both views, original mobile layouts preserved (horizontal chip strip on Tasks, FAB on Calendar). No console errors.
+
+### Notes
+
+- Rail's mini-month is a separate small implementation (not `KinMonthGrid`) because KinMonthGrid's `min-h-[42px]` cells would inflate the rail. If we ever add a `density="compact"` to `KinMonthGrid`, we can DRY this up.
+- Rail width is fixed at 280px — when the brief mentioned "saved views" and "presence" sections that's not yet wired here. Both are easy adds when the data exists (no online-presence tracking yet; saved views is a feature flag away).
+
+## 2026-04-27 — Tier 6 Phase 2: KinSelect, KinChip color escape, KinMonthGrid, KinModalSheet on TaskDetailPanel
+
+Closing the four phase-2 questions Greg flagged in the morning. Library grows by one component, gains an escape-hatch, and Calendar + Tasks both move further onto Kin primitives.
+
+### New library component
+
+- **KinSelect** ([resources/js/components/design-system/KinSelect.vue](resources/js/components/design-system/KinSelect.vue)) — native `<select>` wrapped in KinInput's borderless inset look. Supports placeholder, helper, error, required, disabled, sizes (sm / md / lg), and grouped options via `optgroup`. Uses native `<select>` under the hood so keyboard navigation, screen-reader semantics, mobile native picker, and form integration work out of the box; only the chevron is custom (overlaid `ChevronDownIcon` with `pointer-events-none`). Light: sunken-fill + accent-lavender ring on focus. Dark: raised-overlay so the field doesn't disappear into the page.
+- **Design-system page** at `/design-system/select` ([resources/js/views/design-system/pages/primitives/SelectPage.vue](resources/js/views/design-system/pages/primitives/SelectPage.vue)) covers default states (empty + placeholder, filled, error, disabled, readonly), label + helper, three sizes, and grouped (`optgroup`) options.
+- **Registry** ([resources/js/views/design-system/registry.js](resources/js/views/design-system/registry.js)) — slot 1.8 added under Tier 1 — Primitives, marked `chosen: true`.
+
+### KinChip — `customColor` escape-hatch
+
+- ([resources/js/components/design-system/KinChip.vue](resources/js/components/design-system/KinChip.vue)) — new `customColor` prop accepts any CSS color string. When set: active state fills with that color + white text + matching border via inline style; inactive state shows a small dot of that color + neutral surface bg. Use sparingly — accent families are still preferred. Unblocks tag pills, calendar legend dots, and anywhere else a per-row brand color outside the lavender / peach / mint / sun palette is needed.
+
+### Calendar — KinMonthGrid migration
+
+- **CalendarView.vue** ([resources/js/views/calendar/CalendarView.vue](resources/js/views/calendar/CalendarView.vue)) — month view fully on `KinMonthGrid` (density="dots", maxDots=4). Removed the bespoke 7-column grid + inline event-title pills. New adapters wired in:
+  - `monthCells` — 42-cell array shaped `{ day, month: 'current'|'leading'|'trailing' }`.
+  - `monthEventsMap` — `{ [day]: [accent, accent, ...] }`. Source-based mapping: `task → 'sun'`, `manual → 'lavender'`, calendar connections cycle through `[peach, mint, lavender, sun]` by index so each calendar gets a stable accent regardless of its raw hex.
+  - `monthEventLabels` — passed for hover/aria context (KinMonthGrid uses these in pills mode; harmless in dots mode).
+  - `todayInCurrentMonth` — number-only for the today-circle.
+  - `onMonthDaySelect(day)` — KinMonthGrid emits `select(day)`. If the day has a manual event, opens it for editing; otherwise opens the create modal pre-filled with that date.
+  - Dropped `getEventsForDay` and `eventStyle` (no longer referenced).
+- **Trade-off:** inline event titles are gone (dots only). Per Greg: "go with KinMonthGrid; if it isn't good we can update it later." Mobile spacing benefits kick in immediately — KinMonthGrid bakes in `min-h-[42px] md:min-h-[52px]` instead of the old `min-h-24` desktop-first cell.
+- **Calendar legend** restyled with `KinChip` — `customColor` for connection chips, accent colors for "Family Events" (lavender) and "Tasks" (sun). All chips are `disabled` since they're informational, not interactive.
+
+### Tasks — KinModalSheet + KinSelect + KinChip color
+
+- **TaskDetailPanel.vue** ([resources/js/components/tasks/TaskDetailPanel.vue](resources/js/components/tasks/TaskDetailPanel.vue)) — `SlidePanel` → `KinModalSheet` (centered modal on desktop, bottom sheet on mobile). `#footer` slot → `#actions`. Tag toggle buttons now `KinChip` with `customColor` + `:active` for selection. Assignee `<select>` → `KinSelect` with `assigneeOptions` (Unassigned + assignable members). Recurrence-preset `<select>` → `KinSelect` with the existing 11 preset options. The `text-sand-600` "Unsaved changes" indicator is now `text-ink-tertiary` (sand wasn't a Kin token).
+- **TasksView.vue** ([resources/js/views/tasks/TasksView.vue](resources/js/views/tasks/TasksView.vue)) — tag filter row's "All" button + per-tag chips now `KinChip` (neutral / customColor) with `:active` toggling. Bare `<button>` markup gone. The Manage-tags cog stays bespoke (no Kin equivalent for inline tools like that).
+- **TaskItem.vue** — the always-displayed colored tag labels stayed as inline-style spans on purpose; `KinChip`'s `customColor` is for filter chips (pick / unpick) and didn't fit the always-shown label use case.
+
+Verified in preview: `/calendar` month view shows the Kin grid with accent dots beneath each day number and the today-circle filled lavender; legend chips render with their connection colors. `/tasks` list shows KinChip filter row with custom-color dots/fills; clicking a task opens the new centered KinModalSheet with KinSelect dropdowns for assignee + recurrence. `/design-system/select` demo page shows KinSelect across all states. No console errors after fresh reload.
+
+### Notes
+
+- KinChip `customColor` does not currently support hover states differently per-color (just relies on the global `hover:brightness-95` filter rule). If specific hover treatment is needed for branded chips in future, that's a small extension.
+- KinMonthGrid's day-of-week header row sits flush with cells (no separate background). If the visual separation feels too subtle, we can wrap the grid in a `KinFlatCard` instead of the current padded surface div.
+- Past-day dimming is gone in the new month view (KinMonthGrid doesn't expose an `isPast` prop). If wanted, this would be a small API extension on KinMonthGrid.
+
+## 2026-04-26 — Tier 6.2 + 6.3: Calendar and Tasks refactored onto Kin design-system
+
+Two more views moved onto the Kin component library and tokens. Both are **Phase 1** sweeps — token consistency + the obvious component swaps. Phase 2 questions (KinMonthGrid full migration, KinModalSheet vs SlidePanel) are listed under Caveats so the next session can pick them up cleanly.
+
+### Tier 6.2 — Calendar
+
+- **CalendarView.vue** ([resources/js/views/calendar/CalendarView.vue](resources/js/views/calendar/CalendarView.vue)) — three swaps. (1) View-mode selector (Month/Week/Day) → `KinTabPillGroup` variant=tinted with `v-model:active-key`; (2) all calendar buttons (Add Event, prev/next, Today) → `KinButton` variants — primary, ghost icon-only, secondary; (3) page buttons + grid + legend rebuilt on surface/ink/border tokens. **Kept bespoke**: the month-cell event rows (the inline title pills inside each day) — `KinMonthGrid` is dots/pills only, swapping would lose at-a-glance event titles. Day numbers, today highlight, past-day dimming, and source legend now use `accent-lavender-bold` and `accent-sun-bold` tokens.
+- **TimeGrid.vue** ([resources/js/components/calendar/TimeGrid.vue](resources/js/components/calendar/TimeGrid.vue)) — token-only restyle. All-day pills, hour grid lines, hour labels, current-time line, week-view day headers, today circle, past-day dimming all moved to surface-raised / surface-sunken / border-subtle / ink-tertiary / accent-lavender-bold. The overlap-positioning algorithm and event block `:style` (per-event hex via `getEventColor`) are unchanged.
+
+### Tier 6.3 — Tasks
+
+- **TasksView.vue** ([resources/js/views/tasks/TasksView.vue](resources/js/views/tasks/TasksView.vue)) — token sweep + two swaps. Tag Manager modal: `BaseModal` → `KinModalSheet` (with `:model-value` shim against the existing `show`/`@close` API); Add-tag submit button → `KinButton` primary. Empty state → `KinEmptyState` mint accent. Tag filter chips kept bespoke (dynamic per-tag hex colors don't fit `KinChip`'s accent-prop API).
+- **TaskCheckbox.vue** ([resources/js/components/tasks/TaskCheckbox.vue](resources/js/components/tasks/TaskCheckbox.vue)) — token swap only. Priority-driven border colors (red/orange/lavender) preserved as domain logic.
+- **TaskItem.vue** ([resources/js/components/tasks/TaskItem.vue](resources/js/components/tasks/TaskItem.vue)) — token swap only. Tag pills kept bespoke (dynamic hex).
+- **TaskQuickAdd.vue** ([resources/js/components/tasks/TaskQuickAdd.vue](resources/js/components/tasks/TaskQuickAdd.vue)) — token sweep + Cancel / Add Task → `KinButton` (ghost / primary, `:disabled` preserved).
+- **TaskDetailPanel.vue** ([resources/js/components/tasks/TaskDetailPanel.vue](resources/js/components/tasks/TaskDetailPanel.vue)) — biggest set of swaps. `KinInput` for title / due date / points / custom RRULE / recurrence-end. `KinTextarea` for description. `KinSwitch` for "Open to Anyone" (lavender) and "Completed" (mint). `KinSegmentedFilter` for the priority Low/Medium/High picker. `KinButton` for Delete (danger), Cancel (ghost), Save (primary, with `:disabled` + saving label). Removed orphaned `FlagIcon` import + unused `prioritySelectedClass` helper. **Kept bespoke**: assignee `<select>` and recurrence-preset `<select>` (no Kin select component yet); the slide-out wrapper itself stays `SlidePanel` — see Phase 2 caveat.
+
+### Verified in preview
+
+Calendar: Month + Week views render cleanly, today's-circle in lavender, past days dimmed, legend in surface card. Tasks: list view, Tag Manager modal opens as a centered KinModalSheet (440px desktop), task detail panel opens with all Kin form fields. No new console errors after fresh reload.
+
+### Phase 2 caveats (left for review)
+
+- **Calendar month grid:** the inline event-title pills inside each cell are bespoke. Swapping to `KinMonthGrid` (dots or pills density) would gain mobile-friendly density tokens but lose inline titles at-a-glance. Open question for review.
+- **Calendar TimeGrid:** still bespoke. The overlap-positioning algorithm + hour-row math don't have a Kin equivalent. A future `KinWeekTimeGrid` / `KinDayTimeGrid` would let us drop this; today only the styling is Kin-aligned.
+- **Calendar legend:** bespoke. Could become a `KinChip` row with an accent prop, but the connection-color pills use dynamic per-calendar hex (same problem as task tags).
+- **TaskDetailPanel** still uses `SlidePanel` as the wrapper. The inventory recommended swapping to `KinModalSheet`, but that would change the slide-from-right desktop UX to a centered modal — worth a design call before changing. The contents inside are fully Kin-styled regardless.
+- **Task tag pills + Calendar legend dots** both want a "dynamic-hex chip" pattern that `KinChip` doesn't support today (it uses accent-family props). Consider adding `color` (CSS color string) as an escape-hatch prop on `KinChip` in a future iteration.
+- **Task `<select>` fields** (assignee, recurrence preset) are bespoke. No `KinSelect` exists yet.
+
+Tier 6.2 + 6.3 complete (Phase 1).
+
+## 2026-04-26 — Tier 6.0: App shell refactored onto Kin nav components
+
+Sidebar, TopBar, and the BottomNav fragment-root warning, all in one pass — so every Tier 6.x view sits inside a Kin-consistent chrome.
+
+- **Sidebar.vue** ([resources/js/components/layout/Sidebar.vue](resources/js/components/layout/Sidebar.vue)) — replaced the dark prussian sidebar with `KinSidebar`. Brand area uses `#brand-icon` slot for the logo image (preserves the easter-egg click handler); brand text is the family name. User footer is rendered via `#user` slot — `KinAvatar` for the user, name + role link to `/settings`, and Sign Out button. `v-model:collapsed` persisted to `localStorage` (same key as before, `kinhold-sidebar-collapsed`). Active nav item is computed by longest-matching path so `/points/rewards` correctly highlights "Rewards" rather than "Points". The "FAMILY HUB" subtitle is dropped — design-system convention is single-line brand. Visual change is intentional: sidebar now matches the light Kin surface tokens, not the legacy navy.
+- **TopBar.vue** ([resources/js/components/layout/TopBar.vue](resources/js/components/layout/TopBar.vue)) — left as a thin utility strip (didn't force onto `KinTopNav`, which is a different pattern with built-in nav pills). The four `UserAvatar`s + "+N" overflow chip now use `KinAvatar` with `color="lavender"` so initials render against the Kin soft-lavender background with proper ring offset. Dark-mode toggle restyled with `text-ink-tertiary` + `bg-surface-sunken` hover.
+- **BottomNav.vue** ([resources/js/components/layout/BottomNav.vue](resources/js/components/layout/BottomNav.vue)) — kept bespoke (its 5-slot grouped navigation with two popover groups doesn't map onto `KinBottomNav`'s 4-item + center-FAB convention). Wrapped the template in a single root `<div>` so the parent's `class="md:hidden"` inherits cleanly — eliminates the ~30-per-render `[Vue warn] Extraneous non-props attributes` spam that was filling the console. Moved the `md:hidden` class from the inner `<nav>` up to the wrapper so the Teleport-anchored backdrop is also hidden on desktop.
+
+Verified in preview: light-mode dashboard renders with the new KinSidebar, lavender pill on the active Dashboard item, collapse toggle, KinAvatar user footer, and KinAvatar family row in the top bar. Mobile (375×812) shows the existing mobile header + bespoke BottomNav with no Vue warnings on a fresh reload.
+
+Tier 6.0 complete.
+
+## 2026-04-26 — Tier 6.1: Dashboard refactored onto Kin design-system
+
+First view-level integration of the new Kin* component library (branch `redesign/visual-overhaul`). Refactored the Dashboard top-to-bottom; behavior unchanged, visuals shifted to design-system tokens.
+
+- **DashboardView.vue** — edit toggle, loading skeleton grid, and "no widgets yet" empty state now use `KinButton`, `KinSkeleton`, `KinEmptyState`. Sortable.js drag wrapper preserved as bespoke (correctly).
+- **DashboardToolbar.vue** — three buttons (Add / Cancel / Save) replaced with `KinButton` variants (secondary / ghost / primary with `loading`). Sticky bar restyled with token classes (`bg-surface-raised`, `border-border-subtle`, `text-ink-primary`).
+- **DashboardWidget.vue** — `BaseCard shadow="lg"` replaced with `KinFlatCard padding="sm"`; remove button is now an icon-only `KinButton ghost`; Suspense fallback uses `KinSkeleton`. Drag handle and edit-mode dashed ring kept bespoke. Color classes mapped from `lavender-*`/`prussian-*` to surface/ink tokens.
+- **WidgetPickerModal.vue** — replaced `BaseModal` with `KinModalSheet` (responsive bottom-sheet on mobile, centered modal on desktop). Title field uses `KinInput`; "Filter by Tags", "Due Within", and "Size" sections use `KinFormGroup` wrappers; loading-pill skeletons use `KinSkeleton`; Cancel/Add to Dashboard moved to the modal's `#actions` slot as `KinButton`s. Tag color-pills kept bespoke (dynamic backgroundColor from API).
+- **12 widget files swept** — `KinSkeleton` replaces every inline `animate-pulse` placeholder; `KinEmptyState` replaces every "nothing yet" block in ActivityFeed, Badges, FamilyTasks, FilteredTasks, Leaderboard, MyTasks, TodaysSchedule. Empty-state accent colors picked per intent (lavender default; mint for "all caught up", sun for trophy, peach for warm/celebratory contexts where appropriate). Task rows, podium, color-coded event accents, and "View All" RouterLinks intentionally left bespoke.
+- Verified in preview: dashboard renders cleanly in light mode, edit toolbar appears with three Kin buttons, dashed ring + drag handle + size toggle on each widget, Add Widget picker opens as a 440px desktop modal with the title "Add Widget" and the categorized widget grid. No new console errors after fresh reload.
+
+Tier 6.1 complete. Next view (per roadmap): Calendar.
+
 ## 2026-04-17 — Session 37: Tag Scopes, Meal Plan Shopping Flow, Responsive Grid, Mobile Nav Redesign
 
 ### What Was Done

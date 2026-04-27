@@ -1,23 +1,23 @@
 <template>
-  <div class="flex items-start gap-3 py-3">
+  <div class="flex items-start gap-3 px-4 py-3">
     <UserAvatar :user="item.user" size="sm" />
     <div class="flex-1 min-w-0">
-      <p class="text-sm text-prussian-500 dark:text-lavender-200">
+      <p class="text-sm text-ink-primary">
         <span class="font-semibold">{{ item.user?.name }}</span>
         {{ actionText }}
       </p>
-      <p v-if="item.description" class="text-xs text-lavender-500 dark:text-lavender-400 mt-0.5 truncate">
+      <p v-if="item.description" class="text-xs text-ink-tertiary mt-0.5 truncate">
         {{ item.description }}
       </p>
-      <p class="text-xs text-lavender-400 dark:text-lavender-500 mt-1">
+      <p class="text-xs text-ink-tertiary mt-1">
         {{ formatTime(item.created_at) }}
       </p>
     </div>
     <span
       class="text-sm font-bold font-mono flex-shrink-0 px-2 py-0.5 rounded-full"
       :class="item.points > 0
-        ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30'
-        : 'text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30'"
+        ? 'text-status-success bg-status-success/10'
+        : 'text-status-failed bg-status-failed/10'"
     >
       {{ item.points > 0 ? '+' : '' }}{{ item.points }}
     </span>

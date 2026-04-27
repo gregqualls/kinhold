@@ -2,15 +2,15 @@
   <div
     class="flex items-start gap-3 px-3 py-2.5 rounded-[10px] transition-colors"
     :class="item.is_checked
-      ? 'bg-lavender-50/50 dark:bg-prussian-800/50 opacity-60'
-      : 'bg-white dark:bg-prussian-800 border border-[#E8E4DF] dark:border-prussian-700'"
+      ? 'bg-surface-sunken opacity-60'
+      : 'bg-surface-raised border border-border-subtle'"
   >
     <!-- Checkbox -->
     <button
       class="flex-shrink-0 mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors"
       :class="item.is_checked
-        ? 'bg-lavender-300 dark:bg-prussian-600 border-lavender-300 dark:border-prussian-600'
-        : 'border-lavender-300 dark:border-prussian-600 hover:border-[#C4975A]'"
+        ? 'bg-surface-overlay border-border-subtle'
+        : 'border-border-subtle hover:border-[#C4975A]'"
       :aria-label="item.is_checked ? 'Uncheck item' : 'Check item'"
       @click="item.is_checked ? $emit('uncheck', item.id) : $emit('check', item.id)"
     >
@@ -26,8 +26,8 @@
         <span
           class="text-sm font-medium cursor-default"
           :class="item.is_checked
-            ? 'line-through text-lavender-400 dark:text-lavender-500'
-            : 'text-prussian-500 dark:text-lavender-200'"
+            ? 'line-through text-ink-tertiary'
+            : 'text-ink-primary'"
           @dblclick="startEditing"
         >
           <span
@@ -44,15 +44,15 @@
           />
         </span>
 
-        <span v-if="item.quantity" class="text-xs text-lavender-400 dark:text-lavender-500">{{ item.quantity }}</span>
+        <span v-if="item.quantity" class="text-xs text-ink-tertiary">{{ item.quantity }}</span>
 
         <!-- Source icons (inline SVG — no lucide dependency) -->
         <!-- Link icon for recipe source -->
-        <svg v-if="item.source === 'recipe'" class="w-3.5 h-3.5 text-lavender-400 dark:text-lavender-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <svg v-if="item.source === 'recipe'" class="w-3.5 h-3.5 text-ink-tertiary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
         </svg>
         <!-- Pin icon for staple source -->
-        <svg v-else-if="item.source === 'staple'" class="w-3.5 h-3.5 text-lavender-400 dark:text-lavender-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <svg v-else-if="item.source === 'staple'" class="w-3.5 h-3.5 text-ink-tertiary flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
         </svg>
@@ -63,7 +63,7 @@
           class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
           :class="daysUntil(item.needed_date) <= 2
             ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-            : 'bg-lavender-100 text-lavender-600 dark:bg-prussian-700 dark:text-lavender-400'"
+            : 'bg-surface-sunken text-ink-secondary'"
         >
           {{ formatDays(daysUntil(item.needed_date)) }}
         </span>
@@ -72,7 +72,7 @@
       <!-- Line 2: recipe source -->
       <p
         v-if="item.source === 'recipe' && item.source_recipe_name"
-        class="text-xs text-lavender-400 dark:text-lavender-500 mt-0.5"
+        class="text-xs text-ink-tertiary mt-0.5"
       >
         for {{ item.source_recipe_name }}
       </p>
@@ -84,7 +84,7 @@
       class="flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all"
       :class="item.is_recurring
         ? 'bg-[#C4975A]/15 text-[#C4975A] border border-[#C4975A]/30'
-        : 'text-lavender-400 dark:text-lavender-500 hover:bg-lavender-100 dark:hover:bg-prussian-700 hover:text-lavender-600 dark:hover:text-lavender-300'"
+        : 'text-ink-tertiary hover:bg-surface-sunken hover:text-ink-secondary'"
       :title="item.is_recurring
         ? 'This item reappears automatically after you clear bought items. Click to turn off.'
         : 'Make recurring — this item will reappear every time you clear bought items (great for staples like milk, bread, eggs)'"
@@ -99,7 +99,7 @@
     <!-- Move to another list -->
     <div v-if="canManage && otherLists.length > 0" class="relative flex-shrink-0">
       <button
-        class="p-1 rounded-full text-lavender-300 dark:text-lavender-600 hover:text-lavender-500 transition-colors"
+        class="p-1 rounded-full text-ink-tertiary hover:text-ink-secondary transition-colors"
         title="Move to another list"
         aria-label="Move to another list"
         @click="showMoveMenu = !showMoveMenu"
@@ -111,12 +111,12 @@
       </button>
       <div
         v-if="showMoveMenu"
-        class="absolute right-0 mt-1 bg-white dark:bg-prussian-800 border border-lavender-200 dark:border-prussian-700 rounded-lg shadow-lg z-10 py-1 min-w-[140px]"
+        class="absolute right-0 mt-1 bg-surface-raised border border-border-subtle rounded-lg shadow-lg z-10 py-1 min-w-[140px]"
       >
         <button
           v-for="list in otherLists"
           :key="list.id"
-          class="w-full px-3 py-1.5 text-sm text-left text-prussian-500 dark:text-lavender-200 hover:bg-lavender-50 dark:hover:bg-prussian-700 cursor-pointer transition-colors"
+          class="w-full px-3 py-1.5 text-sm text-left text-ink-primary hover:bg-surface-sunken cursor-pointer transition-colors"
           @mousedown.prevent="emit('move-item', { itemId: item.id, targetListId: list.id }); showMoveMenu = false"
         >
           {{ list.name }}
@@ -126,7 +126,7 @@
 
     <!-- Remove button -->
     <button
-      class="flex-shrink-0 p-1 rounded-full text-lavender-300 dark:text-lavender-600 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100 md:opacity-100"
+      class="flex-shrink-0 p-1 rounded-full text-ink-tertiary hover:text-status-failed hover:bg-status-failed/10 transition-colors opacity-0 group-hover:opacity-100 md:opacity-100"
       aria-label="Remove item"
       @click="$emit('remove', item.id)"
     >

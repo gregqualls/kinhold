@@ -1,126 +1,90 @@
 <template>
-  <SlidePanel :show="!!task" title="Task Details" @close="$emit('close')">
-    <div v-if="task" class="p-6 space-y-6">
+  <KinModalSheet
+    :model-value="!!task"
+    title="Task Details"
+    size="md"
+    @update:model-value="(v) => !v && $emit('close')"
+  >
+    <div v-if="task" class="space-y-5">
       <!-- Title -->
-      <div>
-        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Title</label>
-        <input
-          v-model="form.title"
-          class="w-full text-lg font-semibold text-prussian-500 dark:text-lavender-200 border-0 border-b-2 border-transparent focus:border-wisteria-400 outline-none py-1 bg-transparent transition-colors"
-          placeholder="Task title"
-        />
-      </div>
+      <KinInput
+        v-model="form.title"
+        label="Title"
+        placeholder="Task title"
+      />
 
       <!-- Description -->
-      <div>
-        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Description</label>
-        <textarea
-          v-model="form.description"
-          rows="3"
-          class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none resize-none transition-all"
-          placeholder="Add details..."
-        ></textarea>
-      </div>
+      <KinTextarea
+        v-model="form.description"
+        label="Description"
+        :rows="3"
+        placeholder="Add details..."
+      />
 
       <!-- Tags -->
       <div>
-        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-2">Tags</label>
+        <label class="block text-xs font-medium text-ink-tertiary uppercase tracking-wider mb-2">Tags</label>
         <div class="flex flex-wrap gap-2">
-          <button
+          <KinChip
             v-for="tag in tags"
             :key="tag.id"
-            class="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-full transition-colors"
-            :class="form.tag_ids.includes(tag.id)
-              ? 'text-white'
-              : 'bg-lavender-100 dark:bg-prussian-700 text-lavender-600 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
-            :style="form.tag_ids.includes(tag.id) ? { backgroundColor: getTagHex(tag.color) } : {}"
+            variant="filter"
+            size="sm"
+            :custom-color="getTagHex(tag.color)"
+            :active="form.tag_ids.includes(tag.id)"
             @click="toggleTag(tag.id)"
           >
-            <span
-              v-if="!form.tag_ids.includes(tag.id)"
-              class="w-2 h-2 rounded-full"
-              :style="{ backgroundColor: getTagHex(tag.color) }"
-            ></span>
             {{ tag.name }}
-          </button>
+          </KinChip>
         </div>
       </div>
 
       <!-- Priority -->
       <div>
-        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-2">Priority</label>
-        <div class="flex gap-2">
-          <button
-            v-for="p in ['low', 'medium', 'high']"
-            :key="p"
-            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium transition-all"
-            :class="form.priority === p ? prioritySelectedClass(p) : 'bg-lavender-50 dark:bg-prussian-700 text-lavender-500 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-600'"
-            @click="form.priority = p"
-          >
-            <FlagIcon class="w-4 h-4" />
-            {{ p.charAt(0).toUpperCase() + p.slice(1) }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Due Date -->
-      <div>
-        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Due Date</label>
-        <input
-          v-model="form.due_date"
-          type="date"
-          class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
+        <label class="block text-xs font-medium text-ink-tertiary uppercase tracking-wider mb-2">Priority</label>
+        <KinSegmentedFilter
+          :options="priorityOptions"
+          :active-key="form.priority"
+          @update:active-key="form.priority = $event"
         />
       </div>
 
+      <!-- Due Date -->
+      <KinInput
+        v-model="form.due_date"
+        label="Due Date"
+        type="date"
+      />
+
       <!-- Family Task (open to anyone) -->
-      <div class="flex items-center justify-between py-3 px-4 bg-lavender-50 dark:bg-prussian-700 rounded-xl">
-        <div>
-          <span class="text-sm text-prussian-500 dark:text-lavender-200 font-medium">Open to Anyone</span>
-          <p class="text-xs text-lavender-500 dark:text-lavender-400 mt-0.5">Any family member can claim and complete this task</p>
-        </div>
-        <button
-          class="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-3"
-          :class="form.is_family_task ? 'bg-wisteria-500' : 'bg-lavender-300 dark:bg-prussian-500'"
-          @click="form.is_family_task = !form.is_family_task"
-        >
-          <span
-            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
-            :class="form.is_family_task && 'translate-x-5'"
-          ></span>
-        </button>
+      <div class="py-3 px-4 bg-surface-sunken rounded-xl">
+        <KinSwitch
+          v-model="form.is_family_task"
+          label="Open to Anyone"
+          description="Any family member can claim and complete this task"
+          color="lavender"
+        />
       </div>
 
       <!-- Assignee (hidden when open to anyone) -->
-      <div v-if="!form.is_family_task">
-        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Assigned To</label>
-        <select
-          v-model="form.assigned_to"
-          class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
-        >
-          <option :value="null">Unassigned</option>
-          <option
-            v-for="member in assignableMembers"
-            :key="member.id"
-            :value="member.id"
-          >
-            {{ member.name }}
-          </option>
-        </select>
-      </div>
+      <KinSelect
+        v-if="!form.is_family_task"
+        v-model="form.assigned_to"
+        label="Assigned To"
+        :options="assigneeOptions"
+      />
 
       <!-- Points (only for parents — children can't set point values) -->
       <div v-if="enabledModules.points && isParent">
-        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Points</label>
+        <label class="block text-xs font-medium text-ink-tertiary uppercase tracking-wider mb-1.5">Points</label>
         <div class="flex items-center gap-3">
-          <input
+          <KinInput
             v-model.number="form.points"
             type="number"
             min="0"
             placeholder="Auto (based on priority)"
-            class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
           />
-          <span class="text-xs text-lavender-500 dark:text-lavender-400 whitespace-nowrap">
+          <span class="text-xs text-ink-tertiary whitespace-nowrap">
             Earns: {{ form.points || defaultPoints[form.priority] || 10 }} pts
           </span>
         </div>
@@ -128,111 +92,88 @@
 
       <!-- Recurring Task -->
       <div>
-        <label class="block text-xs font-medium text-lavender-500 dark:text-lavender-400 uppercase tracking-wider mb-1.5">Repeat</label>
-        <select
+        <KinSelect
           v-model="form.recurrence_preset"
-          class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
-        >
-          <option value="">Does not repeat</option>
-          <option value="FREQ=DAILY">Every day</option>
-          <option value="FREQ=WEEKLY;BYDAY=MO">Every Monday</option>
-          <option value="FREQ=WEEKLY;BYDAY=TU">Every Tuesday</option>
-          <option value="FREQ=WEEKLY;BYDAY=WE">Every Wednesday</option>
-          <option value="FREQ=WEEKLY;BYDAY=TH">Every Thursday</option>
-          <option value="FREQ=WEEKLY;BYDAY=FR">Every Friday</option>
-          <option value="FREQ=WEEKLY;BYDAY=SA">Every Saturday</option>
-          <option value="FREQ=WEEKLY;BYDAY=SU">Every Sunday</option>
-          <option value="FREQ=MONTHLY">Every month</option>
-          <option value="custom">Custom RRULE...</option>
-        </select>
+          label="Repeat"
+          :options="recurrencePresetOptions"
+        />
 
         <!-- Custom RRULE input -->
-        <input
-          v-if="form.recurrence_preset === 'custom'"
-          v-model="form.recurrence_rule"
-          type="text"
-          placeholder="e.g. FREQ=WEEKLY;BYDAY=TU,TH"
-          class="w-full mt-2 text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
-        />
+        <div v-if="form.recurrence_preset === 'custom'" class="mt-2">
+          <KinInput
+            v-model="form.recurrence_rule"
+            type="text"
+            placeholder="e.g. FREQ=WEEKLY;BYDAY=TU,TH"
+          />
+        </div>
 
         <!-- Recurrence end date -->
         <div v-if="form.recurrence_preset" class="mt-2">
-          <label class="block text-xs text-lavender-500 dark:text-lavender-400 mb-1">Repeat until (optional)</label>
-          <input
+          <KinInput
             v-model="form.recurrence_end"
             type="date"
-            class="w-full text-sm text-prussian-500 dark:text-lavender-200 border border-lavender-200 dark:border-prussian-700 rounded-xl px-3 py-2 bg-white dark:bg-prussian-700 focus:ring-2 focus:ring-wisteria-400 focus:border-transparent outline-none transition-all"
+            label="Repeat until (optional)"
           />
         </div>
       </div>
 
       <!-- Status -->
-      <div class="flex items-center justify-between py-3 px-4 bg-lavender-50 dark:bg-prussian-700 rounded-xl">
-        <span class="text-sm text-prussian-500 dark:text-lavender-200 font-medium">Completed</span>
-        <button
-          class="relative w-11 h-6 rounded-full transition-colors"
-          :class="form.completed ? 'bg-emerald-500' : 'bg-lavender-300 dark:bg-prussian-500'"
-          @click="form.completed = !form.completed"
-        >
-          <span
-            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
-            :class="form.completed && 'translate-x-5'"
-          ></span>
-        </button>
+      <div class="py-3 px-4 bg-surface-sunken rounded-xl">
+        <KinSwitch
+          v-model="form.completed"
+          label="Completed"
+          color="mint"
+        />
       </div>
     </div>
 
-    <template #footer>
+    <template #actions>
       <div class="flex gap-3 items-center">
-        <button
-          class="px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
-          @click="$emit('delete', task.id)"
-        >
+        <KinButton variant="danger" size="md" @click="$emit('delete', task.id)">
           Delete
-        </button>
+        </KinButton>
         <div class="flex-1"></div>
 
         <!-- Unsaved changes indicator -->
         <Transition name="fade-fast" mode="out-in">
-          <span v-if="isDirty && !justSaved" key="dirty" class="text-xs text-sand-600 dark:text-sand-400 font-medium">
+          <span v-if="isDirty && !justSaved" key="dirty" class="text-xs text-ink-tertiary font-medium">
             Unsaved changes
           </span>
-          <span v-else-if="justSaved" key="saved" class="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+          <span v-else-if="justSaved" key="saved" class="text-xs text-status-success font-medium flex items-center gap-1">
             <CheckCircleIcon class="w-4 h-4" />
             Saved!
           </span>
         </Transition>
 
-        <button
-          class="px-4 py-2.5 text-sm font-medium text-lavender-600 dark:text-lavender-400 hover:bg-lavender-100 dark:hover:bg-prussian-700 rounded-xl transition-colors"
-          @click="$emit('close')"
-        >
+        <KinButton variant="ghost" size="md" @click="$emit('close')">
           Cancel
-        </button>
-        <button
+        </KinButton>
+        <KinButton
+          variant="primary"
+          size="md"
           :disabled="saving || !form.title?.trim()"
-          :class="[
-            'px-6 py-2.5 text-sm font-medium text-white rounded-xl transition-all',
-            isDirty
-              ? 'bg-wisteria-600 hover:bg-wisteria-500 shadow-md shadow-wisteria-600/30 scale-[1.02]'
-              : 'bg-wisteria-600 hover:bg-wisteria-500',
-            (saving || !form.title?.trim()) && 'opacity-40 !shadow-none !scale-100',
-          ]"
           @click="save"
         >
           {{ saving ? 'Saving...' : 'Save' }}
-        </button>
+        </KinButton>
       </div>
     </template>
-  </SlidePanel>
+  </KinModalSheet>
 </template>
 
 <script setup>
 import { reactive, watch, ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
-import { FlagIcon, CheckCircleIcon } from '@heroicons/vue/24/outline'
-import SlidePanel from '@/components/common/SlidePanel.vue'
+import { CheckCircleIcon } from '@heroicons/vue/24/outline'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinTextarea from '@/components/design-system/KinTextarea.vue'
+import KinSwitch from '@/components/design-system/KinSwitch.vue'
+import KinSegmentedFilter from '@/components/design-system/KinSegmentedFilter.vue'
+import KinSelect from '@/components/design-system/KinSelect.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   task: Object,
@@ -250,11 +191,36 @@ let savedTimer = null
 
 const defaultPoints = { low: 5, medium: 10, high: 20 }
 
+const priorityOptions = [
+  { key: 'low', label: 'Low' },
+  { key: 'medium', label: 'Medium' },
+  { key: 'high', label: 'High' },
+]
+
 // If user can't assign tasks to others, only show themselves as an option
 const assignableMembers = computed(() => {
   if (canAssignTasks.value) return familyMembers.value
   return familyMembers.value.filter((m) => m.id === currentUser.value?.id)
 })
+
+const assigneeOptions = computed(() => [
+  { value: null, label: 'Unassigned' },
+  ...assignableMembers.value.map((m) => ({ value: m.id, label: m.name })),
+])
+
+const recurrencePresetOptions = [
+  { value: '', label: 'Does not repeat' },
+  { value: 'FREQ=DAILY', label: 'Every day' },
+  { value: 'FREQ=WEEKLY;BYDAY=MO', label: 'Every Monday' },
+  { value: 'FREQ=WEEKLY;BYDAY=TU', label: 'Every Tuesday' },
+  { value: 'FREQ=WEEKLY;BYDAY=WE', label: 'Every Wednesday' },
+  { value: 'FREQ=WEEKLY;BYDAY=TH', label: 'Every Thursday' },
+  { value: 'FREQ=WEEKLY;BYDAY=FR', label: 'Every Friday' },
+  { value: 'FREQ=WEEKLY;BYDAY=SA', label: 'Every Saturday' },
+  { value: 'FREQ=WEEKLY;BYDAY=SU', label: 'Every Sunday' },
+  { value: 'FREQ=MONTHLY', label: 'Every month' },
+  { value: 'custom', label: 'Custom RRULE...' },
+]
 
 const colorMap = {
   wisteria: '#7d57a8',
@@ -390,14 +356,6 @@ const save = () => {
   }, 2000)
 }
 
-const prioritySelectedClass = (p) => {
-  const classes = {
-    high: 'bg-red-100 text-red-700 ring-1 ring-red-200',
-    medium: 'bg-orange-100 text-orange-700 ring-1 ring-orange-200',
-    low: 'bg-lavender-200 dark:bg-prussian-600 text-prussian-500 dark:text-lavender-200 ring-1 ring-lavender-300 dark:ring-prussian-500',
-  }
-  return classes[p]
-}
 </script>
 
 <style scoped>

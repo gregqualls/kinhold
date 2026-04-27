@@ -25,45 +25,44 @@
 
       <!-- Navigation Footer -->
       <div class="mt-auto pt-6 flex items-center gap-3">
-        <button
+        <KinButton
           v-if="store.currentStep > 0 && !isLastStep"
-          class="kin-btn-ghost"
+          variant="ghost"
           @click="store.prevStep()"
         >
           Back
-        </button>
+        </KinButton>
 
         <div class="flex-1"></div>
 
-        <button
+        <KinButton
           v-if="!isLastStep"
-          class="kin-btn-ghost"
+          variant="ghost"
           @click="handleSkip"
         >
           Skip for now
-        </button>
+        </KinButton>
 
-        <button
+        <KinButton
           v-if="!isLastStep"
-          class="kin-btn-primary"
+          variant="primary"
+          :loading="stepLoading"
           :disabled="stepLoading"
           @click="handleContinue"
         >
-          <span v-if="stepLoading" class="flex items-center gap-2">
-            <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
-            Saving...
-          </span>
-          <span v-else>Continue</span>
-        </button>
+          {{ stepLoading ? 'Saving...' : 'Continue' }}
+        </KinButton>
 
-        <button
+        <KinButton
           v-if="isLastStep"
-          class="kin-btn-primary w-full text-center"
+          variant="primary"
+          class="w-full text-center"
+          :loading="store.isCompleting"
           :disabled="store.isCompleting"
           @click="handleFinish"
         >
           Go to Dashboard
-        </button>
+        </KinButton>
       </div>
     </div>
   </div>
@@ -81,6 +80,7 @@ import TagsStep from './steps/TagsStep.vue'
 import FeaturesStep from './steps/FeaturesStep.vue'
 import FeaturesExplainerStep from './steps/FeaturesExplainerStep.vue'
 import CompleteStep from './steps/CompleteStep.vue'
+import KinButton from '@/components/design-system/KinButton.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -108,9 +108,9 @@ provide('onboarding', {
 })
 
 function dotClass(index) {
-  if (index < store.currentStep) return 'bg-kin-gold/50'
-  if (index === store.currentStep) return 'bg-kin-gold w-3 h-3'
-  return 'bg-kin-gray-200 dark:bg-kin-gray-800'
+  if (index < store.currentStep) return 'bg-accent-lavender-bold/50'
+  if (index === store.currentStep) return 'bg-accent-lavender-bold w-3 h-3'
+  return 'bg-surface-sunken'
 }
 
 async function handleContinue() {

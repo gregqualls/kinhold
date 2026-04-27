@@ -5,6 +5,7 @@
 -->
 <script setup>
 import { computed, ref } from 'vue'
+import * as avatarPresets from '@/components/common/avatarPresets'
 
 // ── Props ────────────────────────────────────────────────────────────────────
 const props = defineProps({
@@ -56,10 +57,34 @@ const props = defineProps({
 const imgFailed = ref(false)
 function onImgError() { imgFailed.value = true }
 
+// ── Source classification ──────────────────────────────────────────────────
+// `src` accepts either a real photo URL (http/https/leading-slash) OR an
+// app-internal preset reference of the form `phosphor:<key>` that resolves
+// to a Phosphor icon component. The preset case is treated like the `icon`
+// prop — never rendered as an <img>.
+//
+// Importing avatarPresets is intentionally cheap: a flat object lookup, no
+// network fetch, no async resolution.
+const presetIcon = computed(() => {
+  const s = props.src
+  if (!s || typeof s !== 'string' || !s.startsWith('phosphor:')) return null
+  const key = s.slice('phosphor:'.length)
+  const preset = avatarPresets.getPreset?.(key) ?? null
+  return preset?.component ?? null
+})
+const isPresetSrc = computed(() => !!presetIcon.value)
+const isPhotoSrc = computed(() =>
+  !!props.src && typeof props.src === 'string' && !isPresetSrc.value
+)
+
 // ── Derived: which content mode to render ───────────────────────────────────
-const showPhoto    = computed(() => !!props.src && !imgFailed.value)
-const showInitials = computed(() => !showPhoto.value && !!props.name)
-const showIcon     = computed(() => !showPhoto.value && !showInitials.value && !!props.icon)
+// Order: preset icon > photo > initials > consumer icon prop > "?" fallback
+const showPhoto    = computed(() => isPhotoSrc.value && !imgFailed.value)
+const showPresetIcon = computed(() => isPresetSrc.value && !showPhoto.value)
+const showInitials = computed(() => !showPhoto.value && !showPresetIcon.value && !!props.name)
+const showIcon     = computed(() =>
+  !showPhoto.value && !showPresetIcon.value && !showInitials.value && !!props.icon
+)
 // fallback: question mark — handled inline in template
 
 // ── Initials ─────────────────────────────────────────────────────────────────
@@ -219,6 +244,16 @@ const presenceClass = computed(() =>
         :alt="name || 'Avatar'"
         class="w-full h-full object-cover"
         @error="onImgError"
+      />
+
+      <!-- Preset icon resolved from `phosphor:<key>` src -->
+      <component
+        v-else-if="showPresetIcon"
+        :is="presetIcon"
+        weight="duotone"
+        :class="['shrink-0', textBoldClass]"
+        :style="{ width: Math.round(sizeConfig.px * 0.6) + 'px', height: Math.round(sizeConfig.px * 0.6) + 'px' }"
+        aria-hidden="true"
       />
 
       <!-- Initials -->

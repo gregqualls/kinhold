@@ -34,6 +34,19 @@ const props = defineProps({
   },
 
   /**
+   * Escape-hatch for arbitrary brand / category colors that don't map onto
+   * the four accent families. Pass a CSS color string (`#7d57a8`, `rgb(...)`).
+   * When present, overrides the `color` prop:
+   *   - active state: solid customColor background + white text
+   *   - inactive state: small dot of customColor + neutral surface bg
+   * Use sparingly — accent families are preferred for design consistency.
+   */
+  customColor: {
+    type: String,
+    default: null,
+  },
+
+  /**
    * Status key — only used when variant='status'.
    */
   status: {
@@ -139,6 +152,15 @@ const accentMap = {
 const chipColorClasses = computed(() => {
   if (props.variant === 'status') return ''
 
+  // customColor short-circuits the accent system — base classes only;
+  // background/border/text get applied via `chipCustomStyle` below.
+  if (props.customColor) {
+    if (props.active) {
+      return 'border text-white'
+    }
+    return 'bg-surface-sunken border border-border-subtle text-ink-secondary'
+  }
+
   const isNeutral = props.color === 'neutral'
 
   if (props.active) {
@@ -167,6 +189,23 @@ const chipColorClasses = computed(() => {
   const a = accentMap[props.color]
   return `${a.softBg} border ${a.border} ${a.boldText}`
 })
+
+// Inline-style override when customColor is set. Active fills with the color;
+// inactive shows a small dot via the `#leading` slot fallback we render below.
+const chipCustomStyle = computed(() => {
+  if (!props.customColor) return null
+  if (props.active) {
+    return {
+      backgroundColor: props.customColor,
+      borderColor: props.customColor,
+    }
+  }
+  return null
+})
+
+const showCustomDot = computed(() =>
+  !!props.customColor && !props.active && props.variant !== 'status'
+)
 
 // ── Status dot color class ────────────────────────────────────────────────────
 
@@ -201,10 +240,19 @@ const interactionClasses = computed(() => {
       removablePaddingClass,
       interactionClasses,
     ]"
+    :style="chipCustomStyle"
     v-bind="rootTag === 'button' ? { type: 'button', disabled: disabled || undefined } : {}"
   >
     <!-- Leading slot (icon before label) -->
     <slot name="leading" />
+
+    <!-- Custom-color dot (inactive state) when no leading slot is provided -->
+    <span
+      v-if="showCustomDot && !$slots.leading"
+      :class="['rounded-full flex-shrink-0', dotSizeClass]"
+      :style="{ backgroundColor: customColor }"
+      aria-hidden="true"
+    />
 
     <!-- Status dot — only rendered for status variant -->
     <span

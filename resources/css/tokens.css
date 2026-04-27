@@ -63,14 +63,16 @@
   /* App background — deep warm charcoal, hints of brown warmth */
   --surface-app:     20  19  17;    /* #141311 — warmer than pure #121214 */
 
-  /* Card / raised — step up from app bg, subtle warmth */
-  --surface-raised:  28  27  25;    /* #1C1B19 */
+  /* Card / raised — must be clearly distinguishable from app bg.
+     Old #1C1B19 was only ~8 lightness steps off — cards visually merged
+     into the page. Bumped to #2A2724 for ~22 lightness steps of contrast. */
+  --surface-raised:  42  39  36;    /* #2A2724 */
 
-  /* Inset / sunken — slightly deeper than raised */
-  --surface-sunken:  22  21  19;    /* #161513 — just below raised */
+  /* Inset / sunken — slightly DEEPER than app bg so inputs feel pressed in */
+  --surface-sunken:  16  15  13;    /* #100F0D */
 
-  /* Overlay — sheet/modal — clearly lifted above cards */
-  --surface-overlay: 36  34  32;    /* #242220 */
+  /* Overlay — sheet/modal — clearly lifted above raised */
+  --surface-overlay: 56  52  47;    /* #38342F */
 
   /* Body text — warm off-white, never pure white */
   --ink-primary:     240 237 233;   /* #F0EDE9 — 15.4:1 on #141311 (AA++) */
@@ -84,11 +86,12 @@
   /* Text on light filled surfaces in dark mode */
   --ink-inverse:     28  28  30;    /* #1C1C1E — near-black */
 
-  /* Hairline dividers — warm dark border */
-  --border-subtle:   44  42  39;    /* #2C2A27 */
+  /* Hairline dividers — warm dark border. Bumped to step above the new
+     surface-raised (#2A2724) so borders remain perceptible on cards. */
+  --border-subtle:   60  56  51;    /* #3C3833 */
 
   /* Emphasized borders */
-  --border-strong:   64  62  58;    /* #403E3A */
+  --border-strong:   84  79  72;    /* #544F48 */
 }
 
 

@@ -1,50 +1,52 @@
 <template>
   <div class="flex-1 flex flex-col">
     <div class="text-center mb-6">
-      <h1 class="text-2xl font-heading font-bold text-kin-black dark:text-kin-off-white mb-2">
+      <h1 class="text-2xl font-heading font-bold text-ink-primary mb-2">
         Here's What You Can Do
       </h1>
-      <p class="text-base text-kin-gray-500 dark:text-kin-gray-400">
+      <p class="text-base text-ink-secondary">
         Your family has these features set up for you.
       </p>
     </div>
 
     <div class="space-y-3 overflow-y-auto">
-      <div
+      <KinGradientCard
         v-for="feature in accessibleFeatures"
         :key="feature.key"
-        class="p-4 rounded-xl border border-kin-gold/20 bg-kin-gold/5 dark:bg-kin-gold/10 dark:border-kin-gold/15"
+        :variant="featureVariant(feature.key)"
+        padding="sm"
       >
         <div class="flex items-start gap-3">
           <div class="kin-icon-box flex-shrink-0 mt-0.5">
             <component :is="feature.icon" class="w-5 h-5" />
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-kin-black dark:text-kin-off-white">{{ feature.name }}</p>
-            <p class="text-xs text-kin-gray-500 dark:text-kin-gray-400 mt-1 leading-relaxed">{{ feature.explainer }}</p>
+            <p class="text-sm font-semibold text-ink-primary">{{ feature.name }}</p>
+            <p class="text-xs text-ink-secondary mt-1 leading-relaxed">{{ feature.explainer }}</p>
           </div>
         </div>
-      </div>
+      </KinGradientCard>
 
       <!-- Locked features -->
-      <div
+      <KinFlatCard
         v-for="feature in lockedFeatures"
         :key="feature.key"
-        class="p-4 rounded-xl border border-kin-border dark:border-kin-border-dark bg-white/50 dark:bg-kin-surface-dark/50 opacity-50"
+        padding="sm"
+        class="opacity-50"
       >
         <div class="flex items-start gap-3">
-          <div class="w-10 h-10 rounded-lg bg-kin-gray-100 dark:bg-kin-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <LockClosedIcon class="w-5 h-5 text-kin-gray-400" />
+          <div class="w-10 h-10 rounded-lg bg-surface-sunken flex items-center justify-center flex-shrink-0 mt-0.5">
+            <LockClosedIcon class="w-5 h-5 text-ink-tertiary" />
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-kin-gray-400 dark:text-kin-gray-500">{{ feature.name }}</p>
-            <p class="text-xs text-kin-gray-400 dark:text-kin-gray-500 mt-1">Managed by your parents.</p>
+            <p class="text-sm font-semibold text-ink-tertiary">{{ feature.name }}</p>
+            <p class="text-xs text-ink-tertiary mt-1">Managed by your parents.</p>
           </div>
         </div>
-      </div>
+      </KinFlatCard>
     </div>
 
-    <p v-if="accessibleFeatures.length === 0" class="text-sm text-kin-gray-500 dark:text-kin-gray-400 text-center mt-4">
+    <p v-if="accessibleFeatures.length === 0" class="text-sm text-ink-secondary text-center mt-4">
       Your parents haven't set up features yet. They can do this from Settings.
     </p>
   </div>
@@ -61,8 +63,22 @@ import {
   ChatBubbleLeftRightIcon,
   LockClosedIcon,
 } from '@heroicons/vue/24/outline'
+import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
+import KinGradientCard from '@/components/design-system/KinGradientCard.vue'
 
 const authStore = useAuthStore()
+
+const variantMap = {
+  calendar: 'sun',
+  tasks: 'mint',
+  points: 'warm',
+  badges: 'sun',
+  chat: 'cool',
+  vault: 'lavender',
+}
+function featureVariant(key) {
+  return variantMap[key] || 'iridescent'
+}
 
 const allFeatures = [
   {

@@ -137,20 +137,24 @@
     border-radius: 10px;
   }
 
-  /* Primary button: Gold accent */
+  /* Primary button: ink-primary fill (matches KinButton's dark pill).
+     Mirrors the Kin design-system primary so legacy `btn-primary`
+     consumers (BaseButton, etc.) blend with KinButton instances. */
   .btn-primary {
-    @apply btn text-white shadow-sm;
-    background-color: rgb(var(--wisteria-600));
+    @apply btn shadow-resting;
+    background-color: rgb(var(--ink-primary));
+    color: rgb(var(--ink-inverse));
   }
   .btn-primary:hover {
-    background-color: rgb(var(--wisteria-400));
-    box-shadow: 0 4px 12px rgba(196, 151, 90, 0.25);
+    background-color: rgb(var(--ink-primary) / 0.92);
+    box-shadow: var(--shadow-hover);
   }
   .btn-primary:active {
-    background-color: rgb(var(--wisteria-700));
+    background-color: rgb(var(--ink-primary));
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.40);
   }
   .btn-primary:focus {
-    --tw-ring-color: rgb(var(--wisteria-400) / 0.4);
+    --tw-ring-color: rgb(var(--accent-lavender-bold) / 0.4);
   }
 
   /* Secondary button: Outlined */

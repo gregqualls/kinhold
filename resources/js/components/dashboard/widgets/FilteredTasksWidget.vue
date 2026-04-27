@@ -2,13 +2,13 @@
   <div class="flex flex-col h-full">
     <!-- Header -->
     <div class="flex items-center justify-between mb-3 flex-shrink-0">
-      <h3 class="text-sm font-semibold text-prussian-500 dark:text-lavender-200 flex items-center gap-2">
-        <FunnelIcon class="w-4 h-4 text-wisteria-500" />
+      <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
+        <FunnelIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || 'Tasks' }}
       </h3>
       <RouterLink
         to="/tasks"
-        class="text-wisteria-600 dark:text-wisteria-400 text-xs font-medium hover:text-wisteria-500"
+        class="text-xs font-medium text-accent-lavender-bold hover:opacity-80 transition-opacity"
       >
         View All
       </RouterLink>
@@ -28,48 +28,50 @@
 
     <!-- Loading -->
     <div v-if="loading" class="flex-1 min-h-0 space-y-2">
-      <div v-for="n in 4" :key="n" class="h-12 bg-lavender-100 dark:bg-prussian-700 rounded-lg animate-pulse"></div>
+      <KinSkeleton v-for="n in 4" :key="n" shape="rect" :height="'48px'" />
     </div>
 
     <!-- Empty -->
-    <div v-else-if="tasks.length === 0" class="flex-1 flex items-center justify-center">
-      <div class="text-center">
-        <FunnelIcon class="w-8 h-8 text-lavender-400 dark:text-lavender-500 mx-auto mb-1" />
-        <p class="text-sm text-lavender-500 dark:text-lavender-400">No matching tasks</p>
-      </div>
-    </div>
+    <KinEmptyState
+      v-else-if="tasks.length === 0"
+      :icon="FunnelIcon"
+      title="No matching tasks"
+      size="sm"
+      accent-color="lavender"
+      class="flex-1"
+    />
 
     <!-- Task list -->
     <div v-else class="flex-1 min-h-0 overflow-y-auto" :class="columnsClass">
       <div
         v-for="task in tasks"
         :key="task.id"
-        class="flex items-start gap-2 p-2 rounded-lg hover:bg-lavender-50 dark:hover:bg-prussian-700/50 transition-colors"
+        class="flex items-start gap-2 p-2 border-b border-border-subtle last:border-b-0 hover:bg-surface-sunken transition-colors"
         :class="{ 'opacity-40': task._justCompleted }"
       >
         <button
           class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
           :class="task._justCompleted
-            ? 'border-green-400 bg-green-100 dark:bg-green-900/30 dark:border-green-600'
-            : 'border-lavender-300 dark:border-prussian-500 hover:border-wisteria-400 dark:hover:border-wisteria-400'"
+            ? 'border-status-success bg-status-success/10'
+            : 'border-border-subtle hover:border-accent-lavender-bold'"
           :aria-label="`Mark ${task.title} as complete`"
           @click.stop="toggleTask(task)"
         >
-          <CheckIcon v-if="task._justCompleted" class="w-3 h-3 text-green-600 dark:text-green-400" />
+          <CheckIcon v-if="task._justCompleted" class="w-3 h-3 text-status-success" />
         </button>
 
         <div class="flex-1 min-w-0">
-          <p class="text-sm text-prussian-600 dark:text-lavender-200 truncate">{{ task.title }}</p>
+          <p class="text-sm text-ink-secondary truncate">{{ task.title }}</p>
           <div class="flex items-center gap-2 mt-0.5">
-            <p v-if="task.due_date" class="text-xs text-lavender-500 dark:text-lavender-400">
+            <p v-if="task.due_date" class="text-xs text-ink-tertiary">
               {{ formatDate(task.due_date) }}
             </p>
-            <span v-if="task.points" class="text-[10px] font-semibold font-mono text-wisteria-600 dark:text-wisteria-400">
+            <span v-if="task.points" class="text-[10px] font-semibold font-mono text-accent-lavender-bold">
               +{{ task.points }}
             </span>
             <span
               v-if="task.assignee"
-              class="text-[10px] text-lavender-400 dark:text-lavender-500"
+              class="text-[10px] text-ink-tertiary"
             >
               {{ task.assignee.name?.split(' ')[0] }}
             </span>
@@ -87,6 +89,8 @@ import { useWidgetData } from '@/composables/useWidgetData'
 import { FunnelIcon } from '@heroicons/vue/24/outline'
 import { CheckIcon } from '@heroicons/vue/24/solid'
 import api from '@/services/api'
+import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
 const props = defineProps({
   config: { type: Object, required: true },

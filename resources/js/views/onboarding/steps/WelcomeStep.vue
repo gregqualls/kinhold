@@ -1,45 +1,39 @@
 <template>
   <div class="flex-1 flex flex-col">
     <div class="text-center mb-8">
-      <h1 class="text-2xl font-heading font-bold text-kin-black dark:text-kin-off-white mb-2">
+      <h1 class="text-2xl font-heading font-bold text-ink-primary mb-2">
         {{ isParent ? 'Welcome to Kinhold' : `Welcome to ${familyName || 'Kinhold'}` }}
       </h1>
-      <p class="text-base text-kin-gray-500 dark:text-kin-gray-400">
+      <p class="text-base text-ink-secondary">
         {{ isParent ? "Let's set up your family hub. This takes about 2 minutes." : "Just a couple of quick things to get you set up." }}
       </p>
     </div>
 
     <div class="space-y-5">
-      <div>
-        <label class="block text-sm font-medium text-kin-gray-500 dark:text-kin-gray-400 mb-1.5">
-          Family Name
-        </label>
-        <input
-          v-model="familyName"
-          type="text"
-          class="kin-input"
-          placeholder="The Qualls Family"
-          :disabled="!isParent"
-        />
-      </div>
+      <KinInput
+        v-model="familyName"
+        type="text"
+        label="Family Name"
+        placeholder="The Qualls Family"
+        :disabled="!isParent"
+      />
 
-      <div>
-        <label class="block text-sm font-medium text-kin-gray-500 dark:text-kin-gray-400 mb-1.5">
-          Your Timezone
-        </label>
-        <select v-model="timezone" class="kin-input">
-          <option v-for="tz in commonTimezones" :key="tz" :value="tz">{{ formatTimezone(tz) }}</option>
-        </select>
-      </div>
+      <KinSelect
+        v-model="timezone"
+        label="Your Timezone"
+        :options="timezoneOptions"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, inject, onMounted } from 'vue'
+import { ref, computed, inject, onMounted } from 'vue'
 import { useOnboardingStore } from '@/stores/onboarding'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
+import KinInput from '@/components/design-system/KinInput.vue'
+import KinSelect from '@/components/design-system/KinSelect.vue'
 
 const store = useOnboardingStore()
 const authStore = useAuthStore()
@@ -66,6 +60,8 @@ const commonTimezones = [
   'Asia/Shanghai',
   'Australia/Sydney',
 ]
+
+const timezoneOptions = computed(() => commonTimezones.map(tz => ({ value: tz, label: formatTimezone(tz) })))
 
 function formatTimezone(tz) {
   try {

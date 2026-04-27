@@ -45,7 +45,9 @@ class MealPlanEntryResource extends JsonResource
                 fn () => new MealPresetResource($this->whenLoaded('preset'))
             ),
             'image_url' => match ($type) {
-                'recipe' => $entry->recipe?->image_path ? '/storage/'.$entry->recipe->image_path : null,
+                // Pass absolute URLs (http(s):// or /...) through untouched;
+                // bare storage paths get the /storage/ prefix.
+                'recipe' => self::resolveImageUrl($entry->recipe?->image_path),
                 'restaurant' => $entry->restaurant?->image_url,
                 default => null,
             },
@@ -58,5 +60,23 @@ class MealPlanEntryResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
+    }
+
+    /**
+     * Convert a recipe image_path into a usable URL.
+     *
+     * - null/empty → null
+     * - already absolute (http(s):// or leading /) → returned unchanged
+     * - bare storage-disk path (e.g. "recipes/abc.jpg") → prefixed with /storage/
+     */
+    private static function resolveImageUrl(?string $path): ?string
+    {
+        if ($path === null || $path === '') {
+            return null;
+        }
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '/')) {
+            return $path;
+        }
+        return '/storage/'.$path;
     }
 }

@@ -68,3 +68,44 @@ export const useFamilyColors = () => {
     resetColors,
   }
 }
+
+// ── Kin design-system accent families ────────────────────────────────────────
+//
+// These are the 4 accent families KinAvatar accepts (`color` prop). They map
+// 1:1 to the Kin design tokens (`accent-lavender-soft` / `accent-peach-soft` /
+// `accent-mint-soft` / `accent-sun-soft`) and are the canonical palette for
+// avatar tinting going forward. Storage uses the family name; legacy values
+// like 'teal' / 'amber' / 'sage' / etc. fall through `kinAccentFor()` to a
+// best-fit Kin family so existing user choices still render sensibly.
+export const KIN_AVATAR_ACCENTS = [
+  { name: 'lavender', hex: '#6856B2', bg: 'bg-accent-lavender-soft', label: 'Lavender' },
+  { name: 'peach',    hex: '#C4713A', bg: 'bg-accent-peach-soft',    label: 'Peach'    },
+  { name: 'mint',     hex: '#2E7D55', bg: 'bg-accent-mint-soft',     label: 'Mint'     },
+  { name: 'sun',      hex: '#A07A10', bg: 'bg-accent-sun-soft',      label: 'Sun'      },
+]
+
+const LEGACY_TO_KIN = {
+  teal:     'mint',
+  amber:    'sun',
+  sage:     'mint',
+  steel:    'lavender',
+  plum:     'lavender',
+  rose:     'peach',
+  sienna:   'peach',
+  lavender: 'lavender',
+  cyan:     'mint',
+  olive:    'sun',
+  berry:    'peach',
+  forest:   'mint',
+}
+
+/**
+ * Resolve a stored avatar_color to one of the 4 Kin accent family names,
+ * suitable for `<KinAvatar :color="...">`. Falls back to `'lavender'` when
+ * the input is empty / unknown.
+ */
+export function kinAccentFor(avatarColor) {
+  if (!avatarColor) return 'lavender'
+  if (KIN_AVATAR_ACCENTS.some((c) => c.name === avatarColor)) return avatarColor
+  return LEGACY_TO_KIN[avatarColor] ?? 'lavender'
+}

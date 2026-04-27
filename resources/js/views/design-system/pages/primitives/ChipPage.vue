@@ -48,6 +48,25 @@ function toggleFilter(color) {
 // ── Removable chip visibility ─────────────────────────────────────────────────
 
 const removableVisible = ref(true)
+
+// ── customColor escape-hatch demo state ──────────────────────────────────────
+
+const customColorFilterTags = [
+  { label: 'Chores',   color: '#059669' },
+  { label: 'School',   color: '#a5a84e' },
+  { label: 'Sports',   color: '#dc2626' },
+  { label: 'Shopping', color: '#7d57a8' },
+  { label: 'Family',   color: '#db2777' },
+  { label: 'Pets',     color: '#ea580c' },
+]
+
+const customColorActive = ref(['Chores', 'Pets'])
+
+function toggleCustomColorFilter(label) {
+  const idx = customColorActive.value.indexOf(label)
+  if (idx === -1) customColorActive.value.push(label)
+  else customColorActive.value.splice(idx, 1)
+}
 function resetRemovable() { removableVisible.value = true }
 </script>
 
@@ -261,6 +280,68 @@ function resetRemovable() { removableVisible.value = true }
 
       <p class="mt-3 text-body-sm text-ink-secondary px-1">
         The inline indicator is <strong>not</strong> a chip variant — it complements the chip. Use it in task rows, activity feeds, calendar event summaries, or shopping list items where a full chip would disrupt the rhythm. The dot vocabulary is instantly learnable — after 2–3 uses, the color signals meaning without reading the label.
+      </p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         CUSTOM COLOR ESCAPE-HATCH
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="mb-16">
+      <VariantFrame label="customColor" caption="Pass any CSS color string when the four accent families don't fit — user-defined tag colors, per-calendar source colors, brand colors. Active fills with the color; inactive shows a small dot + neutral surface.">
+        <ModeSplit>
+          <div class="w-full space-y-8">
+
+            <!-- Inactive vs active -->
+            <div>
+              <p class="text-caption text-ink-tertiary mb-3">Inactive (dot + neutral) vs active (filled)</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip variant="filter" custom-color="#7d57a8">Wisteria</KinChip>
+                <KinChip variant="filter" custom-color="#7d57a8" :active="true">Wisteria</KinChip>
+                <KinChip variant="filter" custom-color="#dc2626">Red</KinChip>
+                <KinChip variant="filter" custom-color="#dc2626" :active="true">Red</KinChip>
+                <KinChip variant="filter" custom-color="#059669">Green</KinChip>
+                <KinChip variant="filter" custom-color="#059669" :active="true">Green</KinChip>
+                <KinChip variant="filter" custom-color="#0d9488">Teal</KinChip>
+                <KinChip variant="filter" custom-color="#0d9488" :active="true">Teal</KinChip>
+              </div>
+            </div>
+
+            <!-- Real-world filter row -->
+            <div>
+              <p class="text-caption text-ink-tertiary mb-3">Filter row — interactive (tasks tag filter pattern)</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip
+                  v-for="t in customColorFilterTags"
+                  :key="t.label"
+                  variant="filter"
+                  size="sm"
+                  :custom-color="t.color"
+                  :active="customColorActive.includes(t.label)"
+                  @click="toggleCustomColorFilter(t.label)"
+                >
+                  {{ t.label }}
+                </KinChip>
+              </div>
+              <p class="mt-2 text-caption text-ink-tertiary">Selected: <code>{{ customColorActive.length ? customColorActive.join(', ') : 'none' }}</code></p>
+            </div>
+
+            <!-- Disabled informational -->
+            <div>
+              <p class="text-caption text-ink-tertiary mb-3">Disabled / informational (calendar legend pattern)</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip variant="filter" size="sm" custom-color="#1166ee" disabled>Mike's Calendar</KinChip>
+                <KinChip variant="filter" size="sm" custom-color="#7c49b6" disabled>Sarah's Work</KinChip>
+                <KinChip variant="filter" size="sm" custom-color="#0d9488" disabled>School District</KinChip>
+                <KinChip variant="filter" size="sm" custom-color="#e11d48" disabled>Sports Teams</KinChip>
+              </div>
+            </div>
+
+          </div>
+        </ModeSplit>
+      </VariantFrame>
+
+      <p class="mt-3 text-body-sm text-ink-secondary px-1">
+        Use <code>customColor</code> sparingly. The four accent families (<code>lavender / peach / mint / sun</code>) carry the design language — they're tied to category meaning across the app. <code>customColor</code> is for when content owns the color: user-defined tag pickers, per-calendar source legends, brand chips that have to match an external palette. It bypasses the accent system entirely (no soft / bold / hover variations), so it should not become the default.
       </p>
     </section>
 

@@ -5,16 +5,16 @@
       <div class="flex items-center gap-2 min-w-0">
         <button
           v-if="collapsible"
-          class="p-0.5 rounded text-lavender-400 hover:text-prussian-500 dark:hover:text-lavender-200 transition-colors"
+          class="p-0.5 rounded text-ink-tertiary hover:text-ink-primary transition-colors"
           :aria-label="expanded ? 'Collapse' : 'Expand'"
           @click="expanded = !expanded"
         >
           <ChevronDownIcon class="w-4 h-4 transition-transform" :class="{ '-rotate-90': !expanded }" />
         </button>
-        <h4 v-if="title" class="text-sm font-medium text-prussian-500 dark:text-lavender-200 truncate">
+        <h4 v-if="title" class="text-sm font-medium text-ink-primary truncate">
           {{ title }}
         </h4>
-        <span v-if="subtitle" class="text-xs text-lavender-400 dark:text-lavender-500 flex-shrink-0">
+        <span v-if="subtitle" class="text-xs text-ink-tertiary flex-shrink-0">
           {{ subtitle }}
         </span>
         <span
@@ -27,7 +27,7 @@
         </span>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
-        <span class="text-xs text-lavender-400 dark:text-lavender-500">
+        <span class="text-xs text-ink-tertiary">
           {{ selectedIds.length }}/{{ ingredients.length }}
         </span>
         <button
@@ -41,7 +41,7 @@
 
     <!-- Ingredient list -->
     <div v-if="!collapsible || expanded" class="space-y-0.5">
-      <p v-if="ingredients.length === 0" class="text-xs text-lavender-400 dark:text-lavender-500 italic px-3 py-2">
+      <p v-if="ingredients.length === 0" class="text-xs text-ink-tertiary italic px-3 py-2">
         No ingredients on this recipe.
       </p>
       <label
@@ -53,18 +53,18 @@
         <input
           type="checkbox"
           :checked="isSelected(ingredient.id)"
-          class="w-4 h-4 rounded border-lavender-300 dark:border-prussian-600 text-[#C4975A] focus:ring-[#C4975A]"
+          class="w-4 h-4 rounded border-border-subtle text-[#C4975A] focus:ring-[#C4975A]"
           @change="toggle(ingredient.id)"
         />
         <div class="flex-1 min-w-0 flex items-center gap-2">
           <div class="min-w-0 flex-1">
-            <span class="text-sm" :class="ingredient.already_on_list ? 'text-lavender-400 dark:text-lavender-500 line-through decoration-lavender-300 dark:decoration-prussian-500' : 'text-prussian-500 dark:text-lavender-200'">
+            <span class="text-sm" :class="ingredient.already_on_list ? 'text-ink-tertiary line-through decoration-border-subtle' : 'text-ink-primary'">
               {{ ingredient.name }}
             </span>
-            <span v-if="ingredient.quantity || ingredient.unit" class="text-xs text-lavender-400 dark:text-lavender-500 ml-1.5">
+            <span v-if="ingredient.quantity || ingredient.unit" class="text-xs text-ink-tertiary ml-1.5">
               {{ [ingredient.quantity, ingredient.unit].filter(Boolean).join(' ') }}
             </span>
-            <span v-if="ingredient.is_optional" class="text-xs text-lavender-400 dark:text-lavender-500 ml-1.5 italic">
+            <span v-if="ingredient.is_optional" class="text-xs text-ink-tertiary ml-1.5 italic">
               (optional)
             </span>
           </div>
@@ -117,7 +117,7 @@ const rowClass = (ingredient) => {
   }
   return isSelected(ingredient.id)
     ? 'bg-[#C4975A]/5 dark:bg-[#C4975A]/10'
-    : 'hover:bg-lavender-50 dark:hover:bg-prussian-700'
+    : 'hover:bg-surface-sunken'
 }
 
 const toggle = (id) => {

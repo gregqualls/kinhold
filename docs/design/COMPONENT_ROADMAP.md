@@ -413,11 +413,12 @@ When a component is chosen and promoted, tick it here. Add commit hash.
 ### Tier 1 — Primitives
 - [ ] 1.1 Button
 - [ ] 1.2 Input / Textarea / Search
-- [ ] 1.3 Chip / Tag / Status pill
+- [ ] 1.3 Chip / Tag / Status pill (gained `customColor` escape-hatch 2026-04-27)
 - [ ] 1.4 Avatar
 - [ ] 1.5 Checkbox / Radio / Switch
 - [ ] 1.6 Progress bar
 - [ ] 1.7 Skeleton loader
+- [x] 1.8 Select (added 2026-04-27)
 
 ### Tier 2 — Cards
 - [ ] 2.1 FlatCard
@@ -460,13 +461,14 @@ When a component is chosen and promoted, tick it here. Add commit hash.
 - [ ] 5.15 HeroPhotoSheet
 
 ### Tier 6 — View integration
-- [ ] 6.1 Dashboard
-- [ ] 6.2 Calendar
-- [ ] 6.3 Tasks
-- [ ] 6.4 Points + Achievements
-- [ ] 6.5 Food
-- [ ] 6.6 Vault
-- [ ] 6.7 Chat
-- [ ] 6.8 Settings
-- [ ] 6.9 Onboarding
-- [ ] 6.10 Auth
+- [x] 6.0 App shell — Sidebar + TopBar + BottomNav (2026-04-26)
+- [x] 6.1 Dashboard (2026-04-26)
+- [x] 6.2 Calendar — Phase 1 + Phase 2 + Phase 3 (2026-04-27; KinMonthGrid pills, utility rail, KinDayHeader)
+- [x] 6.3 Tasks — Phase 1 + Phase 2 + Phase 3 (2026-04-27; KinModalSheet + KinSelect + utility rail + card-wrapped rows)
+- [x] 6.4 Points + Achievements (2026-04-27; KinAchievementTile, KinHeroMetricCard, KinSearch, modals → KinModalSheet)
+- [x] 6.5 Food — Phase 1 (2026-04-27; FoodView shell + 4 tabs + 19 components token-swept + KinPhotoCard recipe/restaurant/meal-entry cards; RecipeForm/MealEntryPicker/MealPlanShoppingModal/MealWeekGrid deferred to Phase 2)
+- [x] 6.6 Vault — Phase 1 (2026-04-27; categories/entries/entry views + Kin form/modal swaps; encryption + Milkdown content typography deferred)
+- [x] 6.7 Chat — Phase 1 (2026-04-27; empty states + composer Send → KinButton; bespoke message bubbles deferred)
+- [x] 6.8 Settings — Phase 1 (2026-04-27; ~340 token swaps + KinInput/KinSelect/KinSwitch swaps; BaseModal × 5 + ToggleSwitch dark-mode rows deferred)
+- [x] 6.9 Onboarding — Phase 1 (2026-04-27; 8 steps refactored; KinGradientCard for FeaturesExplainerStep)
+- [x] 6.10 Auth — Phase 1 (2026-04-27; LoginView + RegisterView wrapped in KinFlatCard with KinInput/KinButton/KinCheckbox)
