@@ -10,7 +10,6 @@
 
 <p align="center">
   <a href="#features">Features</a> &bull;
-  <a href="#screenshots">Screenshots</a> &bull;
   <a href="#quick-start">Quick Start</a> &bull;
   <a href="#tech-stack">Tech Stack</a> &bull;
   <a href="#mcp-server">MCP Server</a> &bull;
@@ -22,15 +21,13 @@
   <a href="https://github.com/gregqualls/kinhold/stargazers"><img src="https://img.shields.io/github/stars/gregqualls/kinhold?style=social" alt="GitHub Stars" /></a>
 </p>
 
-<p align="center">
-  <img src="docs/screenshots/hero.png" alt="Kinhold Hero" width="720" />
-</p>
-
 ---
 
-Kinhold is a self-hosted family management app that brings tasks, calendar, sensitive documents, and gamification into one interface. Built mobile-first with dark mode and multiple color themes, it's designed for real families with kids who need a little motivation to get things done.
+Kinhold is a self-hosted family management app that brings tasks, calendar, sensitive documents, meal planning, and gamification into one interface. Built mobile-first with dark mode and multiple color themes on the Kin design system, it's designed for real families with kids who need a little motivation to get things done.
 
-Live at [kinhold.app](https://kinhold.app)
+Live at [kinhold.app](https://kinhold.app).
+
+**Try it now:** [app.kinhold.app/demo](https://app.kinhold.app/demo) — log in as the Johnson family and explore the full app, no signup required.
 
 ## Features
 
@@ -39,8 +36,9 @@ Live at [kinhold.app](https://kinhold.app)
 - **Task Management** — Multiple task lists, priorities, due dates, assignees. Family tasks anyone can claim. Recurring tasks via RRULE (daily, weekly, monthly). Points awarded on completion.
 - **Family Calendar** — Aggregate Google Calendars + ICS feeds from every family member, plus manual events anyone can create. Recurrence (weekly/monthly/yearly), visibility controls (visible/busy/private), and "feature on dashboard" with countdown banners. Tasks with due dates show on the calendar automatically. Month/week/day views, mobile-optimized.
 - **Secure Vault** — Encrypted storage for sensitive family info (SSNs, medical records, insurance, financial data). WYSIWYG markdown editor, role-based permissions, tap-to-reveal sensitive fields, auto-clear clipboard, document uploads. AI-guided playbooks for common data entry.
+- **Food & Meal Planning** — Recipe library with photo upload, ingredients, steps, tags, and family ratings. Weekly meal planner. Restaurant list with tags. Shopping lists with pre-shop checklists, per-item assignment, and one-tap "build shopping list from this week's meals."
 - **AI Assistant** — Natural language interface to all family data via MCP tools: "What tasks are due this week?", "Create a dentist appointment for Friday", "What's the wifi password?" Powered by Claude's tool_use API.
-- **MCP Server** — 20 tools for managing Kinhold through Claude Desktop or Claude Code. Full CRUD on tasks, vault, calendar, points, rewards, badges, and family data. Laravel-native, no separate process.
+- **MCP Server** — 20 tools for managing Kinhold through Claude Desktop or Claude Code. Full CRUD on tasks, vault, calendar, points, rewards, badges, dashboard, and family data. Laravel-native, no separate process.
 
 ### Gamification
 
@@ -49,7 +47,7 @@ Turn chores into a game your kids actually want to play.
 - **Points** — Earn points by completing tasks. Parents can give kudos (+1 pt) or deduct points. Ledger-based architecture — every point is traceable, no balance mutations.
 - **Leaderboard** — Family rankings over configurable periods (daily/weekly/monthly). Resets each period without touching point banks.
 - **Rewards Store** — Parents create prizes with point costs (Sweets = 10 pts, Movie Pick = 40 pts). Kids purchase instantly.
-- **Badges** — Steam-style achievements with hexagonal icons. 27 default badges auto-created for every family. Auto-triggered by milestones (first task completed, 7-day streak, 1000 points earned) or manually awarded by parents. Hidden badges show as "???" until earned.
+- **Badges** — Steam-style achievements with hexagonal icons. 29 default badges auto-created for every family. Auto-triggered by milestones (first task completed, 7-day streak, 1000 points earned) or manually awarded by parents. Hidden badges show as "???" until earned.
 - **Activity Feed** — Family-wide feed showing task completions, kudos, purchases, and badge unlocks.
 
 ### Quality of Life
@@ -62,37 +60,6 @@ Turn chores into a game your kids actually want to play.
 - **Managed Accounts** — Parents can create child accounts without email and switch into them
 - **Google OAuth** — Sign in with Google, or use email/password
 - **Easter Eggs** — Hidden surprises scattered throughout the app. Find them all to unlock secret badges.
-
-## Screenshots
-
-<p align="center">
-  <img src="docs/screenshots/hero.png" alt="Dashboard (Light Mode)" width="360" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/dashboard-dark.png" alt="Dashboard (Dark Mode)" width="360" />
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/points-feed.png" alt="Points Feed" width="250" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/badges.png" alt="Badges" width="250" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/rewards.png" alt="Rewards Store" width="250" />
-</p>
-
-<details>
-<summary><strong>More screenshots</strong></summary>
-<br />
-<p align="center">
-  <img src="docs/screenshots/tasks-desktop.png" alt="Task Lists" width="360" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/calendar.png" alt="Calendar" width="360" />
-</p>
-<p align="center">
-  <img src="docs/screenshots/vault.png" alt="Vault" width="360" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/chat.png" alt="AI Chat" width="360" />
-</p>
-</details>
 
 ## Tech Stack
 
@@ -237,8 +204,8 @@ For local development, use `http://localhost:8000/mcp` as the URL.
 
 | Tool | Description |
 |------|-------------|
-| ManageTaskLists | Create, update, delete, and list task lists |
 | ManageTasks | Create, update, delete, and list tasks |
+| ManageDashboard | Configure dashboard widgets for a family member |
 | CompleteTask | Mark tasks complete or incomplete |
 | ManageTags | Create, update, delete, and list tags |
 | ViewPoints | View point balances, leaderboard, and activity feed |
@@ -326,14 +293,18 @@ Found a bug or have an idea? Open an issue on [GitHub Issues](https://github.com
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan. Recently shipped and coming up:
 
 **Recently shipped:**
+- ~~Food & Meal Planning~~ — Recipes, weekly meal plans, restaurants, shopping lists with pre-shop checklists
+- ~~Kin design-system overhaul~~ — Every authenticated view, dashboard widget, and auth/onboarding surface unified onto Kin tokens & components
+- ~~Public demo at `/demo`~~ — Deep-linkable Johnson-family walkthrough for marketing
 - ~~Manual calendar mode~~ — Create events without Google, recurrence, visibility, featured on dashboard
 - ~~Profile pictures and avatars~~ — Photo upload, 26 icon presets, color picker
 - ~~MCP-powered AI assistant~~ — Natural language interface to all 20 tools
 - ~~Vault overhaul~~ — WYSIWYG markdown editor, playbooks, kids personal vault
 
-**Coming up (Phase A):**
-- Shopping and grocery lists
-- Meal planning
+**Coming up:**
+- Food/meal MCP tools (Phase F Step 8)
+- AI usage limits for hosted version ([#137](https://github.com/gregqualls/kinhold/issues/137))
+- Self-hosted single-family enforcement ([#138](https://github.com/gregqualls/kinhold/issues/138))
 - PWA support (installable, offline-capable)
 
 ## License
