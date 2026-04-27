@@ -602,7 +602,7 @@ onMounted(async () => {
 .prose-vault ol { @apply list-decimal pl-6 mb-2 text-sm text-ink-secondary; }
 .prose-vault li { @apply mb-1; }
 .prose-vault code { @apply text-xs bg-surface-sunken px-1.5 py-0.5 rounded font-mono; }
-.prose-vault pre { @apply bg-surface-base rounded-lg p-3 mb-2 overflow-x-auto; }
+.prose-vault pre { @apply bg-surface-sunken rounded-lg p-3 mb-2 overflow-x-auto; }
 .prose-vault pre code { @apply bg-transparent px-0 py-0; }
 .prose-vault table { @apply w-full border-collapse mb-2; }
 .prose-vault th { @apply bg-surface-sunken text-left px-3 py-2 text-xs font-semibold uppercase tracking-wider border border-border-subtle; }

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-surface-base">
+  <div class="min-h-screen bg-surface-app">
     <!-- Navigation -->
     <nav class="sticky top-0 z-50 bg-surface-raised/80 backdrop-blur-md border-b border-border-subtle">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
