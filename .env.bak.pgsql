@@ -1,0 +1,88 @@
+APP_NAME="Kinhold"
+APP_ENV=local
+APP_KEY=base64:n88v/gWT2K665MDNjmq+YEUq2sD6uo14rO8HphIOPHk=
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+LOG_CHANNEL=stack
+LOG_LEVEL=debug
+
+# ---------------------------------------------------------------------------
+# Database
+# ---------------------------------------------------------------------------
+# Option A — PostgreSQL (recommended for production)
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=kinhold
+DB_USERNAME=
+DB_PASSWORD=
+
+# Option B — SQLite (simplest, no server needed)
+# DB_CONNECTION=sqlite
+# DB_DATABASE=/absolute/path/to/kinhold.sqlite
+
+# ---------------------------------------------------------------------------
+# Cache, Queue & Sessions
+# ---------------------------------------------------------------------------
+# With Redis (recommended for production):
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+CACHE_STORE=redis
+QUEUE_CONNECTION=redis
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+
+# Without Redis (use these instead):
+# CACHE_STORE=file
+# QUEUE_CONNECTION=sync
+# SESSION_DRIVER=file
+# SESSION_LIFETIME=120
+
+# ---------------------------------------------------------------------------
+# Mail (optional — app works without it)
+# ---------------------------------------------------------------------------
+# Option A — Resend (recommended for production, handles SPF/DKIM automatically)
+MAIL_MAILER=resend
+RESEND_API_KEY=
+MAIL_FROM_ADDRESS="noreply@kinhold.app"
+MAIL_FROM_NAME="Kinhold"
+# Option B — SMTP (local dev or self-hosted with your own mail server)
+# MAIL_MAILER=smtp
+# MAIL_HOST=
+# MAIL_PORT=587
+# MAIL_USERNAME=
+# MAIL_PASSWORD=
+# MAIL_ENCRYPTION=tls
+
+# ---------------------------------------------------------------------------
+# Google OAuth + Calendar (optional — app works without it)
+# ---------------------------------------------------------------------------
+# Enables "Sign in with Google" and Google Calendar sync.
+# Get credentials at https://console.cloud.google.com/
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:8000/api/v1/calendar/callback
+GOOGLE_AUTH_REDIRECT_URI=http://localhost:8000/auth/google/callback
+
+# ---------------------------------------------------------------------------
+# AI Chat (optional — app works without it)
+# ---------------------------------------------------------------------------
+# Enables the AI chatbot. Get a key at https://console.anthropic.com/
+ANTHROPIC_API_KEY=
+
+# ---------------------------------------------------------------------------
+# Self-Hosted Mode
+# ---------------------------------------------------------------------------
+# Set to true when running your own instance (skips the marketing landing page)
+SELF_HOSTED=false
+
+# Set to true to disable checking GitHub for new Kinhold releases
+DISABLE_UPDATE_CHECK=false
+
+# ---------------------------------------------------------------------------
+# Frontend
+# ---------------------------------------------------------------------------
+VITE_API_URL=http://localhost:8000/api/v1
+VITE_APP_NAME="Kinhold"
