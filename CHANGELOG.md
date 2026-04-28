@@ -2,6 +2,28 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-28 — Prep for Google OAuth verification: drop write scope + tighten privacy policy (v1.4.5)
+
+After v1.4.4 shipped, the calendar reconnect flow surfaced the "Google hasn't verified this app" warning. Diagnosis: the OAuth consent screen in `q32familyhub` had zero scopes registered in the Data Access page, but the runtime requested two sensitive Calendar scopes (`calendar.readonly` AND full `calendar`). Google's user cap warning is exactly this case: *"your OAuth request includes additional scopes that haven't been approved."*
+
+Two changes here, both in service of submitting for Google verification under read-only scopes:
+
+1. **Dropped the full `calendar` (read/write) scope** in [app/Services/GoogleCalendarService.php](app/Services/GoogleCalendarService.php). Code never wrote to Google Calendar — confirmed by grepping `events->insert|update|delete|patch|import` and `calendars->insert|update|delete` (zero hits). Only `events->listEvents` and `calendarList->listCalendarList` are called. `calendar.readonly` is sufficient. Requesting both was redundant since `calendar` already includes read.
+
+2. **Tightened the Privacy Policy** at [resources/js/views/PrivacyPolicyView.vue](resources/js/views/PrivacyPolicyView.vue) for verification submission:
+   - Listed the actual scope identifiers next to each data type (`openid`, `userinfo.email`, `userinfo.profile`, `calendar.readonly`).
+   - Added an explicit "How Google data is stored and retained" subsection: tokens encrypted at rest, calendar events fetched live and never cached (verified by grepping `Cache::` in `CalendarController` — no hits), tokens deleted on disconnect, all Google-derived data deleted within 30 days of account-deletion request.
+   - Added an explicit "Limited Use compliance" subsection mirroring the four required attestations from the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy): no advertising, no selling/sharing, no human reading except for security/legal/aggregated, and **no AI/ML training** on Google data (Kinhold's AI assistant only sees Kinhold-native family events, never Google Calendar events).
+
+The Terms of Service section 7 already had the basic Limited Use disclosure and "calendar read-only" wording — left untouched, now aligned with the actual scope.
+
+**Action items for production (manual, on the Google Cloud side — not in this PR):**
+- Register scopes in Google Auth Platform → Data Access: `openid`, `userinfo.email`, `userinfo.profile`, `calendar.readonly`.
+- Submit for verification with the demo video showing OAuth grant + read use + revocation.
+- During the 1–3 week review, beta users will continue to see the unverified-app warning and bypass via *Advanced → continue*. The 100-user cap stays in effect until approval.
+
+**Version** — bumped `config/version.php` from 1.4.4 → 1.4.5.
+
 ## 2026-04-28 — Fix Google OAuth login loop on production (v1.4.4)
 
 Sign in with Google looped: account-picker → pick account → land back on the login form, repeat. Root cause was a route-binding regression introduced with the MCP/Passport OAuth feature (commit `2ef576b`): `routes/web.php` registered `Route::get('/login', ...)->name('login')` bound to `GoogleAuthController::oauthLogin()`. The comment above it claimed "Uses a separate path so /login stays as the SPA catch-all (no conflict)" but the path was, in fact, `/login`. Every fresh server-side hit to `/login` issued an HTTP 302 to Google OAuth (verified in production via `curl -sI https://app.kinhold.app/login`). Google's callback ran `Auth::login()` + `redirect()->intended('/')`, which sent the SPA to `/`, which redirected to `/login`, which 302'd to Google again — the loop. Users only saw the SPA login form when Vue Router handled `/login` client-side after the SPA was already mounted; cold loads always went to Google.

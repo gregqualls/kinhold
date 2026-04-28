@@ -19,7 +19,7 @@
     <!-- Content -->
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <h1 class="text-3xl font-bold text-ink-primary mb-2">Privacy Policy</h1>
-      <p class="text-sm text-ink-secondary mb-10">Last updated: March 22, 2026</p>
+      <p class="text-sm text-ink-secondary mb-10">Last updated: April 28, 2026</p>
 
       <div class="prose-container space-y-8 text-ink-secondary">
         <section>
@@ -46,14 +46,36 @@
           <h3>Google Account Data</h3>
           <p>If you sign in with Google or connect Google Calendar, we access:</p>
           <ul>
-            <li>Your Google profile (name, email, avatar) for authentication</li>
-            <li>Your Google Calendar events (read-only) to display them in the family calendar</li>
+            <li>Your Google profile (name, email, avatar) for authentication (scopes: <code>openid</code>, <code>userinfo.email</code>, <code>userinfo.profile</code>)</li>
+            <li>Your Google Calendar events, <strong>read-only</strong>, to display them in the family calendar (scope: <code>calendar.readonly</code>)</li>
           </ul>
           <p>
-            We store OAuth tokens (encrypted at rest) to maintain your calendar connection.
-            We do <strong>not</strong> read your Gmail, Drive, or any other Google service.
-            We only request the minimum scopes needed: profile, email, and calendar read access.
+            We do <strong>not</strong> read your Gmail, Drive, contacts, or any other Google service,
+            and we never write to, modify, or delete anything in your Google Calendar.
           </p>
+
+          <h4 class="font-semibold text-ink-primary mt-4 mb-2">How Google data is stored and retained</h4>
+          <ul>
+            <li><strong>OAuth tokens</strong> — encrypted at rest in our database. Used only to fetch calendar events on your behalf. Invalidated immediately when you disconnect.</li>
+            <li><strong>Calendar metadata</strong> — calendar name, calendar ID, and your chosen display color, stored only to know which calendars to read and how to render them.</li>
+            <li><strong>Calendar events</strong> — fetched live from Google each time you open the calendar view; <strong>not stored or cached</strong> in our database.</li>
+            <li><strong>On disconnect</strong> — when you disconnect a calendar in Settings or revoke access at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener" class="text-accent-lavender-bold hover:underline">myaccount.google.com/permissions</a>, we delete the OAuth tokens and calendar metadata immediately.</li>
+            <li><strong>On account deletion</strong> — all Google-derived data is deleted within 30 days of your deletion request.</li>
+          </ul>
+
+          <h4 class="font-semibold text-ink-primary mt-4 mb-2">Limited Use compliance</h4>
+          <p>
+            Kinhold's use and transfer of information received from Google APIs to any other app
+            adheres to the
+            <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener" class="text-accent-lavender-bold hover:underline">Google API Services User Data Policy</a>,
+            including the Limited Use requirements. Specifically, we do not:
+          </p>
+          <ul>
+            <li>Use Google user data for serving advertising, including retargeting, personalized, or interest-based advertising.</li>
+            <li>Sell, transfer, or otherwise disclose Google user data to third parties for advertising, marketing, data brokering, or any unrelated purpose.</li>
+            <li>Allow humans to read Google user data, except (a) with your explicit consent, (b) for security purposes such as investigating abuse, (c) to comply with applicable law, or (d) for internal operations where the data has been aggregated and anonymized.</li>
+            <li>Use Google user data to train or fine-tune any AI or machine-learning model. Calendar events are never sent to AI providers; only Kinhold-native family events are available to the AI assistant.</li>
+          </ul>
 
           <h3>Family Data</h3>
           <p>Data you create within the app:</p>

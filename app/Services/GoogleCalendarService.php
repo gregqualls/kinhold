@@ -129,7 +129,6 @@ class GoogleCalendarService
 
         $client->addScope([
             'https://www.googleapis.com/auth/calendar.readonly',
-            'https://www.googleapis.com/auth/calendar',
         ]);
 
         // Pass user ID in state so callback knows which user initiated
