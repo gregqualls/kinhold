@@ -103,14 +103,14 @@ const sizeClasses = computed(() => {
       <span v-if="loading" class="flex-shrink-0">
         <ArrowPathIcon class="w-4 h-4 animate-spin" aria-hidden="true" />
       </span>
-      <slot v-else name="leading" />
+      <slot v-else name="leading"></slot>
     </template>
 
     <!-- Default slot -->
-    <slot />
+    <slot></slot>
 
     <!-- Trailing slot — hidden when loading or iconOnly -->
-    <slot v-if="!iconOnly && !loading" name="trailing" />
+    <slot v-if="!iconOnly && !loading" name="trailing"></slot>
   </component>
 </template>
 
@@ -135,7 +135,14 @@ const sizeClasses = computed(() => {
 */
 
 /* ── Base kin-btn class ───────────────────────────────────────────── */
-.kin-btn {
+/*
+  :where() wraps the selector with 0 specificity so consumer-side
+  Tailwind utilities like `hidden`, `md:flex`, etc. can override
+  `display` without needing the `!important` modifier. Without this,
+  Vue's scoped-CSS data attribute would push specificity above any
+  utility class and consumers couldn't hide the button responsively.
+*/
+:where(.kin-btn) {
   display: inline-flex;
   align-items: center;
   justify-content: center;

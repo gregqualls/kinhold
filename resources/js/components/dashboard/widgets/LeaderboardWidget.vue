@@ -36,31 +36,8 @@
 
     <!-- Small: responsive layout — side-by-side on desktop, stacked on mobile -->
     <div v-else class="flex-1 min-h-0 flex flex-col md:flex-row gap-3 md:gap-4">
-      <!-- Podium — 1st sun, 2nd lavender, 3rd peach. Same accent palette the
-           rest of the app uses for tier-1/2/3 ranking. -->
-      <div v-if="topThree.length > 0" class="flex items-end justify-center gap-1.5 flex-shrink-0">
-        <div v-if="topThree.length > 1" class="flex flex-col items-center" :aria-label="`2nd place: ${firstName(topThree[1])}, ${topThree[1].total_points} points`">
-          <div class="text-[10px] font-bold text-ink-tertiary mb-1" aria-hidden="true">2nd</div>
-          <KinAvatar :name="topThree[1].user?.name" :src="topThree[1].user?.avatar" size="md" color="lavender" />
-          <div class="w-14 rounded-t-lg mt-1.5 flex items-center justify-center border border-accent-lavender-bold/20" style="height: 56px; background: rgb(var(--accent-lavender-bold) / 0.16)">
-            <span class="text-sm font-bold font-mono text-accent-lavender-bold">{{ topThree[1].total_points }}</span>
-          </div>
-        </div>
-        <div class="flex flex-col items-center" :aria-label="`1st place: ${firstName(topThree[0])}, ${topThree[0].total_points} points`">
-          <TrophyIcon class="w-5 h-5 text-accent-sun-bold mb-0.5" />
-          <KinAvatar :name="topThree[0].user?.name" :src="topThree[0].user?.avatar" size="md" color="sun" ring />
-          <div class="w-16 rounded-t-lg mt-1.5 flex items-center justify-center border border-accent-sun-bold/30" style="height: 84px; background: rgb(var(--accent-sun-bold) / 0.20)">
-            <span class="text-base font-bold font-mono text-accent-sun-bold">{{ topThree[0].total_points }}</span>
-          </div>
-        </div>
-        <div v-if="topThree.length > 2" class="flex flex-col items-center" :aria-label="`3rd place: ${firstName(topThree[2])}, ${topThree[2].total_points} points`">
-          <div class="text-[10px] font-bold text-ink-tertiary mb-1" aria-hidden="true">3rd</div>
-          <KinAvatar :name="topThree[2].user?.name" :src="topThree[2].user?.avatar" size="md" color="peach" />
-          <div class="w-14 rounded-t-lg mt-1.5 flex items-center justify-center border border-accent-peach-bold/20" style="height: 40px; background: rgb(var(--accent-peach-bold) / 0.16)">
-            <span class="text-sm font-bold font-mono text-accent-peach-bold">{{ topThree[2].total_points }}</span>
-          </div>
-        </div>
-      </div>
+      <!-- Podium (shared component — keeps trophy/medal styling consistent with /points) -->
+      <LeaderboardPodium :entries="leaderboard" class="flex-shrink-0" />
 
       <!-- Rankings -->
       <div class="flex-1 min-w-0 flex flex-col justify-center space-y-1.5">
@@ -95,9 +72,8 @@ import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useWidgetData } from '@/composables/useWidgetData'
 import { TrophyIcon } from '@heroicons/vue/24/solid'
-import UserAvatar from '@/components/common/UserAvatar.vue'
-import KinAvatar from '@/components/design-system/KinAvatar.vue'
 import LeaderboardStrip from '@/components/points/LeaderboardStrip.vue'
+import LeaderboardPodium from '@/components/points/LeaderboardPodium.vue'
 import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
@@ -116,7 +92,6 @@ const leaderboard = computed(() => {
   return list.slice(0, limit)
 })
 
-const topThree = computed(() => leaderboard.value.slice(0, 3))
 const maxPoints = computed(() => Math.max(...leaderboard.value.map((e) => e.total_points), 1))
 const firstName = (entry) => entry.user?.name?.split(' ')[0] || '?'
 const isCurrentUser = (entry) => entry.user_id === authStore.currentUser?.id

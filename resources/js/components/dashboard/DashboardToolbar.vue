@@ -4,7 +4,7 @@
       <PencilSquareIcon class="w-5 h-5 text-accent-lavender-bold" />
       <span class="text-sm font-semibold text-ink-primary">Editing Dashboard</span>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 flex-wrap">
       <KinButton variant="secondary" size="sm" @click="$emit('add')">
         <template #leading>
           <PlusIcon class="w-4 h-4" />

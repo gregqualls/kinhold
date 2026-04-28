@@ -1,11 +1,11 @@
 <template>
-  <div class="p-4 md:p-6 max-w-3xl">
+  <div class="p-3 md:p-6 max-w-3xl">
     <!-- Header -->
-    <div class="flex items-center gap-3 mb-6">
+    <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-6">
       <KinButton variant="ghost" size="sm" icon-only aria-label="Back to Points" to="/points">
         <ChevronLeftIcon class="w-5 h-5" />
       </KinButton>
-      <h1 class="text-2xl font-bold font-heading text-ink-primary">My Points History</h1>
+      <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">My Points History</h1>
     </div>
 
     <!-- Hero balance card -->

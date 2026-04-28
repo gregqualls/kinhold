@@ -1,13 +1,12 @@
 <template>
   <div class="h-full flex flex-col overflow-hidden">
     <!-- Search + controls -->
-    <div class="px-4 md:px-6 pt-4 pb-2 space-y-3">
-      <!-- Search + Add button row -->
-      <div class="flex items-center gap-3">
+    <div class="px-4 md:px-6 pt-2 md:pt-4 pb-2 space-y-2 md:space-y-3">
+      <!-- Search + view toggle -->
+      <div class="flex items-center gap-2 sm:gap-3">
         <div class="flex-1">
           <KinSearch v-model="searchInput" placeholder="Search recipes..." @input="onSearchInput" />
         </div>
-        <!-- View toggle -->
         <button
           class="flex-shrink-0 p-2.5 rounded-[10px] transition-colors bg-surface-sunken text-ink-secondary hover:bg-surface-overlay"
           :title="viewMode === 'grid' ? 'Switch to compact view' : 'Switch to grid view'"
@@ -16,10 +15,6 @@
           <Squares2X2Icon v-if="viewMode === 'compact'" class="w-4 h-4" />
           <ListBulletIcon v-else class="w-4 h-4" />
         </button>
-        <KinButton variant="primary" size="sm" class="hidden md:flex" @click="showAddMenu = !showAddMenu">
-          <template #leading><PlusIcon class="w-4 h-4" /></template>
-          Add Recipe
-        </KinButton>
       </div>
 
       <!-- Filter row -->
@@ -89,7 +84,7 @@
     </KinEmptyState>
 
     <!-- Recipe list -->
-    <div v-else class="flex-1 overflow-y-auto px-4 md:px-6 py-4 pb-32 md:pb-6">
+    <div v-else class="flex-1 overflow-y-auto px-4 md:px-6 pt-2 md:pt-4 pb-32 md:pb-6">
       <!-- Grid view -->
       <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <RecipeCard
@@ -167,8 +162,8 @@
       </div>
     </div>
 
-    <!-- Mobile FAB -->
-    <FloatingActionButton @click="showAddMenu = true" />
+    <!-- Floating Action Button -->
+    <FloatingActionButton :mobile-only="false" @click="showAddMenu = true" />
 
     <!-- Add recipe menu (sheet) -->
     <KinModalSheet
@@ -240,7 +235,6 @@ import KinChip from '@/components/design-system/KinChip.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
 import {
-  PlusIcon,
   HeartIcon,
   PencilSquareIcon,
   LinkIcon,
@@ -262,7 +256,7 @@ const showAddMenu = ref(false)
 const showCreateForm = ref(false)
 const showImportModal = ref(false)
 const importTab = ref('url')
-const viewMode = ref(localStorage.getItem('kinhold-recipe-view') || 'grid')
+const viewMode = ref(localStorage.getItem('kinhold-recipe-view') || 'compact')
 
 // Pass-through for absolute URLs; storage prefix for relative paths.
 const resolveImageUrl = (path) => {

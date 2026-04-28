@@ -48,10 +48,12 @@ const rightItems = computed(() => props.items.slice(2, 4))
 </script>
 
 <template>
-  <div class="kin-bottom-nav relative flex items-center rounded-full px-2"
-       style="height: 60px;"
-       role="navigation"
-       aria-label="Primary">
+  <div
+    class="kin-bottom-nav relative flex items-center rounded-full px-2"
+    style="height: 60px;"
+    role="navigation"
+    aria-label="Primary"
+  >
     <!-- Left pair -->
     <component
       :is="itemTag(item)"
@@ -68,8 +70,8 @@ const rightItems = computed(() => props.items.slice(2, 4))
         <component :is="item.icon" class="w-[22px] h-[22px]" />
       </span>
       <component
-        v-else
         :is="item.icon"
+        v-else
         class="kin-bn__slot-icon w-[22px] h-[22px]"
       />
     </component>
@@ -93,15 +95,15 @@ const rightItems = computed(() => props.items.slice(2, 4))
         <component :is="item.icon" class="w-[22px] h-[22px]" />
       </span>
       <component
-        v-else
         :is="item.icon"
+        v-else
         class="kin-bn__slot-icon w-[22px] h-[22px]"
       />
     </component>
 
     <!-- FAB slot — absolute-positioned above pill center -->
     <div class="kin-bn__fab absolute left-1/2 -translate-x-1/2 -translate-y-[16px]">
-      <slot name="fab" />
+      <slot name="fab"></slot>
     </div>
   </div>
 </template>
@@ -112,7 +114,7 @@ const rightItems = computed(() => props.items.slice(2, 4))
   One of the four allowed glass surfaces (REDESIGN_BRIEF tenet #7).
 */
 .kin-bottom-nav {
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   border: 1px solid rgba(255, 255, 255, 0.65);
@@ -123,7 +125,7 @@ const rightItems = computed(() => props.items.slice(2, 4))
 }
 
 .dark .kin-bottom-nav {
-  background: rgba(28, 27, 25, 0.75);
+  background: rgba(28, 27, 25, 0.60);
   backdrop-filter: blur(18px) saturate(130%);
   -webkit-backdrop-filter: blur(18px) saturate(130%);
   border: 1px solid rgba(255, 255, 255, 0.08);

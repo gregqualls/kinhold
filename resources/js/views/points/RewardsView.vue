@@ -1,18 +1,18 @@
 <template>
-  <div class="p-4 md:p-6 max-w-3xl">
+  <div class="p-3 md:p-6 max-w-3xl">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6 gap-3 flex-wrap">
-      <div class="flex items-center gap-3">
+    <div class="flex items-center justify-between mb-3 md:mb-6 gap-3 flex-wrap">
+      <div class="flex items-center gap-2 md:gap-3">
         <KinButton variant="ghost" size="sm" icon-only aria-label="Back to Points" to="/points">
           <ChevronLeftIcon class="w-5 h-5" />
         </KinButton>
-        <h1 class="text-2xl font-bold font-heading text-ink-primary">Rewards</h1>
+        <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Rewards</h1>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
         <span class="text-sm font-bold font-mono text-accent-lavender-bold">
           {{ pointsStore.bank }} pts
         </span>
-        <KinButton v-if="isParent && !showForm" variant="primary" size="sm" @click="openCreateForm">
+        <KinButton v-if="isParent && !showForm" variant="primary" size="sm" class="hidden md:flex" @click="openCreateForm">
           <template #leading>
             <PlusIcon class="w-4 h-4" />
           </template>
@@ -111,6 +111,9 @@
       size="md"
       class="mt-6"
     />
+
+    <!-- Floating Action Button (mobile) -->
+    <FloatingActionButton v-if="isParent && !showForm" @click="openCreateForm" />
   </div>
 </template>
 
@@ -122,6 +125,7 @@ import { useAuthStore } from '@/stores/auth'
 import RewardCard from '@/components/points/RewardCard.vue'
 import RewardForm from '@/components/points/RewardForm.vue'
 import BidModal from '@/components/points/BidModal.vue'
+import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
 import { ChevronLeftIcon, PlusIcon, GiftIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import { useNotification } from '@/composables/useNotification'
 import KinButton from '@/components/design-system/KinButton.vue'

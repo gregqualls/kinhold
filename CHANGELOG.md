@@ -2,6 +2,38 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-28 — Mobile nav: KinBottomNav, AI-aware FAB, More sheet, header compaction, list-default views
+
+Big mobile-chrome pass that retires the old prussian-token `BottomNav.vue` and pulls the rest of the chrome onto the Kin design system. Done iteratively in a single live session with Preview MCP.
+
+**`MobileBottomNav.vue`** — wraps `KinBottomNav` (the glass pill + center FAB from #175) with four slots and the AI-aware FAB. Schedule and Meals open inline popovers above the pill (Calendar/Tasks; Food/Shopping), with outside-click, Escape, and route-change dismissal. Slot 1 dynamically swaps between **Home** and **Points** depending on whether AI is usable — when the FAB takes over Home, Points is promoted to slot 1 so Home doesn't appear twice. Module gating collapses disabled children groups, degrades single-child groups to direct links, and fills empty positions from a priority list (Points → Vault → Settings) so `KinBottomNav`'s 4-item validator never fires.
+
+**`MoreSheet.vue`** — `KinModalSheet` (bottom sheet on mobile, centered modal on desktop) listing Points, Rewards, Badges, Vault, Settings, and Sign Out. Accepts an `excludeKeys` prop so MobileBottomNav can pass the active-slot ids and dedupe (when Points is in slot 1, Points is hidden from More). Sign Out calls `authStore.logout()` then pushes to `/login`, mirroring the Sidebar pattern.
+
+**AI-aware FAB** — reads `aiReady` from the auth store. When AI is usable (kinhold mode + platform key, or byok mode + saved key), the FAB shows a sparkle icon and routes to `/chat`. When AI is off, it shows a Home icon and routes to `/dashboard`, while slot 1 swaps to Points. The store recomputes `aiReady` after any AI-settings save in SettingsView, so the FAB flips without a reload. FAB styling (warm-charcoal gradient + warm-white icon) extracted to a scoped `.mobile-fab` class — the hex values are bespoke to this surface and have no token equivalents.
+
+**Glass alpha tuned** — `KinBottomNav` background reduced from `rgba(255,255,255,0.72)` → `0.55` (light) and `rgba(28,27,25,0.75)` → `0.60` (dark) so the glass effect reads as visibly translucent over uniform page backgrounds.
+
+**Auth-store consolidation** — added `aiReady` ref + `fetchAccountSettings()` action that hits `/settings` once and updates both `services` and `aiReady`. `fetchServices` and `fetchAiReady` are now thin aliases pointing at the same fetcher, dropping duplicate `/settings` calls on init.
+
+**Mobile resize sweep** — quick wins across the affected views at 375px: `flex-wrap` on the DashboardToolbar button row; `flex-wrap` on the RewardsView header; `flex-col sm:flex-row` stacking on RecipesTab search/controls; Tailwind height classes (`h-14`, `h-20`, `h-10`) replacing inline `style="height:…"` on LeaderboardWidget podium bars; `gap-3 sm:gap-4` on VaultEntriesView entry rows.
+
+**Header compaction pass** — eight authenticated views got tighter mobile headers (h1 `text-2xl` → `text-lg md:text-2xl`; subtitles `hidden md:block`; outer padding `pt-4` → `pt-3`; inter-row spacing `mb-6` → `mb-3 md:mb-6`). Saves ~64px vertically per page above the fold. Touched: TasksView, CalendarView, FoodView (+ RecipesTab + RestaurantsTab), VaultCategoriesView, VaultEntriesView, VaultEntryView, PointsFeedView, PointsHistoryView, RewardsView.
+
+**Recipes & Restaurants polish** — default view flipped from grid (`localStorage.getItem(…) || 'grid'` → `|| 'compact'`) so families see scan-friendly rows with thumbnails + tags out of the box. Toolbar Add Recipe/Restaurant pills removed; `FloatingActionButton` gained a `mobileOnly` prop (default `true` to preserve Tasks behavior) and is now the always-visible add affordance for these tabs at every breakpoint.
+
+**Points page mobile-scroll fix** — `PointsFeedView` was using `h-full overflow-hidden` with internal scroll on the Activity feed (a desktop fixed-region pattern). On mobile this clipped Hero + Leaderboard + Activity off the bottom. Gated those rules behind `lg:` so mobile flows naturally as a single scroll column.
+
+**`LeaderboardPodium` extracted** — single shared component used by both `LeaderboardStrip` (Points page) and `LeaderboardWidget` (dashboard). Trophy crown sits centered on top of the 1st-place avatar via absolute positioning relative to the avatar wrapper. Eliminates 25-line inline duplication between the two surfaces.
+
+**`KinButton` specificity fix** — wrapped the base `.kin-btn` selector in `:where()` so its 0-specificity base styles let consumer-side `hidden md:flex` Tailwind classes win without needing `!important`. Several views in this PR (Vault, Rewards) rely on responsive-hide for desktop-only toolbar buttons; previously the scoped CSS data-attribute specificity was beating the utilities.
+
+**`App.vue`** — swapped the import to `MobileBottomNav`, added `fixed bottom-3 left-3 right-3 z-30` positioning + `pb-24 md:pb-0` on `<main>` so content clears the floating pill.
+
+**Z-index fix** — popover backdrop dropped from `z-30` (collided with the bottom-nav wrapper, intercepting popover taps) to `z-20`, so Schedule/Meals popover links now navigate.
+
+**`BottomNav.vue` deleted** — zero imports remain.
+
 ## 2026-04-27 — Demo landing page at `/demo`, fix dashboard-flash on boot
 
 New `DemoView.vue` at `/demo` — a full-page version of the existing demo modal that the marketing site can deep-link to instead of `/login`. Reuses the same five Johnson-family member picker and `authStore.demoLogin()` action as the modal, wrapped in a Kin design-system layout with intro copy ("Meet the Johnson family"), a "What's inside" highlights row (calendar/tasks, vault/recipes, points/badges), and footer links to sign in or create an account. Route is `requiresGuest`, so authenticated visitors bounce to Dashboard. `'Demo'` added to App.vue's chromeless-page list.

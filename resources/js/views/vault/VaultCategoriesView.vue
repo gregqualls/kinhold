@@ -1,11 +1,11 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header -->
-    <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
+    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold font-heading text-ink-primary">Vault</h1>
-          <p class="text-sm text-ink-tertiary mt-0.5">Secure family information</p>
+          <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Vault</h1>
+          <p class="hidden md:block text-sm text-ink-tertiary mt-0.5">Secure family information</p>
         </div>
         <div v-if="isParent" class="hidden md:flex items-center gap-2">
           <KinButton variant="secondary" size="md" @click="openCategoryModal()">
