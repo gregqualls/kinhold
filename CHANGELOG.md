@@ -2,6 +2,16 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-28 — Fix Google OAuth login loop on production (v1.4.4)
+
+Sign in with Google looped: account-picker → pick account → land back on the login form, repeat. Root cause was a route-binding regression introduced with the MCP/Passport OAuth feature (commit `2ef576b`): `routes/web.php` registered `Route::get('/login', ...)->name('login')` bound to `GoogleAuthController::oauthLogin()`. The comment above it claimed "Uses a separate path so /login stays as the SPA catch-all (no conflict)" but the path was, in fact, `/login`. Every fresh server-side hit to `/login` issued an HTTP 302 to Google OAuth (verified in production via `curl -sI https://app.kinhold.app/login`). Google's callback ran `Auth::login()` + `redirect()->intended('/')`, which sent the SPA to `/`, which redirected to `/login`, which 302'd to Google again — the loop. Users only saw the SPA login form when Vue Router handled `/login` client-side after the SPA was already mounted; cold loads always went to Google.
+
+Fix: moved the Passport-flow path from `/login` to `/auth/oauth-login` while preserving the `name('login')` so Laravel's `Authenticate` middleware (the only consumer of `route('login')`) keeps redirecting unauthenticated MCP/Passport requests to the right place. `/login` now falls through to the SPA catch-all as originally intended. The SPA's stateless OAuth flow (`/auth/google/redirect` → `/auth/google/callback` → `/login?code=...` → `POST /api/v1/auth/exchange`) is unchanged.
+
+Also hardened the SPA's OAuth-error path while debugging: `auth.js` now logs the `/auth/exchange` failure response to console.error and surfaces the server's message in `error.value` (was a bare `catch {}` with a generic message); `LoginView.vue` `onMounted` now reads `authStore.error` and displays it in the existing error slot (was previously set but never rendered). These were defensive fixes — without them the original loop showed no UI feedback.
+
+**Note for production:** the Google Cloud Console authorized redirect URIs do not need to change — `/auth/google/oauth-callback` is still valid for the (renamed) MCP path, and the SPA login flow still uses `/auth/google/callback`.
+
 ## 2026-04-28 — Fix: dashboard widgets empty on first demo login (v1.4.3)
 
 Fresh visitors who landed on `/demo`, picked a family member, and got navigated to `/dashboard` saw the chrome (sidebar, mobile nav, header) appear but the page body still showed the demo picker — no widgets, no `DashboardView`. A manual browser refresh consistently fixed it. The same wedge affected fresh `/login` and `/register` → `/dashboard` flows; less commonly noticed because users typically don't watch closely.

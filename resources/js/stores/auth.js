@@ -244,8 +244,12 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('auth_token', oauthToken)
         api.defaults.headers.common['Authorization'] = `Bearer ${oauthToken}`
         await fetchUser()
-      } catch {
-        error.value = 'Google sign-in failed. Please try again.'
+      } catch (e) {
+        const status = e?.response?.status
+        const body = e?.response?.data
+        console.error('[OAuth] /auth/exchange failed', { status, body, error: e })
+        const detail = body?.message || body?.error || (status ? `HTTP ${status}` : e?.message) || 'unknown'
+        error.value = `Google sign-in failed: ${detail}`
       }
       initialAuthChecked.value = true
       return

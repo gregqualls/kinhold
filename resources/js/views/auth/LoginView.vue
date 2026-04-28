@@ -186,6 +186,10 @@ onMounted(() => {
   if (route.query.verify_error === 'invalid') {
     errors.general = 'Email verification link is invalid or has expired. Please sign in and request a new verification email.'
   }
+  if (authStore.error) {
+    errors.general = authStore.error
+    authStore.error = null
+  }
 })
 
 const validateForm = () => {
