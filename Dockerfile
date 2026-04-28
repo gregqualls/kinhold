@@ -1,7 +1,7 @@
 # Multi-stage build for Kinhold
 
 # Stage 1: Node - Build Vue frontend assets
-FROM node:20-alpine as node
+FROM node:25-alpine as node
 
 WORKDIR /app
 
