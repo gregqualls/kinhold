@@ -152,7 +152,6 @@ const durationTransitionStyle = {
     description="Foundation primitives: spacing uses Tailwind defaults (no custom tokens). Radii, shadows, and motion are fully tokenized in tokens.css and mapped to Tailwind utilities. All motion respects prefers-reduced-motion automatically."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════
          SECTION 1 — SPACING BASELINE
          Visual 4px-grid demo, no custom tokens
@@ -583,7 +582,6 @@ const durationTransitionStyle = {
         </table>
       </div>
     </section>
-
   </ComponentPage>
 </template>
 

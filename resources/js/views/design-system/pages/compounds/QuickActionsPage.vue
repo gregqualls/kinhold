@@ -47,16 +47,20 @@ const TASKS_ACTIONS = [
     description="A grid of 4 (or 6) square icon + label tiles for the top of module landing pages — the fastest tap targets for the most common actions. Used on Dashboard, Tasks, Meal Plan, Points, and Vault landing views."
     status="chosen"
   >
-
     <section class="mb-16">
       <VariantFrame label="QuickActions" caption="Flat surface-raised squares · outline border · icon inkPrimary · hover lift">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: L.inkTertiary }">Light mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: L.inkTertiary }"
+            >
+              Light mode
+            </p>
 
             <div>
               <p class="text-[11px] font-medium mb-3" :style="{ color: L.inkTertiary }">4-up · Dashboard actions</p>
@@ -81,10 +85,16 @@ const TASKS_ACTIONS = [
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-8"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: D.inkTertiary }">Dark mode</p>
+          <div
+            class="dark rounded-2xl border p-6 space-y-8"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: D.inkTertiary }"
+            >
+              Dark mode
+            </p>
 
             <div>
               <p class="text-[11px] font-medium mb-3" :style="{ color: D.inkTertiary }">4-up · Dashboard actions</p>
@@ -107,7 +117,6 @@ const TASKS_ACTIONS = [
               Dark hover brightens to surface-overlay and uses shadow-elevated (shadows read poorly on warm-charcoal without a brightness boost — same treatment as FlatCard).
             </p>
           </div>
-
         </div>
       </VariantFrame>
     </section>
@@ -117,8 +126,10 @@ const TASKS_ACTIONS = [
          USAGE GUIDE
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-8">
-      <div class="rounded-2xl border p-6 space-y-4"
-           :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+      <div
+        class="rounded-2xl border p-6 space-y-4"
+        :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"
+      >
         <h2 class="text-[17px] font-semibold" :style="{ color: L.inkPrimary }">When to use QuickActions</h2>
         <ul class="space-y-3 text-[14px]" :style="{ color: L.inkSecondary }">
           <li>
@@ -144,6 +155,5 @@ const TASKS_ACTIONS = [
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>

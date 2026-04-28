@@ -24,7 +24,7 @@ defineProps({
     :class="`kin-timeline-row--${accentColor}`"
     style="min-height: 32px;"
   >
-    <component v-if="icon" :is="icon" class="w-3.5 h-3.5 flex-shrink-0 kin-timeline-row__icon" />
+    <component :is="icon" v-if="icon" class="w-3.5 h-3.5 flex-shrink-0 kin-timeline-row__icon" />
     <span class="kin-timeline-row__label text-[13px] font-medium leading-none truncate flex-1">
       <slot>{{ label }}</slot>
     </span>
@@ -42,8 +42,8 @@ defineProps({
       style="padding: 2px;"
       aria-label="Drag handle"
     >
-      <div class="flex gap-[3px]"><span class="w-[3px] h-[3px] rounded-full" /><span class="w-[3px] h-[3px] rounded-full" /></div>
-      <div class="flex gap-[3px]"><span class="w-[3px] h-[3px] rounded-full" /><span class="w-[3px] h-[3px] rounded-full" /></div>
+      <div class="flex gap-[3px]"><span class="w-[3px] h-[3px] rounded-full"></span><span class="w-[3px] h-[3px] rounded-full"></span></div>
+      <div class="flex gap-[3px]"><span class="w-[3px] h-[3px] rounded-full"></span><span class="w-[3px] h-[3px] rounded-full"></span></div>
     </div>
   </div>
 </template>

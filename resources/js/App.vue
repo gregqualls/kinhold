@@ -45,7 +45,7 @@
 
       <!-- Main Area -->
       <main
-        class="flex-1 overflow-y-auto min-h-0"
+        class="flex-1 overflow-y-auto min-h-0 pb-24 md:pb-0"
       >
         <RouterView v-slot="{ Component, route: viewRoute }">
           <Transition name="page-fade" mode="out-in">
@@ -55,7 +55,7 @@
       </main>
 
       <!-- Bottom Navigation (Mobile) -->
-      <BottomNav v-if="!isAuthPage" class="md:hidden" />
+      <MobileBottomNav v-if="!isAuthPage" class="md:hidden fixed bottom-3 left-3 right-3 z-30" />
     </div>
 
     <!-- Toast Notifications -->
@@ -101,7 +101,7 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import Sidebar from '@/components/layout/Sidebar.vue'
 import TopBar from '@/components/layout/TopBar.vue'
-import BottomNav from '@/components/layout/BottomNav.vue'
+import MobileBottomNav from '@/components/layout/MobileBottomNav.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
 import EasterEggs from '@/components/common/EasterEggs.vue'

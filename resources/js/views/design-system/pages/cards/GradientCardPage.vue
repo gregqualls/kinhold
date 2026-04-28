@@ -47,14 +47,12 @@ const ACCENTS = [
     description="The quiet counterpart to PhotoCard — for imageless content. Subtle iridescent wash (or low-intensity accent tint) + optional small category glyph top-right + content bottom-left. Sits next to FlatCard and PhotoCard as a peer, not a decorative feature. Used for vault entries, imageless tasks, empty-state placeholders, and hero metric cards."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          GRADIENTCARD — Radial gradient + glyph upper-left + content bottom-left
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame label="GradientCard" caption="Quiet ambient wash + small top-right category glyph + content bottom-left. Category is a hint, not a headline.">
         <div class="w-full space-y-10">
-
           <!-- ─── LIGHT PANEL ─────────────────────────────────────── -->
           <div class="rounded-2xl border p-6 space-y-8" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -115,7 +113,9 @@ const ACCENTS = [
                     <button
                       class="rounded-full px-4 py-1.5 text-[12px] font-semibold border"
                       :style="{ borderColor: L.borderStrong, color: L.inkPrimary, background: L.surfaceRaised }"
-                    >Add a task</button>
+                    >
+                      Add a task
+                    </button>
                   </div>
                 </KinGradientCard>
               </div>
@@ -137,12 +137,13 @@ const ACCENTS = [
                     class="font-heading leading-none tracking-tight"
                     style="font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.03em;"
                     :style="{ color: L.inkPrimary }"
-                  >18</p>
+                  >
+                    18
+                  </p>
                   <p class="text-[13px]" :style="{ color: L.inkSecondary }">+4 vs last week</p>
                 </KinGradientCard>
               </div>
             </div>
-
           </div><!-- /light panel -->
 
           <!-- ─── DARK PANEL ─────────────────────────────────────── -->
@@ -205,7 +206,9 @@ const ACCENTS = [
                     <button
                       class="rounded-full px-4 py-1.5 text-[12px] font-semibold border"
                       :style="{ borderColor: D.borderStrong, color: D.inkPrimary, background: 'transparent' }"
-                    >Add a task</button>
+                    >
+                      Add a task
+                    </button>
                   </div>
                 </KinGradientCard>
               </div>
@@ -227,14 +230,14 @@ const ACCENTS = [
                     class="font-heading leading-none tracking-tight"
                     style="font-size: clamp(4rem, 10vw, 11.25rem); letter-spacing: -0.03em;"
                     :style="{ color: D.inkPrimary }"
-                  >18</p>
+                  >
+                    18
+                  </p>
                   <p class="text-[13px]" :style="{ color: D.inkSecondary }">+4 vs last week</p>
                 </KinGradientCard>
               </div>
             </div>
-
           </div><!-- /dark panel -->
-
         </div>
       </VariantFrame>
     </section>
@@ -267,6 +270,5 @@ const ACCENTS = [
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>

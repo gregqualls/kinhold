@@ -53,31 +53,33 @@ const TWO_WEEKS = [
     <section class="mb-16">
       <VariantFrame label="KinWeekStrip" caption="Click any non-past pill to select; past days are disabled. Up to 4 dots per day, 5+ collapses to +N.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode · 7 days</p>
-            <KinWeekStrip :days="WEEK" :today-index="TODAY_INDEX" v-model:selected-index="kinSelectedL" />
+            <KinWeekStrip v-model:selected-index="kinSelectedL" :days="WEEK" :today-index="TODAY_INDEX" />
 
             <p class="text-xs font-semibold uppercase tracking-widest pt-2" :style="{ color: L.inkTertiary }">Light mode · 14 days (two-week context)</p>
             <div class="overflow-x-auto">
-              <KinWeekStrip :days="TWO_WEEKS" :today-index="TODAY_INDEX" v-model:selected-index="kinSelectedL2" />
+              <KinWeekStrip v-model:selected-index="kinSelectedL2" :days="TWO_WEEKS" :today-index="TODAY_INDEX" />
             </div>
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode · 7 days</p>
-            <KinWeekStrip :days="WEEK" :today-index="TODAY_INDEX" v-model:selected-index="kinSelectedD" />
+            <KinWeekStrip v-model:selected-index="kinSelectedD" :days="WEEK" :today-index="TODAY_INDEX" />
 
             <p class="text-xs font-semibold uppercase tracking-widest pt-2" :style="{ color: D.inkTertiary }">Dark mode · 14 days</p>
             <div class="overflow-x-auto">
-              <KinWeekStrip :days="TWO_WEEKS" :today-index="TODAY_INDEX" v-model:selected-index="kinSelectedD2" />
+              <KinWeekStrip v-model:selected-index="kinSelectedD2" :days="TWO_WEEKS" :today-index="TODAY_INDEX" />
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>

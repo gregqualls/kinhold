@@ -116,7 +116,6 @@ const BODY_SCALE = [
     description="Fluid type scale via CSS clamp() — no fixed-breakpoint jumps. Each token scales continuously from mobile (375px) to large monitor (2000px). Headings pair with Plus Jakarta Sans; body with Inter; data/code with JetBrains Mono."
     status="chosen"
   >
-
     <!-- ── Viewport toggle ──────────────────────────────────────────────────── -->
     <div class="flex items-center justify-between mb-8">
       <p class="text-sm text-ink-secondary">
@@ -136,7 +135,6 @@ const BODY_SCALE = [
 
       <!-- Light + dark panels side by side -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
         <!-- Light panel -->
         <div class="rounded-2xl border border-kin-gray-200 bg-kin-ivory overflow-hidden">
           <header class="px-4 py-2 text-xs font-medium uppercase tracking-wider text-kin-gray-500 bg-kin-cream border-b border-kin-gray-200">
@@ -224,7 +222,6 @@ const BODY_SCALE = [
 
       <!-- Light + dark panels -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
         <div class="rounded-2xl border border-kin-gray-200 bg-kin-ivory overflow-hidden">
           <header class="px-4 py-2 text-xs font-medium uppercase tracking-wider text-kin-gray-500 bg-kin-cream border-b border-kin-gray-200">
             Light
@@ -237,10 +234,10 @@ const BODY_SCALE = [
                     :class="[s.twClass, s.fontClass, 'text-ink-primary font-semibold leading-none mb-1 truncate']"
                   >
                     {{ s.token === '--text-display' ? 'Your Week Ahead' :
-                       s.token === '--text-h1'      ? 'Family Dashboard' :
-                       s.token === '--text-h2'      ? 'This Week\'s Tasks' :
-                       s.token === '--text-h3'      ? 'Medical Records' :
-                                                      'Vault Entry' }}
+                      s.token === '--text-h1' ? 'Family Dashboard' :
+                      s.token === '--text-h2' ? 'This Week\'s Tasks' :
+                      s.token === '--text-h3' ? 'Medical Records' :
+                      'Vault Entry' }}
                   </div>
                   <p class="text-caption text-ink-tertiary tracking-wide">{{ s.usage }}</p>
                 </div>
@@ -265,10 +262,10 @@ const BODY_SCALE = [
                     :class="[s.twClass, s.fontClass, 'text-ink-primary font-semibold leading-none mb-1 truncate']"
                   >
                     {{ s.token === '--text-display' ? 'Your Week Ahead' :
-                       s.token === '--text-h1'      ? 'Family Dashboard' :
-                       s.token === '--text-h2'      ? 'This Week\'s Tasks' :
-                       s.token === '--text-h3'      ? 'Medical Records' :
-                                                      'Vault Entry' }}
+                      s.token === '--text-h1' ? 'Family Dashboard' :
+                      s.token === '--text-h2' ? 'This Week\'s Tasks' :
+                      s.token === '--text-h3' ? 'Medical Records' :
+                      'Vault Entry' }}
                   </div>
                   <p class="text-caption text-ink-tertiary tracking-wide">{{ s.usage }}</p>
                 </div>
@@ -322,14 +319,12 @@ const BODY_SCALE = [
       </h2>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
         <div class="rounded-2xl border border-kin-gray-200 bg-kin-ivory overflow-hidden">
           <header class="px-4 py-2 text-xs font-medium uppercase tracking-wider text-kin-gray-500 bg-kin-cream border-b border-kin-gray-200">
             Light
           </header>
           <div class="p-6 md:p-8 overflow-x-auto">
             <div :style="containerStyle(viewport)" class="space-y-5">
-
               <!-- body -->
               <div>
                 <p class="text-body text-ink-primary leading-relaxed">
@@ -343,7 +338,7 @@ const BODY_SCALE = [
                 </div>
               </div>
 
-              <div class="h-px bg-border-subtle" />
+              <div class="h-px bg-border-subtle"></div>
 
               <!-- body-sm -->
               <div>
@@ -357,7 +352,7 @@ const BODY_SCALE = [
                 </div>
               </div>
 
-              <div class="h-px bg-border-subtle" />
+              <div class="h-px bg-border-subtle"></div>
 
               <!-- caption -->
               <div>
@@ -369,7 +364,6 @@ const BODY_SCALE = [
                   <span class="text-caption text-ink-tertiary">11–12px · lh 1.4 · +0.02em</span>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -380,7 +374,6 @@ const BODY_SCALE = [
           </header>
           <div class="p-6 md:p-8 overflow-x-auto">
             <div :style="containerStyle(viewport)" class="space-y-5">
-
               <div>
                 <p class="text-body text-ink-primary leading-relaxed">
                   The emergency binder lives in the hall closet, top shelf. It has insurance cards,
@@ -393,7 +386,7 @@ const BODY_SCALE = [
                 </div>
               </div>
 
-              <div class="h-px bg-border-subtle" />
+              <div class="h-px bg-border-subtle"></div>
 
               <div>
                 <p class="text-body-sm text-ink-secondary leading-relaxed">
@@ -406,7 +399,7 @@ const BODY_SCALE = [
                 </div>
               </div>
 
-              <div class="h-px bg-border-subtle" />
+              <div class="h-px bg-border-subtle"></div>
 
               <div>
                 <p class="text-caption text-ink-tertiary tracking-wide uppercase">
@@ -417,7 +410,6 @@ const BODY_SCALE = [
                   <span class="text-caption text-ink-tertiary">11–12px · lh 1.4 · +0.02em</span>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -435,7 +427,6 @@ const BODY_SCALE = [
       </h2>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
         <div class="rounded-2xl border border-kin-gray-200 bg-kin-ivory overflow-hidden">
           <header class="px-4 py-2 text-xs font-medium uppercase tracking-wider text-kin-gray-500 bg-kin-cream border-b border-kin-gray-200">
             Light
@@ -450,7 +441,7 @@ const BODY_SCALE = [
                 </p>
               </div>
 
-              <div class="h-px bg-border-subtle" />
+              <div class="h-px bg-border-subtle"></div>
 
               <!-- Code snippet block -->
               <div class="rounded-xl bg-surface-sunken border border-border-subtle px-4 py-3">
@@ -484,7 +475,7 @@ const BODY_SCALE = [
                 </p>
               </div>
 
-              <div class="h-px bg-border-subtle" />
+              <div class="h-px bg-border-subtle"></div>
 
               <div class="rounded-xl bg-surface-sunken border border-border-subtle px-4 py-3">
                 <p class="text-mono font-mono text-ink-primary">
@@ -517,7 +508,6 @@ const BODY_SCALE = [
       </h2>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
         <!-- Plus Jakarta Sans — heading -->
         <div class="rounded-2xl border border-border-subtle bg-surface-raised p-6 flex flex-col gap-3">
           <div class="text-h2 font-heading font-bold text-ink-primary leading-tight">
@@ -527,7 +517,7 @@ const BODY_SCALE = [
             <p class="text-h4 font-heading font-semibold text-ink-primary">Plus Jakarta Sans</p>
             <p class="text-body-sm text-ink-secondary mt-0.5">Headings · Display · Hero numbers</p>
           </div>
-          <div class="h-px bg-border-subtle" />
+          <div class="h-px bg-border-subtle"></div>
           <p class="text-body-sm text-ink-tertiary">
             Use with <code class="font-mono text-caption">font-heading</code>.
             Pair with <code class="font-mono text-caption">text-hero</code> through
@@ -545,7 +535,7 @@ const BODY_SCALE = [
             <p class="text-h4 font-sans font-semibold text-ink-primary">Inter</p>
             <p class="text-body-sm text-ink-secondary mt-0.5">Body · Labels · UI text</p>
           </div>
-          <div class="h-px bg-border-subtle" />
+          <div class="h-px bg-border-subtle"></div>
           <p class="text-body-sm text-ink-tertiary">
             Use with <code class="font-mono text-caption">font-sans</code> (default).
             Pair with <code class="font-mono text-caption">text-body</code>,
@@ -564,7 +554,7 @@ const BODY_SCALE = [
             <p class="text-h4 font-mono font-semibold text-ink-primary">JetBrains Mono</p>
             <p class="text-body-sm text-ink-secondary mt-0.5">Code · Data values · Amounts</p>
           </div>
-          <div class="h-px bg-border-subtle" />
+          <div class="h-px bg-border-subtle"></div>
           <p class="text-body-sm text-ink-tertiary">
             Use with <code class="font-mono text-caption">font-mono</code>.
             Pair with <code class="font-mono text-caption">text-mono</code> or any size for
@@ -572,7 +562,6 @@ const BODY_SCALE = [
             keeps columns aligned.
           </p>
         </div>
-
       </div>
     </section>
 
@@ -630,6 +619,5 @@ const BODY_SCALE = [
         Use the viewport toggle above to verify no awkward jump at any of the five test widths: 320 / 500 / 980 / 1440 / 2000px.
       </p>
     </section>
-
   </ComponentPage>
 </template>

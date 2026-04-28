@@ -1,13 +1,13 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header -->
-    <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
-      <h1 class="text-2xl font-bold font-heading text-ink-primary">Meals</h1>
-      <p class="text-sm text-ink-tertiary mt-0.5">Recipes, restaurants &amp; meal planning</p>
+    <div class="px-4 pt-3 md:px-6 md:pt-6">
+      <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Meals</h1>
+      <p class="hidden md:block text-sm text-ink-tertiary mt-0.5">Recipes, restaurants &amp; meal planning</p>
     </div>
 
     <!-- Tab bar -->
-    <div class="px-4 md:px-6 mt-2">
+    <div class="px-4 md:px-6 mt-1 md:mt-2">
       <KinTabPillGroup
         v-model:active-key="activeTab"
         :tabs="tabs"

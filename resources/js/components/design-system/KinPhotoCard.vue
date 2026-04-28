@@ -195,14 +195,14 @@ const overlaySubtitleStyle = computed(() => ({
         v-if="showPhoto"
         class="kin-photo-card__scrim absolute inset-0 pointer-events-none"
         aria-hidden="true"
-      />
+      ></div>
 
       <!-- Badges slot — top-right corner, e.g. status chips, countdown chips -->
       <div
         v-if="$slots.badges"
         class="absolute top-3 right-3 flex flex-col items-end gap-1.5 pointer-events-none"
       >
-        <slot name="badges" />
+        <slot name="badges"></slot>
       </div>
 
       <!-- Actions slot — bottom-right corner, e.g. bookmark, share -->
@@ -210,7 +210,7 @@ const overlaySubtitleStyle = computed(() => ({
         v-if="$slots.actions"
         class="absolute bottom-3 right-3 flex items-center gap-2"
       >
-        <slot name="actions" />
+        <slot name="actions"></slot>
       </div>
 
       <!-- Overlay content — bottom-left title/subtitle or fully custom.
@@ -229,18 +229,22 @@ const overlaySubtitleStyle = computed(() => ({
             class="font-semibold"
             :class="showPhoto ? 'text-white' : 'text-ink-primary'"
             :style="overlayTitleStyle + (showPhoto ? ' text-shadow: 0 1px 3px rgba(0,0,0,0.40);' : '')"
-          >{{ title }}</p>
+          >
+            {{ title }}
+          </p>
           <p
             v-if="subtitle"
             class="mt-0.5"
             :style="overlaySubtitleStyle + (showPhoto ? ' color: rgba(255,255,255,0.82);' : ' color: rgb(var(--ink-secondary));')"
-          >{{ subtitle }}</p>
+          >
+            {{ subtitle }}
+          </p>
         </slot>
       </div>
     </div>
 
     <!-- Default slot — optional below-photo content (rare; photo IS usually the card) -->
-    <slot />
+    <slot></slot>
   </component>
 </template>
 

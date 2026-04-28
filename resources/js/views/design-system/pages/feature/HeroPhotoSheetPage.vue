@@ -39,12 +39,10 @@ const HERO_PHOTO_URL = 'https://images.unsplash.com/photo-1546548970-71785318a17
     <section class="mb-16">
       <VariantFrame label="KinHeroPhotoSheet" caption="Photo + sliding sheet. Bind sheetTop reactively for real parallax. On mount the sheet rests; after scroll it rises to cover most of the photo.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL — side-by-side On mount + After scroll -->
           <div class="rounded-2xl border p-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest mb-6" :style="{ color: L.inkTertiary }">Light mode — On mount (sheet at 60%) · After scroll (sheet at 20%)</p>
             <div class="flex flex-col sm:flex-row justify-center gap-8 items-start">
-
               <!-- On mount -->
               <div>
                 <p class="text-[11px] font-semibold uppercase tracking-wider text-center mb-3" :style="{ color: L.inkTertiary }">On mount</p>
@@ -73,7 +71,7 @@ const HERO_PHOTO_URL = 'https://images.unsplash.com/photo-1546548970-71785318a17
               <!-- Scroll arrow -->
               <div class="hidden sm:flex items-center self-center" style="padding-top: 60px;">
                 <div class="flex flex-col items-center gap-1">
-                  <div class="w-px h-10" :style="{ background: L.borderStrong }" />
+                  <div class="w-px h-10" :style="{ background: L.borderStrong }"></div>
                   <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
                     <path d="M1 1L6 6L11 1" :stroke="L.inkTertiary" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
@@ -104,8 +102,12 @@ const HERO_PHOTO_URL = 'https://images.unsplash.com/photo-1546548970-71785318a17
                     </template>
                     <!-- Author strip -->
                     <div class="flex items-center gap-2 px-2.5 py-2 rounded-xl" :style="{ background: L.surfaceSunken }">
-                      <div class="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0"
-                           :style="{ background: L.accents.peach.soft, color: L.accents.peach.bold }">G</div>
+                      <div
+                        class="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0"
+                        :style="{ background: L.accents.peach.soft, color: L.accents.peach.bold }"
+                      >
+                        G
+                      </div>
                       <div>
                         <p class="text-[11px] font-semibold m-0" :style="{ color: L.inkPrimary }">Grandma Qualls</p>
                         <p class="text-[10px] m-0" :style="{ color: L.inkTertiary }">Family recipe · 4 generations</p>
@@ -118,7 +120,9 @@ const HERO_PHOTO_URL = 'https://images.unsplash.com/photo-1546548970-71785318a17
                       type="button"
                       class="w-full mt-3 py-3 rounded-full border-0 text-[13px] font-semibold cursor-pointer"
                       :style="{ background: L.accents.peach.bold, color: '#FAF8F5' }"
-                    >Start cooking</button>
+                    >
+                      Start cooking
+                    </button>
                   </KinHeroPhotoSheet>
                 </div>
               </div>
@@ -129,7 +133,6 @@ const HERO_PHOTO_URL = 'https://images.unsplash.com/photo-1546548970-71785318a17
           <div class="dark rounded-2xl border p-6" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest mb-6" :style="{ color: D.inkTertiary }">Dark mode — On mount · After scroll</p>
             <div class="flex flex-col sm:flex-row justify-center gap-8 items-start">
-
               <div>
                 <p class="text-[11px] font-semibold uppercase tracking-wider text-center mb-3" :style="{ color: D.inkTertiary }">On mount</p>
                 <div style="width: 280px; border-radius: 40px; overflow: hidden; aspect-ratio: 9/16; border: 2px solid #2C2A27; box-shadow: 0 8px 32px rgba(0,0,0,0.50);">
@@ -156,7 +159,7 @@ const HERO_PHOTO_URL = 'https://images.unsplash.com/photo-1546548970-71785318a17
 
               <div class="hidden sm:flex items-center self-center" style="padding-top: 60px;">
                 <div class="flex flex-col items-center gap-1">
-                  <div class="w-px h-10" :style="{ background: D.borderStrong }" />
+                  <div class="w-px h-10" :style="{ background: D.borderStrong }"></div>
                   <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
                     <path d="M1 1L6 6L11 1" :stroke="D.inkTertiary" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
@@ -185,8 +188,12 @@ const HERO_PHOTO_URL = 'https://images.unsplash.com/photo-1546548970-71785318a17
                       </div>
                     </template>
                     <div class="flex items-center gap-2 px-2.5 py-2 rounded-xl" :style="{ background: D.surfaceSunken }">
-                      <div class="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0"
-                           :style="{ background: D.accents.peach.soft, color: D.accents.peach.bold }">G</div>
+                      <div
+                        class="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0"
+                        :style="{ background: D.accents.peach.soft, color: D.accents.peach.bold }"
+                      >
+                        G
+                      </div>
                       <div>
                         <p class="text-[11px] font-semibold m-0" :style="{ color: D.inkPrimary }">Grandma Qualls</p>
                         <p class="text-[10px] m-0" :style="{ color: D.inkTertiary }">Family recipe · 4 generations</p>
@@ -199,13 +206,14 @@ const HERO_PHOTO_URL = 'https://images.unsplash.com/photo-1546548970-71785318a17
                       type="button"
                       class="w-full mt-3 py-3 rounded-full border-0 text-[13px] font-semibold cursor-pointer"
                       :style="{ background: D.accents.peach.bold, color: '#1C1C1E' }"
-                    >Start cooking</button>
+                    >
+                      Start cooking
+                    </button>
                   </KinHeroPhotoSheet>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">

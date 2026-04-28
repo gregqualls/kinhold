@@ -55,11 +55,9 @@ const activeDark  = ref('today')
     description="Floating glass pill with 4 nav slots + elevated center Ask-Assistant FAB. Pill uses backdrop-blur for a premium floating feel over content. FAB makes AI the primary call-to-action (brief tenet #8)."
     status="chosen"
   >
-
     <section class="mb-20">
       <VariantFrame label="Bottom nav" caption="Glass pill with 4 nav slots + elevated Ask-Assistant FAB. The blur lets content show through — most premium mobile feel.">
         <div class="w-full space-y-10">
-
           <!-- ══════════════ LIGHT PANEL ══════════════ -->
           <div class="rounded-2xl border p-6 space-y-8" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -143,10 +141,8 @@ const activeDark  = ref('today')
               </div>
             </div>
           </div><!-- /dark panel -->
-
         </div>
       </VariantFrame>
     </section>
-
   </ComponentPage>
 </template>

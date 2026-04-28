@@ -35,7 +35,7 @@ defineEmits(['back'])
       :aria-label="photoAlt"
     >
       <!-- Status bar scrim -->
-      <div class="kin-hero-photo-sheet__scrim absolute top-0 left-0 right-0" style="height: 80px;" />
+      <div class="kin-hero-photo-sheet__scrim absolute top-0 left-0 right-0" style="height: 80px;"></div>
 
       <!-- Back button (top-left) -->
       <div class="absolute" style="top: 24px; left: 16px;">
@@ -54,7 +54,7 @@ defineEmits(['back'])
 
       <!-- Actions (top-right) -->
       <div class="absolute flex gap-2" style="top: 24px; right: 16px;">
-        <slot name="actions" />
+        <slot name="actions"></slot>
       </div>
     </div>
 
@@ -65,20 +65,20 @@ defineEmits(['back'])
     >
       <!-- Grab handle -->
       <div class="flex justify-center pt-2 pb-1 flex-shrink-0">
-        <div class="w-8 h-1 rounded-full kin-hero-photo-sheet__handle" />
+        <div class="w-8 h-1 rounded-full kin-hero-photo-sheet__handle"></div>
       </div>
 
       <!-- Title -->
       <div class="px-4 pt-1 flex-shrink-0">
         <h2 v-if="title" class="kin-hero-photo-sheet__title font-heading">{{ title }}</h2>
         <div v-if="$slots.meta" class="kin-hero-photo-sheet__meta mt-2">
-          <slot name="meta" />
+          <slot name="meta"></slot>
         </div>
       </div>
 
       <!-- Body -->
       <div class="px-4 pt-3 pb-4 flex-1 overflow-y-auto">
-        <slot />
+        <slot></slot>
       </div>
     </div>
   </div>

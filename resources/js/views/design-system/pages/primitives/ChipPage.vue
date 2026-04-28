@@ -76,7 +76,6 @@ function resetRemovable() { removableVisible.value = true }
     description="Outlined + soft-tint chip for categories, tags, filters, and feature badges. Paired with a tiny inline status indicator (dot + label) for dense contexts where a full chip would be too much chrome."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          CHIP — Outlined + soft bg tint
          ═══════════════════════════════════════════════════════════════ -->
@@ -86,121 +85,127 @@ function resetRemovable() { removableVisible.value = true }
         caption="Outlined + soft tint — categories, tags, and filters"
       >
         <ModeSplit>
-        <div class="w-full space-y-10">
+          <div class="w-full space-y-10">
+            <!-- Category chips — all 5 colors × default + active -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Category accents — default</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip
+                  v-for="chip in categoryChips"
+                  :key="chip.color"
+                  variant="category"
+                  :color="chip.color"
+                >
+                  {{ chip.label }}
+                </KinChip>
+              </div>
+            </div>
 
-          <!-- Category chips — all 5 colors × default + active -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Category accents — default</p>
-            <div class="flex flex-wrap gap-2">
-              <KinChip
-                v-for="chip in categoryChips"
-                :key="chip.color"
-                variant="category"
-                :color="chip.color"
-              >{{ chip.label }}</KinChip>
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Category accents — active (filled)</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip
+                  v-for="chip in categoryChips"
+                  :key="chip.color"
+                  variant="category"
+                  :color="chip.color"
+                  :active="true"
+                >
+                  {{ chip.label }}
+                </KinChip>
+              </div>
+            </div>
+
+            <!-- Filter chips — inactive / active / removable -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Filter cluster — interactive</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip
+                  v-for="chip in categoryChips"
+                  :key="chip.color"
+                  variant="filter"
+                  :color="chip.color"
+                  :active="activeFilters.includes(chip.color)"
+                  @click="toggleFilter(chip.color)"
+                >
+                  <template #leading>
+                    <CheckIcon
+                      v-if="activeFilters.includes(chip.color)"
+                      class="w-3.5 h-3.5 flex-shrink-0"
+                    />
+                  </template>
+                  {{ chip.label }}
+                </KinChip>
+              </div>
+            </div>
+
+            <!-- Filter chip — removable -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Filter — removable</p>
+              <div class="flex flex-wrap gap-2 items-center">
+                <KinChip
+                  v-if="removableVisible"
+                  variant="filter"
+                  color="peach"
+                  :removable="true"
+                  @remove="removableVisible = false"
+                >
+                  Removable
+                </KinChip>
+                <button
+                  v-else
+                  class="text-xs text-ink-tertiary hover:text-ink-secondary underline"
+                  @click="resetRemovable"
+                >
+                  ↩ Reset
+                </button>
+
+                <KinChip variant="filter" color="mint" :removable="true">
+                  <template #leading>
+                    <CheckIcon class="w-3.5 h-3.5 flex-shrink-0" />
+                  </template>
+                  Completed
+                </KinChip>
+              </div>
+            </div>
+
+            <!-- Size scale -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Sizes — sm / md</p>
+              <div class="flex flex-wrap items-center gap-3">
+                <KinChip variant="category" color="lavender" size="sm">sm — 24px</KinChip>
+                <KinChip variant="category" color="lavender" size="md">md — 28px</KinChip>
+              </div>
+            </div>
+
+            <!-- Disabled state -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Disabled</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip variant="category" color="lavender" :disabled="true">Disabled</KinChip>
+                <KinChip variant="filter" color="peach" :disabled="true">Disabled</KinChip>
+              </div>
+            </div>
+
+            <!-- With leading icon -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">With leading icon</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip variant="category" color="mint">
+                  <template #leading><CheckIcon class="w-3.5 h-3.5 flex-shrink-0" /></template>
+                  Completed
+                </KinChip>
+                <KinChip variant="category" color="lavender">
+                  <template #leading><StarIcon class="w-3.5 h-3.5 flex-shrink-0" /></template>
+                  Family
+                </KinChip>
+                <KinChip variant="category" color="peach">
+                  <template #leading><BellIcon class="w-3.5 h-3.5 flex-shrink-0" /></template>
+                  School
+                </KinChip>
+              </div>
             </div>
           </div>
-
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Category accents — active (filled)</p>
-            <div class="flex flex-wrap gap-2">
-              <KinChip
-                v-for="chip in categoryChips"
-                :key="chip.color"
-                variant="category"
-                :color="chip.color"
-                :active="true"
-              >{{ chip.label }}</KinChip>
-            </div>
-          </div>
-
-          <!-- Filter chips — inactive / active / removable -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Filter cluster — interactive</p>
-            <div class="flex flex-wrap gap-2">
-              <KinChip
-                v-for="chip in categoryChips"
-                :key="chip.color"
-                variant="filter"
-                :color="chip.color"
-                :active="activeFilters.includes(chip.color)"
-                @click="toggleFilter(chip.color)"
-              >
-                <template #leading>
-                  <CheckIcon
-                    v-if="activeFilters.includes(chip.color)"
-                    class="w-3.5 h-3.5 flex-shrink-0"
-                  />
-                </template>
-                {{ chip.label }}
-              </KinChip>
-            </div>
-          </div>
-
-          <!-- Filter chip — removable -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Filter — removable</p>
-            <div class="flex flex-wrap gap-2 items-center">
-              <KinChip
-                v-if="removableVisible"
-                variant="filter"
-                color="peach"
-                :removable="true"
-                @remove="removableVisible = false"
-              >Removable</KinChip>
-              <button
-                v-else
-                class="text-xs text-ink-tertiary hover:text-ink-secondary underline"
-                @click="resetRemovable"
-              >↩ Reset</button>
-
-              <KinChip variant="filter" color="mint" :removable="true">
-                <template #leading>
-                  <CheckIcon class="w-3.5 h-3.5 flex-shrink-0" />
-                </template>
-                Completed
-              </KinChip>
-            </div>
-          </div>
-
-          <!-- Size scale -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Sizes — sm / md</p>
-            <div class="flex flex-wrap items-center gap-3">
-              <KinChip variant="category" color="lavender" size="sm">sm — 24px</KinChip>
-              <KinChip variant="category" color="lavender" size="md">md — 28px</KinChip>
-            </div>
-          </div>
-
-          <!-- Disabled state -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Disabled</p>
-            <div class="flex flex-wrap gap-2">
-              <KinChip variant="category" color="lavender" :disabled="true">Disabled</KinChip>
-              <KinChip variant="filter"   color="peach"    :disabled="true">Disabled</KinChip>
-            </div>
-          </div>
-
-          <!-- With leading icon -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">With leading icon</p>
-            <div class="flex flex-wrap gap-2">
-              <KinChip variant="category" color="mint">
-                <template #leading><CheckIcon class="w-3.5 h-3.5 flex-shrink-0" /></template>
-                Completed
-              </KinChip>
-              <KinChip variant="category" color="lavender">
-                <template #leading><StarIcon class="w-3.5 h-3.5 flex-shrink-0" /></template>
-                Family
-              </KinChip>
-              <KinChip variant="category" color="peach">
-                <template #leading><BellIcon class="w-3.5 h-3.5 flex-shrink-0" /></template>
-                School
-              </KinChip>
-            </div>
-          </div>
-
-        </div>
         </ModeSplit>
       </VariantFrame>
 
@@ -218,63 +223,65 @@ function resetRemovable() { removableVisible.value = true }
         caption="Inline status indicator — tiny dot + label for dense rows where a full chip is too much"
       >
         <ModeSplit>
-        <div class="w-full space-y-10">
-
-          <!-- All 6 status values -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Status — all 6 values</p>
-            <div class="flex flex-wrap gap-2">
-              <KinChip
-                v-for="s in statusChips"
-                :key="s.status"
-                variant="status"
-                :status="s.status"
-              >{{ s.label }}</KinChip>
-            </div>
-          </div>
-
-          <!-- Small size -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Status — sm size (dense rows)</p>
-            <div class="flex flex-wrap gap-2">
-              <KinChip
-                v-for="s in statusChips"
-                :key="s.status"
-                variant="status"
-                size="sm"
-                :status="s.status"
-              >{{ s.label }}</KinChip>
-            </div>
-          </div>
-
-          <!-- Dense task-row context -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Dense context — inline in task rows</p>
-            <div class="flex flex-col gap-2 max-w-sm">
-              <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-raised border border-border-subtle">
-                <span class="text-[13px] font-medium text-ink-primary">Do laundry</span>
-                <KinChip variant="status" size="sm" status="success">Done</KinChip>
-              </div>
-              <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-raised border border-border-subtle">
-                <span class="text-[13px] font-medium text-ink-primary">Call school</span>
-                <KinChip variant="status" size="sm" status="warning">Due soon</KinChip>
-              </div>
-              <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-raised border border-border-subtle">
-                <span class="text-[13px] font-medium text-ink-primary">Pay electric bill</span>
-                <KinChip variant="status" size="sm" status="pending">Pending</KinChip>
+          <div class="w-full space-y-10">
+            <!-- All 6 status values -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Status — all 6 values</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip
+                  v-for="s in statusChips"
+                  :key="s.status"
+                  variant="status"
+                  :status="s.status"
+                >
+                  {{ s.label }}
+                </KinChip>
               </div>
             </div>
-          </div>
 
-          <!-- Disabled -->
-          <div>
-            <p class="text-xs font-medium text-ink-tertiary mb-3">Disabled</p>
-            <div class="flex flex-wrap gap-2">
-              <KinChip variant="status" status="success" :disabled="true">Done</KinChip>
+            <!-- Small size -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Status — sm size (dense rows)</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip
+                  v-for="s in statusChips"
+                  :key="s.status"
+                  variant="status"
+                  size="sm"
+                  :status="s.status"
+                >
+                  {{ s.label }}
+                </KinChip>
+              </div>
+            </div>
+
+            <!-- Dense task-row context -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Dense context — inline in task rows</p>
+              <div class="flex flex-col gap-2 max-w-sm">
+                <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-raised border border-border-subtle">
+                  <span class="text-[13px] font-medium text-ink-primary">Do laundry</span>
+                  <KinChip variant="status" size="sm" status="success">Done</KinChip>
+                </div>
+                <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-raised border border-border-subtle">
+                  <span class="text-[13px] font-medium text-ink-primary">Call school</span>
+                  <KinChip variant="status" size="sm" status="warning">Due soon</KinChip>
+                </div>
+                <div class="flex items-center justify-between py-2 px-3 rounded-xl bg-surface-raised border border-border-subtle">
+                  <span class="text-[13px] font-medium text-ink-primary">Pay electric bill</span>
+                  <KinChip variant="status" size="sm" status="pending">Pending</KinChip>
+                </div>
+              </div>
+            </div>
+
+            <!-- Disabled -->
+            <div>
+              <p class="text-xs font-medium text-ink-tertiary mb-3">Disabled</p>
+              <div class="flex flex-wrap gap-2">
+                <KinChip variant="status" status="success" :disabled="true">Done</KinChip>
+              </div>
             </div>
           </div>
-
-        </div>
         </ModeSplit>
       </VariantFrame>
 
@@ -290,7 +297,6 @@ function resetRemovable() { removableVisible.value = true }
       <VariantFrame label="customColor" caption="Pass any CSS color string when the four accent families don't fit — user-defined tag colors, per-calendar source colors, brand colors. Active fills with the color; inactive shows a small dot + neutral surface.">
         <ModeSplit>
           <div class="w-full space-y-8">
-
             <!-- Inactive vs active -->
             <div>
               <p class="text-caption text-ink-tertiary mb-3">Inactive (dot + neutral) vs active (filled)</p>
@@ -335,7 +341,6 @@ function resetRemovable() { removableVisible.value = true }
                 <KinChip variant="filter" size="sm" custom-color="#e11d48" disabled>Sports Teams</KinChip>
               </div>
             </div>
-
           </div>
         </ModeSplit>
       </VariantFrame>
@@ -363,6 +368,5 @@ function resetRemovable() { removableVisible.value = true }
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>

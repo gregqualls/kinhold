@@ -88,17 +88,19 @@ const brandInitial = computed(() => (props.brand?.charAt(0) || 'K').toUpperCase(
         class="kin-top-nav__item rounded-full px-4 py-1.5 text-[13px] font-medium"
         :class="{ 'kin-top-nav__item--active': activeKey === item.key }"
         @click="$emit('item-click', item.key, $event)"
-      >{{ item.label }}</component>
+      >
+        {{ item.label }}
+      </component>
     </nav>
 
     <!-- ── Search (centered) ─────────────────────────────────────────── -->
     <div class="flex-1 flex justify-center px-4">
-      <slot name="search" />
+      <slot name="search"></slot>
     </div>
 
     <!-- ── Utility cluster (right) ───────────────────────────────────── -->
     <div class="flex items-center gap-1 shrink-0">
-      <slot name="utility" />
+      <slot name="utility"></slot>
     </div>
   </div>
 </template>

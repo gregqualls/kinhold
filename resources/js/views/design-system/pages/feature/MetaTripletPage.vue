@@ -53,7 +53,6 @@ const allSets = [
     <section class="mb-16">
       <VariantFrame label="KinMetaTriplet" caption="Pass any 3-item array of { icon, label, value, accent }. Renders the three pairs side-by-side with hairline dividers.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest mb-2" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -71,7 +70,6 @@ const allSets = [
               <KinMetaTriplet :items="set.data" />
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>

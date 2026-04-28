@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header -->
-    <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
+    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
       <div class="flex items-center gap-3">
         <button
           class="p-2 -ml-2 text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken rounded-xl transition-colors"
@@ -10,8 +10,8 @@
           <ChevronLeftIcon class="w-5 h-5" />
         </button>
         <div class="flex-1 min-w-0">
-          <h1 class="text-xl font-bold font-heading text-ink-primary truncate">{{ currentEntry?.title || 'Entry' }}</h1>
-          <p v-if="categoryName" class="text-xs text-ink-tertiary mt-0.5">{{ categoryName }}</p>
+          <h1 class="text-base md:text-xl font-bold font-heading text-ink-primary truncate">{{ currentEntry?.title || 'Entry' }}</h1>
+          <p v-if="categoryName" class="hidden md:block text-xs text-ink-tertiary mt-0.5">{{ categoryName }}</p>
         </div>
 
         <ContextMenu v-if="isParent && currentEntry" :items="entryMenuItems" />

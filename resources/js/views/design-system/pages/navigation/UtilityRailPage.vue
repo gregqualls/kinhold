@@ -134,7 +134,6 @@ const FILTERS = [
     description="Right-side rail for data-heavy desktop pages (Calendar, Tasks, Vault, Food). Contains: mini-month, quick filters, presence list, saved views, and secondary actions. Collapses to a slide-up bottom sheet on mobile. Single locked treatment."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          SECTION 1 — FULL RAIL DEMO
          280px-wide rail beside a sample "main content" area.
@@ -146,7 +145,6 @@ const FILTERS = [
         caption="Right-side rail for data-heavy pages — mini-month, filters, presence, saved views, actions"
       >
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -154,7 +152,6 @@ const FILTERS = [
 
             <!-- Layout container -->
             <div class="flex rounded-2xl border overflow-hidden" style="min-height: 520px" :style="{ borderColor: L.borderSubtle }">
-
               <!-- Main content area -->
               <div class="flex-1 p-6" :style="{ background: L.surfaceRaised }">
                 <p class="text-[11px] font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Calendar</p>
@@ -162,10 +159,12 @@ const FILTERS = [
                 <p class="text-[13px] mt-1" :style="{ color: L.inkSecondary }">14 events this month · 3 today</p>
                 <!-- Dummy content rows -->
                 <div class="mt-6 space-y-2">
-                  <div v-for="i in 5" :key="i" class="h-10 rounded-xl flex items-center px-3 gap-3"
-                    :style="{ background: L.surfaceSunken }">
-                    <div class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ background: L.lavenderBold, opacity: 0.6 + i * 0.05 }" />
-                    <div class="h-2.5 rounded-full flex-1" :style="{ background: L.borderSubtle, maxWidth: (50 + i * 8) + '%' }" />
+                  <div
+                    v-for="i in 5" :key="i" class="h-10 rounded-xl flex items-center px-3 gap-3"
+                    :style="{ background: L.surfaceSunken }"
+                  >
+                    <div class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ background: L.lavenderBold, opacity: 0.6 + i * 0.05 }"></div>
+                    <div class="h-2.5 rounded-full flex-1" :style="{ background: L.borderSubtle, maxWidth: (50 + i * 8) + '%' }"></div>
                   </div>
                 </div>
               </div>
@@ -185,14 +184,20 @@ const FILTERS = [
                   </div>
                   <!-- Day-of-week header -->
                   <div class="grid grid-cols-7 mb-1">
-                    <div v-for="d in DAYS_OF_WEEK" :key="d"
+                    <div
+                      v-for="d in DAYS_OF_WEEK" :key="d"
                       class="text-center text-[9px] font-semibold uppercase"
-                      :style="{ color: L.inkTertiary }">{{ d }}</div>
+                      :style="{ color: L.inkTertiary }"
+                    >
+                      {{ d }}
+                    </div>
                   </div>
                   <!-- Day cells -->
                   <div class="grid grid-cols-7 gap-y-0.5">
-                    <div v-for="(cell, idx) in MONTH_CELLS" :key="idx"
-                      class="flex flex-col items-center">
+                    <div
+                      v-for="(cell, idx) in MONTH_CELLS" :key="idx"
+                      class="flex flex-col items-center"
+                    >
                       <div
                         v-if="cell !== null"
                         class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] cursor-pointer ur-lt-day"
@@ -200,12 +205,16 @@ const FILTERS = [
                         :style="cell === TODAY_DAY
                           ? { background: L.lavenderBold, color: '#FFFFFF' }
                           : { color: L.inkPrimary }"
-                      >{{ cell }}</div>
-                      <div v-else class="w-7 h-7" />
-                      <div v-if="cell !== null && EVENT_DAYS.has(cell)"
+                      >
+                        {{ cell }}
+                      </div>
+                      <div v-else class="w-7 h-7"></div>
+                      <div
+                        v-if="cell !== null && EVENT_DAYS.has(cell)"
                         class="w-[3px] h-[3px] rounded-full -mt-0.5 mb-0.5"
-                        :style="{ background: cell === TODAY_DAY ? '#FFFFFF' : L.lavenderBold }" />
-                      <div v-else class="h-[3px] mb-0.5" />
+                        :style="{ background: cell === TODAY_DAY ? '#FFFFFF' : L.lavenderBold }"
+                      ></div>
+                      <div v-else class="h-[3px] mb-0.5"></div>
                     </div>
                   </div>
                 </template>
@@ -218,7 +227,9 @@ const FILTERS = [
                       :style="f.on
                         ? { border: `1px solid ${L.chipOnBorder}`, background: L.chipOnBg, color: L.chipOnText }
                         : { border: `1px solid ${L.chipOffBorder}`, background: 'transparent', color: L.chipOffText }"
-                    >{{ f.label }}</button>
+                    >
+                      {{ f.label }}
+                    </button>
                   </div>
                 </template>
 
@@ -226,12 +237,16 @@ const FILTERS = [
                   <div class="space-y-2">
                     <div v-for="m in FAMILY" :key="m.initials" class="flex items-center gap-2.5">
                       <div class="relative flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center"
-                          :style="{ background: m.bg }">
+                        <div
+                          class="w-8 h-8 rounded-full flex items-center justify-center"
+                          :style="{ background: m.bg }"
+                        >
                           <span class="text-[10px] font-bold" :style="{ color: m.text }">{{ m.initials }}</span>
                         </div>
-                        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2"
-                          :style="{ background: m.online ? L.dotOnline : L.dotOffline, borderColor: L.dotBorder }" />
+                        <span
+                          class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2"
+                          :style="{ background: m.online ? L.dotOnline : L.dotOffline, borderColor: L.dotBorder }"
+                        ></span>
                       </div>
                       <div class="flex-1 min-w-0">
                         <p class="text-[12px] font-medium truncate" :style="{ color: L.inkPrimary }">{{ m.name }}</p>
@@ -275,17 +290,18 @@ const FILTERS = [
 
             <!-- Layout container -->
             <div class="flex rounded-2xl border overflow-hidden" style="min-height: 520px" :style="{ borderColor: D.borderSubtle }">
-
               <!-- Main content area -->
               <div class="flex-1 p-6" :style="{ background: D.surfaceRaised }">
                 <p class="text-[11px] font-semibold uppercase tracking-widest mb-4" :style="{ color: D.inkTertiary }">Calendar</p>
                 <p class="text-[22px] font-semibold" :style="{ color: D.inkPrimary }">April 2026</p>
                 <p class="text-[13px] mt-1" :style="{ color: D.inkSecondary }">14 events this month · 3 today</p>
                 <div class="mt-6 space-y-2">
-                  <div v-for="i in 5" :key="i" class="h-10 rounded-xl flex items-center px-3 gap-3"
-                    :style="{ background: D.surfaceSunken }">
-                    <div class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ background: D.lavenderBold, opacity: 0.5 + i * 0.05 }" />
-                    <div class="h-2.5 rounded-full flex-1" :style="{ background: D.borderSubtle, maxWidth: (50 + i * 8) + '%' }" />
+                  <div
+                    v-for="i in 5" :key="i" class="h-10 rounded-xl flex items-center px-3 gap-3"
+                    :style="{ background: D.surfaceSunken }"
+                  >
+                    <div class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="{ background: D.lavenderBold, opacity: 0.5 + i * 0.05 }"></div>
+                    <div class="h-2.5 rounded-full flex-1" :style="{ background: D.borderSubtle, maxWidth: (50 + i * 8) + '%' }"></div>
                   </div>
                 </div>
               </div>
@@ -303,9 +319,13 @@ const FILTERS = [
                     </button>
                   </div>
                   <div class="grid grid-cols-7 mb-1">
-                    <div v-for="d in DAYS_OF_WEEK" :key="d"
+                    <div
+                      v-for="d in DAYS_OF_WEEK" :key="d"
                       class="text-center text-[9px] font-semibold uppercase"
-                      :style="{ color: D.inkTertiary }">{{ d }}</div>
+                      :style="{ color: D.inkTertiary }"
+                    >
+                      {{ d }}
+                    </div>
                   </div>
                   <div class="grid grid-cols-7 gap-y-0.5">
                     <div v-for="(cell, idx) in MONTH_CELLS" :key="idx" class="flex flex-col items-center">
@@ -316,12 +336,16 @@ const FILTERS = [
                         :style="cell === TODAY_DAY
                           ? { background: D.lavenderBold, color: '#141311' }
                           : { color: D.inkPrimary }"
-                      >{{ cell }}</div>
-                      <div v-else class="w-7 h-7" />
-                      <div v-if="cell !== null && EVENT_DAYS.has(cell)"
+                      >
+                        {{ cell }}
+                      </div>
+                      <div v-else class="w-7 h-7"></div>
+                      <div
+                        v-if="cell !== null && EVENT_DAYS.has(cell)"
                         class="w-[3px] h-[3px] rounded-full -mt-0.5 mb-0.5"
-                        :style="{ background: cell === TODAY_DAY ? '#141311' : D.lavenderBold }" />
-                      <div v-else class="h-[3px] mb-0.5" />
+                        :style="{ background: cell === TODAY_DAY ? '#141311' : D.lavenderBold }"
+                      ></div>
+                      <div v-else class="h-[3px] mb-0.5"></div>
                     </div>
                   </div>
                 </template>
@@ -334,7 +358,9 @@ const FILTERS = [
                       :style="f.on
                         ? { border: `1px solid ${D.chipOnBorder}`, background: D.chipOnBg, color: D.chipOnText }
                         : { border: `1px solid ${D.chipOffBorder}`, background: 'transparent', color: D.chipOffText }"
-                    >{{ f.label }}</button>
+                    >
+                      {{ f.label }}
+                    </button>
                   </div>
                 </template>
 
@@ -342,12 +368,16 @@ const FILTERS = [
                   <div class="space-y-2">
                     <div v-for="m in FAMILY" :key="m.initials" class="flex items-center gap-2.5">
                       <div class="relative flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center"
-                          :style="{ background: m.bgD }">
+                        <div
+                          class="w-8 h-8 rounded-full flex items-center justify-center"
+                          :style="{ background: m.bgD }"
+                        >
                           <span class="text-[10px] font-bold" :style="{ color: m.textD }">{{ m.initials }}</span>
                         </div>
-                        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2"
-                          :style="{ background: m.online ? D.dotOnline : D.dotOffline, borderColor: D.dotBorder }" />
+                        <span
+                          class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2"
+                          :style="{ background: m.online ? D.dotOnline : D.dotOffline, borderColor: D.dotBorder }"
+                        ></span>
                       </div>
                       <div class="flex-1 min-w-0">
                         <p class="text-[12px] font-medium truncate" :style="{ color: D.inkPrimary }">{{ m.name }}</p>
@@ -382,7 +412,6 @@ const FILTERS = [
               </KinUtilityRail>
             </div><!-- /dark layout -->
           </div><!-- /dark panel -->
-
         </div>
       </VariantFrame>
     </section>
@@ -398,7 +427,6 @@ const FILTERS = [
         caption="April 2026 — today highlighted, event dots on days 3 / 8 / 14 / 17 / 22 / 28"
       >
         <div class="w-full space-y-10">
-
           <!-- LIGHT -->
           <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -418,9 +446,13 @@ const FILTERS = [
 
               <!-- Day-of-week header -->
               <div class="grid grid-cols-7 mb-1">
-                <div v-for="d in DAYS_OF_WEEK" :key="d"
+                <div
+                  v-for="d in DAYS_OF_WEEK" :key="d"
                   class="text-center text-[10px] font-semibold uppercase"
-                  :style="{ color: L.inkTertiary }">{{ d }}</div>
+                  :style="{ color: L.inkTertiary }"
+                >
+                  {{ d }}
+                </div>
               </div>
 
               <!-- Day cells (larger — w-9 h-9) -->
@@ -433,13 +465,17 @@ const FILTERS = [
                     :style="cell === TODAY_DAY
                       ? { background: L.lavenderBold, color: '#FFFFFF' }
                       : { color: L.inkPrimary }"
-                  >{{ cell }}</div>
-                  <div v-else class="w-9 h-9" />
+                  >
+                    {{ cell }}
+                  </div>
+                  <div v-else class="w-9 h-9"></div>
                   <!-- Event dot -->
-                  <div v-if="cell !== null && EVENT_DAYS.has(cell)"
+                  <div
+                    v-if="cell !== null && EVENT_DAYS.has(cell)"
                     class="w-[4px] h-[4px] rounded-full -mt-1 mb-1"
-                    :style="{ background: cell === TODAY_DAY ? '#FFFFFF' : L.lavenderBold }" />
-                  <div v-else class="h-[4px] mb-1" />
+                    :style="{ background: cell === TODAY_DAY ? '#FFFFFF' : L.lavenderBold }"
+                  ></div>
+                  <div v-else class="h-[4px] mb-1"></div>
                 </div>
               </div>
             </div>
@@ -447,15 +483,23 @@ const FILTERS = [
             <!-- Legend -->
             <div class="flex items-center gap-6 pt-2">
               <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold"
-                  :style="{ background: L.lavenderBold, color: '#FFFFFF' }">18</div>
+                <div
+                  class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold"
+                  :style="{ background: L.lavenderBold, color: '#FFFFFF' }"
+                >
+                  18
+                </div>
                 <span class="text-[11px]" :style="{ color: L.inkSecondary }">Today</span>
               </div>
               <div class="flex items-center gap-2">
                 <div class="flex flex-col items-center">
-                  <div class="w-7 h-7 rounded-full flex items-center justify-center text-[11px]"
-                    :style="{ color: L.inkPrimary }">8</div>
-                  <div class="w-[4px] h-[4px] rounded-full -mt-1" :style="{ background: L.lavenderBold }" />
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-[11px]"
+                    :style="{ color: L.inkPrimary }"
+                  >
+                    8
+                  </div>
+                  <div class="w-[4px] h-[4px] rounded-full -mt-1" :style="{ background: L.lavenderBold }"></div>
                 </div>
                 <span class="text-[11px]" :style="{ color: L.inkSecondary }">Has events</span>
               </div>
@@ -478,9 +522,13 @@ const FILTERS = [
                 </button>
               </div>
               <div class="grid grid-cols-7 mb-1">
-                <div v-for="d in DAYS_OF_WEEK" :key="d"
+                <div
+                  v-for="d in DAYS_OF_WEEK" :key="d"
                   class="text-center text-[10px] font-semibold uppercase"
-                  :style="{ color: D.inkTertiary }">{{ d }}</div>
+                  :style="{ color: D.inkTertiary }"
+                >
+                  {{ d }}
+                </div>
               </div>
               <div class="grid grid-cols-7 gap-y-1">
                 <div v-for="(cell, idx) in MONTH_CELLS" :key="idx" class="flex flex-col items-center">
@@ -491,33 +539,44 @@ const FILTERS = [
                     :style="cell === TODAY_DAY
                       ? { background: D.lavenderBold, color: '#141311' }
                       : { color: D.inkPrimary }"
-                  >{{ cell }}</div>
-                  <div v-else class="w-9 h-9" />
-                  <div v-if="cell !== null && EVENT_DAYS.has(cell)"
+                  >
+                    {{ cell }}
+                  </div>
+                  <div v-else class="w-9 h-9"></div>
+                  <div
+                    v-if="cell !== null && EVENT_DAYS.has(cell)"
                     class="w-[4px] h-[4px] rounded-full -mt-1 mb-1"
-                    :style="{ background: cell === TODAY_DAY ? '#141311' : D.lavenderBold }" />
-                  <div v-else class="h-[4px] mb-1" />
+                    :style="{ background: cell === TODAY_DAY ? '#141311' : D.lavenderBold }"
+                  ></div>
+                  <div v-else class="h-[4px] mb-1"></div>
                 </div>
               </div>
             </div>
 
             <div class="flex items-center gap-6 pt-2">
               <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold"
-                  :style="{ background: D.lavenderBold, color: '#141311' }">18</div>
+                <div
+                  class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold"
+                  :style="{ background: D.lavenderBold, color: '#141311' }"
+                >
+                  18
+                </div>
                 <span class="text-[11px]" :style="{ color: D.inkSecondary }">Today</span>
               </div>
               <div class="flex items-center gap-2">
                 <div class="flex flex-col items-center">
-                  <div class="w-7 h-7 rounded-full flex items-center justify-center text-[11px]"
-                    :style="{ color: D.inkPrimary }">8</div>
-                  <div class="w-[4px] h-[4px] rounded-full -mt-1" :style="{ background: D.lavenderBold }" />
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-[11px]"
+                    :style="{ color: D.inkPrimary }"
+                  >
+                    8
+                  </div>
+                  <div class="w-[4px] h-[4px] rounded-full -mt-1" :style="{ background: D.lavenderBold }"></div>
                 </div>
                 <span class="text-[11px]" :style="{ color: D.inkSecondary }">Has events</span>
               </div>
             </div>
           </div><!-- /dark mini-month -->
-
         </div>
       </VariantFrame>
     </section>
@@ -533,7 +592,6 @@ const FILTERS = [
         caption="Outlined + soft-tint chips (Chip 1.3 treatment) — active = lavender fill + border, off = subtle border + muted text"
       >
         <div class="w-full space-y-10">
-
           <!-- LIGHT -->
           <div class="rounded-2xl border p-6 space-y-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -547,21 +605,27 @@ const FILTERS = [
                 :style="f.on
                   ? { border: `1px solid ${L.chipOnBorder}`, background: L.chipOnBg, color: L.chipOnText }
                   : { border: `1px solid ${L.chipOffBorder}`, background: 'transparent', color: L.chipOffText }"
-              >{{ f.label }}</button>
+              >
+                {{ f.label }}
+              </button>
             </div>
 
             <!-- Annotation -->
             <div class="flex gap-6 pt-2">
               <div class="flex items-center gap-2">
-                <button class="inline-flex items-center h-7 px-3 rounded-full text-[12px] font-medium"
-                  :style="{ border: `1px solid ${L.chipOnBorder}`, background: L.chipOnBg, color: L.chipOnText }">
+                <button
+                  class="inline-flex items-center h-7 px-3 rounded-full text-[12px] font-medium"
+                  :style="{ border: `1px solid ${L.chipOnBorder}`, background: L.chipOnBg, color: L.chipOnText }"
+                >
                   Mine
                 </button>
                 <span class="text-[11px]" :style="{ color: L.inkSecondary }">On — lavender outline + 50% tint bg</span>
               </div>
               <div class="flex items-center gap-2">
-                <button class="inline-flex items-center h-7 px-3 rounded-full text-[12px] font-medium"
-                  :style="{ border: `1px solid ${L.chipOffBorder}`, background: 'transparent', color: L.chipOffText }">
+                <button
+                  class="inline-flex items-center h-7 px-3 rounded-full text-[12px] font-medium"
+                  :style="{ border: `1px solid ${L.chipOffBorder}`, background: 'transparent', color: L.chipOffText }"
+                >
                   Family
                 </button>
                 <span class="text-[11px]" :style="{ color: L.inkSecondary }">Off — border-subtle + ink-tertiary</span>
@@ -581,27 +645,32 @@ const FILTERS = [
                 :style="f.on
                   ? { border: `1px solid ${D.chipOnBorder}`, background: D.chipOnBg, color: D.chipOnText }
                   : { border: `1px solid ${D.chipOffBorder}`, background: 'transparent', color: D.chipOffText }"
-              >{{ f.label }}</button>
+              >
+                {{ f.label }}
+              </button>
             </div>
 
             <div class="flex gap-6 pt-2">
               <div class="flex items-center gap-2">
-                <button class="inline-flex items-center h-7 px-3 rounded-full text-[12px] font-medium"
-                  :style="{ border: `1px solid ${D.chipOnBorder}`, background: D.chipOnBg, color: D.chipOnText }">
+                <button
+                  class="inline-flex items-center h-7 px-3 rounded-full text-[12px] font-medium"
+                  :style="{ border: `1px solid ${D.chipOnBorder}`, background: D.chipOnBg, color: D.chipOnText }"
+                >
                   Mine
                 </button>
                 <span class="text-[11px]" :style="{ color: D.inkSecondary }">On — dark lavender bg + border</span>
               </div>
               <div class="flex items-center gap-2">
-                <button class="inline-flex items-center h-7 px-3 rounded-full text-[12px] font-medium"
-                  :style="{ border: `1px solid ${D.chipOffBorder}`, background: 'transparent', color: D.chipOffText }">
+                <button
+                  class="inline-flex items-center h-7 px-3 rounded-full text-[12px] font-medium"
+                  :style="{ border: `1px solid ${D.chipOffBorder}`, background: 'transparent', color: D.chipOffText }"
+                >
                   Family
                 </button>
                 <span class="text-[11px]" :style="{ color: D.inkSecondary }">Off — border-subtle + ink-tertiary</span>
               </div>
             </div>
           </div><!-- /dark filters -->
-
         </div>
       </VariantFrame>
     </section>
@@ -617,7 +686,6 @@ const FILTERS = [
         caption="Who's around — 32px avatar + name + status text + online (green) / offline (muted) dot"
       >
         <div class="w-full space-y-10">
-
           <!-- LIGHT -->
           <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -626,12 +694,16 @@ const FILTERS = [
             <div class="max-w-xs space-y-3">
               <div v-for="m in FAMILY" :key="m.initials" class="flex items-center gap-3">
                 <div class="relative flex-shrink-0">
-                  <div class="w-9 h-9 rounded-full flex items-center justify-center"
-                    :style="{ background: m.bg }">
+                  <div
+                    class="w-9 h-9 rounded-full flex items-center justify-center"
+                    :style="{ background: m.bg }"
+                  >
                     <span class="text-[11px] font-bold" :style="{ color: m.text }">{{ m.initials }}</span>
                   </div>
-                  <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
-                    :style="{ background: m.online ? L.dotOnline : L.dotOffline, borderColor: L.dotBorder }" />
+                  <span
+                    class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
+                    :style="{ background: m.online ? L.dotOnline : L.dotOffline, borderColor: L.dotBorder }"
+                  ></span>
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-[13px] font-medium truncate" :style="{ color: L.inkPrimary }">{{ m.name }}</p>
@@ -639,8 +711,10 @@ const FILTERS = [
                 </div>
                 <!-- Status badge pill -->
                 <div class="flex-shrink-0 flex items-center gap-1">
-                  <div class="w-1.5 h-1.5 rounded-full"
-                    :style="{ background: m.online ? L.dotOnline : L.dotOffline }" />
+                  <div
+                    class="w-1.5 h-1.5 rounded-full"
+                    :style="{ background: m.online ? L.dotOnline : L.dotOffline }"
+                  ></div>
                   <span class="text-[10px]" :style="{ color: m.online ? L.dotOnline : L.inkTertiary }">
                     {{ m.online ? 'Now' : 'Away' }}
                   </span>
@@ -657,20 +731,26 @@ const FILTERS = [
             <div class="max-w-xs space-y-3">
               <div v-for="m in FAMILY" :key="m.initials" class="flex items-center gap-3">
                 <div class="relative flex-shrink-0">
-                  <div class="w-9 h-9 rounded-full flex items-center justify-center"
-                    :style="{ background: m.bgD }">
+                  <div
+                    class="w-9 h-9 rounded-full flex items-center justify-center"
+                    :style="{ background: m.bgD }"
+                  >
                     <span class="text-[11px] font-bold" :style="{ color: m.textD }">{{ m.initials }}</span>
                   </div>
-                  <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
-                    :style="{ background: m.online ? D.dotOnline : D.dotOffline, borderColor: D.dotBorder }" />
+                  <span
+                    class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
+                    :style="{ background: m.online ? D.dotOnline : D.dotOffline, borderColor: D.dotBorder }"
+                  ></span>
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-[13px] font-medium truncate" :style="{ color: D.inkPrimary }">{{ m.name }}</p>
                   <p class="text-[11px]" :style="{ color: m.online ? D.dotOnline : D.inkTertiary }">{{ m.status }}</p>
                 </div>
                 <div class="flex-shrink-0 flex items-center gap-1">
-                  <div class="w-1.5 h-1.5 rounded-full"
-                    :style="{ background: m.online ? D.dotOnline : D.dotOffline }" />
+                  <div
+                    class="w-1.5 h-1.5 rounded-full"
+                    :style="{ background: m.online ? D.dotOnline : D.dotOffline }"
+                  ></div>
                   <span class="text-[10px]" :style="{ color: m.online ? D.dotOnline : D.inkTertiary }">
                     {{ m.online ? 'Now' : 'Away' }}
                   </span>
@@ -678,7 +758,6 @@ const FILTERS = [
               </div>
             </div>
           </div><!-- /dark presence -->
-
         </div>
       </VariantFrame>
     </section>
@@ -694,7 +773,6 @@ const FILTERS = [
         caption="Saved filter combos — bookmark icon, view name, surface-sunken hover state"
       >
         <div class="w-full space-y-10">
-
           <!-- LIGHT -->
           <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -734,7 +812,6 @@ const FILTERS = [
               Hover bg: <code class="font-mono text-[10px] px-1 py-0.5 rounded" :style="{ background: D.borderSubtle, color: D.inkSecondary }">border-subtle #2C2A27</code> · 150ms spring
             </p>
           </div><!-- /dark saved -->
-
         </div>
       </VariantFrame>
     </section>
@@ -750,7 +827,6 @@ const FILTERS = [
         caption="Rail on screens &lt; 768px — slides up from bottom as a sheet with 28px top radius and drag handle"
       >
         <div class="w-full space-y-10">
-
           <!-- LIGHT -->
           <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode — mobile (375px)</p>
@@ -760,9 +836,10 @@ const FILTERS = [
             </p>
 
             <!-- Faux mobile viewport + sheet -->
-            <div class="max-w-[375px] mx-auto" style="height: 540px; position: relative; overflow: hidden; border-radius: 20px; border: 1px solid"
-              :style="{ borderColor: L.borderSubtle }">
-
+            <div
+              class="max-w-[375px] mx-auto" style="height: 540px; position: relative; overflow: hidden; border-radius: 20px; border: 1px solid"
+              :style="{ borderColor: L.borderSubtle }"
+            >
               <!-- Faux main content behind sheet -->
               <div class="absolute inset-0 p-4" :style="{ background: L.surfaceRaised }">
                 <p class="text-[13px] font-semibold" :style="{ color: L.inkPrimary }">Calendar</p>
@@ -777,12 +854,11 @@ const FILTERS = [
               >
                 <!-- Drag handle -->
                 <div class="flex justify-center pt-3 pb-1">
-                  <div class="w-10 h-1 rounded-full" :style="{ background: L.borderSubtle }" />
+                  <div class="w-10 h-1 rounded-full" :style="{ background: L.borderSubtle }"></div>
                 </div>
 
                 <!-- Sheet contents -->
                 <div class="px-5 pb-5 space-y-5" style="overflow-y: auto; max-height: 440px">
-
                   <!-- Mini-month — full width on mobile -->
                   <div>
                     <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: L.inkTertiary }">This month</p>
@@ -800,16 +876,22 @@ const FILTERS = [
                     </div>
                     <div class="grid grid-cols-7 gap-y-0.5">
                       <div v-for="(cell, idx) in MONTH_CELLS" :key="idx" class="flex flex-col items-center">
-                        <div v-if="cell !== null" class="w-8 h-8 rounded-full flex items-center justify-center text-[11px]"
+                        <div
+                          v-if="cell !== null" class="w-8 h-8 rounded-full flex items-center justify-center text-[11px]"
                           :class="{ 'font-semibold': cell === TODAY_DAY }"
                           :style="cell === TODAY_DAY
                             ? { background: L.lavenderBold, color: '#FFFFFF' }
-                            : { color: L.inkPrimary }">{{ cell }}</div>
-                        <div v-else class="w-8 h-8" />
-                        <div v-if="cell !== null && EVENT_DAYS.has(cell)"
+                            : { color: L.inkPrimary }"
+                        >
+                          {{ cell }}
+                        </div>
+                        <div v-else class="w-8 h-8"></div>
+                        <div
+                          v-if="cell !== null && EVENT_DAYS.has(cell)"
                           class="w-[3px] h-[3px] rounded-full -mt-0.5 mb-0.5"
-                          :style="{ background: cell === TODAY_DAY ? '#FFFFFF' : L.lavenderBold }" />
-                        <div v-else class="h-[3px] mb-0.5" />
+                          :style="{ background: cell === TODAY_DAY ? '#FFFFFF' : L.lavenderBold }"
+                        ></div>
+                        <div v-else class="h-[3px] mb-0.5"></div>
                       </div>
                     </div>
                   </div>
@@ -818,11 +900,13 @@ const FILTERS = [
                   <div class="border-t pt-4" :style="{ borderColor: L.borderSubtle }">
                     <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: L.inkTertiary }">Filters</p>
                     <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width: none">
-                      <button v-for="f in FILTERS" :key="f.label"
+                      <button
+                        v-for="f in FILTERS" :key="f.label"
                         class="inline-flex flex-shrink-0 items-center h-7 px-3 rounded-full text-[12px] font-medium"
                         :style="f.on
                           ? { border: `1px solid ${L.chipOnBorder}`, background: L.chipOnBg, color: L.chipOnText }
-                          : { border: `1px solid ${L.chipOffBorder}`, background: 'transparent', color: L.chipOffText }">
+                          : { border: `1px solid ${L.chipOffBorder}`, background: 'transparent', color: L.chipOffText }"
+                      >
                         {{ f.label }}
                       </button>
                     </div>
@@ -833,12 +917,16 @@ const FILTERS = [
                     <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: L.inkTertiary }">Who's around</p>
                     <div class="flex items-center gap-2">
                       <div v-for="m in FAMILY" :key="m.initials" class="relative flex-shrink-0">
-                        <div class="w-9 h-9 rounded-full flex items-center justify-center"
-                          :style="{ background: m.bg }">
+                        <div
+                          class="w-9 h-9 rounded-full flex items-center justify-center"
+                          :style="{ background: m.bg }"
+                        >
                           <span class="text-[10px] font-bold" :style="{ color: m.text }">{{ m.initials }}</span>
                         </div>
-                        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2"
-                          :style="{ background: m.online ? L.dotOnline : L.dotOffline, borderColor: L.dotBorder }" />
+                        <span
+                          class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2"
+                          :style="{ background: m.online ? L.dotOnline : L.dotOffline, borderColor: L.dotBorder }"
+                        ></span>
                       </div>
                     </div>
                   </div>
@@ -847,7 +935,8 @@ const FILTERS = [
                   <div class="border-t pt-4" :style="{ borderColor: L.borderSubtle }">
                     <p class="text-[10px] font-semibold uppercase tracking-widest mb-2" :style="{ color: L.inkTertiary }">Saved views</p>
                     <div class="space-y-1">
-                      <button v-for="v in SAVED_VIEWS" :key="v"
+                      <button
+                        v-for="v in SAVED_VIEWS" :key="v"
                         class="w-full flex items-center gap-2.5 px-2 py-2 rounded-xl text-left ur-lt-saved"
                       >
                         <BookmarkIcon class="w-4 h-4 flex-shrink-0" :style="{ color: L.inkTertiary }" />
@@ -868,7 +957,6 @@ const FILTERS = [
                       </button>
                     </div>
                   </div>
-
                 </div><!-- /sheet contents -->
               </div><!-- /sheet -->
             </div><!-- /faux mobile -->
@@ -882,9 +970,10 @@ const FILTERS = [
               Dark sheet surface is #1C1B19 (surface-raised) — clearly lighter than #141311 app bg. Drag handle uses border-subtle (#2C2A27).
             </p>
 
-            <div class="max-w-[375px] mx-auto" style="height: 540px; position: relative; overflow: hidden; border-radius: 20px; border: 1px solid"
-              :style="{ borderColor: D.borderSubtle }">
-
+            <div
+              class="max-w-[375px] mx-auto" style="height: 540px; position: relative; overflow: hidden; border-radius: 20px; border: 1px solid"
+              :style="{ borderColor: D.borderSubtle }"
+            >
               <!-- Faux main content -->
               <div class="absolute inset-0 p-4" :style="{ background: D.surfaceApp }">
                 <p class="text-[13px] font-semibold" :style="{ color: D.inkPrimary }">Calendar</p>
@@ -899,12 +988,11 @@ const FILTERS = [
               >
                 <!-- Drag handle -->
                 <div class="flex justify-center pt-3 pb-1">
-                  <div class="w-10 h-1 rounded-full" :style="{ background: D.borderSubtle }" />
+                  <div class="w-10 h-1 rounded-full" :style="{ background: D.borderSubtle }"></div>
                 </div>
 
                 <!-- Sheet contents -->
                 <div class="px-5 pb-5 space-y-5" style="overflow-y: auto; max-height: 440px">
-
                   <!-- Mini-month -->
                   <div>
                     <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: D.inkTertiary }">This month</p>
@@ -922,16 +1010,22 @@ const FILTERS = [
                     </div>
                     <div class="grid grid-cols-7 gap-y-0.5">
                       <div v-for="(cell, idx) in MONTH_CELLS" :key="idx" class="flex flex-col items-center">
-                        <div v-if="cell !== null" class="w-8 h-8 rounded-full flex items-center justify-center text-[11px]"
+                        <div
+                          v-if="cell !== null" class="w-8 h-8 rounded-full flex items-center justify-center text-[11px]"
                           :class="{ 'font-semibold': cell === TODAY_DAY }"
                           :style="cell === TODAY_DAY
                             ? { background: D.lavenderBold, color: '#141311' }
-                            : { color: D.inkPrimary }">{{ cell }}</div>
-                        <div v-else class="w-8 h-8" />
-                        <div v-if="cell !== null && EVENT_DAYS.has(cell)"
+                            : { color: D.inkPrimary }"
+                        >
+                          {{ cell }}
+                        </div>
+                        <div v-else class="w-8 h-8"></div>
+                        <div
+                          v-if="cell !== null && EVENT_DAYS.has(cell)"
                           class="w-[3px] h-[3px] rounded-full -mt-0.5 mb-0.5"
-                          :style="{ background: cell === TODAY_DAY ? '#141311' : D.lavenderBold }" />
-                        <div v-else class="h-[3px] mb-0.5" />
+                          :style="{ background: cell === TODAY_DAY ? '#141311' : D.lavenderBold }"
+                        ></div>
+                        <div v-else class="h-[3px] mb-0.5"></div>
                       </div>
                     </div>
                   </div>
@@ -940,11 +1034,13 @@ const FILTERS = [
                   <div class="border-t pt-4" :style="{ borderColor: D.borderSubtle }">
                     <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: D.inkTertiary }">Filters</p>
                     <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width: none">
-                      <button v-for="f in FILTERS" :key="f.label"
+                      <button
+                        v-for="f in FILTERS" :key="f.label"
                         class="inline-flex flex-shrink-0 items-center h-7 px-3 rounded-full text-[12px] font-medium"
                         :style="f.on
                           ? { border: `1px solid ${D.chipOnBorder}`, background: D.chipOnBg, color: D.chipOnText }
-                          : { border: `1px solid ${D.chipOffBorder}`, background: 'transparent', color: D.chipOffText }">
+                          : { border: `1px solid ${D.chipOffBorder}`, background: 'transparent', color: D.chipOffText }"
+                      >
                         {{ f.label }}
                       </button>
                     </div>
@@ -955,12 +1051,16 @@ const FILTERS = [
                     <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5" :style="{ color: D.inkTertiary }">Who's around</p>
                     <div class="flex items-center gap-2">
                       <div v-for="m in FAMILY" :key="m.initials" class="relative flex-shrink-0">
-                        <div class="w-9 h-9 rounded-full flex items-center justify-center"
-                          :style="{ background: m.bgD }">
+                        <div
+                          class="w-9 h-9 rounded-full flex items-center justify-center"
+                          :style="{ background: m.bgD }"
+                        >
                           <span class="text-[10px] font-bold" :style="{ color: m.textD }">{{ m.initials }}</span>
                         </div>
-                        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2"
-                          :style="{ background: m.online ? D.dotOnline : D.dotOffline, borderColor: D.dotBorder }" />
+                        <span
+                          class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2"
+                          :style="{ background: m.online ? D.dotOnline : D.dotOffline, borderColor: D.dotBorder }"
+                        ></span>
                       </div>
                     </div>
                   </div>
@@ -969,7 +1069,8 @@ const FILTERS = [
                   <div class="border-t pt-4" :style="{ borderColor: D.borderSubtle }">
                     <p class="text-[10px] font-semibold uppercase tracking-widest mb-2" :style="{ color: D.inkTertiary }">Saved views</p>
                     <div class="space-y-1">
-                      <button v-for="v in SAVED_VIEWS" :key="v"
+                      <button
+                        v-for="v in SAVED_VIEWS" :key="v"
                         class="w-full flex items-center gap-2.5 px-2 py-2 rounded-xl text-left ur-dk-saved"
                       >
                         <BookmarkIcon class="w-4 h-4 flex-shrink-0" :style="{ color: D.inkTertiary }" />
@@ -990,12 +1091,10 @@ const FILTERS = [
                       </button>
                     </div>
                   </div>
-
                 </div><!-- /dark sheet contents -->
               </div><!-- /dark sheet -->
             </div><!-- /dark faux mobile -->
           </div><!-- /dark mobile -->
-
         </div>
       </VariantFrame>
     </section>
@@ -1041,7 +1140,6 @@ const FILTERS = [
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>
 

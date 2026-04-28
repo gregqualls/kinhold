@@ -46,7 +46,7 @@ const displayTitle = computed(() => props.state === 'hidden' ? '???' : props.tit
         v-if="state === 'earned'"
         class="kin-achievement-tile__pulse hex-tile absolute"
         style="width: 108px; height: 108px;"
-      />
+      ></div>
       <!-- In-progress: arc around perimeter -->
       <svg
         v-if="state === 'in-progress'"
@@ -72,7 +72,7 @@ const displayTitle = computed(() => props.state === 'hidden' ? '???' : props.tit
         class="kin-achievement-tile__hex hex-tile flex items-center justify-center relative z-10"
         style="width: 80px; height: 80px;"
       >
-        <component v-if="icon" :is="icon" class="kin-achievement-tile__icon w-9 h-9" />
+        <component :is="icon" v-if="icon" class="kin-achievement-tile__icon w-9 h-9" />
       </div>
     </div>
     <div class="text-center space-y-0.5">

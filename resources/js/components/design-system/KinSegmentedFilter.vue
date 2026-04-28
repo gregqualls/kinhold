@@ -106,7 +106,7 @@ watch(() => [props.activeKey, props.options], () => nextTick(recalc), { deep: tr
       class="kin-seg__indicator absolute top-0.5 bottom-0.5 rounded-full pointer-events-none"
       :style="indicatorStyle"
       aria-hidden="true"
-    />
+    ></span>
 
     <button
       v-for="(opt, i) in options"

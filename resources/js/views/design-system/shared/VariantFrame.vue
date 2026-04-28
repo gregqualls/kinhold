@@ -19,7 +19,7 @@ defineProps({
       <span v-if="chosen" class="text-xs font-medium text-emerald-600 dark:text-emerald-300">Chosen</span>
     </header>
     <div class="p-6 md:p-8 min-h-[200px] flex items-center justify-center">
-      <slot />
+      <slot></slot>
     </div>
   </article>
 </template>

@@ -63,7 +63,9 @@ function dayLabels(c) {
         v-for="h in dayHeaders"
         :key="h"
         class="text-center text-[10px] font-semibold uppercase tracking-wider py-1 text-ink-tertiary"
-      >{{ h }}</div>
+      >
+        {{ h }}
+      </div>
     </div>
 
     <!-- Calendar cells -->
@@ -85,7 +87,9 @@ function dayLabels(c) {
         <div
           class="kin-month-grid__num w-7 h-7 flex items-center justify-center rounded-full text-[13px] font-semibold leading-none flex-shrink-0"
           :class="isToday(cell) && 'kin-month-grid__num--today'"
-        >{{ cell.day }}</div>
+        >
+          {{ cell.day }}
+        </div>
 
         <!-- Dots density -->
         <div
@@ -98,7 +102,7 @@ function dayLabels(c) {
             class="rounded-full flex-shrink-0"
             style="width: 5px; height: 5px;"
             :class="`kin-month-grid__dot--${color}`"
-          />
+          ></span>
           <span
             v-if="dayEvents(cell).length > maxDots"
             class="text-[8px] font-semibold leading-none text-ink-tertiary"
@@ -113,11 +117,15 @@ function dayLabels(c) {
               :key="pi"
               class="rounded-[3px] px-1 mb-[2px] text-[9px] md:text-[10px] font-semibold truncate leading-[14px]"
               :class="`kin-month-grid__pill--${color}`"
-            >{{ dayLabels(cell)[pi] ?? color }}</div>
+            >
+              {{ dayLabels(cell)[pi] ?? color }}
+            </div>
             <div
               v-if="dayEvents(cell).length > maxPills"
               class="text-[9px] md:text-[10px] font-medium leading-[14px] px-1 text-ink-tertiary"
-            >+{{ dayEvents(cell).length - maxPills }} more</div>
+            >
+              +{{ dayEvents(cell).length - maxPills }} more
+            </div>
           </div>
         </template>
       </button>

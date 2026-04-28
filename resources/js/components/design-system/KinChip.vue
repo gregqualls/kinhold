@@ -244,7 +244,7 @@ const interactionClasses = computed(() => {
     v-bind="rootTag === 'button' ? { type: 'button', disabled: disabled || undefined } : {}"
   >
     <!-- Leading slot (icon before label) -->
-    <slot name="leading" />
+    <slot name="leading"></slot>
 
     <!-- Custom-color dot (inactive state) when no leading slot is provided -->
     <span
@@ -252,17 +252,17 @@ const interactionClasses = computed(() => {
       :class="['rounded-full flex-shrink-0', dotSizeClass]"
       :style="{ backgroundColor: customColor }"
       aria-hidden="true"
-    />
+    ></span>
 
     <!-- Status dot — only rendered for status variant -->
     <span
       v-if="variant === 'status'"
       :class="['rounded-full flex-shrink-0', dotSizeClass, statusDotClass]"
       aria-hidden="true"
-    />
+    ></span>
 
     <!-- Default slot (label text) -->
-    <slot />
+    <slot></slot>
 
     <!-- Remove button — only rendered when removable=true -->
     <button

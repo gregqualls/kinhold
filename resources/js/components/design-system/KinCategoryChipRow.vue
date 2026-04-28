@@ -98,7 +98,9 @@ function isActive(key) {
       v-if="mode === 'hybrid' && mobileHiddenCount > 0"
       type="button"
       class="kin-cat-chip kin-cat-chip--overflow flex-shrink-0 inline-flex items-center gap-1 rounded-full h-7 px-3 text-[12px] font-semibold md:hidden"
-    >+{{ mobileHiddenCount }} more</button>
+    >
+      +{{ mobileHiddenCount }} more
+    </button>
 
     <!-- Clear chip -->
     <button

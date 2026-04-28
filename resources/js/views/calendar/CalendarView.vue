@@ -1,10 +1,10 @@
 <template>
   <div class="flex h-full">
     <!-- Main column -->
-    <div class="flex-1 min-w-0 p-4 md:p-6 overflow-y-auto">
+    <div class="flex-1 min-w-0 p-3 md:p-6 overflow-y-auto">
       <!-- Header -->
-      <div class="flex items-center justify-between mb-4 gap-3 flex-wrap">
-        <h1 class="text-2xl font-bold font-heading text-ink-primary">Calendar</h1>
+      <div class="flex items-center justify-between mb-2 md:mb-4 gap-3 flex-wrap">
+        <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Calendar</h1>
 
         <div class="flex items-center gap-2 flex-wrap">
           <!-- View Mode Selector -->
@@ -127,7 +127,9 @@
             v-for="d in MINI_DOW"
             :key="d"
             class="text-center text-[9px] font-semibold uppercase text-ink-tertiary"
-          >{{ d }}</div>
+          >
+            {{ d }}
+          </div>
         </div>
         <!-- Cells -->
         <div class="grid grid-cols-7 gap-y-0.5">
@@ -149,8 +151,8 @@
               v-if="cell.month === 'current' && filteredMonthEventsMap[cell.day]?.length"
               class="w-[3px] h-[3px] rounded-full mt-0.5"
               :class="cell.day === todayInCurrentMonth ? 'bg-ink-inverse' : 'bg-accent-lavender-bold'"
-            />
-            <span v-else class="h-[3px] mt-0.5" />
+            ></span>
+            <span v-else class="h-[3px] mt-0.5"></span>
           </button>
         </div>
       </template>

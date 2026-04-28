@@ -22,6 +22,6 @@ defineProps({
         }"
       >{{ status === 'empty' ? 'Awaiting variants' : status === 'scaffolded' ? 'In review' : 'Chosen' }}</span>
     </header>
-    <slot />
+    <slot></slot>
   </div>
 </template>

@@ -54,7 +54,7 @@ const slotProps = computed(() => ({
     </label>
 
     <!-- Field slot (pass id + aria attrs down) -->
-    <slot v-bind="slotProps" />
+    <slot v-bind="slotProps"></slot>
 
     <!-- Helper / error text -->
     <p

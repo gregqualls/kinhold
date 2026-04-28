@@ -1,10 +1,10 @@
 <template>
-  <div class="flex h-full">
+  <div class="flex lg:h-full">
     <!-- Main column -->
-    <div class="flex-1 min-w-0 flex flex-col p-4 md:p-6 gap-4 overflow-hidden">
+    <div class="flex-1 min-w-0 flex flex-col p-3 md:p-6 gap-3 md:gap-4 lg:overflow-hidden">
       <!-- Header -->
       <div class="flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
-        <h1 class="text-2xl font-bold font-heading text-ink-primary">Points</h1>
+        <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Points</h1>
         <!-- Mobile-only quick links (rail handles this on desktop) -->
         <div class="flex gap-2 lg:hidden">
           <KinButton variant="secondary" size="sm" to="/points/rewards">Rewards</KinButton>
@@ -39,13 +39,13 @@
         <LeaderboardStrip :leaderboard="pointsStore.leaderboard" />
       </KinFlatCard>
 
-      <!-- Activity Feed — fills remaining vertical space -->
-      <KinFlatCard padding="none" class="flex-1 overflow-hidden flex flex-col min-h-0">
+      <!-- Activity Feed — fills remaining vertical space on desktop, flows on mobile -->
+      <KinFlatCard padding="none" class="lg:flex-1 lg:overflow-hidden flex flex-col lg:min-h-0">
         <div class="px-4 pt-3 pb-2 border-b border-border-subtle flex-shrink-0">
           <p class="text-sm font-semibold text-ink-primary">Activity</p>
         </div>
 
-        <div class="flex-1 overflow-y-auto divide-y divide-border-subtle">
+        <div class="lg:flex-1 lg:overflow-y-auto divide-y divide-border-subtle">
           <FeedItem
             v-for="item in pointsStore.feed"
             :key="item.id"

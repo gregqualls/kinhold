@@ -101,12 +101,12 @@ onBeforeUnmount(() => {
                   v-if="entry.chosen"
                   class="w-1.5 h-1.5 rounded-full bg-emerald-500"
                   aria-label="Chosen"
-                />
+                ></span>
                 <span
                   v-else-if="entry.scaffolded"
                   class="w-1.5 h-1.5 rounded-full bg-blue-500"
                   aria-label="Scaffolded"
-                />
+                ></span>
               </RouterLink>
             </li>
           </ul>

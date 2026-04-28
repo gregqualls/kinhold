@@ -3,11 +3,11 @@
     <!-- Main column -->
     <div class="flex-1 min-w-0 flex flex-col">
       <!-- Header -->
-      <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6">
+      <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold font-heading text-ink-primary">Tasks</h1>
-            <p class="text-sm text-ink-tertiary mt-0.5">
+            <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Tasks</h1>
+            <p class="hidden md:block text-sm text-ink-tertiary mt-0.5">
               {{ filteredIncompleteTasks.length }} remaining
             </p>
           </div>
@@ -62,54 +62,25 @@
         <div class="border-t border-border-subtle"></div>
       </div>
 
-    <!-- Loading -->
-    <div v-if="isLoading" class="flex items-center justify-center py-16">
-      <LoadingSpinner size="lg" />
-    </div>
+      <!-- Loading -->
+      <div v-if="isLoading" class="flex items-center justify-center py-16">
+        <LoadingSpinner size="lg" />
+      </div>
 
-    <!-- Tasks -->
-    <div v-else ref="scrollContainerRef" class="flex-1 overflow-y-auto pb-32 md:pb-6">
-      <!-- Quick add -->
-      <TaskQuickAdd ref="quickAddRef" :tags="tags" @add="handleQuickAdd" />
+      <!-- Tasks -->
+      <div v-else ref="scrollContainerRef" class="flex-1 overflow-y-auto pb-32 md:pb-6">
+        <!-- Quick add -->
+        <TaskQuickAdd ref="quickAddRef" :tags="tags" @add="handleQuickAdd" />
 
-      <!-- Incomplete tasks -->
-      <KinFlatCard
-        v-if="filteredIncompleteTasks.length > 0"
-        padding="none"
-        class="mx-4 md:mx-6 mt-3 overflow-hidden"
-      >
-        <TransitionGroup name="task-list" tag="div">
-          <TaskItem
-            v-for="task in filteredIncompleteTasks"
-            :key="task.id"
-            :task="task"
-            @click="openDetail(task)"
-            @toggle="handleToggle(task)"
-            @edit="openDetail(task)"
-            @delete="confirmDelete(task)"
-            @update-inline="handleInlineUpdate"
-          />
-        </TransitionGroup>
-      </KinFlatCard>
-
-      <!-- Completed section -->
-      <div v-if="filteredCompletedTasks.length > 0" class="mt-5 px-4 md:px-6">
-        <button
-          type="button"
-          class="flex items-center gap-2 text-xs font-medium text-ink-tertiary hover:text-ink-primary transition-colors mb-2"
-          @click="showCompleted = !showCompleted"
+        <!-- Incomplete tasks -->
+        <KinFlatCard
+          v-if="filteredIncompleteTasks.length > 0"
+          padding="none"
+          class="mx-4 md:mx-6 mt-3 overflow-hidden"
         >
-          <ChevronRightIcon
-            class="w-3 h-3 transition-transform"
-            :class="showCompleted && 'rotate-90'"
-          />
-          Completed ({{ filteredCompletedTasks.length }})
-        </button>
-
-        <KinFlatCard v-if="showCompleted" padding="none" class="overflow-hidden">
           <TransitionGroup name="task-list" tag="div">
             <TaskItem
-              v-for="task in filteredCompletedTasks"
+              v-for="task in filteredIncompleteTasks"
               :key="task.id"
               :task="task"
               @click="openDetail(task)"
@@ -120,26 +91,55 @@
             />
           </TransitionGroup>
         </KinFlatCard>
-      </div>
 
-      <!-- Empty state -->
-      <KinEmptyState
-        v-if="tasks.length === 0 && !isLoading"
-        :icon="CheckCircleIcon"
-        title="No tasks yet"
-        description="Add your first task to get started."
-        accent-color="mint"
-        size="md"
-      />
+        <!-- Completed section -->
+        <div v-if="filteredCompletedTasks.length > 0" class="mt-5 px-4 md:px-6">
+          <button
+            type="button"
+            class="flex items-center gap-2 text-xs font-medium text-ink-tertiary hover:text-ink-primary transition-colors mb-2"
+            @click="showCompleted = !showCompleted"
+          >
+            <ChevronRightIcon
+              class="w-3 h-3 transition-transform"
+              :class="showCompleted && 'rotate-90'"
+            />
+            Completed ({{ filteredCompletedTasks.length }})
+          </button>
 
-      <!-- No matches for filter -->
-      <div
-        v-if="tasks.length > 0 && filteredIncompleteTasks.length === 0 && filteredCompletedTasks.length === 0 && selectedTagIds.length > 0"
-        class="text-center py-12 text-ink-tertiary text-sm"
-      >
-        No tasks match the selected tags.
+          <KinFlatCard v-if="showCompleted" padding="none" class="overflow-hidden">
+            <TransitionGroup name="task-list" tag="div">
+              <TaskItem
+                v-for="task in filteredCompletedTasks"
+                :key="task.id"
+                :task="task"
+                @click="openDetail(task)"
+                @toggle="handleToggle(task)"
+                @edit="openDetail(task)"
+                @delete="confirmDelete(task)"
+                @update-inline="handleInlineUpdate"
+              />
+            </TransitionGroup>
+          </KinFlatCard>
+        </div>
+
+        <!-- Empty state -->
+        <KinEmptyState
+          v-if="tasks.length === 0 && !isLoading"
+          :icon="CheckCircleIcon"
+          title="No tasks yet"
+          description="Add your first task to get started."
+          accent-color="mint"
+          size="md"
+        />
+
+        <!-- No matches for filter -->
+        <div
+          v-if="tasks.length > 0 && filteredIncompleteTasks.length === 0 && filteredCompletedTasks.length === 0 && selectedTagIds.length > 0"
+          class="text-center py-12 text-ink-tertiary text-sm"
+        >
+          No tasks match the selected tags.
+        </div>
       </div>
-    </div>
     </div><!-- /main column -->
 
     <!-- Right utility rail (desktop only) -->

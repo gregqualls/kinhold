@@ -44,20 +44,17 @@ const D = {
     description="The workhorse card — white/raised surface, subtle border, soft shadow. Quiet by default. Used for form groups, list rows on desktop, settings panels, and any content chunk that needs a clear neutral bounding box. Single canonical treatment, three padding sizes."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          SECTION 1 — PADDING SCALE
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame label="Padding" caption="Three canonical padding sizes — sm for dense, md default, lg for hero moments">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div class="space-y-4">
-
               <!-- sm · 16px — dense list row context -->
               <div class="flex items-stretch gap-4">
                 <div class="flex-shrink-0 w-14 flex flex-col items-start justify-center gap-0.5">
@@ -114,7 +111,6 @@ const D = {
                   </div>
                 </KinFlatCard>
               </div>
-
             </div>
           </div><!-- /light padding -->
 
@@ -123,7 +119,6 @@ const D = {
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div class="space-y-4">
-
               <!-- sm · 16px — dense list row -->
               <div class="flex items-stretch gap-4">
                 <div class="flex-shrink-0 w-14 flex flex-col items-start justify-center gap-0.5">
@@ -180,10 +175,8 @@ const D = {
                   </div>
                 </KinFlatCard>
               </div>
-
             </div>
           </div><!-- /dark padding -->
-
         </div>
       </VariantFrame>
     </section>
@@ -195,13 +188,11 @@ const D = {
     <section class="mb-20">
       <VariantFrame label="States" caption="Default resting shadow, hover lifts to shadow-hover with 1px translate">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest mb-6" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div class="grid grid-cols-3 gap-4">
-
               <!-- 1. Default -->
               <div class="flex flex-col gap-3">
                 <KinFlatCard padding="md">
@@ -228,7 +219,6 @@ const D = {
                 </KinFlatCard>
                 <p class="text-[11px] text-center font-medium" :style="{ color: L.inkTertiary }">hover me</p>
               </div>
-
             </div>
           </div><!-- /light states -->
 
@@ -237,7 +227,6 @@ const D = {
             <p class="text-xs font-semibold uppercase tracking-widest mb-6" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div class="grid grid-cols-3 gap-4">
-
               <!-- 1. Default -->
               <div class="flex flex-col gap-3">
                 <KinFlatCard padding="md">
@@ -264,10 +253,8 @@ const D = {
                 </KinFlatCard>
                 <p class="text-[11px] text-center font-medium" :style="{ color: D.inkTertiary }">hover me</p>
               </div>
-
             </div>
           </div><!-- /dark states -->
-
         </div>
       </VariantFrame>
     </section>
@@ -279,7 +266,6 @@ const D = {
     <section class="mb-20">
       <VariantFrame label="Composition" caption="Realistic uses — form groups, list rows, settings sections">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -300,13 +286,13 @@ const D = {
                     <label class="relative inline-flex cursor-pointer flex-shrink-0">
                       <input type="checkbox" class="peer sr-only" checked />
                       <span class="relative w-[36px] h-[22px] rounded-full block" style="background: #6856B2">
-                        <span class="absolute top-[2px] right-[2px] w-[18px] h-[18px] rounded-full block" style="background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.20)" />
+                        <span class="absolute top-[2px] right-[2px] w-[18px] h-[18px] rounded-full block" style="background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.20)"></span>
                       </span>
                     </label>
                   </div>
 
                   <!-- Divider -->
-                  <div class="border-t" :style="{ borderColor: L.borderSubtle }" />
+                  <div class="border-t" :style="{ borderColor: L.borderSubtle }"></div>
 
                   <!-- Switch row 2 -->
                   <div class="flex items-center justify-between gap-4">
@@ -317,7 +303,7 @@ const D = {
                     <label class="relative inline-flex cursor-pointer flex-shrink-0">
                       <input type="checkbox" class="peer sr-only" />
                       <span class="relative w-[36px] h-[22px] rounded-full block" :style="{ background: L.borderStrong }">
-                        <span class="absolute top-[2px] left-[2px] w-[18px] h-[18px] rounded-full block" style="background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.20)" />
+                        <span class="absolute top-[2px] left-[2px] w-[18px] h-[18px] rounded-full block" style="background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.20)"></span>
                       </span>
                     </label>
                   </div>
@@ -348,7 +334,6 @@ const D = {
                 <p class="font-heading" style="font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; letter-spacing: -0.02em" :style="{ color: L.inkPrimary }">247</p>
               </KinFlatCard>
             </div>
-
           </div><!-- /light composition -->
 
           <!-- DARK PANEL -->
@@ -369,11 +354,11 @@ const D = {
                     <label class="relative inline-flex cursor-pointer flex-shrink-0">
                       <input type="checkbox" class="peer sr-only" checked />
                       <span class="relative w-[36px] h-[22px] rounded-full block" style="background: #B6A8E6">
-                        <span class="absolute top-[2px] right-[2px] w-[18px] h-[18px] rounded-full block" style="background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.40)" />
+                        <span class="absolute top-[2px] right-[2px] w-[18px] h-[18px] rounded-full block" style="background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.40)"></span>
                       </span>
                     </label>
                   </div>
-                  <div class="border-t" :style="{ borderColor: D.borderSubtle }" />
+                  <div class="border-t" :style="{ borderColor: D.borderSubtle }"></div>
                   <div class="flex items-center justify-between gap-4">
                     <div class="flex-1">
                       <p class="text-[13px] font-medium" :style="{ color: D.inkPrimary }">Push notifications</p>
@@ -382,7 +367,7 @@ const D = {
                     <label class="relative inline-flex cursor-pointer flex-shrink-0">
                       <input type="checkbox" class="peer sr-only" />
                       <span class="relative w-[36px] h-[22px] rounded-full block" :style="{ background: D.borderStrong }">
-                        <span class="absolute top-[2px] left-[2px] w-[18px] h-[18px] rounded-full block" style="background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.40)" />
+                        <span class="absolute top-[2px] left-[2px] w-[18px] h-[18px] rounded-full block" style="background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.40)"></span>
                       </span>
                     </label>
                   </div>
@@ -413,9 +398,7 @@ const D = {
                 <p class="font-heading" style="font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; letter-spacing: -0.02em" :style="{ color: D.inkPrimary }">247</p>
               </KinFlatCard>
             </div>
-
           </div><!-- /dark composition -->
-
         </div>
       </VariantFrame>
     </section>
@@ -446,7 +429,6 @@ const D = {
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>
 <style scoped>

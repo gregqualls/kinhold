@@ -58,7 +58,9 @@ const nextUp = computed(() => REGISTRY.find((e) => e.tier !== 'overview' && !e.c
       <RouterLink
         :to="`/design-system/${nextUp.slug}`"
         class="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-kin-black text-sm font-medium hover:bg-kin-gray-100 dark:bg-kin-black dark:text-white dark:hover:bg-kin-surface-dark"
-      >Open page <span aria-hidden>→</span></RouterLink>
+      >
+        Open page <span aria-hidden>→</span>
+      </RouterLink>
     </section>
 
     <section class="mt-10 rounded-2xl border border-dashed border-kin-gray-300 dark:border-kin-gray-700 p-6 text-sm leading-relaxed text-kin-gray-600 dark:text-kin-gray-300">

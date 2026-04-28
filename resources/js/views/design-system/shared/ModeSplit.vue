@@ -42,7 +42,7 @@ onMounted(() => {
           :style="width ? { maxWidth: width + 'px' } : {}"
         >
           <div class="p-6">
-            <slot />
+            <slot></slot>
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@ onMounted(() => {
           :style="width ? { maxWidth: width + 'px' } : {}"
         >
           <div class="p-6">
-            <slot />
+            <slot></slot>
           </div>
         </div>
       </div>

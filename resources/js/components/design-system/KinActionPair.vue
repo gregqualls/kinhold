@@ -51,10 +51,10 @@ const primaryClass = computed(() =>
 <template>
   <div :class="wrapperClass">
     <div :class="secondaryClass">
-      <slot name="secondary" />
+      <slot name="secondary"></slot>
     </div>
     <div :class="primaryClass">
-      <slot name="primary" />
+      <slot name="primary"></slot>
     </div>
   </div>
 </template>

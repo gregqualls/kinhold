@@ -13,6 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
   const pendingLink = ref(null) // { code, email } when Google OAuth needs password confirmation
   const services = ref(null) // { google_oauth, google_calendar, ai_platform_key, ai_family_key, mail }
   const appConfig = ref(null) // Public config from /api/v1/config (available pre-auth)
+  const aiReady = ref(false)
   // Computed properties
   const isParent = computed(() => user.value?.role === 'parent')
   const familyMembers = computed(() => family.value?.members || [])
@@ -193,6 +194,7 @@ export const useAuthStore = defineStore('auth', () => {
       family.value = null
       isAuthenticated.value = false
       error.value = null
+      aiReady.value = false
     } catch {
       // Logout failed — clear local state anyway
     } finally {
@@ -206,8 +208,8 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = response.data.user
       family.value = response.data.family
       isAuthenticated.value = true
-      // Load service availability in the background
-      fetchServices()
+      // Load service availability + AI readiness in the background (single /settings hit)
+      fetchAccountSettings()
     } catch {
       isAuthenticated.value = false
       user.value = null
@@ -293,16 +295,25 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const fetchServices = async () => {
+  const fetchAccountSettings = async () => {
     try {
       const { data } = await api.get('/settings')
       if (data.settings?.services) {
         services.value = data.settings.services
       }
+      const mode = data.settings?.ai_mode ?? 'kinhold'
+      const familyKey = !!data.settings?.ai_has_key
+      const platformKey = !!data.settings?.services?.ai_platform_key
+      aiReady.value = (mode === 'kinhold' && platformKey) || (mode === 'byok' && familyKey)
     } catch {
-      // Non-critical — services stay null, UI degrades gracefully
+      // Non-critical — services stays as previous value, aiReady falls back to false
+      aiReady.value = false
     }
   }
+
+  // Backward-compat aliases — both refresh the same /settings response.
+  const fetchServices = fetchAccountSettings
+  const fetchAiReady = fetchAccountSettings
 
   const isServiceAvailable = computed(() => (serviceName) => {
     if (!services.value) return true // Assume available until loaded
@@ -442,5 +453,7 @@ export const useAuthStore = defineStore('auth', () => {
     isServiceAvailable,
     fetchServices,
     appConfig,
+    aiReady,
+    fetchAiReady,
   }
 })

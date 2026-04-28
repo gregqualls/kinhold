@@ -55,7 +55,7 @@ defineEmits(['action-click'])
         class="kin-author-strip__action flex-shrink-0 inline-flex items-center gap-1.5 rounded-full h-7 px-3 text-[12px] font-medium border"
         @click="$emit('action-click', $event)"
       >
-        <component v-if="actionIcon" :is="actionIcon" class="w-3.5 h-3.5" />
+        <component :is="actionIcon" v-if="actionIcon" class="w-3.5 h-3.5" />
         {{ actionLabel }}
       </button>
     </slot>

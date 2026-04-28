@@ -55,7 +55,6 @@ const ACCENT_CARDS = [
     description="Iridescent card fills and ambient backgrounds. Seven gradient tokens — each a single CSS variable that swaps automatically between light and dark. Gradients are for atmosphere and warmth, not decoration. Tenet #6: photos where we have them, gradients where we don't."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════
          SECTION 1 — AMBIENT BACKGROUND
          Full-width panel using bg-ambient in both modes.
@@ -124,15 +123,21 @@ const ACCENT_CARDS = [
               <p
                 class="text-caption font-medium uppercase tracking-widest mb-1"
                 style="color:#6E6B67"
-              >Points balance</p>
+              >
+                Points balance
+              </p>
               <p
                 class="text-hero font-heading leading-none tracking-tight"
                 style="color:#F0EDE9"
-              >1,247</p>
+              >
+                1,247
+              </p>
               <p
                 class="text-body-sm mt-2"
                 style="color:#A09C97"
-              >+38 this week</p>
+              >
+                +38 this week
+              </p>
             </div>
           </div>
         </div>
@@ -168,7 +173,6 @@ const ACCENT_CARDS = [
       >
         <p class="text-xs font-medium text-ink-tertiary mb-5">Light mode</p>
         <div class="flex flex-col sm:flex-row gap-4">
-
           <!-- Subtle card — token-based: gradient wells layer over bg-surface-raised.
                Renders correctly when root theme is light. Toggle the theme to verify. -->
           <div class="flex flex-col gap-2 flex-1">
@@ -214,7 +218,6 @@ const ACCENT_CARDS = [
             </div>
             <code class="text-caption font-mono text-ink-tertiary">bg-iridescent-warm</code>
           </div>
-
         </div>
       </div>
 
@@ -225,7 +228,6 @@ const ACCENT_CARDS = [
       >
         <p class="text-xs font-medium mb-5" style="color:#6E6B67">Dark mode</p>
         <div class="flex flex-col sm:flex-row gap-4">
-
           <!-- Subtle card (dark) — oversized wells + faint linear base to kill splotch gaps -->
           <div class="flex flex-col gap-2 flex-1">
             <div
@@ -271,7 +273,6 @@ const ACCENT_CARDS = [
             </div>
             <code class="text-caption font-mono" style="color:#6E6B67">bg-iridescent-warm (dark)</code>
           </div>
-
         </div>
       </div>
     </section>
@@ -323,7 +324,6 @@ const ACCENT_CARDS = [
       >
         <p class="text-xs font-medium mb-5" style="color:#6E6B67">Dark mode</p>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-
           <!-- Lavender dark -->
           <div class="flex flex-col gap-2">
             <div
@@ -367,7 +367,6 @@ const ACCENT_CARDS = [
             </div>
             <code class="text-[10px] font-mono" style="color:#6E6B67">bg-accent-sun (dark)</code>
           </div>
-
         </div>
       </div>
     </section>
@@ -428,7 +427,6 @@ const ACCENT_CARDS = [
         to the card rule — it lives only on the app shell background.
       </div>
     </section>
-
   </ComponentPage>
 </template>
 

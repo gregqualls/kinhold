@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col overflow-hidden">
     <!-- Search + controls -->
-    <div class="px-4 md:px-6 pt-4 pb-2 space-y-3">
+    <div class="px-4 md:px-6 pt-2 md:pt-4 pb-2 space-y-2 md:space-y-3">
       <div class="flex items-center gap-3">
         <div class="flex-1">
           <KinSearch
@@ -21,15 +21,6 @@
           <Squares2X2Icon v-if="viewMode === 'compact'" class="w-4 h-4" />
           <ListBulletIcon v-else class="w-4 h-4" />
         </button>
-        <KinButton
-          variant="primary"
-          size="sm"
-          class="hidden md:inline-flex whitespace-nowrap"
-          @click="openAddModal"
-        >
-          <template #leading><PlusIcon class="w-4 h-4" /></template>
-          Add Restaurant
-        </KinButton>
       </div>
 
       <!-- Filter row -->
@@ -167,8 +158,8 @@
       </div>
     </div>
 
-    <!-- Mobile FAB -->
-    <FloatingActionButton @click="openAddModal" />
+    <!-- Floating Action Button -->
+    <FloatingActionButton :mobile-only="false" @click="openAddModal" />
 
     <!-- Detail slide panel -->
     <SlidePanel :show="!!selectedRestaurant" title="Restaurant Details" @close="selectedRestaurant = null">
@@ -386,7 +377,6 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import {
-  PlusIcon,
   HeartIcon,
   StarIcon,
   BuildingStorefrontIcon,
@@ -486,7 +476,7 @@ const restaurantFallbackGradient = (r) => {
 }
 
 // ── View mode (grid / compact) — same toggle pattern as RecipesTab ────────────
-const viewMode = ref(localStorage.getItem('kinhold-restaurant-view') || 'grid')
+const viewMode = ref(localStorage.getItem('kinhold-restaurant-view') || 'compact')
 const toggleViewMode = () => {
   viewMode.value = viewMode.value === 'grid' ? 'compact' : 'grid'
   localStorage.setItem('kinhold-restaurant-view', viewMode.value)

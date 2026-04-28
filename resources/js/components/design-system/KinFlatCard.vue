@@ -116,11 +116,11 @@ const headerFooterPaddingClass = computed(() => ({
         '-mt-0',
       ]"
     >
-      <slot name="header" />
+      <slot name="header"></slot>
     </div>
 
     <!-- ── Default slot ───────────────────────────────────────────────────── -->
-    <slot />
+    <slot></slot>
 
     <!-- ── Footer slot ────────────────────────────────────────────────────── -->
     <div
@@ -131,7 +131,7 @@ const headerFooterPaddingClass = computed(() => ({
         'pt-4 mt-4 border-t border-border-subtle',
       ]"
     >
-      <slot name="footer" />
+      <slot name="footer"></slot>
     </div>
   </component>
 </template>
