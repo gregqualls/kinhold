@@ -15,7 +15,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: PHP - Main application
-FROM php:8.4-fpm-alpine as php
+FROM php:8.5-fpm-alpine as php
 
 # Install system dependencies (autoconf needed for pecl)
 RUN apk add --no-cache \
