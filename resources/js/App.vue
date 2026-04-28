@@ -47,10 +47,15 @@
       <main
         class="flex-1 overflow-y-auto min-h-0 pb-24 md:pb-0"
       >
+        <!-- No `<Transition>` wrapper: Vue's transition state machine wedges
+             on the pre-auth → authed boundary (Demo/Login/Register → Dashboard).
+             Both with and without `mode="out-in"` the leaving view stays
+             frozen mid-leave (stuck at `page-fade-leave-active` without ever
+             receiving `page-fade-leave-to`), preventing the new component
+             from mounting (out-in mode) or piling stale DOM under the new
+             view (default mode). Plain RouterView avoids the wedge entirely. -->
         <RouterView v-slot="{ Component, route: viewRoute }">
-          <Transition name="page-fade" mode="out-in">
-            <component :is="Component" :key="viewRoute.path" />
-          </Transition>
+          <component :is="Component" :key="viewRoute.path" />
         </RouterView>
       </main>
 
@@ -158,17 +163,6 @@ const handleResendVerification = async () => {
 </script>
 
 <style>
-.page-fade-enter-active {
-  transition: opacity 0.15s ease;
-}
-.page-fade-leave-active {
-  transition: opacity 0.1s ease;
-}
-.page-fade-enter-from,
-.page-fade-leave-to {
-  opacity: 0;
-}
-
 .toast-notify-enter-active {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }

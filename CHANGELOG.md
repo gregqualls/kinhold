@@ -2,6 +2,22 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-28 — Fix: dashboard widgets empty on first demo login (v1.4.3)
+
+Fresh visitors who landed on `/demo`, picked a family member, and got navigated to `/dashboard` saw the chrome (sidebar, mobile nav, header) appear but the page body still showed the demo picker — no widgets, no `DashboardView`. A manual browser refresh consistently fixed it. The same wedge affected fresh `/login` and `/register` → `/dashboard` flows; less commonly noticed because users typically don't watch closely.
+
+**Root cause** — `App.vue` wrapped the `<RouterView>` slot in `<Transition name="page-fade" mode="out-in">`. On the pre-auth → authed boundary (Demo/Login/Register → Dashboard), Vue's transition state machine wedged: the leaving view stayed frozen with both `page-fade-leave-from page-fade-leave-active` AND `page-fade-enter-from` on the same DOM element, never advancing to `page-fade-leave-to`. The CSS opacity transition therefore never ran and `transitionend` never fired. With `mode="out-in"`, Vue waits for the leave callback before mounting the new view — that callback never fired, so `DashboardView` never mounted, `onMounted` never ran, `dashboardStore.fetchConfig()` never executed, and the dashboard store wasn't even registered in Pinia. On a refresh the route lands directly on `/dashboard` with no transition, so everything works.
+
+We tried two narrower fixes that both failed verification: (1) switching chrome from `v-if="!isAuthPage"` to `v-show="!isAuthPage"` to avoid mounting Sidebar/TopBar/MobileBottomNav/EasterEggs mid-transition — Dashboard still never mounted; (2) dropping just `mode="out-in"` so leave and enter run in parallel — DashboardView did mount and widgets populated, but the leaving DemoView still froze mid-leave with `leave-active` (no `leave-to`) and stayed visible in the DOM, overlaying the new view. The wedge is internal to Vue's `<Transition>` lifecycle on this specific boundary; the chrome and the mode are both red herrings.
+
+The two original suspect candidates (stale `"me"` resolution in `useWidgetData`, fire-and-forget `fetchAccountSettings`) were also red herrings — `authStore.currentUser?.id` was correctly populated, and no widget reads `services`/`aiReady`. Confirmed via instrumented dev-server reproduction: only `POST /demo-login`, `GET /user`, `GET /settings` hit the backend on a wedged demo login; zero widget fetches, zero `/user/dashboard`.
+
+**Fix** — removed the `<Transition name="page-fade" mode="out-in">` wrapper around `<RouterView>` in [resources/js/App.vue](resources/js/App.vue) and deleted its `.page-fade-*` CSS rules. Route changes now swap views directly via `:key="viewRoute.path"`; old unmounts and new mounts in the same tick with no transition lifecycle to wedge. Cost is the loss of a 100–150ms inter-route opacity fade — a small UX touch the bug had effectively disabled anyway whenever it triggered. Added a comment explaining why a future tidy-up shouldn't reintroduce a `<Transition>` here without first solving the wedge.
+
+**Verification** — verified end-to-end via Playwright on a fresh incognito session: `/demo` → click Mike → `/dashboard` lands with "Good evening, Mike!" greeting, all ten widget cards populate (Welcome, Countdown, Today's Schedule, My Tasks, Family Tasks, Points balance, Leaderboard, Rewards, Badges, Quick Actions), and the full widget API cascade fires (`GET /user/dashboard`, `tasks`, `points/bank`, `points/leaderboard`, `rewards`, `badges`, `calendar/events`, `featured-events/countdown`). Old DemoView is no longer in the DOM. Zero console errors. Sanity check: `/login` still renders chromeless. The other four demo members (Sarah, Emma, Jake, Lily) go through the identical `demoLogin` → `router.push({ name: 'Dashboard' })` code path; only the route component differs across them, not the transition.
+
+**Version** — bumped `config/version.php` from 1.4.2 → 1.4.3.
+
 ## 2026-04-28 — Mobile nav: KinBottomNav, AI-aware FAB, More sheet, header compaction, list-default views
 
 Big mobile-chrome pass that retires the old prussian-token `BottomNav.vue` and pulls the rest of the chrome onto the Kin design system. Done iteratively in a single live session with Preview MCP.
