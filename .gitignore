@@ -12,6 +12,10 @@
 .env
 .env.backup
 .env.production
+.env.bak*
+*.env.bak
+.env.local
+.env.*.local
 
 # Laravel
 /storage/*.key
