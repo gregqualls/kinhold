@@ -115,8 +115,8 @@ const isNeutral = computed(() =>
             v-if="displayTime || source === 'task' || location"
             class="kin-event-tile__meta text-[11px] font-medium flex items-center gap-1 min-w-0"
           >
-            <ClockIcon      v-if="!allDay && source !== 'task' && time" class="w-3 h-3 shrink-0" />
-            <CheckBadgeIcon v-if="source === 'task'"                     class="w-3 h-3 shrink-0 kin-event-tile__task-badge" />
+            <ClockIcon v-if="!allDay && source !== 'task' && time" class="w-3 h-3 shrink-0" />
+            <CheckBadgeIcon v-if="source === 'task'" class="w-3 h-3 shrink-0 kin-event-tile__task-badge" />
             <span class="truncate">{{ displayTime }}</span>
           </p>
           <div v-if="avatars.length" class="flex -space-x-1.5 shrink-0">

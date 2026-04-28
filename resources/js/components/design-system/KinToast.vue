@@ -70,7 +70,7 @@ const resolvedIcon = computed(() => props.icon || DEFAULT_ICONS[props.status])
     aria-live="polite"
   >
     <!-- Left accent bar -->
-    <div class="kin-toast__bar w-1 flex-shrink-0 self-stretch" :class="`kin-toast__bar--${status}`" />
+    <div class="kin-toast__bar w-1 flex-shrink-0 self-stretch" :class="`kin-toast__bar--${status}`"></div>
 
     <!-- Body -->
     <div class="flex-1 flex items-start gap-2.5 px-3 py-2.5">
@@ -90,7 +90,9 @@ const resolvedIcon = computed(() => props.icon || DEFAULT_ICONS[props.status])
           class="kin-toast__action mt-1.5 text-[12px] font-semibold"
           :class="`kin-toast__action--${status}`"
           @click="$emit('action')"
-        >{{ actionLabel }}</button>
+        >
+          {{ actionLabel }}
+        </button>
       </div>
       <button
         v-if="closable"

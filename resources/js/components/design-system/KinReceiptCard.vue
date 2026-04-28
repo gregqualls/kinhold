@@ -29,7 +29,7 @@ defineEmits(['action-click'])
     <!-- Header -->
     <div v-if="title" class="px-5 pt-5 pb-4 flex items-center gap-3">
       <div class="kin-receipt-card__title-icon w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
-        <component v-if="titleIcon" :is="titleIcon" class="w-4 h-4" />
+        <component :is="titleIcon" v-if="titleIcon" class="w-4 h-4" />
       </div>
       <p class="text-[15px] font-semibold leading-snug text-ink-primary">{{ title }}</p>
     </div>
@@ -46,7 +46,7 @@ defineEmits(['action-click'])
             class="kin-receipt-card__row-icon w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
             :class="`kin-receipt-card__row-icon--${row.iconAccent || accentColor}`"
           >
-            <component v-if="row.icon" :is="row.icon" class="w-3.5 h-3.5" />
+            <component :is="row.icon" v-if="row.icon" class="w-3.5 h-3.5" />
           </div>
           <span class="text-[12px] font-medium uppercase tracking-wider flex-1 text-ink-tertiary">{{ row.label }}</span>
           <span class="text-[14px] font-medium text-ink-primary">{{ row.value }}</span>
@@ -61,7 +61,9 @@ defineEmits(['action-click'])
           type="button"
           class="kin-receipt-card__action w-full h-9 rounded-full border text-[13px] font-medium"
           @click="$emit('action-click', $event)"
-        >{{ actionLabel }}</button>
+        >
+          {{ actionLabel }}
+        </button>
       </slot>
     </div>
   </div>

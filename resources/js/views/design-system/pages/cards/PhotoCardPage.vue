@@ -37,14 +37,12 @@ const PHOTOS = {
     description="Image-led card for recipes, restaurants, events, and any content with a real photo. Edge-to-edge photo + bottom gradient scrim (always present for legibility) + optional translucent chip badges overlaid top-right. When no photo is available, fall back to GradientCard (2.3) rather than rendering with a blank image."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          PHOTOCARD — Edge-to-edge photo + gradient scrim + optional chips
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame label="PhotoCard" caption="Edge-to-edge photo + gradient scrim + optional top-right chip badges. Scrim handles text legibility on any photo; chips are opt-in per card.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-8" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -59,7 +57,7 @@ const PHOTOS = {
                   aspect="tall"
                   title="Roasted salmon with lemon-dill butter"
                   subtitle="Serves 4 · 520 kcal"
-                  overlaySize="lg"
+                  overlay-size="lg"
                   interactive
                 >
                   <template #badges>
@@ -81,7 +79,6 @@ const PHOTOS = {
             <div>
               <p class="text-[11px] mb-4 font-medium" :style="{ color: L.inkTertiary }">Grid of 3 — different chip types per card</p>
               <div class="grid grid-cols-3 gap-4">
-
                 <!-- Burrito — time chip -->
                 <KinPhotoCard
                   :src="PHOTOS.burrito"
@@ -89,7 +86,7 @@ const PHOTOS = {
                   aspect="tall"
                   title="Breakfast burritos"
                   subtitle="Serves 6"
-                  overlaySize="sm"
+                  overlay-size="sm"
                   interactive
                 >
                   <template #badges>
@@ -109,7 +106,7 @@ const PHOTOS = {
                   aspect="tall"
                   title="Thai basil chicken"
                   subtitle="Serves 4"
-                  overlaySize="sm"
+                  overlay-size="sm"
                   interactive
                 >
                   <template #badges>
@@ -126,7 +123,7 @@ const PHOTOS = {
                   aspect="tall"
                   title="Overnight oats"
                   subtitle="Serves 2"
-                  overlaySize="sm"
+                  overlay-size="sm"
                   interactive
                 >
                   <template #badges>
@@ -138,7 +135,6 @@ const PHOTOS = {
                     </span>
                   </template>
                 </KinPhotoCard>
-
               </div>
             </div>
 
@@ -146,12 +142,11 @@ const PHOTOS = {
             <div>
               <p class="text-[11px] mb-4 font-medium" :style="{ color: L.inkTertiary }">No chips — the scrim alone handles legibility when status isn't needed</p>
               <div class="grid grid-cols-3 gap-4">
-                <KinPhotoCard :src="PHOTOS.burrito" alt="Breakfast burritos" aspect="tall" title="Breakfast burritos" subtitle="Serves 6 · 15 min" overlaySize="sm" interactive />
-                <KinPhotoCard :src="PHOTOS.thai" alt="Thai basil chicken" aspect="tall" title="Thai basil chicken" subtitle="Serves 4 · 20 min" overlaySize="sm" interactive />
-                <KinPhotoCard :src="PHOTOS.oats" alt="Blueberry overnight oats" aspect="tall" title="Blueberry overnight oats" subtitle="Serves 2 · 5 min" overlaySize="sm" interactive />
+                <KinPhotoCard :src="PHOTOS.burrito" alt="Breakfast burritos" aspect="tall" title="Breakfast burritos" subtitle="Serves 6 · 15 min" overlay-size="sm" interactive />
+                <KinPhotoCard :src="PHOTOS.thai" alt="Thai basil chicken" aspect="tall" title="Thai basil chicken" subtitle="Serves 4 · 20 min" overlay-size="sm" interactive />
+                <KinPhotoCard :src="PHOTOS.oats" alt="Blueberry overnight oats" aspect="tall" title="Blueberry overnight oats" subtitle="Serves 2 · 5 min" overlay-size="sm" interactive />
               </div>
             </div>
-
           </div><!-- /light panel -->
 
           <!-- DARK PANEL -->
@@ -169,7 +164,7 @@ const PHOTOS = {
                   aspect="tall"
                   title="Roasted salmon with lemon-dill butter"
                   subtitle="Serves 4 · 520 kcal"
-                  overlaySize="lg"
+                  overlay-size="lg"
                   interactive
                 >
                   <template #badges>
@@ -191,8 +186,7 @@ const PHOTOS = {
             <div>
               <p class="text-[11px] mb-4 font-medium" :style="{ color: D.inkTertiary }">Grid of 3 — different chip types per card</p>
               <div class="grid grid-cols-3 gap-4">
-
-                <KinPhotoCard :src="PHOTOS.burrito" alt="Breakfast burritos" aspect="tall" title="Breakfast burritos" subtitle="Serves 6" overlaySize="sm" interactive>
+                <KinPhotoCard :src="PHOTOS.burrito" alt="Breakfast burritos" aspect="tall" title="Breakfast burritos" subtitle="Serves 6" overlay-size="sm" interactive>
                   <template #badges>
                     <span class="photo-chip inline-flex items-center gap-1 rounded-full h-6 px-2.5 text-[10px] font-semibold">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3 flex-shrink-0">
@@ -203,7 +197,7 @@ const PHOTOS = {
                   </template>
                 </KinPhotoCard>
 
-                <KinPhotoCard :src="PHOTOS.thai" alt="Thai basil chicken" aspect="tall" title="Thai basil chicken" subtitle="Serves 4" overlaySize="sm" interactive>
+                <KinPhotoCard :src="PHOTOS.thai" alt="Thai basil chicken" aspect="tall" title="Thai basil chicken" subtitle="Serves 4" overlay-size="sm" interactive>
                   <template #badges>
                     <span class="photo-chip inline-flex items-center rounded-full h-6 px-2.5 text-[10px] font-semibold">
                       New
@@ -211,7 +205,7 @@ const PHOTOS = {
                   </template>
                 </KinPhotoCard>
 
-                <KinPhotoCard :src="PHOTOS.oats" alt="Blueberry overnight oats" aspect="tall" title="Overnight oats" subtitle="Serves 2" overlaySize="sm" interactive>
+                <KinPhotoCard :src="PHOTOS.oats" alt="Blueberry overnight oats" aspect="tall" title="Overnight oats" subtitle="Serves 2" overlay-size="sm" interactive>
                   <template #badges>
                     <span class="photo-chip inline-flex items-center gap-1 rounded-full h-6 px-2.5 text-[10px] font-semibold">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 flex-shrink-0" style="color: #F59E0B">
@@ -221,7 +215,6 @@ const PHOTOS = {
                     </span>
                   </template>
                 </KinPhotoCard>
-
               </div>
             </div>
 
@@ -229,14 +222,12 @@ const PHOTOS = {
             <div>
               <p class="text-[11px] mb-4 font-medium" :style="{ color: D.inkTertiary }">No chips — the scrim alone handles legibility when status isn't needed</p>
               <div class="grid grid-cols-3 gap-4">
-                <KinPhotoCard :src="PHOTOS.burrito" alt="Breakfast burritos" aspect="tall" title="Breakfast burritos" subtitle="Serves 6 · 15 min" overlaySize="sm" interactive />
-                <KinPhotoCard :src="PHOTOS.thai" alt="Thai basil chicken" aspect="tall" title="Thai basil chicken" subtitle="Serves 4 · 20 min" overlaySize="sm" interactive />
-                <KinPhotoCard :src="PHOTOS.oats" alt="Blueberry overnight oats" aspect="tall" title="Blueberry overnight oats" subtitle="Serves 2 · 5 min" overlaySize="sm" interactive />
+                <KinPhotoCard :src="PHOTOS.burrito" alt="Breakfast burritos" aspect="tall" title="Breakfast burritos" subtitle="Serves 6 · 15 min" overlay-size="sm" interactive />
+                <KinPhotoCard :src="PHOTOS.thai" alt="Thai basil chicken" aspect="tall" title="Thai basil chicken" subtitle="Serves 4 · 20 min" overlay-size="sm" interactive />
+                <KinPhotoCard :src="PHOTOS.oats" alt="Blueberry overnight oats" aspect="tall" title="Blueberry overnight oats" subtitle="Serves 2 · 5 min" overlay-size="sm" interactive />
               </div>
             </div>
-
           </div><!-- /dark panel -->
-
         </div>
       </VariantFrame>
     </section>
@@ -273,7 +264,6 @@ const PHOTOS = {
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>
 

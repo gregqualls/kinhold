@@ -76,19 +76,23 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
     description="The canonical two-button decision pattern — a secondary action next to a primary action. Solves the outline/filled, sizing, and gap questions for list rows and decision cards app-wide."
     status="scaffolded"
   >
-
     <!-- ══════════════════════════════════════════════════════════════════════
          VARIANT A — Equal-width [outline] [filled]
          ═══════════════════════════════════════════════════════════════════ -->
     <section class="mb-16">
       <VariantFrame label="A" caption="Equal-width [outline] [filled] — symmetric 50/50 layout">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: L.inkTertiary }">Light mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: L.inkTertiary }"
+            >
+              Light mode
+            </p>
 
             <!-- Affirmative -->
             <div class="space-y-2">
@@ -103,7 +107,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('la-aff-sec')" @mouseleave="onLeave('la-aff-sec')"
-                >Later</button>
+                >
+                  Later
+                </button>
                 <button
                   class="flex-1"
                   :style="{
@@ -115,7 +121,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     transition: 'box-shadow 150ms, transform 150ms',
                   }"
                   @mouseenter="onEnter('la-aff-pri')" @mouseleave="onLeave('la-aff-pri')"
-                >Confirm</button>
+                >
+                  Confirm
+                </button>
               </div>
             </div>
 
@@ -132,7 +140,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('la-des-sec')" @mouseleave="onLeave('la-des-sec')"
-                >Keep</button>
+                >
+                  Keep
+                </button>
                 <button
                   class="flex-1 flex items-center justify-center gap-1.5"
                   :style="{
@@ -154,8 +164,10 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
             <!-- Inside a list row -->
             <div class="space-y-2">
               <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: L.inkTertiary }">Inside a list row</p>
-              <div class="rounded-2xl border p-4 flex items-center gap-4"
-                   :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SH_LT }">
+              <div
+                class="rounded-2xl border p-4 flex items-center gap-4"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SH_LT }"
+              >
                 <div class="flex-1 min-w-0">
                   <p class="text-[14px] font-medium truncate" :style="{ color: L.inkPrimary }">Redeem: Movie Night Pass</p>
                   <p class="text-[12px] mt-0.5" :style="{ color: L.inkSecondary }">150 pts · expires Jun 30</p>
@@ -170,7 +182,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       cursor: 'pointer', transition: 'background 150ms', whiteSpace: 'nowrap',
                     }"
                     @mouseenter="onEnter('la-row-sec')" @mouseleave="onLeave('la-row-sec')"
-                  >View</button>
+                  >
+                    View
+                  </button>
                   <button
                     :style="{
                       height: '36px', paddingLeft: '16px', paddingRight: '16px',
@@ -182,7 +196,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       transition: 'box-shadow 150ms, transform 150ms', whiteSpace: 'nowrap',
                     }"
                     @mouseenter="onEnter('la-row-pri')" @mouseleave="onLeave('la-row-pri')"
-                  >Redeem</button>
+                  >
+                    Redeem
+                  </button>
                 </div>
               </div>
             </div>
@@ -197,7 +213,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     background: 'transparent', color: L.inkPrimary, border: `1px solid ${L.borderStrong}`,
                     cursor: 'default',
                   }"
-                >Later</button>
+                >
+                  Later
+                </button>
                 <button
                   class="flex-1 flex items-center justify-center gap-2"
                   :style="{
@@ -207,7 +225,7 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                   }"
                   disabled
                 >
-                  <span class="dot-pulse-lt" />
+                  <span class="dot-pulse-lt"></span>
                   Confirming…
                 </button>
               </div>
@@ -224,7 +242,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'not-allowed', opacity: '0.4',
                   }"
                   disabled
-                >Later</button>
+                >
+                  Later
+                </button>
                 <button
                   :style="{
                     height: '40px', flex: '1', borderRadius: '9999px', fontSize: '14px', fontWeight: '500',
@@ -232,16 +252,24 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     border: 'none', cursor: 'not-allowed', opacity: '0.4', boxShadow: 'none',
                   }"
                   disabled
-                >Confirm</button>
+                >
+                  Confirm
+                </button>
               </div>
             </div>
           </div><!-- /light -->
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: D.inkTertiary }">Dark mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: D.inkTertiary }"
+            >
+              Dark mode
+            </p>
 
             <!-- Affirmative -->
             <div class="space-y-2">
@@ -256,7 +284,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('da-aff-sec')" @mouseleave="onLeave('da-aff-sec')"
-                >Later</button>
+                >
+                  Later
+                </button>
                 <button
                   class="flex-1"
                   :style="{
@@ -268,7 +298,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     transition: 'box-shadow 150ms, transform 150ms',
                   }"
                   @mouseenter="onEnter('da-aff-pri')" @mouseleave="onLeave('da-aff-pri')"
-                >Confirm</button>
+                >
+                  Confirm
+                </button>
               </div>
             </div>
 
@@ -285,7 +317,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('da-des-sec')" @mouseleave="onLeave('da-des-sec')"
-                >Keep</button>
+                >
+                  Keep
+                </button>
                 <button
                   class="flex-1 flex items-center justify-center gap-1.5"
                   :style="{
@@ -307,8 +341,10 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
             <!-- Inside a list row -->
             <div class="space-y-2">
               <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: D.inkTertiary }">Inside a list row</p>
-              <div class="rounded-2xl border p-4 flex items-center gap-4"
-                   :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SH_DK }">
+              <div
+                class="rounded-2xl border p-4 flex items-center gap-4"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SH_DK }"
+              >
                 <div class="flex-1 min-w-0">
                   <p class="text-[14px] font-medium truncate" :style="{ color: D.inkPrimary }">Redeem: Movie Night Pass</p>
                   <p class="text-[12px] mt-0.5" :style="{ color: D.inkSecondary }">150 pts · expires Jun 30</p>
@@ -323,7 +359,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       cursor: 'pointer', transition: 'background 150ms', whiteSpace: 'nowrap',
                     }"
                     @mouseenter="onEnter('da-row-sec')" @mouseleave="onLeave('da-row-sec')"
-                  >View</button>
+                  >
+                    View
+                  </button>
                   <button
                     :style="{
                       height: '36px', paddingLeft: '16px', paddingRight: '16px',
@@ -335,7 +373,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       transition: 'box-shadow 150ms, transform 150ms', whiteSpace: 'nowrap',
                     }"
                     @mouseenter="onEnter('da-row-pri')" @mouseleave="onLeave('da-row-pri')"
-                  >Redeem</button>
+                  >
+                    Redeem
+                  </button>
                 </div>
               </div>
             </div>
@@ -350,7 +390,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     background: 'transparent', color: D.inkPrimary, border: `1px solid ${D.borderStrong}`,
                     cursor: 'default',
                   }"
-                >Later</button>
+                >
+                  Later
+                </button>
                 <button
                   class="flex-1 flex items-center justify-center gap-2"
                   :style="{
@@ -360,7 +402,7 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                   }"
                   disabled
                 >
-                  <span class="dot-pulse-dk" />
+                  <span class="dot-pulse-dk"></span>
                   Confirming…
                 </button>
               </div>
@@ -377,7 +419,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'not-allowed', opacity: '0.4',
                   }"
                   disabled
-                >Later</button>
+                >
+                  Later
+                </button>
                 <button
                   :style="{
                     height: '40px', flex: '1', borderRadius: '9999px', fontSize: '14px', fontWeight: '500',
@@ -385,7 +429,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     border: 'none', cursor: 'not-allowed', opacity: '0.4', boxShadow: 'none',
                   }"
                   disabled
-                >Confirm</button>
+                >
+                  Confirm
+                </button>
               </div>
             </div>
           </div><!-- /dark -->
@@ -403,12 +449,17 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
     <section class="mb-16">
       <VariantFrame label="B" caption="Asymmetric [ghost] [filled ~2/3] — confident hierarchy">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: L.inkTertiary }">Light mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: L.inkTertiary }"
+            >
+              Light mode
+            </p>
 
             <!-- Affirmative -->
             <div class="space-y-2">
@@ -423,7 +474,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('lb-aff-sec')" @mouseleave="onLeave('lb-aff-sec')"
-                >Skip</button>
+                >
+                  Skip
+                </button>
                 <button
                   :style="{
                     height: '40px', flex: '2',
@@ -435,7 +488,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     transition: 'box-shadow 150ms, transform 150ms',
                   }"
                   @mouseenter="onEnter('lb-aff-pri')" @mouseleave="onLeave('lb-aff-pri')"
-                >Send Kudos</button>
+                >
+                  Send Kudos
+                </button>
               </div>
             </div>
 
@@ -452,7 +507,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('lb-des-sec')" @mouseleave="onLeave('lb-des-sec')"
-                >Keep</button>
+                >
+                  Keep
+                </button>
                 <button
                   class="flex items-center justify-center gap-1.5"
                   :style="{
@@ -475,8 +532,10 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
             <!-- Inside a list row -->
             <div class="space-y-2">
               <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: L.inkTertiary }">Inside a list row</p>
-              <div class="rounded-2xl border p-4 flex items-center gap-4"
-                   :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SH_LT }">
+              <div
+                class="rounded-2xl border p-4 flex items-center gap-4"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SH_LT }"
+              >
                 <div class="flex-1 min-w-0">
                   <p class="text-[14px] font-medium truncate" :style="{ color: L.inkPrimary }">Clean the kitchen</p>
                   <p class="text-[12px] mt-0.5" :style="{ color: L.inkSecondary }">20 pts · assigned to you</p>
@@ -491,7 +550,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       cursor: 'pointer', transition: 'background 150ms', whiteSpace: 'nowrap',
                     }"
                     @mouseenter="onEnter('lb-row-sec')" @mouseleave="onLeave('lb-row-sec')"
-                  >Edit</button>
+                  >
+                    Edit
+                  </button>
                   <button
                     class="flex items-center gap-1.5"
                     :style="{
@@ -523,7 +584,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     background: 'transparent', color: L.inkSecondary, border: 'none',
                     cursor: 'default',
                   }"
-                >Skip</button>
+                >
+                  Skip
+                </button>
                 <button
                   class="flex-[2] flex items-center justify-center gap-2"
                   :style="{
@@ -534,7 +597,7 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                   }"
                   disabled
                 >
-                  <span class="dot-pulse-lt" />
+                  <span class="dot-pulse-lt"></span>
                   Sending…
                 </button>
               </div>
@@ -552,7 +615,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'not-allowed', opacity: '0.4',
                   }"
                   disabled
-                >Skip</button>
+                >
+                  Skip
+                </button>
                 <button
                   :style="{
                     height: '40px', flex: '2',
@@ -561,16 +626,24 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     border: 'none', cursor: 'not-allowed', opacity: '0.4', boxShadow: 'none',
                   }"
                   disabled
-                >Send Kudos</button>
+                >
+                  Send Kudos
+                </button>
               </div>
             </div>
           </div><!-- /light -->
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: D.inkTertiary }">Dark mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: D.inkTertiary }"
+            >
+              Dark mode
+            </p>
 
             <!-- Affirmative -->
             <div class="space-y-2">
@@ -585,7 +658,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('db-aff-sec')" @mouseleave="onLeave('db-aff-sec')"
-                >Skip</button>
+                >
+                  Skip
+                </button>
                 <button
                   :style="{
                     height: '40px', flex: '2',
@@ -597,7 +672,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     transition: 'box-shadow 150ms, transform 150ms',
                   }"
                   @mouseenter="onEnter('db-aff-pri')" @mouseleave="onLeave('db-aff-pri')"
-                >Send Kudos</button>
+                >
+                  Send Kudos
+                </button>
               </div>
             </div>
 
@@ -614,7 +691,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('db-des-sec')" @mouseleave="onLeave('db-des-sec')"
-                >Keep</button>
+                >
+                  Keep
+                </button>
                 <button
                   class="flex items-center justify-center gap-1.5"
                   :style="{
@@ -637,8 +716,10 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
             <!-- Inside a list row -->
             <div class="space-y-2">
               <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: D.inkTertiary }">Inside a list row</p>
-              <div class="rounded-2xl border p-4 flex items-center gap-4"
-                   :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SH_DK }">
+              <div
+                class="rounded-2xl border p-4 flex items-center gap-4"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SH_DK }"
+              >
                 <div class="flex-1 min-w-0">
                   <p class="text-[14px] font-medium truncate" :style="{ color: D.inkPrimary }">Clean the kitchen</p>
                   <p class="text-[12px] mt-0.5" :style="{ color: D.inkSecondary }">20 pts · assigned to you</p>
@@ -653,7 +734,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       cursor: 'pointer', transition: 'background 150ms', whiteSpace: 'nowrap',
                     }"
                     @mouseenter="onEnter('db-row-sec')" @mouseleave="onLeave('db-row-sec')"
-                  >Edit</button>
+                  >
+                    Edit
+                  </button>
                   <button
                     class="flex items-center gap-1.5"
                     :style="{
@@ -685,7 +768,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     background: 'transparent', color: D.inkSecondary, border: 'none',
                     cursor: 'default',
                   }"
-                >Skip</button>
+                >
+                  Skip
+                </button>
                 <button
                   class="flex-[2] flex items-center justify-center gap-2"
                   :style="{
@@ -696,7 +781,7 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                   }"
                   disabled
                 >
-                  <span class="dot-pulse-dk" />
+                  <span class="dot-pulse-dk"></span>
                   Sending…
                 </button>
               </div>
@@ -714,7 +799,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'not-allowed', opacity: '0.4',
                   }"
                   disabled
-                >Skip</button>
+                >
+                  Skip
+                </button>
                 <button
                   :style="{
                     height: '40px', flex: '2',
@@ -723,7 +810,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     border: 'none', cursor: 'not-allowed', opacity: '0.4', boxShadow: 'none',
                   }"
                   disabled
-                >Send Kudos</button>
+                >
+                  Send Kudos
+                </button>
               </div>
             </div>
           </div><!-- /dark -->
@@ -741,12 +830,17 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
     <section class="mb-16">
       <VariantFrame label="C" caption="Responsive: stacked on mobile (filled top), side-by-side equal-width on desktop">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: L.inkTertiary }">Light mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: L.inkTertiary }"
+            >
+              Light mode
+            </p>
 
             <!-- Affirmative -->
             <div class="space-y-2">
@@ -763,7 +857,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     transition: 'box-shadow 150ms, transform 150ms',
                   }"
                   @mouseenter="onEnter('lc-aff-pri')" @mouseleave="onLeave('lc-aff-pri')"
-                >Accept</button>
+                >
+                  Accept
+                </button>
                 <button
                   class="action-pair-secondary"
                   :style="{
@@ -773,7 +869,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('lc-aff-sec')" @mouseleave="onLeave('lc-aff-sec')"
-                >Decline</button>
+                >
+                  Decline
+                </button>
               </div>
             </div>
 
@@ -805,15 +903,19 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('lc-des-sec')" @mouseleave="onLeave('lc-des-sec')"
-                >Keep</button>
+                >
+                  Keep
+                </button>
               </div>
             </div>
 
             <!-- Inside a list row -->
             <div class="space-y-2">
               <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: L.inkTertiary }">Inside a list row (invitation card)</p>
-              <div class="rounded-2xl border p-4 space-y-4"
-                   :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SH_LT }">
+              <div
+                class="rounded-2xl border p-4 space-y-4"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SH_LT }"
+              >
                 <div>
                   <p class="text-[14px] font-medium" :style="{ color: L.inkPrimary }">New invitation from Mom</p>
                   <p class="text-[12px] mt-0.5" :style="{ color: L.inkSecondary }">Family movie night · Sat Apr 19 at 7 pm</p>
@@ -826,7 +928,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       background: L.accents.lavender.bold, color: L.inkInverse,
                       border: 'none', cursor: 'pointer', boxShadow: SH_LT,
                     }"
-                  >Accept</button>
+                  >
+                    Accept
+                  </button>
                   <button
                     class="action-pair-secondary"
                     :style="{
@@ -834,7 +938,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       background: 'transparent', color: L.inkPrimary, border: `1px solid ${L.borderStrong}`,
                       cursor: 'pointer',
                     }"
-                  >Decline</button>
+                  >
+                    Decline
+                  </button>
                 </div>
               </div>
             </div>
@@ -852,7 +958,7 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                   }"
                   disabled
                 >
-                  <span class="dot-pulse-lt" />
+                  <span class="dot-pulse-lt"></span>
                   Accepting…
                 </button>
                 <button
@@ -862,7 +968,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     background: 'transparent', color: L.inkPrimary, border: `1px solid ${L.borderStrong}`,
                     cursor: 'default',
                   }"
-                >Decline</button>
+                >
+                  Decline
+                </button>
               </div>
             </div>
 
@@ -878,7 +986,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     border: 'none', cursor: 'not-allowed', opacity: '0.4', boxShadow: 'none',
                   }"
                   disabled
-                >Accept</button>
+                >
+                  Accept
+                </button>
                 <button
                   class="action-pair-secondary"
                   :style="{
@@ -887,16 +997,24 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'not-allowed', opacity: '0.4',
                   }"
                   disabled
-                >Decline</button>
+                >
+                  Decline
+                </button>
               </div>
             </div>
           </div><!-- /light -->
 
           <!-- DARK PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: D.inkTertiary }">Dark mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: D.inkTertiary }"
+            >
+              Dark mode
+            </p>
 
             <!-- Affirmative -->
             <div class="space-y-2">
@@ -913,7 +1031,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     transition: 'box-shadow 150ms, transform 150ms',
                   }"
                   @mouseenter="onEnter('dc-aff-pri')" @mouseleave="onLeave('dc-aff-pri')"
-                >Accept</button>
+                >
+                  Accept
+                </button>
                 <button
                   class="action-pair-secondary"
                   :style="{
@@ -923,7 +1043,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('dc-aff-sec')" @mouseleave="onLeave('dc-aff-sec')"
-                >Decline</button>
+                >
+                  Decline
+                </button>
               </div>
             </div>
 
@@ -955,15 +1077,19 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'pointer', transition: 'background 150ms',
                   }"
                   @mouseenter="onEnter('dc-des-sec')" @mouseleave="onLeave('dc-des-sec')"
-                >Keep</button>
+                >
+                  Keep
+                </button>
               </div>
             </div>
 
             <!-- Inside a list row -->
             <div class="space-y-2">
               <p class="text-[11px] font-medium uppercase tracking-wider" :style="{ color: D.inkTertiary }">Inside a list row (invitation card)</p>
-              <div class="rounded-2xl border p-4 space-y-4"
-                   :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SH_DK }">
+              <div
+                class="rounded-2xl border p-4 space-y-4"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle, boxShadow: SH_DK }"
+              >
                 <div>
                   <p class="text-[14px] font-medium" :style="{ color: D.inkPrimary }">New invitation from Mom</p>
                   <p class="text-[12px] mt-0.5" :style="{ color: D.inkSecondary }">Family movie night · Sat Apr 19 at 7 pm</p>
@@ -976,7 +1102,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       background: D.accents.lavender.bold, color: D.inkInverse,
                       border: 'none', cursor: 'pointer', boxShadow: SH_DK,
                     }"
-                  >Accept</button>
+                  >
+                    Accept
+                  </button>
                   <button
                     class="action-pair-secondary"
                     :style="{
@@ -984,7 +1112,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                       background: 'transparent', color: D.inkPrimary, border: `1px solid ${D.borderStrong}`,
                       cursor: 'pointer',
                     }"
-                  >Decline</button>
+                  >
+                    Decline
+                  </button>
                 </div>
               </div>
             </div>
@@ -1002,7 +1132,7 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                   }"
                   disabled
                 >
-                  <span class="dot-pulse-dk" />
+                  <span class="dot-pulse-dk"></span>
                   Accepting…
                 </button>
                 <button
@@ -1012,7 +1142,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     background: 'transparent', color: D.inkPrimary, border: `1px solid ${D.borderStrong}`,
                     cursor: 'default',
                   }"
-                >Decline</button>
+                >
+                  Decline
+                </button>
               </div>
             </div>
 
@@ -1028,7 +1160,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     border: 'none', cursor: 'not-allowed', opacity: '0.4', boxShadow: 'none',
                   }"
                   disabled
-                >Accept</button>
+                >
+                  Accept
+                </button>
                 <button
                   class="action-pair-secondary"
                   :style="{
@@ -1037,7 +1171,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
                     cursor: 'not-allowed', opacity: '0.4',
                   }"
                   disabled
-                >Decline</button>
+                >
+                  Decline
+                </button>
               </div>
             </div>
           </div><!-- /dark -->
@@ -1053,8 +1189,10 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
          CLAUDE'S PICK
          ═══════════════════════════════════════════════════════════════════ -->
     <section class="mb-8">
-      <div class="rounded-2xl border p-6 space-y-3"
-           :style="{ background: L.accents.lavender.soft, borderColor: L.accents.lavender.bold }">
+      <div
+        class="rounded-2xl border p-6 space-y-3"
+        :style="{ background: L.accents.lavender.soft, borderColor: L.accents.lavender.bold }"
+      >
         <div class="flex items-center gap-2">
           <SparklesIcon class="w-5 h-5" :style="{ color: L.accents.lavender.bold }" />
           <h2 class="text-[15px] font-semibold" :style="{ color: L.accents.lavender.bold }">LOCKED — Variant A primary, Variant B as prop alternative</h2>
@@ -1076,8 +1214,10 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
          USAGE GUIDE
          ═══════════════════════════════════════════════════════════════════ -->
     <section class="mb-8">
-      <div class="rounded-2xl border p-6 space-y-5"
-           :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SH_LT }">
+      <div
+        class="rounded-2xl border p-6 space-y-5"
+        :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle, boxShadow: SH_LT }"
+      >
         <h2 class="text-[15px] font-semibold" :style="{ color: L.inkPrimary }">Usage guide</h2>
 
         <div class="space-y-4">
@@ -1108,8 +1248,10 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
             </ul>
           </div>
 
-          <div class="rounded-xl p-4 space-y-1"
-               :style="{ background: L.surfaceSunken }">
+          <div
+            class="rounded-xl p-4 space-y-1"
+            :style="{ background: L.surfaceSunken }"
+          >
             <p class="text-[13px] font-semibold" :style="{ color: L.inkPrimary }">Hard rules (all variants)</p>
             <ul class="space-y-1 text-[13px] leading-relaxed list-disc list-inside" :style="{ color: L.inkSecondary }">
               <li>Gap between buttons: 8 px (compact rows) or 12 px (standalone). Never wider — they are one decision.</li>
@@ -1128,10 +1270,11 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
     <section class="mb-16">
       <VariantFrame label="Kin" caption="KinActionPair — layout='asymmetric' gives secondary 1/3 (ghost) + primary 2/3 (filled). layout='equal' (default) is 50/50.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div class="space-y-2">
@@ -1165,8 +1308,10 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div class="space-y-2">
@@ -1198,11 +1343,9 @@ function onLeave(k) { hov.value = { ...hov.value, [k]: false } }
               </KinActionPair>
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>
-
   </ComponentPage>
 </template>
 

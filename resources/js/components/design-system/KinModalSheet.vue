@@ -87,7 +87,7 @@ const widthStyle = computed(() => {
         <div
           class="kin-ms-backdrop absolute inset-0"
           @click="onBackdrop"
-        />
+        ></div>
 
         <!-- Surface -->
         <Transition name="kin-ms-surface" appear>
@@ -128,7 +128,7 @@ const widthStyle = computed(() => {
 
             <!-- Body -->
             <div class="px-5 py-4 text-ink-secondary text-[13px]">
-              <slot />
+              <slot></slot>
             </div>
 
             <!-- Footer (actions) -->
@@ -136,7 +136,7 @@ const widthStyle = computed(() => {
               v-if="$slots.actions"
               class="px-5 pb-5 pt-1"
             >
-              <slot name="actions" />
+              <slot name="actions"></slot>
             </div>
           </div>
         </Transition>

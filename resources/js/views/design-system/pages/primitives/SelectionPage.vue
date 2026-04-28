@@ -76,14 +76,12 @@ const swSettingsLabels = [
     description="Selection controls. Minimal neutral fill when checked (near-black / off-white) for both checkbox and radio; Apple-style pastel-accent toggle for switches."
     status="chosen"
   >
-
     <!-- ═══════════════════════════════════════════════════════════════
          SECTION 1 — CHECKBOX
          ════════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame label="Checkbox" caption="Minimal neutral — near-black fill when checked">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border border-border-subtle bg-surface-app p-6 space-y-8">
             <p class="text-caption font-semibold uppercase tracking-widest text-ink-tertiary">Light mode</p>
@@ -220,7 +218,7 @@ const swSettingsLabels = [
               <p class="text-caption text-ink-tertiary mb-3">With label + description (interactive)</p>
               <div class="flex flex-col gap-3">
                 <KinCheckbox v-model="cbSmUnchecked" label="Unchecked default" />
-                <KinCheckbox v-model="cbSmChecked"   label="Checked default" />
+                <KinCheckbox v-model="cbSmChecked" label="Checked default" />
                 <KinCheckbox
                   v-model="cbWithDesc"
                   label="Send morning briefing"
@@ -229,7 +227,6 @@ const swSettingsLabels = [
               </div>
             </div>
           </div><!-- /dark checkbox -->
-
         </div>
       </VariantFrame>
     </section>
@@ -241,7 +238,6 @@ const swSettingsLabels = [
     <section class="mb-20">
       <VariantFrame label="Radio" caption="Minimal neutral — ink-primary inner dot when checked">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border border-border-subtle bg-surface-app p-6 space-y-8">
             <p class="text-caption font-semibold uppercase tracking-widest text-ink-tertiary">Light mode</p>
@@ -405,7 +401,6 @@ const swSettingsLabels = [
               </fieldset>
             </div>
           </div><!-- /dark radio -->
-
         </div>
       </VariantFrame>
     </section>
@@ -417,7 +412,6 @@ const swSettingsLabels = [
     <section class="mb-16">
       <VariantFrame label="Switch" caption="Apple-style toggle — pastel-accent on track, smooth 200ms thumb transition">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border border-border-subtle bg-surface-app p-6 space-y-8">
             <p class="text-caption font-semibold uppercase tracking-widest text-ink-tertiary">Light mode</p>
@@ -582,7 +576,6 @@ const swSettingsLabels = [
               </ul>
             </div>
           </div><!-- /dark switch -->
-
         </div>
       </VariantFrame>
 
@@ -590,6 +583,5 @@ const swSettingsLabels = [
         Use for any binary on/off setting. Prefer over checkbox for settings contexts where the control represents a stateful mode rather than a completion or selection. The 200ms thumb slide makes the transition feel immediate without being jarring. Reduced-motion environments will see an instant jump instead.
       </p>
     </section>
-
   </ComponentPage>
 </template>

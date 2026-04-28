@@ -115,7 +115,9 @@ const bars = computed(() => {
           class="kin-stat-tile__range-btn px-1.5 py-0.5 transition-colors"
           :class="range === r && 'kin-stat-tile__range-btn--active'"
           @click="$emit('update:range', r)"
-        >{{ r }}</button>
+        >
+          {{ r }}
+        </button>
       </div>
     </div>
 
@@ -125,8 +127,8 @@ const bars = computed(() => {
         class="kin-stat-tile__delta inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
         :class="deltaUp ? 'kin-stat-tile__delta--up' : 'kin-stat-tile__delta--down'"
       >
-        <ArrowUpRightIcon   v-if="deltaUp"  class="w-3 h-3" />
-        <ArrowDownRightIcon v-else           class="w-3 h-3" />
+        <ArrowUpRightIcon v-if="deltaUp" class="w-3 h-3" />
+        <ArrowDownRightIcon v-else class="w-3 h-3" />
         {{ delta }}
       </span>
     </div>
@@ -135,7 +137,9 @@ const bars = computed(() => {
     <p
       class="kin-stat-tile__value leading-none font-semibold tracking-tighter"
       :style="{ fontSize: valueFontSize }"
-    >{{ value }}</p>
+    >
+      {{ value }}
+    </p>
 
     <!-- Optional chart -->
     <svg

@@ -143,7 +143,6 @@ function onChange(e) {
 
 <template>
   <div class="flex flex-col gap-1 w-full">
-
     <!-- Label -->
     <label
       v-if="hasLabel"
@@ -185,7 +184,9 @@ function onChange(e) {
             :key="String(opt.value)"
             :value="opt.value"
             :disabled="opt.disabled"
-          >{{ opt.label }}</option>
+          >
+            {{ opt.label }}
+          </option>
         </template>
 
         <!-- Grouped options -->
@@ -200,7 +201,9 @@ function onChange(e) {
               :key="String(opt.value)"
               :value="opt.value"
               :disabled="opt.disabled"
-            >{{ opt.label }}</option>
+            >
+              {{ opt.label }}
+            </option>
           </optgroup>
         </template>
       </select>
@@ -229,7 +232,6 @@ function onChange(e) {
     >
       {{ hasError ? error : helper }}
     </p>
-
   </div>
 </template>
 

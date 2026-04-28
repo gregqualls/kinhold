@@ -64,34 +64,37 @@ const multiD  = ref(['emma', 'greg'])
     <section class="mb-16">
       <VariantFrame label="KinAvatarPicker" caption="Pill-card row · single- or multi-select · md (40px) and lg (56px) sizes · overflow-x-auto for crowded rows.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Single-select · md (40px)</p>
-              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeL]" @update:active-keys="(ks) => activeL = ks[0] || null" size="md" />
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeL]" size="md" @update:active-keys="(ks) => activeL = ks[0] || null" />
             </div>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Single-select · lg (56px)</p>
-              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeL]" @update:active-keys="(ks) => activeL = ks[0] || null" size="lg" />
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeL]" size="lg" @update:active-keys="(ks) => activeL = ks[0] || null" />
             </div>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Multi-select · md (checkmark overlay)</p>
-              <KinAvatarPicker :members="toKinMembers(MEMBERS)" v-model:active-keys="multiL" multi size="md" />
+              <KinAvatarPicker v-model:active-keys="multiL" :members="toKinMembers(MEMBERS)" multi size="md" />
             </div>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">8 members · overflow-x-auto in 320px frame</p>
-              <div class="max-w-[320px] rounded-xl border p-3"
-                   :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+              <div
+                class="max-w-[320px] rounded-xl border p-3"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"
+              >
                 <div class="overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
                   <div class="w-max">
-                    <KinAvatarPicker :members="toKinMembers(MEMBERS_OVERFLOW)" :active-keys="[activeL]" @update:active-keys="(ks) => activeL = ks[0] || null" size="md" />
+                    <KinAvatarPicker :members="toKinMembers(MEMBERS_OVERFLOW)" :active-keys="[activeL]" size="md" @update:active-keys="(ks) => activeL = ks[0] || null" />
                   </div>
                 </div>
               </div>
@@ -99,38 +102,41 @@ const multiD  = ref(['emma', 'greg'])
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Single-select · md (40px)</p>
-              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeD]" @update:active-keys="(ks) => activeD = ks[0] || null" size="md" />
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeD]" size="md" @update:active-keys="(ks) => activeD = ks[0] || null" />
             </div>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Single-select · lg (56px)</p>
-              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeD]" @update:active-keys="(ks) => activeD = ks[0] || null" size="lg" />
+              <KinAvatarPicker :members="toKinMembers(MEMBERS)" :active-keys="[activeD]" size="lg" @update:active-keys="(ks) => activeD = ks[0] || null" />
             </div>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Multi-select · md (checkmark overlay)</p>
-              <KinAvatarPicker :members="toKinMembers(MEMBERS)" v-model:active-keys="multiD" multi size="md" />
+              <KinAvatarPicker v-model:active-keys="multiD" :members="toKinMembers(MEMBERS)" multi size="md" />
             </div>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">8 members · overflow-x-auto in 320px frame</p>
-              <div class="max-w-[320px] rounded-xl border p-3"
-                   :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
+              <div
+                class="max-w-[320px] rounded-xl border p-3"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }"
+              >
                 <div class="overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
                   <div class="w-max">
-                    <KinAvatarPicker :members="toKinMembers(MEMBERS_OVERFLOW)" :active-keys="[activeD]" @update:active-keys="(ks) => activeD = ks[0] || null" size="md" />
+                    <KinAvatarPicker :members="toKinMembers(MEMBERS_OVERFLOW)" :active-keys="[activeD]" size="md" @update:active-keys="(ks) => activeD = ks[0] || null" />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>

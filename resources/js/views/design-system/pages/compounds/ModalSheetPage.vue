@@ -26,8 +26,10 @@ const L = {
     <section class="mb-16">
       <VariantFrame label="KinModalSheet" caption="Click the trigger to open. Responsive: bottom sheet on mobile, centered modal at md+. Backdrop / Esc dismiss.">
         <div class="w-full space-y-6">
-          <div class="rounded-2xl border p-6 space-y-4"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-4"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Trigger — renders real overlay (responsive)</p>
             <div class="flex gap-3">
               <KinButton variant="primary" @click="kinModalOpen = true">Open modal / sheet</KinButton>

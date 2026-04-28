@@ -17,7 +17,7 @@ const props = defineProps({
 <template>
   <div class="kin-day-header flex items-center gap-0" :class="`kin-day-header--${size}`">
     <span class="kin-day-header__num font-heading flex-shrink-0 text-ink-primary">{{ day }}</span>
-    <div class="kin-day-header__rule flex-shrink-0 self-stretch" />
+    <div class="kin-day-header__rule flex-shrink-0 self-stretch"></div>
     <div class="flex flex-col justify-center gap-1 min-w-0">
       <div class="flex items-center gap-2 flex-wrap">
         <span class="kin-day-header__weekday font-semibold uppercase tracking-widest text-ink-primary">{{ weekday }}</span>

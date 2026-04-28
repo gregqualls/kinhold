@@ -26,7 +26,6 @@ const D = {
     <section class="mb-16">
       <VariantFrame label="KinDayHeader" caption="Hero number left · thin rule · weekday + month stacked right · optional event-count below-right. sm / md / lg sizes; isToday highlights the number.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-8 space-y-10" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -50,7 +49,6 @@ const D = {
               <KinDayHeader :day="14" weekday="Friday" month="March 2026" :event-count="3" size="lg" />
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>

@@ -81,7 +81,7 @@ function select() {
             'kin-rd-dot rounded-full flex-shrink-0',
             sizeMap.dot,
           ]"
-        />
+        ></span>
       </span>
     </span>
 

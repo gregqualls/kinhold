@@ -212,7 +212,6 @@ const presenceClass = computed(() =>
     class="relative inline-flex flex-shrink-0 items-center justify-center"
     :style="{ width: wrapperPx + 'px', height: wrapperPx + 'px' }"
   >
-
     <!-- ── Photo / initials / icon circle ──────────────────────────────────── -->
     <!--
       When arc is active the circle is inset by arcPad from the wrapper edge.
@@ -248,8 +247,8 @@ const presenceClass = computed(() =>
 
       <!-- Preset icon resolved from `phosphor:<key>` src -->
       <component
-        v-else-if="showPresetIcon"
         :is="presetIcon"
+        v-else-if="showPresetIcon"
         weight="duotone"
         :class="['shrink-0', textBoldClass]"
         :style="{ width: Math.round(sizeConfig.px * 0.6) + 'px', height: Math.round(sizeConfig.px * 0.6) + 'px' }"
@@ -266,8 +265,8 @@ const presenceClass = computed(() =>
 
       <!-- Icon component -->
       <component
-        v-else-if="showIcon"
         :is="icon"
+        v-else-if="showIcon"
         :class="['shrink-0', textBoldClass]"
         :style="{ width: Math.round(sizeConfig.px * 0.55) + 'px', height: Math.round(sizeConfig.px * 0.55) + 'px' }"
         aria-hidden="true"
@@ -333,7 +332,7 @@ const presenceClass = computed(() =>
         inset: sizeConfig.arcPad + 'px',
         ...ringStyle,
       }"
-    />
+    ></div>
 
     <!-- ── Presence dot ────────────────────────────────────────────────────── -->
     <!--
@@ -346,13 +345,13 @@ const presenceClass = computed(() =>
       class="absolute rounded-full block"
       :class="presenceClass"
       :style="{
-        width:  sizeConfig.presencePx + 'px',
+        width: sizeConfig.presencePx + 'px',
         height: sizeConfig.presencePx + 'px',
         border: sizeConfig.presenceBorderPx + 'px solid rgb(var(--surface-app))',
         bottom: hasArc ? (sizeConfig.arcPad - 1) + 'px' : '-1px',
-        right:  hasArc ? (sizeConfig.arcPad - 1) + 'px' : '-1px',
+        right: hasArc ? (sizeConfig.arcPad - 1) + 'px' : '-1px',
         zIndex: 10,
       }"
-    />
+    ></span>
   </div>
 </template>

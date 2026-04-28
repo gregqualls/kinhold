@@ -23,6 +23,8 @@ const WIDTHS = [
         ? 'bg-white text-kin-black shadow-sm dark:bg-kin-off-white dark:text-kin-black'
         : 'text-kin-gray-500 hover:text-kin-black dark:text-kin-gray-300 dark:hover:text-kin-off-white'"
       @click="$emit('update:modelValue', w.value)"
-    >{{ w.label }}<span v-if="w.value !== 'full'" class="ml-1 font-mono opacity-60">{{ w.value }}</span></button>
+    >
+      {{ w.label }}<span v-if="w.value !== 'full'" class="ml-1 font-mono opacity-60">{{ w.value }}</span>
+    </button>
   </div>
 </template>

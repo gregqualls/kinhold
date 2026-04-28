@@ -30,11 +30,11 @@ const D = {
     <section class="mb-16">
       <VariantFrame label="KinAIActivityCard" caption="Click the header to toggle expanded/collapsed. Expanded reveals trigger → steps → output. Status pill (success / pending / failed) + duration on the right.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-3" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Light mode</p>
             <KinAIActivityCard
+              v-model:expanded="kinExpL"
               title="Created task &quot;Take out trash&quot; for Emma"
               status="success"
               duration="1.2s"
@@ -44,7 +44,6 @@ const D = {
                 { label: 'create_task — assigned to Emma, due tomorrow' },
                 { label: 'notify_user — push sent to Emma' },
               ]"
-              v-model:expanded="kinExpL"
             >
               <template #output>
                 <div class="flex items-start justify-between gap-2">
@@ -64,6 +63,7 @@ const D = {
           <div class="dark rounded-2xl border p-6 space-y-3" :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: D.inkTertiary }">Dark mode</p>
             <KinAIActivityCard
+              v-model:expanded="kinExpD"
               title="Created task &quot;Take out trash&quot; for Emma"
               status="success"
               duration="1.2s"
@@ -73,7 +73,6 @@ const D = {
                 { label: 'create_task — assigned to Emma, due tomorrow' },
                 { label: 'notify_user — push sent to Emma' },
               ]"
-              v-model:expanded="kinExpD"
             >
               <template #output>
                 <div class="flex items-start justify-between gap-2">
@@ -88,7 +87,6 @@ const D = {
             <KinAIActivityCard title="Fetching vault entry for car insurance" status="pending" duration="3.8s" />
             <KinAIActivityCard title="Meal plan generation failed — missing ingredients" status="failed" duration="4.2s" />
           </div>
-
         </div>
       </VariantFrame>
     </section>

@@ -218,7 +218,6 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
     description="Redesign token layer — warm near-white light / deep warm-charcoal dark. Both modes authored independently. Use these tokens in new redesign components; existing kin-*/prussian-*/wisteria-* tokens remain available during migration."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════
          SECTION 1 — SURFACES & INK
          Light and dark panels rendered side by side
@@ -232,15 +231,18 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
       <div class="mb-8">
         <p class="text-xs font-medium text-ink-tertiary mb-3">Light mode</p>
         <div class="rounded-2xl border border-border-subtle p-5 space-y-3" style="background:#FAF8F5">
-
           <!-- Surface swatches row -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div v-for="s in SURFACES" :key="s.cssVar"
-                 class="rounded-xl overflow-hidden border"
-                 style="border-color:#E8E4DF">
+            <div
+              v-for="s in SURFACES" :key="s.cssVar"
+              class="rounded-xl overflow-hidden border"
+              style="border-color:#E8E4DF"
+            >
               <!-- Swatch chip -->
-              <div class="h-14 flex items-end px-2.5 pb-1.5 relative"
-                   :style="{ background: s.lightHex, border: s.lightHex === '#FFFFFF' ? '1px solid #E8E4DF' : 'none' }">
+              <div
+                class="h-14 flex items-end px-2.5 pb-1.5 relative"
+                :style="{ background: s.lightHex, border: s.lightHex === '#FFFFFF' ? '1px solid #E8E4DF' : 'none' }"
+              >
                 <!-- ink-primary text sample on this surface -->
                 <span class="text-[10px] font-medium truncate" style="color:#1C1C1E">{{ s.name }}</span>
               </div>
@@ -254,24 +256,34 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
 
           <!-- Ink + border swatches row -->
           <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-            <div v-for="t in INK_TOKENS" :key="t.cssVar"
-                 class="rounded-xl overflow-hidden border"
-                 style="border-color:#E8E4DF">
-              <div class="h-10 flex items-center px-3"
-                   :style="{ background: t.lightHex }">
-                <span class="text-[10px] font-medium truncate"
-                      :style="{ color: t.name === 'Ink inverse' ? '#1C1C1E' : '#FAF8F5' }">Aa</span>
+            <div
+              v-for="t in INK_TOKENS" :key="t.cssVar"
+              class="rounded-xl overflow-hidden border"
+              style="border-color:#E8E4DF"
+            >
+              <div
+                class="h-10 flex items-center px-3"
+                :style="{ background: t.lightHex }"
+              >
+                <span
+                  class="text-[10px] font-medium truncate"
+                  :style="{ color: t.name === 'Ink inverse' ? '#1C1C1E' : '#FAF8F5' }"
+                >Aa</span>
               </div>
               <div class="px-2.5 py-2 text-[11px]" style="background:#FFFFFF">
                 <p class="font-semibold leading-tight" style="color:#1C1C1E">{{ t.name }}</p>
                 <code class="font-mono text-[10px] opacity-60">{{ t.lightHex }}</code>
               </div>
             </div>
-            <div v-for="b in BORDERS" :key="b.cssVar"
-                 class="rounded-xl overflow-hidden border"
-                 style="border-color:#E8E4DF">
-              <div class="h-10 flex items-center px-3"
-                   :style="{ background: '#FAF8F5', borderBottom: `3px solid ${b.lightHex}` }">
+            <div
+              v-for="b in BORDERS" :key="b.cssVar"
+              class="rounded-xl overflow-hidden border"
+              style="border-color:#E8E4DF"
+            >
+              <div
+                class="h-10 flex items-center px-3"
+                :style="{ background: '#FAF8F5', borderBottom: `3px solid ${b.lightHex}` }"
+              >
               </div>
               <div class="px-2.5 py-2 text-[11px]" style="background:#FFFFFF">
                 <p class="font-semibold leading-tight" style="color:#1C1C1E">{{ b.name }}</p>
@@ -286,14 +298,17 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
       <div>
         <p class="text-xs font-medium text-ink-tertiary mb-3">Dark mode</p>
         <div class="rounded-2xl border p-5 space-y-3" style="background:#141311; border-color:#2C2A27">
-
           <!-- Surface swatches row -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div v-for="s in SURFACES" :key="s.cssVar"
-                 class="rounded-xl overflow-hidden"
-                 style="border: 1px solid #2C2A27">
-              <div class="h-14 flex items-end px-2.5 pb-1.5"
-                   :style="{ background: s.darkHex }">
+            <div
+              v-for="s in SURFACES" :key="s.cssVar"
+              class="rounded-xl overflow-hidden"
+              style="border: 1px solid #2C2A27"
+            >
+              <div
+                class="h-14 flex items-end px-2.5 pb-1.5"
+                :style="{ background: s.darkHex }"
+              >
                 <span class="text-[10px] font-medium truncate" style="color:#F0EDE9">{{ s.name }}</span>
               </div>
               <div class="px-2.5 py-2 text-[11px]" style="background:#1C1B19">
@@ -305,24 +320,34 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
 
           <!-- Ink + border swatches row -->
           <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-            <div v-for="t in INK_TOKENS" :key="t.cssVar"
-                 class="rounded-xl overflow-hidden"
-                 style="border: 1px solid #2C2A27">
-              <div class="h-10 flex items-center px-3"
-                   :style="{ background: t.darkHex }">
-                <span class="text-[10px] font-medium truncate"
-                      :style="{ color: t.name === 'Ink inverse' ? '#F0EDE9' : '#141311' }">Aa</span>
+            <div
+              v-for="t in INK_TOKENS" :key="t.cssVar"
+              class="rounded-xl overflow-hidden"
+              style="border: 1px solid #2C2A27"
+            >
+              <div
+                class="h-10 flex items-center px-3"
+                :style="{ background: t.darkHex }"
+              >
+                <span
+                  class="text-[10px] font-medium truncate"
+                  :style="{ color: t.name === 'Ink inverse' ? '#F0EDE9' : '#141311' }"
+                >Aa</span>
               </div>
               <div class="px-2.5 py-2 text-[11px]" style="background:#1C1B19">
                 <p class="font-semibold leading-tight" style="color:#F0EDE9">{{ t.name }}</p>
                 <code class="font-mono text-[10px]" style="color:#6E6B67">{{ t.darkHex }}</code>
               </div>
             </div>
-            <div v-for="b in BORDERS" :key="b.cssVar"
-                 class="rounded-xl overflow-hidden"
-                 style="border: 1px solid #2C2A27">
-              <div class="h-10 flex items-center px-3"
-                   :style="{ background: '#141311', borderBottom: `3px solid ${b.darkHex}` }">
+            <div
+              v-for="b in BORDERS" :key="b.cssVar"
+              class="rounded-xl overflow-hidden"
+              style="border: 1px solid #2C2A27"
+            >
+              <div
+                class="h-10 flex items-center px-3"
+                :style="{ background: '#141311', borderBottom: `3px solid ${b.darkHex}` }"
+              >
               </div>
               <div class="px-2.5 py-2 text-[11px]" style="background:#1C1B19">
                 <p class="font-semibold leading-tight" style="color:#F0EDE9">{{ b.name }}</p>
@@ -353,8 +378,10 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
                 {{ a.family }} — Light
               </span>
               <!-- Chip demo -->
-              <span class="inline-flex items-center gap-1.5 self-start rounded-full px-2.5 py-0.5 text-xs font-medium"
-                    :style="{ background: a.lightSoftHex, color: a.lightBoldHex, border: `1px solid ${a.lightBoldHex}20` }">
+              <span
+                class="inline-flex items-center gap-1.5 self-start rounded-full px-2.5 py-0.5 text-xs font-medium"
+                :style="{ background: a.lightSoftHex, color: a.lightBoldHex, border: `1px solid ${a.lightBoldHex}20` }"
+              >
                 <span class="w-1.5 h-1.5 rounded-full inline-block" :style="{ background: a.lightBoldHex }"></span>
                 {{ a.family }}
               </span>
@@ -365,12 +392,12 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
               <div>
                 <p class="opacity-50 mb-0.5">soft bg</p>
                 <code class="font-mono">{{ a.softCssVar }}</code>
-                <br><code class="font-mono opacity-60">{{ a.lightSoftHex }}</code>
+                <br /><code class="font-mono opacity-60">{{ a.lightSoftHex }}</code>
               </div>
               <div>
                 <p class="opacity-50 mb-0.5">bold text</p>
                 <code class="font-mono">{{ a.boldCssVar }}</code>
-                <br><code class="font-mono opacity-60">{{ a.lightBoldHex }}</code>
+                <br /><code class="font-mono opacity-60">{{ a.lightBoldHex }}</code>
               </div>
             </div>
           </div>
@@ -380,8 +407,10 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
               <span class="text-xs font-semibold" :style="{ color: a.darkBoldHex }">
                 {{ a.family }} — Dark
               </span>
-              <span class="inline-flex items-center gap-1.5 self-start rounded-full px-2.5 py-0.5 text-xs font-medium"
-                    :style="{ background: a.darkSoftHex, color: a.darkBoldHex, border: `1px solid ${a.darkBoldHex}30` }">
+              <span
+                class="inline-flex items-center gap-1.5 self-start rounded-full px-2.5 py-0.5 text-xs font-medium"
+                :style="{ background: a.darkSoftHex, color: a.darkBoldHex, border: `1px solid ${a.darkBoldHex}30` }"
+              >
                 <span class="w-1.5 h-1.5 rounded-full inline-block" :style="{ background: a.darkBoldHex }"></span>
                 {{ a.family }}
               </span>
@@ -416,13 +445,17 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
         <div class="flex flex-wrap gap-3">
           <div v-for="s in STATUS" :key="s.name" class="flex flex-col gap-1.5 items-start">
             <!-- Filled pill -->
-            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-white"
-                  :style="{ background: s.lightHex }">
+            <span
+              class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-white"
+              :style="{ background: s.lightHex }"
+            >
               {{ s.name }}
             </span>
             <!-- Tinted bg + colored text -->
-            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
-                  :style="{ background: s.lightHex + '1A', color: s.lightHex }">
+            <span
+              class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
+              :style="{ background: s.lightHex + '1A', color: s.lightHex }"
+            >
               {{ s.name }}
             </span>
             <code class="text-[10px] font-mono opacity-60" style="color:#6B6966">{{ s.lightHex }}</code>
@@ -436,13 +469,17 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
         <div class="flex flex-wrap gap-3">
           <div v-for="s in STATUS" :key="s.name" class="flex flex-col gap-1.5 items-start">
             <!-- Filled pill — dark text for legibility on lighter dark-mode status colors -->
-            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
-                  :style="{ background: s.darkHex, color: '#141311' }">
+            <span
+              class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
+              :style="{ background: s.darkHex, color: '#141311' }"
+            >
               {{ s.name }}
             </span>
             <!-- Tinted bg + colored text -->
-            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
-                  :style="{ background: s.darkHex + '22', color: s.darkHex }">
+            <span
+              class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
+              :style="{ background: s.darkHex + '22', color: s.darkHex }"
+            >
               {{ s.name }}
             </span>
             <code class="text-[10px] font-mono opacity-60" style="color:#6E6B67">{{ s.darkHex }}</code>
@@ -462,8 +499,10 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(s, i) in STATUS" :key="s.name"
-                :class="i % 2 === 1 ? 'bg-surface-sunken' : 'bg-surface-raised'">
+            <tr
+              v-for="(s, i) in STATUS" :key="s.name"
+              :class="i % 2 === 1 ? 'bg-surface-sunken' : 'bg-surface-raised'"
+            >
               <td class="px-3 py-2 font-mono text-ink-primary">{{ s.cssVar }}</td>
               <td class="px-3 py-2">
                 <span class="inline-flex items-center gap-1.5">
@@ -578,6 +617,5 @@ const BRAND_GOLD = { hex: '#C4975A', cssVar: '--brand-gold', tailwind: 'bg-brand
         </div>
       </details>
     </section>
-
   </ComponentPage>
 </template>

@@ -111,7 +111,7 @@ function toggle() {
             sizeMap.thumb,
           ]"
           :style="{ '--sw-translate': sizeMap.translate }"
-        />
+        ></span>
       </span>
     </span>
   </label>

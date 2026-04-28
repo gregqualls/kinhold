@@ -32,7 +32,9 @@ defineEmits(['nice', 'reply'])
     <div
       class="kin-activity-row__avatar flex-shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full text-[13px] font-semibold"
       :style="{ background: avatarColor, color: '#fff' }"
-    >{{ initials }}</div>
+    >
+      {{ initials }}
+    </div>
 
     <div class="flex-1 min-w-0 space-y-0.5">
       <div class="flex items-baseline gap-2 flex-wrap">

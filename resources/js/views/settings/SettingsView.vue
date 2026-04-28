@@ -2130,6 +2130,7 @@ const saveAiSettings = async () => {
     aiConfig.apiKey = ''
     showAiKey.value = false
     await authStore.fetchUser()
+    authStore.fetchAiReady()
     success('AI settings saved!')
   } catch (err) {
     notificationError(err.response?.data?.message || 'Failed to save AI settings')

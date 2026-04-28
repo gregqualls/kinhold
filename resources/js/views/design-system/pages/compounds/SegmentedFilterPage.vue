@@ -88,7 +88,6 @@ function activeIndex(options, activeKey) {
     description="Segmented pill control for mutually-exclusive filter selection — activity feeds, time-range pickers, leaderboard period selectors, and notification filters."
     status="scaffolded"
   >
-
     <!-- ═══════════════════════════════════════════════════════════════════
          VARIANT A — LOCKED: Filled active · plain inactive · single outlined container
          Ease-out fill transition (220ms cubic-bezier(0.22, 1, 0.36, 1)) on the
@@ -97,7 +96,6 @@ function activeIndex(options, activeKey) {
     <section class="mb-16">
       <VariantFrame label="A" caption="Filled active · plain inactive · single outlined container · ease-out fill transition (LOCKED)">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL A -->
           <div class="rounded-2xl border p-6 space-y-8" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -146,7 +144,9 @@ function activeIndex(options, activeKey) {
                     ? { background: L.inkPrimary, color: L.inkInverse }
                     : { background: 'transparent', color: L.inkSecondary }"
                   @click="aFeedLt = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -166,7 +166,9 @@ function activeIndex(options, activeKey) {
                     ? { background: L.inkPrimary, color: L.inkInverse }
                     : { background: 'transparent', color: L.inkSecondary }"
                   @click="aTimeLt = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -186,7 +188,9 @@ function activeIndex(options, activeKey) {
                     ? { background: L.inkPrimary, color: L.inkInverse }
                     : { background: 'transparent', color: L.inkSecondary }"
                   @click="aTimeLt = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -257,7 +261,9 @@ function activeIndex(options, activeKey) {
                     ? { background: D.inkPrimary, color: D.inkInverse }
                     : { background: 'transparent', color: D.inkSecondary }"
                   @click="aFeedDk = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -277,7 +283,9 @@ function activeIndex(options, activeKey) {
                     ? { background: D.inkPrimary, color: D.inkInverse }
                     : { background: 'transparent', color: D.inkSecondary }"
                   @click="aTimeDk = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -297,7 +305,9 @@ function activeIndex(options, activeKey) {
                     ? { background: D.inkPrimary, color: D.inkInverse }
                     : { background: 'transparent', color: D.inkSecondary }"
                   @click="aTimeDk = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -319,7 +329,6 @@ function activeIndex(options, activeKey) {
               </div>
             </div>
           </div><!-- /dark panel A -->
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
@@ -336,7 +345,6 @@ function activeIndex(options, activeKey) {
     <section class="mb-16">
       <VariantFrame label="B" caption="Sliding active background (iOS segmented control) · monochrome ink indicator · ease-out 200ms">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL B -->
           <div class="rounded-2xl border p-6 space-y-8" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -407,7 +415,9 @@ function activeIndex(options, activeKey) {
                   class="relative z-10 seg-b-lt inline-flex items-center rounded-full h-[26px] px-3 text-[12px] font-medium"
                   :style="bFeedLt === opt.key ? { color: L.inkPrimary } : { color: L.inkSecondary }"
                   @click="bFeedLt = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -436,7 +446,9 @@ function activeIndex(options, activeKey) {
                   class="relative z-10 seg-b-lt inline-flex items-center justify-center rounded-full w-9 h-8 text-[13px] font-semibold"
                   :style="bTimeLt === opt.key ? { color: L.inkPrimary } : { color: L.inkSecondary }"
                   @click="bTimeLt = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -465,7 +477,9 @@ function activeIndex(options, activeKey) {
                   class="relative z-10 seg-b-lt inline-flex items-center justify-center rounded-full w-8 h-[26px] text-[12px] font-semibold"
                   :style="bTimeLt === opt.key ? { color: L.inkPrimary } : { color: L.inkSecondary }"
                   @click="bTimeLt = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -562,7 +576,9 @@ function activeIndex(options, activeKey) {
                   class="relative z-10 seg-b-dk inline-flex items-center rounded-full h-[26px] px-3 text-[12px] font-medium"
                   :style="bFeedDk === opt.key ? { color: D.inkPrimary } : { color: D.inkSecondary }"
                   @click="bFeedDk = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -591,7 +607,9 @@ function activeIndex(options, activeKey) {
                   class="relative z-10 seg-b-dk inline-flex items-center justify-center rounded-full w-9 h-8 text-[13px] font-semibold"
                   :style="bTimeDk === opt.key ? { color: D.inkPrimary } : { color: D.inkSecondary }"
                   @click="bTimeDk = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -620,7 +638,9 @@ function activeIndex(options, activeKey) {
                   class="relative z-10 seg-b-dk inline-flex items-center justify-center rounded-full w-8 h-[26px] text-[12px] font-semibold"
                   :style="bTimeDk === opt.key ? { color: D.inkPrimary } : { color: D.inkSecondary }"
                   @click="bTimeDk = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -649,7 +669,6 @@ function activeIndex(options, activeKey) {
               </div>
             </div>
           </div><!-- /dark panel B -->
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
@@ -666,7 +685,6 @@ function activeIndex(options, activeKey) {
     <section class="mb-16">
       <VariantFrame label="C" caption="Individual outlined pills per option · gap between · active = accent-bold fill + inverse text">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL C -->
           <div class="rounded-2xl border p-6 space-y-8" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -709,7 +727,9 @@ function activeIndex(options, activeKey) {
                     ? { background: L.accents.lavender.bold, color: L.inkInverse, border: `1px solid ${L.accents.lavender.bold}` }
                     : { background: L.surfaceRaised, color: L.inkSecondary, border: `1px solid ${L.borderStrong}` }"
                   @click="cFeedLt = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -726,7 +746,9 @@ function activeIndex(options, activeKey) {
                     ? { background: L.accents.mint.bold, color: L.inkInverse, border: `1px solid ${L.accents.mint.bold}` }
                     : { background: L.surfaceRaised, color: L.inkSecondary, border: `1px solid ${L.borderStrong}` }"
                   @click="cTimeLt = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -743,7 +765,9 @@ function activeIndex(options, activeKey) {
                     ? { background: L.accents.mint.bold, color: L.inkInverse, border: `1px solid ${L.accents.mint.bold}` }
                     : { background: L.surfaceRaised, color: L.inkSecondary, border: `1px solid ${L.borderStrong}` }"
                   @click="cTimeLt = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -805,7 +829,9 @@ function activeIndex(options, activeKey) {
                     ? { background: D.accents.lavender.bold, color: D.inkInverse, border: `1px solid ${D.accents.lavender.bold}` }
                     : { background: D.surfaceRaised, color: D.inkSecondary, border: `1px solid ${D.borderStrong}` }"
                   @click="cFeedDk = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -822,7 +848,9 @@ function activeIndex(options, activeKey) {
                     ? { background: D.accents.mint.bold, color: D.inkInverse, border: `1px solid ${D.accents.mint.bold}` }
                     : { background: D.surfaceRaised, color: D.inkSecondary, border: `1px solid ${D.borderStrong}` }"
                   @click="cTimeDk = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -839,7 +867,9 @@ function activeIndex(options, activeKey) {
                     ? { background: D.accents.mint.bold, color: D.inkInverse, border: `1px solid ${D.accents.mint.bold}` }
                     : { background: D.surfaceRaised, color: D.inkSecondary, border: `1px solid ${D.borderStrong}` }"
                   @click="cTimeDk = opt.key"
-                >{{ opt.label }}</button>
+                >
+                  {{ opt.label }}
+                </button>
               </div>
             </div>
 
@@ -858,7 +888,6 @@ function activeIndex(options, activeKey) {
               </div>
             </div>
           </div><!-- /dark panel C -->
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
@@ -926,20 +955,21 @@ function activeIndex(options, activeKey) {
     <section class="mb-16">
       <VariantFrame label="Kin" caption="KinSegmentedFilter — outlined container · ink-filled active pill that *slides* between options. forceMotion is on so you can see the slide regardless of OS reduced-motion preference.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Feed filter — md · with counts</p>
-              <KinSegmentedFilter :options="FEED_OPTIONS" v-model:active-key="kinFeedL" force-motion />
+              <KinSegmentedFilter v-model:active-key="kinFeedL" :options="FEED_OPTIONS" force-motion />
             </div>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Time range — sm · compact</p>
-              <KinSegmentedFilter :options="TIME_OPTIONS" v-model:active-key="kinTimeL" size="sm" force-motion />
+              <KinSegmentedFilter v-model:active-key="kinTimeL" :options="TIME_OPTIONS" size="sm" force-motion />
             </div>
 
             <div class="space-y-2">
@@ -949,25 +979,25 @@ function activeIndex(options, activeKey) {
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Feed filter — md · with counts</p>
-              <KinSegmentedFilter :options="FEED_OPTIONS" v-model:active-key="kinFeedD" force-motion />
+              <KinSegmentedFilter v-model:active-key="kinFeedD" :options="FEED_OPTIONS" force-motion />
             </div>
 
             <div class="space-y-2">
               <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Time range — sm · compact</p>
-              <KinSegmentedFilter :options="TIME_OPTIONS" v-model:active-key="kinTimeD" size="sm" force-motion />
+              <KinSegmentedFilter v-model:active-key="kinTimeD" :options="TIME_OPTIONS" size="sm" force-motion />
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>
-
   </ComponentPage>
 </template>
 

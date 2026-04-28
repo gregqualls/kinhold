@@ -44,14 +44,12 @@ const ACHIEVEMENT_DEMOS = [
     description="Family-aware avatar: photo / preset icon / initials fallback, five sizes (xs–xl). Default is a clean ringless circle — the daily-driver. The arc-ring is an additive affordance applied only where progress communicates state (achievements, weekly task %, badge arcs)."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          SECTION 1 — BASE AVATAR (clean circle, no ring)
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-16">
       <VariantFrame label="Avatar" caption="Clean circle — the default daily-driver">
         <div class="w-full space-y-10">
-
           <!-- Light panel -->
           <div class="rounded-2xl border border-border-subtle bg-surface-app p-6 space-y-8">
             <p class="text-xs font-semibold uppercase tracking-widest text-ink-tertiary">Light mode</p>
@@ -197,7 +195,6 @@ const ACHIEVEMENT_DEMOS = [
     <section class="mb-16">
       <VariantFrame label="Arc" caption="Arc progress overlay — achievement rings and progress toward a goal">
         <div class="w-full space-y-10">
-
           <!-- Light panel -->
           <div class="rounded-2xl border border-border-subtle bg-surface-app p-6 space-y-8">
             <p class="text-xs font-semibold uppercase tracking-widest text-ink-tertiary">Light mode</p>
@@ -348,6 +345,5 @@ const ACHIEVEMENT_DEMOS = [
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>

@@ -67,12 +67,12 @@ const visibleSections = computed(() =>
         <p class="text-[10px] font-semibold uppercase tracking-widest mb-2.5 text-ink-tertiary">
           {{ labelFor(slotName) }}
         </p>
-        <slot :name="slotName" />
+        <slot :name="slotName"></slot>
       </div>
     </template>
 
     <!-- Generic default slot for anything custom (rare). -->
-    <slot />
+    <slot></slot>
   </aside>
 </template>
 

@@ -59,24 +59,28 @@ const activeMob_C = ref('overview')
     description="Pill-row tabs for in-page sections. Three variants explore fill weight, underline minimalism, and tinted accent. Used in recipe detail, restaurant detail, vault entries, family profile, and food module top nav."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          VARIANT A — Filled active pill
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-16">
       <VariantFrame label="A" caption="Filled active pill · outlined inactive · count badge support">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: L.inkTertiary }">Light mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: L.inkTertiary }"
+            >
+              Light mode
+            </p>
 
             <KinTabPillGroup
+              v-model:active-key="activeA_L"
               variant="filled"
               :tabs="TABS_CORE"
-              v-model:active-key="activeA_L"
             />
 
             <!-- Content placeholder -->
@@ -93,15 +97,21 @@ const activeMob_C = ref('overview')
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: D.inkTertiary }">Dark mode</p>
+          <div
+            class="dark rounded-2xl border p-6 space-y-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: D.inkTertiary }"
+            >
+              Dark mode
+            </p>
 
             <KinTabPillGroup
+              v-model:active-key="activeA_D"
               variant="filled"
               :tabs="TABS_CORE"
-              v-model:active-key="activeA_D"
             />
 
             <div class="rounded-xl p-4" :style="{ background: D.surfaceRaised, border: `1px solid ${D.borderSubtle}` }">
@@ -115,7 +125,6 @@ const activeMob_C = ref('overview')
               Badge on inactive uses surface-overlay (#242220) for subtle separation.
             </p>
           </div>
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
@@ -131,17 +140,22 @@ const activeMob_C = ref('overview')
     <section class="mb-16">
       <VariantFrame label="B" caption="Underline active · plain inactive · zero fill chrome">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: L.inkTertiary }">Light mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: L.inkTertiary }"
+            >
+              Light mode
+            </p>
 
             <KinTabPillGroup
+              v-model:active-key="activeB_L"
               variant="underline"
               :tabs="TABS_CORE"
-              v-model:active-key="activeB_L"
             />
 
             <div class="rounded-xl p-4" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
@@ -157,15 +171,21 @@ const activeMob_C = ref('overview')
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: D.inkTertiary }">Dark mode</p>
+          <div
+            class="dark rounded-2xl border p-6 space-y-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: D.inkTertiary }"
+            >
+              Dark mode
+            </p>
 
             <KinTabPillGroup
+              v-model:active-key="activeB_D"
               variant="underline"
               :tabs="TABS_CORE"
-              v-model:active-key="activeB_D"
             />
 
             <div class="rounded-xl p-4" :style="{ background: D.surfaceRaised, border: `1px solid ${D.borderSubtle}` }">
@@ -179,7 +199,6 @@ const activeMob_C = ref('overview')
               Count badge on active: dark-lavender-soft fill with lavender-bold text.
             </p>
           </div>
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
@@ -195,17 +214,22 @@ const activeMob_C = ref('overview')
     <section class="mb-16">
       <VariantFrame label="C" caption="Tinted active pill · transparent inactive · Kinhold lavender accent">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: L.inkTertiary }">Light mode</p>
+          <div
+            class="rounded-2xl border p-6 space-y-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: L.inkTertiary }"
+            >
+              Light mode
+            </p>
 
             <KinTabPillGroup
+              v-model:active-key="activeC_L"
               variant="tinted"
               :tabs="TABS_CORE"
-              v-model:active-key="activeC_L"
             />
 
             <div class="rounded-xl p-4" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
@@ -221,15 +245,21 @@ const activeMob_C = ref('overview')
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
-            <p class="text-xs font-semibold uppercase tracking-widest"
-               :style="{ color: D.inkTertiary }">Dark mode</p>
+          <div
+            class="dark rounded-2xl border p-6 space-y-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :style="{ color: D.inkTertiary }"
+            >
+              Dark mode
+            </p>
 
             <KinTabPillGroup
+              v-model:active-key="activeC_D"
               variant="tinted"
               :tabs="TABS_CORE"
-              v-model:active-key="activeC_D"
             />
 
             <div class="rounded-xl p-4" :style="{ background: D.surfaceRaised, border: `1px solid ${D.borderSubtle}` }">
@@ -243,7 +273,6 @@ const activeMob_C = ref('overview')
               Count badge uses #B6A8E6 fill with charcoal text — intentionally strong pop.
             </p>
           </div>
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
@@ -259,7 +288,6 @@ const activeMob_C = ref('overview')
     <section class="mb-16">
       <VariantFrame label="Mobile" caption="375px viewport · 7 tabs · overflow-x-auto — scrolls horizontally without wrapping">
         <div class="w-full space-y-8">
-
           <p class="text-[12px]" :style="{ color: L.inkTertiary }">
             Each variant on a 375px-equivalent container. Tabs are <code class="font-mono text-[11px] px-1 py-0.5 rounded" :style="{ background: L.surfaceSunken }">flex-shrink-0</code>
             so they never compress. The row uses <code class="font-mono text-[11px] px-1 py-0.5 rounded" :style="{ background: L.surfaceSunken }">overflow-x-auto; scrollbar-width: none</code>
@@ -269,14 +297,16 @@ const activeMob_C = ref('overview')
           <!-- ── Variant A mobile ────────────────────────────────── -->
           <div class="space-y-2">
             <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Variant A — filled pill</p>
-            <div class="max-w-[375px] rounded-2xl border p-4 space-y-4"
-                 :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <div
+              class="max-w-[375px] rounded-2xl border p-4 space-y-4"
+              :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+            >
               <div class="overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
                 <KinTabPillGroup
+                  v-model:active-key="activeMob_A"
                   variant="filled"
                   size="sm"
                   :tabs="TABS_OVERFLOW"
-                  v-model:active-key="activeMob_A"
                 />
               </div>
               <div class="rounded-xl px-3 py-2" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
@@ -290,14 +320,16 @@ const activeMob_C = ref('overview')
           <!-- ── Variant B mobile ────────────────────────────────── -->
           <div class="space-y-2">
             <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Variant B — underline</p>
-            <div class="max-w-[375px] rounded-2xl border p-4 space-y-4"
-                 :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <div
+              class="max-w-[375px] rounded-2xl border p-4 space-y-4"
+              :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+            >
               <div class="overflow-x-auto pb-0" style="scrollbar-width: none; -ms-overflow-style: none;">
                 <KinTabPillGroup
+                  v-model:active-key="activeMob_B"
                   variant="underline"
                   size="sm"
                   :tabs="TABS_OVERFLOW"
-                  v-model:active-key="activeMob_B"
                 />
               </div>
               <div class="rounded-xl px-3 py-2" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
@@ -311,14 +343,16 @@ const activeMob_C = ref('overview')
           <!-- ── Variant C mobile ────────────────────────────────── -->
           <div class="space-y-2">
             <p class="text-[11px] font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Variant C — tinted accent</p>
-            <div class="max-w-[375px] rounded-2xl border p-4 space-y-4"
-                 :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <div
+              class="max-w-[375px] rounded-2xl border p-4 space-y-4"
+              :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+            >
               <div class="overflow-x-auto pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
                 <KinTabPillGroup
+                  v-model:active-key="activeMob_C"
                   variant="tinted"
                   size="sm"
                   :tabs="TABS_OVERFLOW"
-                  v-model:active-key="activeMob_C"
                 />
               </div>
               <div class="rounded-xl px-3 py-2" :style="{ background: L.surfaceRaised, border: `1px solid ${L.borderSubtle}` }">
@@ -328,7 +362,6 @@ const activeMob_C = ref('overview')
               </div>
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>
@@ -338,8 +371,10 @@ const activeMob_C = ref('overview')
          CLAUDE'S PICK CALLOUT
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-8">
-      <div class="rounded-2xl border p-6 space-y-3"
-           :style="{ background: L.accents.lavender.soft, borderColor: L.accents.lavender.bold }">
+      <div
+        class="rounded-2xl border p-6 space-y-3"
+        :style="{ background: L.accents.lavender.soft, borderColor: L.accents.lavender.bold }"
+      >
         <div class="flex items-center gap-2">
           <SparklesIcon class="w-5 h-5" :style="{ color: L.accents.lavender.bold }" />
           <h2 class="text-[15px] font-semibold" :style="{ color: L.accents.lavender.bold }">Claude's pick — Variant C</h2>
@@ -360,8 +395,10 @@ const activeMob_C = ref('overview')
          USAGE GUIDE
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-8">
-      <div class="rounded-2xl border p-6 space-y-4"
-           :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+      <div
+        class="rounded-2xl border p-6 space-y-4"
+        :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"
+      >
         <h2 class="text-[17px] font-semibold" :style="{ color: L.inkPrimary }">When to use which variant</h2>
         <ul class="space-y-3 text-[14px]" :style="{ color: L.inkSecondary }">
           <li>
@@ -395,7 +432,6 @@ const activeMob_C = ref('overview')
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>
 

@@ -60,52 +60,57 @@ const activeC_dk_hidden = ref(['family', 'reading'])
     description="Horizontal row of icon + label chips for category selection. Three layout strategies for overflow behavior — the chip style itself is locked from Tier 1.3."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          VARIANT A — flex-wrap: all chips visible, wraps on narrow
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-16">
       <VariantFrame label="A" caption="Flex-wrap row — all chips visible, wraps to multiple lines on narrow viewports">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: L.inkTertiary }">Wide — all 8 categories on one line</p>
-              <KinCategoryChipRow mode="wrap" :categories="CATEGORIES" v-model:active-keys="activeA_lt" />
+              <KinCategoryChipRow v-model:active-keys="activeA_lt" mode="wrap" :categories="CATEGORIES" />
             </div>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: L.inkTertiary }">Narrow (320px) — wraps naturally across two lines</p>
-              <div class="max-w-[320px] rounded-xl border p-3"
-                   :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
-                <KinCategoryChipRow mode="wrap" :categories="CATEGORIES" v-model:active-keys="activeA_lt" />
+              <div
+                class="max-w-[320px] rounded-xl border p-3"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"
+              >
+                <KinCategoryChipRow v-model:active-keys="activeA_lt" mode="wrap" :categories="CATEGORIES" />
               </div>
             </div>
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-8"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-8"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: D.inkTertiary }">Wide — all 8 categories</p>
-              <KinCategoryChipRow mode="wrap" :categories="CATEGORIES" v-model:active-keys="activeA_dk" />
+              <KinCategoryChipRow v-model:active-keys="activeA_dk" mode="wrap" :categories="CATEGORIES" />
             </div>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: D.inkTertiary }">Narrow (320px) — wraps naturally</p>
-              <div class="max-w-[320px] rounded-xl border p-3"
-                   :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
-                <KinCategoryChipRow mode="wrap" :categories="CATEGORIES" v-model:active-keys="activeA_dk" />
+              <div
+                class="max-w-[320px] rounded-xl border p-3"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }"
+              >
+                <KinCategoryChipRow v-model:active-keys="activeA_dk" mode="wrap" :categories="CATEGORIES" />
               </div>
             </div>
           </div>
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
@@ -119,45 +124,51 @@ const activeC_dk_hidden = ref(['family', 'reading'])
     <section class="mb-16">
       <VariantFrame label="B" caption="Horizontal scroll — single-line, no wrapping">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: L.inkTertiary }">Wide — single-line, scrollable</p>
-              <KinCategoryChipRow mode="scroll" :categories="CATEGORIES" v-model:active-keys="activeB_lt" />
+              <KinCategoryChipRow v-model:active-keys="activeB_lt" mode="scroll" :categories="CATEGORIES" />
             </div>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: L.inkTertiary }">Narrow (320px) — scroll right to reveal hidden chips</p>
-              <div class="max-w-[320px] rounded-xl border p-3"
-                   :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
-                <KinCategoryChipRow mode="scroll" :clearable="false" :categories="CATEGORIES" v-model:active-keys="activeB_lt" />
+              <div
+                class="max-w-[320px] rounded-xl border p-3"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"
+              >
+                <KinCategoryChipRow v-model:active-keys="activeB_lt" mode="scroll" :clearable="false" :categories="CATEGORIES" />
               </div>
             </div>
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-8"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-8"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: D.inkTertiary }">Wide — single-line</p>
-              <KinCategoryChipRow mode="scroll" :categories="CATEGORIES" v-model:active-keys="activeB_dk" />
+              <KinCategoryChipRow v-model:active-keys="activeB_dk" mode="scroll" :categories="CATEGORIES" />
             </div>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: D.inkTertiary }">Narrow (320px) — scroll right</p>
-              <div class="max-w-[320px] rounded-xl border p-3"
-                   :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
-                <KinCategoryChipRow mode="scroll" :clearable="false" :categories="CATEGORIES" v-model:active-keys="activeB_dk" />
+              <div
+                class="max-w-[320px] rounded-xl border p-3"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }"
+              >
+                <KinCategoryChipRow v-model:active-keys="activeB_dk" mode="scroll" :clearable="false" :categories="CATEGORIES" />
               </div>
             </div>
           </div>
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
@@ -171,45 +182,51 @@ const activeC_dk_hidden = ref(['family', 'reading'])
     <section class="mb-16">
       <VariantFrame label="C" caption="Hybrid — 4 chips + '+N more' affordance on mobile; full wrap on desktop">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-8"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-8"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: L.inkTertiary }">Desktop — full wrap, all chips accessible</p>
-              <KinCategoryChipRow mode="hybrid" :categories="CATEGORIES" v-model:active-keys="activeC_lt" />
+              <KinCategoryChipRow v-model:active-keys="activeC_lt" mode="hybrid" :categories="CATEGORIES" />
             </div>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: L.inkTertiary }">Mobile (320px) — 4 chips visible, "+N more" opens a bottom sheet (wired in production)</p>
-              <div class="max-w-[320px] rounded-xl border p-3"
-                   :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
-                <KinCategoryChipRow mode="hybrid" :mobile-visible="4" :clearable="false" :categories="CATEGORIES" v-model:active-keys="activeC_lt" />
+              <div
+                class="max-w-[320px] rounded-xl border p-3"
+                :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"
+              >
+                <KinCategoryChipRow v-model:active-keys="activeC_lt" mode="hybrid" :mobile-visible="4" :clearable="false" :categories="CATEGORIES" />
               </div>
             </div>
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-8"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-8"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: D.inkTertiary }">Desktop — full wrap</p>
-              <KinCategoryChipRow mode="hybrid" :categories="CATEGORIES" v-model:active-keys="activeC_dk" />
+              <KinCategoryChipRow v-model:active-keys="activeC_dk" mode="hybrid" :categories="CATEGORIES" />
             </div>
 
             <div>
               <p class="text-xs mb-3" :style="{ color: D.inkTertiary }">Mobile (320px) — 4 chips + overflow affordance</p>
-              <div class="max-w-[320px] rounded-xl border p-3"
-                   :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }">
-                <KinCategoryChipRow mode="hybrid" :mobile-visible="4" :clearable="false" :categories="CATEGORIES" v-model:active-keys="activeC_dk" />
+              <div
+                class="max-w-[320px] rounded-xl border p-3"
+                :style="{ background: D.surfaceRaised, borderColor: D.borderSubtle }"
+              >
+                <KinCategoryChipRow v-model:active-keys="activeC_dk" mode="hybrid" :mobile-visible="4" :clearable="false" :categories="CATEGORIES" />
               </div>
             </div>
           </div>
-
         </div>
       </VariantFrame>
       <p class="mt-3 text-sm px-1" :style="{ color: L.inkSecondary }">
@@ -221,8 +238,10 @@ const activeC_dk_hidden = ref(['family', 'reading'])
          CLAUDE'S PICK
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-8">
-      <div class="rounded-2xl border p-6 space-y-3"
-           :style="{ background: L.accents.lavender.soft, borderColor: L.accents.lavender.bold }">
+      <div
+        class="rounded-2xl border p-6 space-y-3"
+        :style="{ background: L.accents.lavender.soft, borderColor: L.accents.lavender.bold }"
+      >
         <div class="flex items-center gap-2">
           <SparklesIcon class="w-5 h-5" :style="{ color: L.accents.lavender.bold }" />
           <h2 class="text-[15px] font-semibold" :style="{ color: L.accents.lavender.bold }">Claude's pick — Variant B</h2>
@@ -237,8 +256,10 @@ const activeC_dk_hidden = ref(['family', 'reading'])
          USAGE GUIDE
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-8">
-      <div class="rounded-2xl border p-6 space-y-4"
-           :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }">
+      <div
+        class="rounded-2xl border p-6 space-y-4"
+        :style="{ background: L.surfaceRaised, borderColor: L.borderSubtle }"
+      >
         <h2 class="text-[17px] font-semibold" :style="{ color: L.inkPrimary }">When to use which</h2>
         <ul class="space-y-4 text-[14px]" :style="{ color: L.inkSecondary }">
           <li>
@@ -260,6 +281,5 @@ const activeC_dk_hidden = ref(['family', 'reading'])
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>

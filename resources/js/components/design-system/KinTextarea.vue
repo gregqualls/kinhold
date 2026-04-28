@@ -100,7 +100,6 @@ function onInput(e) {
 
 <template>
   <div class="flex flex-col gap-1 w-full">
-
     <!-- Label -->
     <label
       v-if="hasLabel"
@@ -127,11 +126,11 @@ function onInput(e) {
         'kin-textarea w-full border-0 outline-none resize-y',
         'bg-surface-sunken text-ink-primary placeholder:text-ink-tertiary',
         sizeClasses,
-        hasError  ? 'kin-textarea--error'  : '',
-        disabled  ? 'cursor-not-allowed opacity-70' : '',
+        hasError ? 'kin-textarea--error' : '',
+        disabled ? 'cursor-not-allowed opacity-70' : '',
       ]"
       @input="onInput"
-    />
+    ></textarea>
 
     <!-- Helper / Error -->
     <p
@@ -144,7 +143,6 @@ function onInput(e) {
     >
       {{ hasError ? error : helper }}
     </p>
-
   </div>
 </template>
 

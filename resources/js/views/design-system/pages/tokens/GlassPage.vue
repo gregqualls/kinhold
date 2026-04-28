@@ -61,7 +61,6 @@ const UTILITY_CLASSES = [
     description="Glassmorphism — purposeful and constrained. Two utility classes (.surface-glass and .surface-glass-strong) backed by six CSS custom properties. Both classes inherit border-radius, so they pair naturally with rounded-pill, rounded-card, and rounded-sheet."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════
          INTRO / TENET CALLOUT
          ══════════════════════════════════════════════ -->
@@ -556,7 +555,6 @@ const UTILITY_CLASSES = [
           The background gradient is intentional — it shows how badly glass degrades legibility on small controls.
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-
           <!-- DON'T 1: Form input -->
           <div class="flex flex-col gap-3">
             <div class="relative">
@@ -649,7 +647,6 @@ const UTILITY_CLASSES = [
               </p>
             </div>
           </div>
-
         </div>
 
         <div class="mt-6 rounded-xl border border-border-subtle bg-surface-raised px-4 py-3 text-body-sm text-ink-secondary">
@@ -740,7 +737,6 @@ const UTILITY_CLASSES = [
         utilities from Tailwind — use these classes instead.
       </div>
     </section>
-
   </ComponentPage>
 </template>
 

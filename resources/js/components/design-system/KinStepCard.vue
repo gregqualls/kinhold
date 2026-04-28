@@ -32,7 +32,7 @@ defineProps({
         <CheckIcon v-if="state === 'done'" class="w-4 h-4" />
         <span v-else>{{ number }}</span>
       </div>
-      <div v-if="!isLast" class="kin-step-card__connector flex-1" style="width: 2px; min-height: 24px; margin: 2px 0;" />
+      <div v-if="!isLast" class="kin-step-card__connector flex-1" style="width: 2px; min-height: 24px; margin: 2px 0;"></div>
     </div>
 
     <!-- Right: card content -->
@@ -44,8 +44,8 @@ defineProps({
             v-if="state === 'done'"
             class="kin-step-card__chip inline-flex items-center h-5 px-2 rounded-full text-[11px] font-medium flex-shrink-0"
           >Done</span>
-          <ChevronUpIcon   v-else-if="state === 'active'" class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
-          <ChevronDownIcon v-else                         class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
+          <ChevronUpIcon v-else-if="state === 'active'" class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
+          <ChevronDownIcon v-else class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
         </div>
         <p v-if="(body || $slots.default) && state !== 'default'" class="kin-step-card__body text-[13px] leading-relaxed mt-2">
           <slot>{{ body }}</slot>

@@ -54,23 +54,20 @@ const collapsedDk = ref(false)
     description="Desktop navigation sidebar for data-heavy views — calendar, tasks, vault, food. Active item gets a filled accent-lavender pill. Collapsible to 72px icons-only state via the toggle at the bottom."
     status="chosen"
   >
-
     <section class="mb-20">
       <VariantFrame label="Sidebar" caption="Accent-pill active item + collapsible. Click the toggle at the bottom of each sidebar to switch between 240px expanded and 72px icons-only.">
         <div class="w-full space-y-10">
-
           <!-- ══════════════ LIGHT PANEL ══════════════ -->
           <div class="rounded-2xl border p-6 space-y-4" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
             <p class="text-[11px] font-medium" :style="{ color: L.inkTertiary }">Active: "Today" — click the chevron toggle at the bottom to collapse</p>
 
             <div class="flex rounded-xl overflow-hidden border" :style="{ borderColor: L.borderSubtle, height: '480px' }">
-
               <KinSidebar
+                v-model:collapsed="collapsedLt"
                 brand="kinhold"
                 :items="NAV_ITEMS"
                 active-key="today"
-                v-model:collapsed="collapsedLt"
               >
                 <template #user="{ collapsed }">
                   <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" :style="{ background: L.accentLavSoft }">
@@ -103,12 +100,11 @@ const collapsedDk = ref(false)
             <p class="text-[11px] font-medium" :style="{ color: D.inkTertiary }">Active: "Today" — click the chevron toggle at the bottom to collapse</p>
 
             <div class="flex rounded-xl overflow-hidden border" :style="{ borderColor: D.borderSubtle, height: '480px' }">
-
               <KinSidebar
+                v-model:collapsed="collapsedDk"
                 brand="kinhold"
                 :items="NAV_ITEMS"
                 active-key="today"
-                v-model:collapsed="collapsedDk"
               >
                 <template #user="{ collapsed }">
                   <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" :style="{ background: D.accentLavSoft }">
@@ -134,10 +130,8 @@ const collapsedDk = ref(false)
               </div>
             </div>
           </div><!-- /dark panel -->
-
         </div>
       </VariantFrame>
     </section>
-
   </ComponentPage>
 </template>

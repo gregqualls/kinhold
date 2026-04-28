@@ -37,29 +37,30 @@ const chartStreak = [0.10, 0.20, 0.30, 0.42, 0.55, 0.70, 0.85]
     <section class="mb-16">
       <VariantFrame label="KinStatTile" caption="Every layer below the hero number is opt-in (label + range + delta + chart). Hero font size scales with character count for visual balance.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode — full (label + range + delta + hero + chart)</p>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <KinStatTile
-                label="Points Earned" value="1,248" accent-color="sun"
-                delta="+86" :delta-up="true"
-                :chart-data="chartPoints" chart-type="line"
-                :ranges="RANGES" v-model:range="rangePointsL"
+                v-model:range="rangePointsL" label="Points Earned" value="1,248"
+                accent-color="sun" delta="+86"
+                :delta-up="true" :chart-data="chartPoints"
+                chart-type="line" :ranges="RANGES"
               />
               <KinStatTile
-                label="Tasks Done" value="84%" accent-color="mint"
-                delta="+12%" :delta-up="true"
-                :chart-data="chartTasks" chart-type="bars"
-                :ranges="RANGES" v-model:range="rangeTasksL"
+                v-model:range="rangeTasksL" label="Tasks Done" value="84%"
+                accent-color="mint" delta="+12%"
+                :delta-up="true" :chart-data="chartTasks"
+                chart-type="bars" :ranges="RANGES"
               />
               <KinStatTile
-                label="Day Streak" value="23" accent-color="peach"
-                delta="+3" :delta-up="true"
-                :chart-data="chartStreak" chart-type="line"
-                :ranges="RANGES" v-model:range="rangeStreakL"
+                v-model:range="rangeStreakL" label="Day Streak" value="23"
+                accent-color="peach" delta="+3"
+                :delta-up="true" :chart-data="chartStreak"
+                chart-type="line" :ranges="RANGES"
               />
             </div>
 
@@ -72,27 +73,29 @@ const chartStreak = [0.10, 0.20, 0.30, 0.42, 0.55, 0.70, 0.85]
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode — full</p>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <KinStatTile
-                label="Points Earned" value="1,248" accent-color="sun"
-                delta="+86" :delta-up="true"
-                :chart-data="chartPoints" chart-type="line"
-                :ranges="RANGES" v-model:range="rangePointsD"
+                v-model:range="rangePointsD" label="Points Earned" value="1,248"
+                accent-color="sun" delta="+86"
+                :delta-up="true" :chart-data="chartPoints"
+                chart-type="line" :ranges="RANGES"
               />
               <KinStatTile
-                label="Tasks Done" value="84%" accent-color="mint"
-                delta="+12%" :delta-up="true"
-                :chart-data="chartTasks" chart-type="bars"
-                :ranges="RANGES" v-model:range="rangeTasksD"
+                v-model:range="rangeTasksD" label="Tasks Done" value="84%"
+                accent-color="mint" delta="+12%"
+                :delta-up="true" :chart-data="chartTasks"
+                chart-type="bars" :ranges="RANGES"
               />
               <KinStatTile
-                label="Day Streak" value="23" accent-color="peach"
-                delta="+3" :delta-up="true"
-                :chart-data="chartStreak" chart-type="line"
-                :ranges="RANGES" v-model:range="rangeStreakD"
+                v-model:range="rangeStreakD" label="Day Streak" value="23"
+                accent-color="peach" delta="+3"
+                :delta-up="true" :chart-data="chartStreak"
+                chart-type="line" :ranges="RANGES"
               />
             </div>
 
@@ -103,7 +106,6 @@ const chartStreak = [0.10, 0.20, 0.30, 0.42, 0.55, 0.70, 0.85]
               <KinStatTile label="Leader" value="Greg" accent-color="sun" />
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>

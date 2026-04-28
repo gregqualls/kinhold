@@ -26,10 +26,11 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
     <section class="mb-16">
       <VariantFrame label="KinHeroMetricCard" caption="Iridescent (calm summary), warm (streak / urgency), photo (with two-layer scrim). Hero number is container-query scaled.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div class="space-y-4">
@@ -70,8 +71,10 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div class="space-y-4">
@@ -110,7 +113,6 @@ const PHOTO_FAMILY_DINNER = 'https://images.unsplash.com/photo-1414235077428-338
               />
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>

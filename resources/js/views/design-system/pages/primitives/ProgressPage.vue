@@ -61,15 +61,12 @@ const ARC_EMPHASIS = [
     description="Horizontal solid-fill bars for linear progress (task lists, rewards, budgets) + arc gauges for hero moments (dashboard goal rings, weekly stats). Both respect prefers-reduced-motion."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          SECTION 1 — HORIZONTAL PROGRESS BAR
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
-
       <VariantFrame label="Horizontal" caption="Solid accent fill — editorial, matches the lavender system">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-8" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -116,7 +113,7 @@ const ARC_EMPHASIS = [
               <p class="text-xs mb-4" :style="{ color: L.inkTertiary }">With label — realistic Kinhold contexts</p>
               <div class="space-y-5">
                 <div v-for="bar in LABELED_BARS" :key="bar.label">
-                  <KinProgressBar :value="bar.pct" size="md" color="lavender" :label="bar.label" showValue />
+                  <KinProgressBar :value="bar.pct" size="md" color="lavender" :label="bar.label" show-value />
                   <p class="mt-1 text-[11px]" :style="{ color: L.inkTertiary }">{{ bar.detail }}</p>
                 </div>
               </div>
@@ -175,7 +172,7 @@ const ARC_EMPHASIS = [
               <p class="text-xs mb-4" :style="{ color: D.inkTertiary }">With label</p>
               <div class="space-y-5">
                 <div v-for="bar in LABELED_BARS" :key="bar.label">
-                  <KinProgressBar :value="bar.pct" size="md" color="lavender" :label="bar.label" showValue />
+                  <KinProgressBar :value="bar.pct" size="md" color="lavender" :label="bar.label" show-value />
                   <p class="mt-1 text-[11px]" :style="{ color: D.inkTertiary }">{{ bar.detail }}</p>
                 </div>
               </div>
@@ -189,7 +186,6 @@ const ARC_EMPHASIS = [
           </div><!-- /dark -->
         </div>
       </VariantFrame>
-
     </section>
 
 
@@ -199,7 +195,6 @@ const ARC_EMPHASIS = [
     <section class="mb-20">
       <VariantFrame label="Arc gauge" caption="Circular gauge for hero moments — weekly goals, budget rings, reward progress">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-10" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -414,6 +409,5 @@ const ARC_EMPHASIS = [
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>

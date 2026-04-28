@@ -108,7 +108,6 @@ function onClear() {
 
 <template>
   <div class="relative w-full" :class="disabled ? 'opacity-70' : ''">
-
     <!-- Leading search icon — color shifts on focus via CSS -->
     <span
       :class="[
@@ -156,7 +155,6 @@ function onClear() {
     >
       <XMarkIcon :class="iconSize" />
     </button>
-
   </div>
 </template>
 

@@ -135,13 +135,13 @@ const fillStyle = computed(() => ({
         v-if="!indeterminate"
         class="rounded-pill kin-bar-fill"
         :style="fillStyle"
-      />
+      ></div>
       <!-- Indeterminate shimmer -->
       <div
         v-else
         class="rounded-pill kin-bar-indeterminate"
         :style="fillStyle"
-      />
+      ></div>
     </div>
   </div>
 </template>

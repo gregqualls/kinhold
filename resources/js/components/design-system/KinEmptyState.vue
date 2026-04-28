@@ -76,7 +76,9 @@ const titleClass = computed(() => ({
     <h2
       class="font-heading font-semibold leading-snug text-ink-primary"
       :class="titleClass"
-    >{{ title }}</h2>
+    >
+      {{ title }}
+    </h2>
 
     <!-- Description (prop OR default slot) -->
     <p
@@ -88,7 +90,7 @@ const titleClass = computed(() => ({
 
     <!-- CTA -->
     <div v-if="$slots.cta" class="pt-1">
-      <slot name="cta" />
+      <slot name="cta"></slot>
     </div>
   </div>
 </template>

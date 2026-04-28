@@ -54,27 +54,29 @@ const kinSelPillsD = ref(SELECTED)
     <section class="mb-16">
       <VariantFrame label="KinMonthGrid" caption="Click any current-month cell to select; leading/trailing month days are dimmed and disabled. Density toggle shows the same data as dots or as truncated event pills.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-4 md:p-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-4 md:p-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-[10px] font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Light mode · dots density (default)</p>
-            <KinMonthGrid :cells="CELLS" :events="EVENTS" :today="TODAY" v-model:selected="kinSelL" density="dots" />
+            <KinMonthGrid v-model:selected="kinSelL" :cells="CELLS" :events="EVENTS" :today="TODAY" density="dots" />
 
             <p class="text-[10px] font-semibold uppercase tracking-widest mt-6 mb-4" :style="{ color: L.inkTertiary }">Light mode · pills density</p>
-            <KinMonthGrid :cells="CELLS" :events="EVENTS" :today="TODAY" v-model:selected="kinSelPillsL" density="pills" />
+            <KinMonthGrid v-model:selected="kinSelPillsL" :cells="CELLS" :events="EVENTS" :today="TODAY" density="pills" />
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-4 md:p-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-4 md:p-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-[10px] font-semibold uppercase tracking-widest mb-4" :style="{ color: D.inkTertiary }">Dark mode · dots density (default)</p>
-            <KinMonthGrid :cells="CELLS" :events="EVENTS" :today="TODAY" v-model:selected="kinSelD" density="dots" />
+            <KinMonthGrid v-model:selected="kinSelD" :cells="CELLS" :events="EVENTS" :today="TODAY" density="dots" />
 
             <p class="text-[10px] font-semibold uppercase tracking-widest mt-6 mb-4" :style="{ color: D.inkTertiary }">Dark mode · pills density</p>
-            <KinMonthGrid :cells="CELLS" :events="EVENTS" :today="TODAY" v-model:selected="kinSelPillsD" density="pills" />
+            <KinMonthGrid v-model:selected="kinSelPillsD" :cells="CELLS" :events="EVENTS" :today="TODAY" density="pills" />
           </div>
-
         </div>
       </VariantFrame>
     </section>

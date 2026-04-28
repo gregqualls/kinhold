@@ -39,10 +39,11 @@ const KIN_DEMOS = [
     <section class="mb-16">
       <VariantFrame label="KinToast + KinToastStack" caption="Fire a real toast. Auto-dismiss 4.5s · max 3 visible · top-right desktop / top-center mobile.">
         <div class="w-full space-y-6">
-
           <!-- TRIGGER PANEL -->
-          <div class="rounded-2xl border p-6 space-y-4"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-4"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Fire a toast</p>
             <div class="flex flex-wrap gap-2">
               <KinButton
@@ -51,7 +52,9 @@ const KIN_DEMOS = [
                 size="sm"
                 variant="secondary"
                 @click="pushToast(d)"
-              >{{ d.status }}</KinButton>
+              >
+                {{ d.status }}
+              </KinButton>
             </div>
             <p class="text-[13px]" :style="{ color: L.inkSecondary }">
               Each click pushes a real KinToast into KinToastStack. Auto-dismisses after 4.5s; click <kbd class="font-mono text-[11px] px-1.5 py-0.5 rounded" :style="{ background: L.surfaceSunken }">×</kbd> to dismiss early. Max 3 visible — older ones drop off the bottom of the stack.
@@ -60,18 +63,21 @@ const KIN_DEMOS = [
 
           <!-- STATIC GALLERY (light + dark) for visual reference -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="rounded-2xl border p-6 space-y-3"
-                 :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+            <div
+              class="rounded-2xl border p-6 space-y-3"
+              :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+            >
               <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light — all 6 statuses</p>
               <KinToast v-for="d in KIN_DEMOS" :key="d.status" :status="d.status" :title="d.title" :body="d.body" :action-label="d.actionLabel" />
             </div>
-            <div class="dark rounded-2xl border p-6 space-y-3"
-                 :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+            <div
+              class="dark rounded-2xl border p-6 space-y-3"
+              :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+            >
               <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark — all 6 statuses</p>
               <KinToast v-for="d in KIN_DEMOS" :key="d.status" :status="d.status" :title="d.title" :body="d.body" :action-label="d.actionLabel" />
             </div>
           </div>
-
         </div>
       </VariantFrame>
 

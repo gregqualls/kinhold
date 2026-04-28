@@ -86,7 +86,7 @@ const ctaAttrs = computed(() => {
         class="absolute inset-0 w-full h-full object-cover"
         loading="lazy"
       />
-      <div class="kin-hmc__scrim absolute inset-0" aria-hidden="true" />
+      <div class="kin-hmc__scrim absolute inset-0" aria-hidden="true"></div>
     </template>
 
     <!-- Content — in normal flow, pushed to bottom of article via justify-end. -->
@@ -97,14 +97,16 @@ const ctaAttrs = computed(() => {
           <p
             class="kin-hmc__value font-semibold leading-none tracking-tight whitespace-nowrap"
             :style="{ fontSize: valueFontSize }"
-          >{{ value }}</p>
+          >
+            {{ value }}
+          </p>
           <div v-if="delta" class="flex items-center gap-2 pt-1">
             <span
               class="kin-hmc__delta inline-flex items-center gap-1 h-6 px-2.5 rounded-full text-[11px] font-medium"
               :class="deltaUp ? 'kin-hmc__delta--up' : 'kin-hmc__delta--down'"
             >
-              <ArrowUpRightIcon   v-if="deltaUp"  class="w-3 h-3" />
-              <ArrowDownRightIcon v-else           class="w-3 h-3" />
+              <ArrowUpRightIcon v-if="deltaUp" class="w-3 h-3" />
+              <ArrowDownRightIcon v-else class="w-3 h-3" />
               {{ delta }}
             </span>
           </div>
@@ -113,8 +115,8 @@ const ctaAttrs = computed(() => {
 
       <slot name="cta">
         <component
-          v-if="ctaLabel"
           :is="ctaTag"
+          v-if="ctaLabel"
           v-bind="ctaAttrs"
           class="kin-hmc__cta shrink-0 inline-flex items-center gap-1.5 h-10 px-4 rounded-full text-[13px] font-medium"
           @click="$emit('cta-click', $event)"

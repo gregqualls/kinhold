@@ -28,7 +28,6 @@ const D = {
     <section class="mb-16">
       <VariantFrame label="KinReceiptCard" caption="Title + title icon + accent color · label/value rows with optional row icons · optional CTA. Per-row icon accent overrides the card accent.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest mb-4" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -39,9 +38,9 @@ const D = {
                 accent-color="sun"
                 :rows="[
                   { label: 'Points spent', value: '150', icon: StarIcon },
-                  { label: 'Purchased',    value: 'Today', icon: CalendarDaysIcon },
-                  { label: 'Expires',      value: 'Apr 30', icon: ClockIcon },
-                  { label: 'Redeemed by',  value: 'Emma',   icon: UserIcon },
+                  { label: 'Purchased', value: 'Today', icon: CalendarDaysIcon },
+                  { label: 'Expires', value: 'Apr 30', icon: ClockIcon },
+                  { label: 'Redeemed by', value: 'Emma', icon: UserIcon },
                 ]"
                 action-label="View details"
               />
@@ -50,9 +49,9 @@ const D = {
                 :title-icon="CheckBadgeIcon"
                 accent-color="mint"
                 :rows="[
-                  { label: 'Due',      value: 'Tomorrow 6pm', icon: CalendarDaysIcon },
-                  { label: 'Priority', value: 'High',          icon: FlagIcon, iconAccent: 'peach' },
-                  { label: 'Points',   value: '5',             icon: StarIcon, iconAccent: 'sun' },
+                  { label: 'Due', value: 'Tomorrow 6pm', icon: CalendarDaysIcon },
+                  { label: 'Priority', value: 'High', icon: FlagIcon, iconAccent: 'peach' },
+                  { label: 'Points', value: '5', icon: StarIcon, iconAccent: 'sun' },
                 ]"
                 action-label="Mark complete"
               />
@@ -69,9 +68,9 @@ const D = {
                 accent-color="sun"
                 :rows="[
                   { label: 'Points spent', value: '150', icon: StarIcon },
-                  { label: 'Purchased',    value: 'Today', icon: CalendarDaysIcon },
-                  { label: 'Expires',      value: 'Apr 30', icon: ClockIcon },
-                  { label: 'Redeemed by',  value: 'Emma',   icon: UserIcon },
+                  { label: 'Purchased', value: 'Today', icon: CalendarDaysIcon },
+                  { label: 'Expires', value: 'Apr 30', icon: ClockIcon },
+                  { label: 'Redeemed by', value: 'Emma', icon: UserIcon },
                 ]"
                 action-label="View details"
               />
@@ -80,15 +79,14 @@ const D = {
                 :title-icon="CheckBadgeIcon"
                 accent-color="mint"
                 :rows="[
-                  { label: 'Due',      value: 'Tomorrow 6pm', icon: CalendarDaysIcon },
-                  { label: 'Priority', value: 'High',          icon: FlagIcon, iconAccent: 'peach' },
-                  { label: 'Points',   value: '5',             icon: StarIcon, iconAccent: 'sun' },
+                  { label: 'Due', value: 'Tomorrow 6pm', icon: CalendarDaysIcon },
+                  { label: 'Priority', value: 'High', icon: FlagIcon, iconAccent: 'peach' },
+                  { label: 'Points', value: '5', icon: StarIcon, iconAccent: 'sun' },
                 ]"
                 action-label="Mark complete"
               />
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>

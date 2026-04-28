@@ -52,10 +52,8 @@ const activeDark  = ref('today')
     description="Left-aligned brand + nav pills, full search pill in the middle, utility cluster right. Bar uses a glass (backdrop-blur) treatment — one of the four allowed glass surfaces per tenet #7."
     status="chosen"
   >
-
     <VariantFrame label="Top nav" caption="Left-aligned brand + nav pills, search in the middle, utility right. Glass (backdrop-blur) surface — floats above content like a sticky header.">
       <div class="w-full space-y-10">
-
         <!-- ══════════════ LIGHT PANEL ══════════════ -->
         <div class="rounded-2xl border p-6 space-y-8" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
           <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -72,8 +70,10 @@ const activeDark  = ref('today')
                   @item-click="(key) => activeLight = key"
                 >
                   <template #search>
-                    <div class="flex items-center gap-2 rounded-full px-4 h-9 max-w-sm w-full"
-                         style="background: rgba(245,242,238,0.70); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.60);">
+                    <div
+                      class="flex items-center gap-2 rounded-full px-4 h-9 max-w-sm w-full"
+                      style="background: rgba(245,242,238,0.70); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.60);"
+                    >
                       <MagnifyingGlassIcon class="w-4 h-4 shrink-0" :style="{ color: L.inkTertiary }" />
                       <span class="text-[13px]" :style="{ color: L.inkTertiary }">Search Kinhold...</span>
                     </div>
@@ -86,8 +86,12 @@ const activeDark  = ref('today')
                       <BellIcon class="w-5 h-5" />
                       <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 border-2 border-white"></span>
                     </button>
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold ml-1"
-                         :style="{ background: L.accentLavenderSoft, color: L.accentLavenderBold }">GQ</div>
+                    <div
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold ml-1"
+                      :style="{ background: L.accentLavenderSoft, color: L.accentLavenderBold }"
+                    >
+                      GQ
+                    </div>
                   </template>
                 </KinTopNav>
               </div>
@@ -98,8 +102,10 @@ const activeDark  = ref('today')
           <div>
             <p class="text-[11px] mb-3 font-medium" :style="{ color: L.inkTertiary }">Active indicator on glass surface</p>
             <div class="space-y-3">
-              <div v-for="activeKey in ['today', 'family', 'assistant']" :key="activeKey"
-                   class="overflow-x-auto">
+              <div
+                v-for="activeKey in ['today', 'family', 'assistant']" :key="activeKey"
+                class="overflow-x-auto"
+              >
                 <div class="min-w-max">
                   <KinTopNav
                     brand="kinhold"
@@ -107,8 +113,12 @@ const activeDark  = ref('today')
                     :active-key="activeKey"
                   >
                     <template #utility>
-                      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold"
-                           :style="{ background: L.accentLavenderSoft, color: L.accentLavenderBold }">GQ</div>
+                      <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold"
+                        :style="{ background: L.accentLavenderSoft, color: L.accentLavenderBold }"
+                      >
+                        GQ
+                      </div>
                     </template>
                   </KinTopNav>
                 </div>
@@ -124,8 +134,10 @@ const activeDark  = ref('today')
             </p>
             <div class="overflow-x-auto rounded-2xl overflow-hidden border" :style="{ borderColor: L.borderSubtle }">
               <div class="relative min-w-[1000px]">
-                <div class="absolute inset-0"
-                     style="background: linear-gradient(135deg, #EDE9F9 0%, #D4EFE4 35%, #FFF4C2 70%, #F9E0D6 100%);">
+                <div
+                  class="absolute inset-0"
+                  style="background: linear-gradient(135deg, #EDE9F9 0%, #D4EFE4 35%, #FFF4C2 70%, #F9E0D6 100%);"
+                >
                   <div class="pt-20 px-8 space-y-3 opacity-60">
                     <div class="h-8 rounded-full w-64" style="background: rgba(104,86,178,0.25)"></div>
                     <div class="h-4 rounded-full w-48" style="background: rgba(104,86,178,0.15)"></div>
@@ -143,8 +155,10 @@ const activeDark  = ref('today')
                     active-key="today"
                   >
                     <template #search>
-                      <div class="flex items-center gap-2 rounded-full px-4 h-9 max-w-sm w-full"
-                           style="background: rgba(245,242,238,0.70); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.60);">
+                      <div
+                        class="flex items-center gap-2 rounded-full px-4 h-9 max-w-sm w-full"
+                        style="background: rgba(245,242,238,0.70); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.60);"
+                      >
                         <MagnifyingGlassIcon class="w-4 h-4 shrink-0" :style="{ color: L.inkTertiary }" />
                         <span class="text-[13px]" :style="{ color: L.inkTertiary }">Search Kinhold...</span>
                       </div>
@@ -157,8 +171,12 @@ const activeDark  = ref('today')
                         <BellIcon class="w-5 h-5" />
                         <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 border-2 border-white"></span>
                       </button>
-                      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold ml-1"
-                           :style="{ background: L.accentLavenderSoft, color: L.accentLavenderBold }">GQ</div>
+                      <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold ml-1"
+                        :style="{ background: L.accentLavenderSoft, color: L.accentLavenderBold }"
+                      >
+                        GQ
+                      </div>
                     </template>
                   </KinTopNav>
                 </div>
@@ -166,7 +184,6 @@ const activeDark  = ref('today')
               </div>
             </div>
           </div>
-
         </div><!-- /light panel -->
 
         <!-- ══════════════ DARK PANEL ══════════════ -->
@@ -185,8 +202,10 @@ const activeDark  = ref('today')
                   @item-click="(key) => activeDark = key"
                 >
                   <template #search>
-                    <div class="flex items-center gap-2 rounded-full px-4 h-9 max-w-sm w-full"
-                         style="background: rgba(20,19,17,0.50); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08);">
+                    <div
+                      class="flex items-center gap-2 rounded-full px-4 h-9 max-w-sm w-full"
+                      style="background: rgba(20,19,17,0.50); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08);"
+                    >
                       <MagnifyingGlassIcon class="w-4 h-4 shrink-0" :style="{ color: D.inkTertiary }" />
                       <span class="text-[13px]" :style="{ color: D.inkTertiary }">Search Kinhold...</span>
                     </div>
@@ -199,8 +218,12 @@ const activeDark  = ref('today')
                       <BellIcon class="w-5 h-5" />
                       <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500" style="border: 2px solid rgba(28,27,25,0.75);"></span>
                     </button>
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold ml-1"
-                         :style="{ background: D.accentLavenderSoft, color: D.accentLavenderBold }">GQ</div>
+                    <div
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold ml-1"
+                      :style="{ background: D.accentLavenderSoft, color: D.accentLavenderBold }"
+                    >
+                      GQ
+                    </div>
                   </template>
                 </KinTopNav>
               </div>
@@ -211,8 +234,10 @@ const activeDark  = ref('today')
           <div>
             <p class="text-[11px] mb-3 font-medium" :style="{ color: D.inkTertiary }">Active indicator on dark glass</p>
             <div class="space-y-3">
-              <div v-for="activeKey in ['today', 'family', 'assistant']" :key="activeKey"
-                   class="overflow-x-auto">
+              <div
+                v-for="activeKey in ['today', 'family', 'assistant']" :key="activeKey"
+                class="overflow-x-auto"
+              >
                 <div class="min-w-max">
                   <KinTopNav
                     brand="kinhold"
@@ -220,8 +245,12 @@ const activeDark  = ref('today')
                     :active-key="activeKey"
                   >
                     <template #utility>
-                      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold"
-                           :style="{ background: D.accentLavenderSoft, color: D.accentLavenderBold }">GQ</div>
+                      <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold"
+                        :style="{ background: D.accentLavenderSoft, color: D.accentLavenderBold }"
+                      >
+                        GQ
+                      </div>
                     </template>
                   </KinTopNav>
                 </div>
@@ -237,8 +266,10 @@ const activeDark  = ref('today')
             </p>
             <div class="overflow-x-auto rounded-2xl overflow-hidden border" :style="{ borderColor: D.borderSubtle }">
               <div class="relative min-w-[1000px]">
-                <div class="absolute inset-0"
-                     style="background: linear-gradient(135deg, #1A1630 0%, #162418 35%, #2D2010 70%, #1A0E18 100%);">
+                <div
+                  class="absolute inset-0"
+                  style="background: linear-gradient(135deg, #1A1630 0%, #162418 35%, #2D2010 70%, #1A0E18 100%);"
+                >
                   <div class="pt-20 px-8 space-y-3 opacity-50">
                     <div class="h-8 rounded-full w-64" style="background: rgba(182,168,230,0.25)"></div>
                     <div class="h-4 rounded-full w-48" style="background: rgba(182,168,230,0.15)"></div>
@@ -256,8 +287,10 @@ const activeDark  = ref('today')
                     active-key="today"
                   >
                     <template #search>
-                      <div class="flex items-center gap-2 rounded-full px-4 h-9 max-w-sm w-full"
-                           style="background: rgba(20,19,17,0.50); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08);">
+                      <div
+                        class="flex items-center gap-2 rounded-full px-4 h-9 max-w-sm w-full"
+                        style="background: rgba(20,19,17,0.50); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08);"
+                      >
                         <MagnifyingGlassIcon class="w-4 h-4 shrink-0" :style="{ color: D.inkTertiary }" />
                         <span class="text-[13px]" :style="{ color: D.inkTertiary }">Search Kinhold...</span>
                       </div>
@@ -270,8 +303,12 @@ const activeDark  = ref('today')
                         <BellIcon class="w-5 h-5" />
                         <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500" style="border: 2px solid rgba(28,27,25,0.75);"></span>
                       </button>
-                      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold ml-1"
-                           :style="{ background: D.accentLavenderSoft, color: D.accentLavenderBold }">GQ</div>
+                      <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold ml-1"
+                        :style="{ background: D.accentLavenderSoft, color: D.accentLavenderBold }"
+                      >
+                        GQ
+                      </div>
                     </template>
                   </KinTopNav>
                 </div>
@@ -279,12 +316,9 @@ const activeDark  = ref('today')
               </div>
             </div>
           </div>
-
         </div><!-- /dark panel -->
-
       </div>
     </VariantFrame>
-
   </ComponentPage>
 </template>
 

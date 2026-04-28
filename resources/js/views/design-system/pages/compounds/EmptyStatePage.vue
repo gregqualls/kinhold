@@ -34,10 +34,11 @@ const D = {
     <section class="mb-16">
       <VariantFrame label="KinEmptyState" caption="Centered iridescent glyph + title + description + CTA slot. Four accent colors, sm and md sizes.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest mb-6" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -102,8 +103,10 @@ const D = {
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest mb-6" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -166,7 +169,6 @@ const D = {
               </div>
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>

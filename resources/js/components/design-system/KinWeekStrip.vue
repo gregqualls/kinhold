@@ -60,9 +60,9 @@ function extraCount(events) {
         type="button"
         class="kin-week-strip__pill flex flex-col items-center justify-center gap-0.5 rounded-full transition-all"
         :class="[
-          isToday(i)     && 'kin-week-strip__pill--today',
-          isSelected(i)  && 'kin-week-strip__pill--selected',
-          isPast(i)      && 'kin-week-strip__pill--past',
+          isToday(i) && 'kin-week-strip__pill--today',
+          isSelected(i) && 'kin-week-strip__pill--selected',
+          isPast(i) && 'kin-week-strip__pill--past',
         ]"
         :disabled="isPast(i)"
         :aria-label="`${day.letter} ${day.num}`"
@@ -81,7 +81,7 @@ function extraCount(events) {
           :key="di"
           class="inline-block w-[5px] h-[5px] rounded-full flex-shrink-0"
           :class="`kin-week-strip__dot--${evt}`"
-        />
+        ></span>
         <span
           v-if="extraCount(day.events) > 0"
           class="kin-week-strip__overflow text-[9px] font-bold leading-none"

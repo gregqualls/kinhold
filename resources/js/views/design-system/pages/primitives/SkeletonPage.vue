@@ -28,14 +28,12 @@ const D = {
     description="Shimmer placeholders for any loading state — text lines, circles, pills, fields, and card blocks. Respects prefers-reduced-motion: shimmer stops and falls back to a static muted base color. Single canonical treatment."
     status="chosen"
   >
-
     <!-- ══════════════════════════════════════════════════════════════
          SECTION 1 — SHAPE PRIMITIVES
          ═══════════════════════════════════════════════════════════════ -->
     <section class="mb-20">
       <VariantFrame label="Shapes" caption="Five canonical skeleton shapes for any loading state">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-10" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -181,7 +179,6 @@ const D = {
               <KinSkeleton force-motion shape="rect" :height="120" width="100%" rounded="16px" />
             </div>
           </div><!-- /dark shapes -->
-
         </div>
       </VariantFrame>
     </section>
@@ -193,7 +190,6 @@ const D = {
     <section class="mb-20">
       <VariantFrame label="Patterns" caption="Composed skeletons — real loading states for Kinhold UI">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-10" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -296,7 +292,6 @@ const D = {
               </div>
             </div>
           </div><!-- /dark patterns -->
-
         </div>
       </VariantFrame>
     </section>
@@ -310,7 +305,6 @@ const D = {
     <section class="mb-20">
       <VariantFrame label="Motion" caption="Always honors prefers-reduced-motion; static fallback is just the muted base color">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
           <div class="rounded-2xl border p-6 space-y-6" :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
@@ -320,13 +314,13 @@ const D = {
             <div class="flex items-end gap-10">
               <!-- Forced motion — always animates, ignores OS reduced-motion -->
               <div class="flex flex-col items-center gap-3">
-                <div class="skel-forced-motion-lt rounded-full" style="height:32px; width:100px" />
+                <div class="skel-forced-motion-lt rounded-full" style="height:32px; width:100px"></div>
                 <span class="text-[11px] font-medium" :style="{ color: L.inkSecondary }">With motion</span>
                 <span class="text-[10px] text-center" :style="{ color: L.inkTertiary }">shimmer always active</span>
               </div>
               <!-- Static — always the base color, never animates -->
               <div class="flex flex-col items-center gap-3">
-                <div class="skel-static-lt rounded-full" style="height:32px; width:100px" />
+                <div class="skel-static-lt rounded-full" style="height:32px; width:100px"></div>
                 <span class="text-[11px] font-medium" :style="{ color: L.inkSecondary }">Reduced motion (static)</span>
                 <span class="text-[10px] text-center" :style="{ color: L.inkTertiary }">muted base, no shimmer</span>
               </div>
@@ -345,12 +339,12 @@ const D = {
             </p>
             <div class="flex items-end gap-10">
               <div class="flex flex-col items-center gap-3">
-                <div class="skel-forced-motion-dk rounded-full" style="height:32px; width:100px" />
+                <div class="skel-forced-motion-dk rounded-full" style="height:32px; width:100px"></div>
                 <span class="text-[11px] font-medium" :style="{ color: D.inkSecondary }">With motion</span>
                 <span class="text-[10px] text-center" :style="{ color: D.inkTertiary }">shimmer always active</span>
               </div>
               <div class="flex flex-col items-center gap-3">
-                <div class="skel-static-dk rounded-full" style="height:32px; width:100px" />
+                <div class="skel-static-dk rounded-full" style="height:32px; width:100px"></div>
                 <span class="text-[11px] font-medium" :style="{ color: D.inkSecondary }">Reduced motion (static)</span>
                 <span class="text-[10px] text-center" :style="{ color: D.inkTertiary }">muted base, no shimmer</span>
               </div>
@@ -360,7 +354,6 @@ const D = {
               Static bg is the fallback — no animation, no pulse.
             </p>
           </div><!-- /dark motion -->
-
         </div>
       </VariantFrame>
     </section>
@@ -392,7 +385,6 @@ const D = {
         </ul>
       </div>
     </section>
-
   </ComponentPage>
 </template>
 

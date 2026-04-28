@@ -159,7 +159,7 @@ const delayStyle = computed(() => (
       :class="{ 'kin-skeleton--force-motion': forceMotion }"
       aria-hidden="true"
       :style="{ ...shapeStyle, ...delayStyle, width: cssWidth ?? lw }"
-    />
+    ></div>
   </div>
 
   <!-- Single element: one shimmer block -->

@@ -34,10 +34,11 @@ const D = {
     <section class="mb-16">
       <VariantFrame label="KinFormGroup" caption="Default slot exposes { id, ariaInvalid, ariaDescribedby } so the field inside gets a label-linked id and a11y wiring for free.">
         <div class="w-full space-y-10">
-
           <!-- LIGHT PANEL -->
-          <div class="rounded-2xl border p-6 space-y-5"
-               :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }">
+          <div
+            class="rounded-2xl border p-6 space-y-5"
+            :style="{ background: L.surfaceApp, borderColor: L.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: L.inkTertiary }">Light mode</p>
 
             <div class="max-w-md space-y-5">
@@ -78,8 +79,10 @@ const D = {
           </div>
 
           <!-- DARK PANEL -->
-          <div class="dark rounded-2xl border p-6 space-y-5"
-               :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }">
+          <div
+            class="dark rounded-2xl border p-6 space-y-5"
+            :style="{ background: D.surfaceApp, borderColor: D.borderSubtle }"
+          >
             <p class="text-xs font-semibold uppercase tracking-widest" :style="{ color: D.inkTertiary }">Dark mode</p>
 
             <div class="max-w-md space-y-5">
@@ -118,7 +121,6 @@ const D = {
               </KinFormGroup>
             </div>
           </div>
-
         </div>
       </VariantFrame>
     </section>

@@ -99,7 +99,7 @@ const badgeSizeClass = computed(() => (props.size === 'sm'
         v-if="variant === 'underline' && activeKey === tab.key"
         class="kin-tab__underline absolute bottom-0 left-0 right-0 h-[2px] rounded-t-full"
         aria-hidden="true"
-      />
+      ></span>
     </button>
   </div>
 </template>

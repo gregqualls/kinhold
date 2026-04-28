@@ -125,7 +125,7 @@ const brandAttrs = computed(() => {
         @click="toggle"
       >
         <ChevronDoubleRightIcon v-if="collapsed" class="w-4 h-4" />
-        <ChevronDoubleLeftIcon  v-else            class="w-4 h-4" />
+        <ChevronDoubleLeftIcon v-else class="w-4 h-4" />
       </button>
     </div>
 
@@ -135,7 +135,7 @@ const brandAttrs = computed(() => {
       class="p-3 flex items-center gap-2 border-t border-border-subtle"
       :class="collapsed ? 'justify-center' : ''"
     >
-      <slot name="user" :collapsed="collapsed" />
+      <slot name="user" :collapsed="collapsed"></slot>
     </div>
   </aside>
 </template>

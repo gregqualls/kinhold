@@ -41,23 +41,25 @@ const statusLabel = computed(() => ({
 </script>
 
 <template>
-  <div class="kin-ai-act rounded-[20px] border overflow-hidden bg-surface-raised border-border-subtle"
-       :class="status === 'pending' && 'kin-ai-act--pending'">
+  <div
+    class="kin-ai-act rounded-[20px] border overflow-hidden bg-surface-raised border-border-subtle"
+    :class="status === 'pending' && 'kin-ai-act--pending'"
+  >
     <!-- Collapsed row (always visible as header) -->
     <button
       type="button"
       class="kin-ai-act__row w-full flex items-center gap-3 px-4 py-3 text-left"
       @click="toggle"
     >
-      <span class="kin-ai-act__dot w-2 h-2 rounded-full flex-shrink-0" :class="`kin-ai-act__dot--${status}`" />
+      <span class="kin-ai-act__dot w-2 h-2 rounded-full flex-shrink-0" :class="`kin-ai-act__dot--${status}`"></span>
       <p class="text-sm font-medium flex-1 truncate text-ink-primary">{{ title }}</p>
       <span
         v-if="duration"
         class="kin-ai-act__chip text-[11px] font-medium px-2 py-0.5 rounded-full flex-shrink-0"
         :class="`kin-ai-act__chip--${status}`"
       >{{ duration }} · {{ statusLabel }}</span>
-      <ChevronUpIcon   v-if="expanded" class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
-      <ChevronDownIcon v-else          class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
+      <ChevronUpIcon v-if="expanded" class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
+      <ChevronDownIcon v-else class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
     </button>
 
     <!-- Expanded body -->
@@ -75,7 +77,7 @@ const statusLabel = computed(() => ({
         <ul class="space-y-2">
           <li v-for="(step, i) in steps" :key="i" class="flex items-center gap-2.5">
             <CheckCircleIcon class="w-4 h-4 flex-shrink-0 kin-ai-act__step-check" />
-            <component v-if="step.icon" :is="step.icon" class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
+            <component :is="step.icon" v-if="step.icon" class="w-4 h-4 flex-shrink-0 text-ink-tertiary" />
             <span class="text-sm font-mono flex-1 text-ink-primary">{{ step.label }}</span>
             <span v-if="step.duration" class="text-[11px] text-ink-tertiary">{{ step.duration }}</span>
           </li>
@@ -85,7 +87,7 @@ const statusLabel = computed(() => ({
       <div v-if="$slots.output" class="px-5 pt-4 pb-4 border-b border-border-subtle">
         <p class="text-[11px] font-semibold uppercase tracking-widest mb-3 text-ink-tertiary">Output</p>
         <div class="kin-ai-act__output rounded-xl px-4 py-3" :class="`kin-ai-act__output--${outputAccent}`">
-          <slot name="output" />
+          <slot name="output"></slot>
         </div>
       </div>
 

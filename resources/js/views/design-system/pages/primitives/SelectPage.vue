@@ -53,7 +53,6 @@ const groupedOptions = [
     description="Native <select> wrapped in KinInput's borderless inset look — sunken at rest, accent-lavender ring on focus, raised surface in dark mode. Keeps the OS-native dropdown so accessibility and mobile pickers work out of the box."
     status="chosen"
   >
-
     <!-- ════════════════════════════════════════════════════════════════
          Default states
          ════════════════════════════════════════════════════════════════ -->
@@ -189,6 +188,5 @@ const groupedOptions = [
         </ModeSplit>
       </VariantFrame>
     </section>
-
   </ComponentPage>
 </template>

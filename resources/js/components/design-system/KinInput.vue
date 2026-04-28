@@ -137,7 +137,6 @@ function onInput(e) {
 
 <template>
   <div class="flex flex-col gap-1 w-full">
-
     <!-- Label -->
     <label
       v-if="hasLabel"
@@ -150,7 +149,6 @@ function onInput(e) {
 
     <!-- Field wrapper (for prefix/suffix positioning) -->
     <div class="relative w-full">
-
       <!-- Prefix slot -->
       <span
         v-if="$slots.prefix"
@@ -162,7 +160,7 @@ function onInput(e) {
         ]"
         aria-hidden="true"
       >
-        <slot name="prefix" />
+        <slot name="prefix"></slot>
       </span>
 
       <!-- The <input> element -->
@@ -204,9 +202,8 @@ function onInput(e) {
         ]"
         aria-hidden="true"
       >
-        <slot name="suffix" />
+        <slot name="suffix"></slot>
       </span>
-
     </div><!-- /field wrapper -->
 
     <!-- Helper / Error message -->
@@ -220,7 +217,6 @@ function onInput(e) {
     >
       {{ hasError ? error : helper }}
     </p>
-
   </div>
 </template>
 
