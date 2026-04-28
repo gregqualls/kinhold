@@ -38,9 +38,11 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, string $id, 
 // Google account linking (from Settings, for existing email/password users)
 Route::get('/auth/google/link-callback', [GoogleAuthController::class, 'linkCallback'])->name('google.link-callback');
 
-// OAuth login flow for MCP clients (Passport needs a web session)
-// Uses a separate path so /login stays as the SPA catch-all (no conflict)
-Route::get('/login', [GoogleAuthController::class, 'oauthLogin'])->name('login');
+// OAuth login flow for MCP clients (Passport needs a web session).
+// Path is /auth/oauth-login — the route name 'login' is what Laravel's
+// Authenticate middleware redirects unauthenticated HTML requests to.
+// /login itself is unbound so the SPA catch-all serves the SPA login form.
+Route::get('/auth/oauth-login', [GoogleAuthController::class, 'oauthLogin'])->name('login');
 Route::get('/auth/google/oauth-callback', [GoogleAuthController::class, 'oauthCallback'])->name('google.oauth-callback');
 
 // SPA catch-all — exclude api/, oauth/, and .well-known/ paths
