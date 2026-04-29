@@ -10,6 +10,7 @@ use App\Models\VaultCategory;
 use App\Models\VaultEntry;
 use App\Models\VaultPermission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Crypt;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use ZipArchive;
@@ -112,14 +113,13 @@ class UserDataExportTest extends TestCase
             'icon' => 'lemon',
         ]);
 
-        $entry = new VaultEntry([
+        VaultEntry::create([
             'family_id' => $this->familyA->id,
             'vault_category_id' => $category->id,
             'created_by' => $this->parentA->id,
             'title' => 'Lemon storage',
+            'encrypted_data' => Crypt::encryptString(json_encode(['secret' => 'lemons'])),
         ]);
-        $entry->setEncryptedData(['secret' => 'lemons']);
-        $entry->save();
 
         Sanctum::actingAs($this->parentA);
         $response = $this->post('/api/v1/settings/account/data-export');
@@ -169,14 +169,13 @@ class UserDataExportTest extends TestCase
             'icon' => 'share',
         ]);
 
-        $entry = new VaultEntry([
+        $entry = VaultEntry::create([
             'family_id' => $this->familyA->id,
             'vault_category_id' => $category->id,
             'created_by' => $this->parentA->id,
             'title' => 'Wifi password',
+            'encrypted_data' => Crypt::encryptString(json_encode(['password' => 'shared-wifi-secret'])),
         ]);
-        $entry->setEncryptedData(['password' => 'shared-wifi-secret']);
-        $entry->save();
 
         VaultPermission::create([
             'vault_entry_id' => $entry->id,

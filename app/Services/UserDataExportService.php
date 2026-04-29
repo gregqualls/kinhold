@@ -16,6 +16,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\VaultEntry;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
@@ -76,7 +77,7 @@ class UserDataExportService
             'exported_at' => now()->toIso8601String(),
             'user_id' => $user->id,
             'family_id' => $user->family_id,
-            'app_version' => config('app.version'),
+            'app_version' => config('version.current'),
             'files' => array_values($files),
         ];
     }
@@ -130,11 +131,18 @@ class UserDataExportService
         return $entries->map(function (VaultEntry $entry) use ($zip) {
             $row = $entry->toArray();
             $row['encrypted_data'] = null;
-            try {
-                $row['data'] = $entry->getDecryptedData();
-            } catch (DecryptException) {
-                $row['data'] = null;
-                $row['_error'] = 'decryption_failed';
+            // Mirror VaultEncryptionService: encryptString + json_encode pair.
+            // VaultEntry::getDecryptedData() calls plain decrypt() which unserializes
+            // and crashes on the production JSON-only payloads.
+            if ($entry->encrypted_data) {
+                try {
+                    $row['data'] = json_decode(Crypt::decryptString($entry->encrypted_data), true) ?? [];
+                } catch (DecryptException) {
+                    $row['data'] = null;
+                    $row['_error'] = 'decryption_failed';
+                }
+            } else {
+                $row['data'] = [];
             }
 
             $row['documents'] = $entry->documents->map(function ($doc) use ($zip) {
