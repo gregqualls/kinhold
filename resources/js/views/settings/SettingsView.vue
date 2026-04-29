@@ -1083,6 +1083,30 @@
         </div>
       </SettingsSection>
 
+      <!-- Your Data (GDPR export) -->
+      <SettingsSection
+        id="your-data"
+        title="Your Data"
+        description="Download a copy of your data"
+        :icon="ArrowDownTrayIcon"
+        :model-value="expandedSections.has('your-data')"
+        @update:model-value="val => toggleSection('your-data', val)"
+      >
+        <div class="p-4 bg-surface-sunken rounded-lg">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="font-medium text-ink-primary">Export My Data</p>
+              <p class="text-sm text-ink-secondary mt-1">
+                Download a ZIP of everything you've created in Kinhold — tasks, vault entries, points, recipes, and more.
+              </p>
+            </div>
+            <BaseButton variant="primary" size="sm" :loading="exportingData" @click="handleExportData">
+              Export My Data
+            </BaseButton>
+          </div>
+        </div>
+      </SettingsSection>
+
       <!-- Section 8: Danger Zone -->
       <SettingsSection
         id="danger"
@@ -1183,6 +1207,22 @@
         <div class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
           <span class="text-sm font-medium text-ink-primary">Version</span>
           <span class="text-sm font-mono text-ink-secondary">v{{ appVersion }}</span>
+        </div>
+      </div>
+
+      <!-- Your Data (child version) -->
+      <div class="card-lg mb-6">
+        <div class="flex items-center gap-2 mb-3">
+          <ArrowDownTrayIcon class="w-5 h-5 text-accent-lavender-bold" />
+          <h2 class="text-lg font-semibold font-heading text-ink-primary">Your Data</h2>
+        </div>
+        <div class="flex items-start justify-between gap-4">
+          <p class="text-sm text-ink-secondary">
+            Download a ZIP of everything you've created in Kinhold — tasks, points, badges, chat history, and more.
+          </p>
+          <BaseButton variant="primary" size="sm" :loading="exportingData" @click="handleExportData">
+            Export My Data
+          </BaseButton>
         </div>
       </div>
 
@@ -1483,6 +1523,7 @@ import {
   FireIcon,
   InformationCircleIcon,
   ArrowTopRightOnSquareIcon,
+  ArrowDownTrayIcon,
   XMarkIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/vue/24/outline'
@@ -2354,6 +2395,28 @@ const handleDeleteAccount = async () => {
     notificationError(msg)
   }
   deletingAccount.value = false
+}
+
+// ---- Data Export (GDPR Article 15) ----
+const exportingData = ref(false)
+
+const handleExportData = async () => {
+  exportingData.value = true
+  try {
+    const res = await api.post('/settings/account/data-export', {}, { responseType: 'blob' })
+    const url = URL.createObjectURL(res.data)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `kinhold-export-${new Date().toISOString().slice(0, 10)}.zip`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to export data')
+  } finally {
+    exportingData.value = false
+  }
 }
 
 const handleDeleteFamily = async () => {

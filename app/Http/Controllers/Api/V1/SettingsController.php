@@ -7,10 +7,12 @@ use App\Models\Family;
 use App\Models\User;
 use App\Services\AccountDeletionService;
 use App\Services\AgentService;
+use App\Services\UserDataExportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 class SettingsController extends Controller
 {
@@ -322,5 +324,16 @@ class SettingsController extends Controller
         $service->deleteUser($user);
 
         return response()->json(['message' => 'Account deleted successfully'], 200);
+    }
+
+    /**
+     * Export the authenticated user's data as a downloadable ZIP archive.
+     *
+     * Implements GDPR Article 15 (right of access). Auth-only — read-only
+     * action does not require password re-confirmation.
+     */
+    public function exportData(Request $request, UserDataExportService $service): Response
+    {
+        return $service->buildExport($request->user());
     }
 }
