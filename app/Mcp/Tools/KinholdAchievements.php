@@ -19,8 +19,8 @@ Manage badges and view earned achievements.
 
 Actions:
   badge_list — List all family badges (children see hidden badges masked unless earned).
-  badge_create (name*, description*, trigger_type*, trigger_threshold?, icon?, color?, is_hidden?) — Parent only.
-  badge_update (badge_id*, [any field]) — Parent only.
+  badge_create (name*, description*, trigger_type*, trigger_threshold?, icon?, color?, is_hidden?, is_active?, sort_order?) — Parent only. is_active defaults to true.
+  badge_update (badge_id*, [any field — including is_active and sort_order]) — Parent only.
   badge_delete (badge_id*) — Parent only.
   badge_award (badge_id*, user_id*) — Manually award. Parent only.
   badge_revoke (badge_id*, user_id*) — Manually revoke. Parent only.
@@ -53,7 +53,8 @@ class KinholdAchievements extends Tool
             ])->description('What triggers this badge (required for create)'),
             'trigger_threshold' => $schema->integer()->description('Threshold value for auto-trigger (null for custom badges)'),
             'is_hidden' => $schema->boolean()->description('Whether badge is hidden until earned'),
-            'is_active' => $schema->boolean()->description('Whether badge is active'),
+            'is_active' => $schema->boolean()->description('Whether badge is active (defaults to true on create)'),
+            'sort_order' => $schema->integer()->description('Sort order within the badge list (badge_list orders by this)'),
         ];
     }
 
@@ -134,6 +135,8 @@ class KinholdAchievements extends Tool
             'trigger_type' => $triggerType,
             'trigger_threshold' => $request->get('trigger_threshold'),
             'is_hidden' => $request->get('is_hidden', false),
+            'is_active' => $request->get('is_active', true),
+            'sort_order' => $request->get('sort_order', 0),
         ]);
 
         return Response::json([
@@ -160,7 +163,7 @@ class KinholdAchievements extends Tool
         // triggered badge or vice versa.
         $updates = $this->mergeUpdates(
             $request,
-            simpleFields: ['name', 'trigger_type', 'is_hidden', 'is_active'],
+            simpleFields: ['name', 'trigger_type', 'is_hidden', 'is_active', 'sort_order'],
             nullableFields: ['description', 'icon', 'color', 'trigger_threshold'],
         );
 

@@ -30,7 +30,7 @@ Entries (encrypted at rest):
   entry_list (category_id?) — Children see only personal-they-own + entries shared with them.
   entry_get (entry_id*) — Returns decrypted data. Subject to permissions.
   entry_create (title*, category_id*, data*, notes?, is_personal?) — data: { body: "markdown", sensitive_fields: { ... } }.
-  entry_update (entry_id*, [title|notes|data|category_id]) — Subject to policy.
+  entry_update (entry_id*, [title|notes|data|category_id|is_personal]) — Subject to policy. Toggling is_personal changes privacy status.
   entry_delete (entry_id*) — Subject to policy.
 
 Per-user access (parent only):
@@ -325,7 +325,7 @@ class KinholdVault extends Tool
         // Title is required; notes is nullable text where "" should clear.
         $updates = $this->mergeUpdates(
             $request,
-            simpleFields: ['title'],
+            simpleFields: ['title', 'is_personal'],
             nullableFields: ['notes'],
         );
 
