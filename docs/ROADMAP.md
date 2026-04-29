@@ -39,7 +39,7 @@ These features are live and working:
 | Family calendar (read-only Google Calendar + ICS, manual events, recurrence, visibility modes) | COMPLETE |
 | Encrypted family vault (WYSIWYG markdown, per-item permissions, document uploads, playbooks) | COMPLETE |
 | AI chatbot (Claude-powered, queries calendar/tasks/vault) | COMPLETE |
-| MCP server (20 Laravel-native tools, full content coverage via Claude Desktop/Code) | COMPLETE |
+| MCP server (7 consolidated domain-router tools, module-gated registration, full content coverage via Claude Desktop/Code) | COMPLETE |
 | Gamification (points ledger, kudos, leaderboard, rewards store with auctions, badges) | COMPLETE |
 | Email notifications (weekly digest, task assigned/completed, invites) | COMPLETE |
 | Dark mode (full support across all views) | COMPLETE |
@@ -147,10 +147,10 @@ These features are live and working:
 | [#153](https://github.com/gregqualls/kinhold/issues/153) | Food Step 6: Meal plan backend | High | DONE (PR #165) |
 | [#154](https://github.com/gregqualls/kinhold/issues/154) | Food Step 7: Meal plan frontend | High | DONE (PR #166 + PR #169) |
 | — | Meal planner UX overhaul: drag-fix, transposed grid, restaurant import, DRY components | High | DONE (PR #169) |
-| [#155](https://github.com/gregqualls/kinhold/issues/155) | Food Step 8: Integration & polish (MCP, chatbot, dashboard, seeder) | Medium | **NEXT** |
+| [#155](https://github.com/gregqualls/kinhold/issues/155) | Food Step 8: Integration & polish (MCP, chatbot, dashboard, seeder) | Medium | DONE (MCP delivered via `kinhold-food`) |
 | [#65](https://github.com/gregqualls/kinhold/issues/65) | Shopping & grocery lists | Very High | DONE |
 | [#66](https://github.com/gregqualls/kinhold/issues/66) | Meal planning | High | DONE |
-| [#67](https://github.com/gregqualls/kinhold/issues/67) | AI chatbot: meal and grocery integrations | Medium | |
+| [#67](https://github.com/gregqualls/kinhold/issues/67) | AI chatbot: meal and grocery integrations | Medium | DONE (`kinhold-food` action enum) |
 | — | Settings: Food module toggle — note that URL import may use AI (token cost) | Low | Future |
 
 ---

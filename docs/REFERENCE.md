@@ -47,7 +47,7 @@
 - **Future:** RAG search tool, version history, audit log
 
 ### 5. AI Assistant (IMPLEMENTED — Agent Architecture)
-- Natural language interface to all 20 MCP tools via Claude's tool_use API
+- Natural language interface to the 7 consolidated MCP tools via Claude's tool_use API
 - `AgentService` orchestrates: user message → Claude decides tool calls → `ToolRegistry` executes → results fed back → loop until text response (max 10 iterations)
 - **Hallucination guard:** Server-side `claimsAction()` check rejects responses claiming actions taken without tool calls. Logs warning and forces retry.
 - Safety guardrails: tool-only scope, no off-topic, no prompt injection, no physical tasks. Asks clarifying questions for incomplete requests.
@@ -57,13 +57,14 @@
 
 ### 6. MCP Server (IMPLEMENTED — Laravel-Native)
 - Laravel-native via `laravel/mcp` package — runs at `/mcp` endpoint, no separate process
-- 20 consolidated tools (action-based) covering all modules
-- Authenticates with Sanctum bearer token
-- Direct model/service access (no HTTP round-trips)
-- `ScopesToFamily` trait scopes all queries to authenticated user's family
-- Parent-only write actions enforced at tool level
-- **Legacy:** `mcp-server/` TypeScript directory still exists but is superseded
-- **Future:** Webhooks, real-time sync
+- **7 domain-router tools** (consolidated from 20, April 2026): `kinhold-family`, `kinhold-calendar`, `kinhold-tasks`, `kinhold-food`, `kinhold-points`, `kinhold-vault`, `kinhold-achievements`. Each takes an `action` enum that dispatches to per-action handlers (e.g. `kinhold-tasks` accepts `task_list`, `task_create`, `tag_list`, etc.). Action sets and required params are documented in each tool's `#[Description]`.
+- **Module-gated registration** — every tool except `kinhold-family` implements `Concerns\RequiresModule`, which uses `Family::userHasModuleAccess()` in `shouldRegister()` to skip registration when the family has the matching module disabled. Unused-module tool schemas never hit the wire.
+- Authenticates with Passport OAuth or Sanctum bearer (`auth:api,sanctum` middleware).
+- Direct model/service access (no HTTP round-trips). MCP tools delegate to the same service classes as the API controllers (`PointsService`, `MealPlanService`, `RecipeService`, etc.) so business logic stays single-sourced.
+- `Concerns\ScopesToFamily` trait scopes all queries to authenticated user's family.
+- Parent-only write actions enforced at tool level via `requireParent()` or `authorize('ability', $model)` (delegates to Laravel Policies).
+- **Photo uploads** (recipes, restaurants) are not supported via MCP — multipart isn't available in the protocol. URL-based imports work (`recipe_import_url`, `restaurant_import`); photo upload still requires the API directly.
+- **Future:** Anthropic Tool Search / deferred-loading support once `laravel/mcp` ships it upstream — would let heavy domain tools (food, vault, points) defer their schemas until the LLM searches for them, layering on top of module gating.
 
 ### 7. Points & Gamification (IMPLEMENTED)
 - **Ledger-based:** Point Bank = SUM(all transactions). Never mutate a balance — append transactions.
@@ -85,7 +86,7 @@
 - 10 preset badges seeded per family + parents can create more
 - BadgeService checks thresholds after every point/task event
 
-### 9. Food & Meal Planning (IN PROGRESS — Steps 1–7 done)
+### 9. Food & Meal Planning (IMPLEMENTED — All 8 Steps Complete)
 - Recipe backend + module gating (Step 1, Issue #148)
 - Recipe import service: URL scraping + photo AI (Step 2, Issue #149)
 - Recipe frontend UI (Step 3, PR #158)
@@ -93,7 +94,7 @@
 - Shopping frontend + UX (Step 5, PR #162)
 - Meal plan backend live pipeline (Step 6, PR #165)
 - Meal plan frontend: weekly calendar, restaurants tab, settings (Step 7, Session 35)
-- **Step 8 remaining:** MCP tools for food/meals, AI integrations (Issue #65+)
+- **Step 8 (April 2026):** MCP tools for food/meals delivered via `kinhold-food` (47 actions across recipes, shopping, meal plans, presets, restaurants). Closes Issue #155 + #67.
 - See `docs/FOOD-FEATURES-SPEC.md` and `docs/FOOD-IMPLEMENTATION-PLAN.md`
 
 ## Database Schema (Key Tables)
