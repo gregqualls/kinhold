@@ -7,8 +7,6 @@ use App\Models\Family;
 use App\Models\User;
 use App\Services\Agent\ToolRegistry;
 use App\Services\AiProviders\AnthropicProvider;
-use App\Services\AiProviders\GoogleGeminiProvider;
-use App\Services\AiProviders\OpenAiProvider;
 use Illuminate\Support\Facades\Log;
 
 class AgentService
@@ -354,6 +352,12 @@ PROMPT;
 
     /**
      * Get available AI providers with their metadata (used by Settings UI).
+     *
+     * Only Anthropic is exposed today — the agent loop uses tool_use, which is
+     * provider-specific. OpenAI and Google have provider classes but no
+     * tool_use adapter; advertising them would silently downgrade BYOK
+     * families to the platform Anthropic key (#201). Add them back here once
+     * adapters land.
      */
     public static function availableProviders(): array
     {
@@ -365,22 +369,6 @@ PROMPT;
                 'key_placeholder' => 'sk-ant-...',
                 'key_prefix' => 'sk-ant-',
                 'help_url' => 'https://console.anthropic.com/settings/keys',
-            ],
-            [
-                'slug' => 'openai',
-                'name' => OpenAiProvider::displayName(),
-                'default_model' => OpenAiProvider::defaultModel(),
-                'key_placeholder' => 'sk-...',
-                'key_prefix' => 'sk-',
-                'help_url' => 'https://platform.openai.com/api-keys',
-            ],
-            [
-                'slug' => 'google',
-                'name' => GoogleGeminiProvider::displayName(),
-                'default_model' => GoogleGeminiProvider::defaultModel(),
-                'key_placeholder' => 'AIza...',
-                'key_prefix' => 'AIza',
-                'help_url' => 'https://aistudio.google.com/apikey',
             ],
         ];
     }
