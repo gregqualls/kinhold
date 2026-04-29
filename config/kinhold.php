@@ -28,7 +28,7 @@ return [
     */
     'chatbot' => [
         'api_key' => env('ANTHROPIC_API_KEY'),
-        'model' => env('CHATBOT_MODEL', 'claude-sonnet-4-5-20250929'),
+        'model' => env('CHATBOT_MODEL', 'claude-haiku-4-5-20251001'),
         'enabled' => (bool) env('ANTHROPIC_API_KEY'),
     ],
 

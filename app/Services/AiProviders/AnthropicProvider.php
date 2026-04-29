@@ -100,6 +100,6 @@ class AnthropicProvider implements AiProviderInterface
 
     public static function defaultModel(): string
     {
-        return config('services.ai_providers.anthropic.default_model', 'claude-sonnet-4-5-20250514');
+        return config('services.ai_providers.anthropic.default_model', 'claude-haiku-4-5-20251001');
     }
 }
