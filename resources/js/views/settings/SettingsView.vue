@@ -1220,7 +1220,7 @@
           <p class="text-sm text-ink-secondary">
             Download a ZIP of everything you've created in Kinhold — tasks, points, badges, chat history, and more.
           </p>
-          <BaseButton variant="primary" size="sm" :loading="exportingData" @click="handleExportData">
+          <BaseButton variant="primary" size="sm" :loading="exportingData" @click="openExportModal">
             Export My Data
           </BaseButton>
         </div>
@@ -1390,6 +1390,45 @@
       <template #footer>
         <BaseButton variant="primary" @click="showDemoDeletePopup = false">Got it</BaseButton>
       </template>
+    </BaseModal>
+
+    <!-- Export Data Modal -->
+    <BaseModal
+      :show="showExportDataModal"
+      title="Export Your Data"
+      @close="closeExportModal"
+    >
+      <div class="space-y-4">
+        <p class="text-sm text-ink-secondary">
+          Download a ZIP of everything you've created in Kinhold — tasks, vault entries, points, recipes, and more.
+        </p>
+        <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+          <p class="text-sm text-amber-700 dark:text-amber-300">
+            <strong>Heads up:</strong> the file contains decrypted vault data (passwords, SSNs, medical info). It is plaintext on your disk — store it securely and delete it when no longer needed.
+          </p>
+        </div>
+        <BaseInput
+          v-if="currentUser?.has_password !== false"
+          v-model="exportPassword"
+          label="Confirm your password"
+          type="password"
+          placeholder="Current password"
+          :error="exportError"
+          @keydown.enter="handleExportData"
+        />
+      </div>
+
+      <div class="flex gap-2 justify-end pt-4">
+        <BaseButton variant="ghost" @click="closeExportModal">Cancel</BaseButton>
+        <BaseButton
+          variant="primary"
+          :loading="exportingData"
+          :disabled="currentUser?.has_password !== false && !exportPassword"
+          @click="handleExportData"
+        >
+          Download My Data
+        </BaseButton>
+      </div>
     </BaseModal>
 
     <!-- Delete Account Modal -->
@@ -2398,12 +2437,31 @@ const handleDeleteAccount = async () => {
 }
 
 // ---- Data Export (GDPR Article 15) ----
+const showExportDataModal = ref(false)
+const exportPassword = ref('')
+const exportError = ref('')
 const exportingData = ref(false)
 
+const openExportModal = () => {
+  exportPassword.value = ''
+  exportError.value = ''
+  showExportDataModal.value = true
+}
+
+const closeExportModal = () => {
+  showExportDataModal.value = false
+  exportPassword.value = ''
+  exportError.value = ''
+}
+
 const handleExportData = async () => {
+  exportError.value = ''
   exportingData.value = true
   try {
-    const res = await api.post('/settings/account/data-export', {}, { responseType: 'blob' })
+    const payload = currentUser.value?.has_password !== false
+      ? { password: exportPassword.value }
+      : {}
+    const res = await api.post('/settings/account/data-export', payload, { responseType: 'blob' })
     const url = URL.createObjectURL(res.data)
     const a = document.createElement('a')
     a.href = url
@@ -2412,8 +2470,20 @@ const handleExportData = async () => {
     a.click()
     a.remove()
     URL.revokeObjectURL(url)
+    closeExportModal()
   } catch (err) {
-    notificationError(err.response?.data?.message || 'Failed to export data')
+    let msg = 'Failed to export data'
+    // Error response is a Blob (responseType=blob); parse it as JSON.
+    if (err.response?.data instanceof Blob) {
+      try {
+        const text = await err.response.data.text()
+        msg = JSON.parse(text)?.message || msg
+      } catch { /* keep default */ }
+    } else if (err.response?.data?.message) {
+      msg = err.response.data.message
+    }
+    exportError.value = msg
+    notificationError(msg)
   } finally {
     exportingData.value = false
   }

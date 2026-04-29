@@ -11,6 +11,7 @@ use App\Models\VaultEntry;
 use App\Models\VaultPermission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use ZipArchive;
@@ -45,11 +46,57 @@ class UserDataExportTest extends TestCase
         $response->assertStatus(401);
     }
 
+    public function test_export_requires_password_for_password_accounts(): void
+    {
+        Sanctum::actingAs($this->parentA);
+
+        $response = $this->postJson('/api/v1/settings/account/data-export', []);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('password');
+    }
+
+    public function test_export_rejects_wrong_password(): void
+    {
+        Sanctum::actingAs($this->parentA);
+
+        $response = $this->postJson('/api/v1/settings/account/data-export', ['password' => 'wrong']);
+        $response->assertStatus(403);
+        $response->assertJson(['message' => 'Incorrect password']);
+    }
+
+    public function test_export_skips_password_for_oauth_only_accounts(): void
+    {
+        $oauthUser = User::factory()->parent()->create([
+            'family_id' => $this->familyA->id,
+            'password' => null,
+        ]);
+
+        Sanctum::actingAs($oauthUser);
+        $response = $this->post('/api/v1/settings/account/data-export');
+
+        $response->assertStatus(200);
+        $this->assertSame('application/zip', $response->headers->get('Content-Type'));
+    }
+
+    public function test_export_writes_audit_log_entry(): void
+    {
+        Log::spy();
+
+        Sanctum::actingAs($this->parentA);
+        $this->post('/api/v1/settings/account/data-export', ['password' => 'Password1'])
+            ->assertStatus(200);
+
+        Log::shouldHaveReceived('info')
+            ->withArgs(fn ($message, $context) => $message === 'user.data_export'
+                && ($context['user_id'] ?? null) === $this->parentA->id)
+            ->once();
+    }
+
     public function test_export_returns_zip_with_expected_files(): void
     {
         Sanctum::actingAs($this->parentA);
 
-        $response = $this->post('/api/v1/settings/account/data-export');
+        $response = $this->post('/api/v1/settings/account/data-export', ['password' => 'Password1']);
 
         $response->assertStatus(200);
         $this->assertSame('application/zip', $response->headers->get('Content-Type'));
@@ -92,7 +139,7 @@ class UserDataExportTest extends TestCase
         ]);
 
         Sanctum::actingAs($this->parentB);
-        $response = $this->post('/api/v1/settings/account/data-export');
+        $response = $this->post('/api/v1/settings/account/data-export', ['password' => 'Password1']);
 
         $vault = $this->readZipJson($response->getContent(), 'vault.json');
         $tasks = $this->readZipJson($response->getContent(), 'tasks.json');
@@ -122,7 +169,7 @@ class UserDataExportTest extends TestCase
         ]);
 
         Sanctum::actingAs($this->parentA);
-        $response = $this->post('/api/v1/settings/account/data-export');
+        $response = $this->post('/api/v1/settings/account/data-export', ['password' => 'Password1']);
 
         $vault = $this->readZipJson($response->getContent(), 'vault.json');
 
@@ -144,7 +191,7 @@ class UserDataExportTest extends TestCase
         ]);
 
         Sanctum::actingAs($this->parentA);
-        $response = $this->post('/api/v1/settings/account/data-export');
+        $response = $this->post('/api/v1/settings/account/data-export', ['password' => 'Password1']);
 
         $body = $response->getContent();
 
@@ -185,13 +232,13 @@ class UserDataExportTest extends TestCase
 
         Sanctum::actingAs($this->parentA);
         $ownerVault = $this->readZipJson(
-            $this->post('/api/v1/settings/account/data-export')->getContent(),
+            $this->post('/api/v1/settings/account/data-export', ['password' => 'Password1'])->getContent(),
             'vault.json'
         );
 
         Sanctum::actingAs($sibling);
         $granteeVault = $this->readZipJson(
-            $this->post('/api/v1/settings/account/data-export')->getContent(),
+            $this->post('/api/v1/settings/account/data-export', ['password' => 'Password1'])->getContent(),
             'vault.json'
         );
 
