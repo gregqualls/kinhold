@@ -1097,7 +1097,7 @@
             <div>
               <p class="font-medium text-ink-primary">Export My Data</p>
               <p class="text-sm text-ink-secondary mt-1">
-                Download a ZIP of everything you've created in Kinhold — tasks, vault entries, points, recipes, and more.
+                Download a ZIP of everything you've created in Kinhold: tasks, vault entries, points, recipes, and more.
               </p>
             </div>
             <BaseButton variant="primary" size="sm" :loading="exportingData" @click="openExportModal">
@@ -1218,7 +1218,7 @@
         </div>
         <div class="flex items-start justify-between gap-4">
           <p class="text-sm text-ink-secondary">
-            Download a ZIP of everything you've created in Kinhold — tasks, points, badges, chat history, and more.
+            Download a ZIP of everything you've created in Kinhold: tasks, points, badges, chat history, and more.
           </p>
           <BaseButton variant="primary" size="sm" :loading="exportingData" @click="openExportModal">
             Export My Data
@@ -1400,11 +1400,11 @@
     >
       <div class="space-y-4">
         <p class="text-sm text-ink-secondary">
-          Download a ZIP of everything you've created in Kinhold — tasks, vault entries, points, recipes, and more.
+          Download a ZIP of everything you've created in Kinhold: tasks, vault entries, points, recipes, and more.
         </p>
         <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
           <p class="text-sm text-amber-700 dark:text-amber-300">
-            <strong>Heads up:</strong> the file contains decrypted vault data (passwords, SSNs, medical info). It is plaintext on your disk — store it securely and delete it when no longer needed.
+            <strong>Heads up:</strong> the file contains decrypted vault data (passwords, SSNs, medical info). It is plaintext on your disk. Store it securely and delete it when no longer needed.
           </p>
         </div>
         <BaseInput
