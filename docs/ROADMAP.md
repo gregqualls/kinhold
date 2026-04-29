@@ -65,9 +65,9 @@ These features are live and working:
 | Issue | Title | Priority | Status |
 |-------|-------|----------|--------|
 | [#96](https://github.com/gregqualls/kinhold/issues/96) | GDPR compliance: account deletion and data export | Critical | DONE |
-| [#134](https://github.com/gregqualls/kinhold/issues/134) | Separate landing page from SPA | High | |
+| [#134](https://github.com/gregqualls/kinhold/issues/134) | Separate landing page from SPA | High | DONE |
 | [#121](https://github.com/gregqualls/kinhold/issues/121) | Bug: file uploads to the vault | High | DONE |
-| [#137](https://github.com/gregqualls/kinhold/issues/137) | AI assistant usage limits for hosted version | Medium | |
+| [#137](https://github.com/gregqualls/kinhold/issues/137) | AI assistant usage limits for hosted version | Medium | DONE |
 | [#138](https://github.com/gregqualls/kinhold/issues/138) | License enforcement: single-family limit for self-hosted | Medium | |
 | [#104](https://github.com/gregqualls/kinhold/issues/104) | Brand colors in transactional email templates | Low | |
 | [#99](https://github.com/gregqualls/kinhold/issues/99) | Show Kinhold icon in Claude Desktop MCP connector | Low | |

@@ -120,33 +120,67 @@
       </div>
     </div>
 
-    <!-- Input Area -->
+    <!-- Input Area / Lockout State -->
     <div v-if="!checkingKey && hasApiKey" class="border-t border-border-subtle bg-surface-raised px-4 md:px-6 py-3 pb-safe-bottom">
-      <form class="max-w-2xl mx-auto flex gap-2 items-end" @submit.prevent="handleSend">
-        <textarea
-          ref="chatInput"
-          v-model="messageInput"
-          rows="1"
-          placeholder="Tell Kinhold what to do..."
-          class="flex-1 px-4 py-2.5 bg-surface-sunken border border-border-subtle rounded-xl text-sm placeholder-ink-tertiary text-ink-primary focus:bg-surface-raised focus:ring-2 focus:ring-accent-lavender-bold/40 transition-all outline-none resize-none max-h-32 overflow-y-auto"
-          :disabled="loading"
-          @keydown.enter.exact.prevent="handleSend"
-          @input="autoResize"
-        ></textarea>
-        <KinButton
-          variant="primary"
-          size="md"
-          type="submit"
-          icon-only
-          aria-label="Send message"
-          :disabled="!messageInput.trim() || loading"
+      <!-- Lockout: limit reached -->
+      <div v-if="limitReached" class="max-w-2xl mx-auto card-lg p-4 text-center space-y-2">
+        <h3 class="text-sm font-semibold text-ink-primary">
+          Daily {{ usage.plan?.name || 'AI' }} limit reached
+        </h3>
+        <p class="text-xs text-ink-secondary">
+          You've used all {{ usage.limit }} messages for today. Resets in {{ resetCountdown }}.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-2 justify-center pt-1">
+          <KinButton variant="primary" size="sm" to="/settings">
+            Use your own Anthropic key
+          </KinButton>
+          <KinButton variant="secondary" size="sm" to="/settings">
+            Upgrade plan
+          </KinButton>
+        </div>
+      </div>
+
+      <!-- Normal input row -->
+      <template v-else>
+        <!-- Usage chip -->
+        <div
+          v-if="usage.enforced && usage.limit"
+          class="max-w-2xl mx-auto flex justify-end mb-1.5"
         >
-          <PaperAirplaneIcon class="w-5 h-5" />
-        </KinButton>
-      </form>
-      <p class="max-w-2xl mx-auto text-[10px] text-ink-tertiary mt-1.5 text-center">
-        The assistant can make mistakes. Always verify important information.
-      </p>
+          <span
+            class="text-[11px] px-2 py-0.5 rounded-full"
+            :class="chipColorClass"
+          >
+            {{ usage.plan?.name }} · {{ usage.count }} / {{ usage.limit }} today
+          </span>
+        </div>
+
+        <form class="max-w-2xl mx-auto flex gap-2 items-end" @submit.prevent="handleSend">
+          <textarea
+            ref="chatInput"
+            v-model="messageInput"
+            rows="1"
+            placeholder="Tell Kinhold what to do..."
+            class="flex-1 px-4 py-2.5 bg-surface-sunken border border-border-subtle rounded-xl text-sm placeholder-ink-tertiary text-ink-primary focus:bg-surface-raised focus:ring-2 focus:ring-accent-lavender-bold/40 transition-all outline-none resize-none max-h-32 overflow-y-auto"
+            :disabled="loading"
+            @keydown.enter.exact.prevent="handleSend"
+            @input="autoResize"
+          ></textarea>
+          <KinButton
+            variant="primary"
+            size="md"
+            type="submit"
+            icon-only
+            aria-label="Send message"
+            :disabled="!messageInput.trim() || loading"
+          >
+            <PaperAirplaneIcon class="w-5 h-5" />
+          </KinButton>
+        </form>
+        <p class="max-w-2xl mx-auto text-[10px] text-ink-tertiary mt-1.5 text-center">
+          The assistant can make mistakes. Always verify important information.
+        </p>
+      </template>
     </div>
   </div>
 </template>
@@ -177,9 +211,26 @@ marked.setOptions({
 const chatStore = useChatStore()
 const authStore = useAuthStore()
 
-const { messages, loading } = storeToRefs(chatStore)
+const { messages, loading, usage, limitReached } = storeToRefs(chatStore)
 const { currentUser } = storeToRefs(authStore)
 const isParent = computed(() => authStore.isParent)
+const usagePercent = computed(() => chatStore.usagePercent)
+
+const chipColorClass = computed(() => {
+  if (usagePercent.value >= 100) return 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
+  if (usagePercent.value >= 80) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+  return 'bg-surface-sunken text-ink-tertiary'
+})
+
+const resetCountdown = computed(() => {
+  if (!usage.value.reset_at) return 'a few hours'
+  const ms = new Date(usage.value.reset_at).getTime() - Date.now()
+  if (ms <= 0) return 'a moment'
+  const hours = Math.floor(ms / 3_600_000)
+  const minutes = Math.floor((ms % 3_600_000) / 60_000)
+  if (hours >= 1) return `${hours}h ${minutes}m`
+  return `${minutes}m`
+})
 
 const messageInput = ref('')
 const messagesContainer = ref(null)
@@ -246,6 +297,10 @@ onMounted(async () => {
     hasApiKey.value = true
   } finally {
     checkingKey.value = false
+  }
+  // Pull usage so the chip is correct on first paint without sending a message.
+  if (hasApiKey.value) {
+    chatStore.fetchHistory()
   }
   scrollToBottom()
 })

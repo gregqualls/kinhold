@@ -2,6 +2,56 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-29 — AI assistant usage limits with plan registry (#137)
+
+Closes [#137](https://github.com/gregqualls/kinhold/issues/137). The hosted chatbot endpoint (`POST /api/v1/chat`) was unthrottled and tracked no usage — one family looping the assistant could run an unbounded Anthropic bill. Stripe billing (#70) is still Phase B, so this lands the limit infra without the billing infra: a per-family **daily message count** cap, applied only when Kinhold's platform key is in use. BYOK families and self-hosted instances bypass automatically (their key, their cost). Hard cap, friendly lockout, no soft overage — that needs billing infra we don't have yet.
+
+**Plan-aware from day one.** The marketing page already announces three paid tiers (AI Lite 50/day, AI Standard 150/day, AI Pro 300/day) plus BYOK; this PR makes those a config registry rather than hardcoded numbers. Each plan is a slug → `{ name, daily_messages, price_monthly_cents, stripe_price_id, public }` row in [`config/kinhold.php`](config/kinhold.php). Adding a tier or tweaking a number is a one-line edit. When Stripe lands in Phase B the webhook only needs to write `families.settings.chatbot.plan = 'standard'` after checkout — no change to the limit code.
+
+**Plan resolution precedence** (in [`AiUsageService::planFor`](app/Services/AiUsageService.php)):
+1. `families.settings.chatbot.daily_message_limit` numeric override → synthetic "Custom" plan (admin/support escape hatch — no UI for v1, set via Tinker / DB)
+2. `families.settings.chatbot.plan` slug → that plan's row
+3. Demo family (`slug === 'q32-demo-family'`) → `config('kinhold.chatbot.demo_plan')` slug → richer baseline so the live demo doesn't trip the cap
+4. Otherwise → `config('kinhold.chatbot.default_plan')` slug
+
+**`shouldEnforce()` precedence:**
+1. `config('kinhold.self_hosted')` (mirrors `SELF_HOSTED` env var) → bypass
+2. `AgentService::usesPlatformKey($family)` returns false → bypass (BYOK)
+3. Otherwise → enforce
+
+`SELF_HOSTED` was previously read directly via `env()`; this PR routes it through config so tests can override deterministically with `config()->set()`. The BYOK path is centralized via a new `AgentService::resolveApiKey()` static so the limit service doesn't re-implement decryption.
+
+**Schema.** New `ai_usage_daily(family_id, date, message_count, input_tokens, output_tokens)` keyed by `(family_id, date)` UNIQUE. Bounded row count (one per family per active day). UTC throughout — copy says "Resets at midnight UTC." `firstOrCreate` passes a Carbon instance so the date column's cast normalizes both INSERT and WHERE; passing a raw `'Y-m-d'` string mismatched Laravel's stored `'Y-m-d 00:00:00'` form in sqlite and silently failed the unique-row lookup (caught by tests, fixed in implementation).
+
+**Token capture.** `AnthropicProvider::askWithTools()` now returns `{ content, stop_reason, input_tokens, output_tokens }` — Anthropic responses always include a `usage` block, we were just discarding it. Cache hits (we use `cache_control: ephemeral` on the system prompt + tool definitions) are summed into `input_tokens` via `cache_creation_input_tokens` + `cache_read_input_tokens`. `AgentService::chat` aggregates across the agent loop's iterations so a single user turn that does 5 tool calls writes the full token cost to the daily aggregate, not just the final iteration. Tokens are captured but **not enforced** in v1 — the cap is on message count.
+
+**Controller wiring.** `ChatController::send()`:
+- Pre-flight: `if ($usage->shouldEnforce && $usage->isExhausted) → 429 with usage payload` (so the failed call doesn't burn quota or hit Anthropic)
+- Post-success: `$usage->recordMessage($family, input, output)` — only when enforced
+- Response now includes `usage: { count, limit, remaining, reset_at, enforced, plan: { slug, name } }` so the frontend can render the chip without a second round-trip
+- `chat_messages.metadata` now also stores `input_tokens` / `output_tokens` per assistant message, so usage can be reconstructed from message rows if the daily aggregate is ever lost
+
+**Frontend.** New chip above the input row reads `AI Lite · 42 / 50 today` — neutral until 80%, amber 80–99%, red at 100%. When `usage.enforced && usage.remaining <= 0`, the entire input row is replaced with a `card-lg` lockout panel showing "Daily AI Lite limit reached", "You've used all 50 messages for today. Resets in 3h 27m.", and two CTAs: "Use your own Anthropic key" and "Upgrade plan" (both → `/settings` for now; the upgrade path lights up with Stripe in Phase B). The chip stays hidden for BYOK / self-hosted families (`enforced: false`).
+
+The 80%-warning toast was scoped in the plan but pulled — the watcher on the store's computed wasn't firing reliably on first-paint hydration, the chip turning amber is already a strong visual cue, and shipping a half-implemented feature is worse than shipping without it. Revisit in a follow-up if real users miss it.
+
+**MCP-side limits not built.** MCP is one-directional (Claude Desktop calls Kinhold tools; the customer's Claude account pays Anthropic, not Kinhold), so it doesn't burn the platform budget. The marketing page's "heavier MCP users should consider BYO key" copy is forward-looking; revisit if/when Kinhold-side MCP elaboration becomes a real cost. Recipe import keeps its existing 20/hr-per-family throttle ([AppServiceProvider.php:41-43](app/Providers/AppServiceProvider.php)) — separate concern with separate budget.
+
+**Tests.** New `tests/Unit/AiUsageServiceTest.php` (13 cases) and `tests/Feature/ChatRateLimitTest.php` (6 cases) cover plan precedence, BYOK and self-hosted bypass, 429 response shape, demo-family resolution, token persistence to both `chat_messages.metadata` and the daily aggregate. Full suite: 155/155 (was 131; +24 new, no regressions). PHPStan clean, Pint clean on touched files, Vite build green. Browser verification confirmed: chip text/colors at 0/50 (neutral), 42/50 (amber), and lockout state at 50/50 (CTAs + reset countdown).
+
+**Files**
+- `database/migrations/2026_04_29_120000_create_ai_usage_daily_table.php` — new
+- `app/Models/AiUsageDaily.php` — new
+- `app/Services/AiUsageService.php` — new
+- `app/Services/AiProviders/AnthropicProvider.php` — `askWithTools` returns token counts
+- `app/Services/AgentService.php` — sums tokens across agent loop; static `resolveApiKey` + `usesPlatformKey` helpers
+- `app/Http/Controllers/Api/V1/ChatController.php` — pre-flight check, recordMessage, usage payload, history endpoint also returns usage
+- `config/kinhold.php` — `chatbot.plans` registry, `default_plan`, `demo_plan`, `self_hosted`
+- `.env.example` — new env vars documented
+- `resources/js/stores/chat.js` — `usage`, `limitReached`, `usagePercent`, `applyUsage()`
+- `resources/js/views/chat/ChatView.vue` — chip + lockout panel
+- `tests/Unit/AiUsageServiceTest.php`, `tests/Feature/ChatRateLimitTest.php` — new
+
 ## 2026-04-29 — GDPR data export: synchronous ZIP download (#96)
 
 Closes the second half of [#96](https://github.com/gregqualls/kinhold/issues/96) — account deletion shipped previously, data export was the missing piece. Triggered by a real user scenario: someone created a duplicate Google OAuth account and had no way to retrieve their data. Self-hosted families need it too. Implements GDPR Article 15 (right of access).
