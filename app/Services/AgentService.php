@@ -224,25 +224,28 @@ PROMPT;
     /**
      * Detect if a response claims to have performed a write action.
      * Used to catch hallucinated success responses when no tools were called.
+     *
+     * Skips the check if the response is a clarifying question — words like
+     * "saved" / "added" naturally appear in questions ("Do you have a recipe
+     * saved?", "Want me to add it?") and would otherwise force a wasteful
+     * retry round-trip. A trailing "?" is the cheap heuristic for "asking,
+     * not claiming."
      */
     private function claimsAction(string $text): bool
     {
+        if (str_contains($text, '?')) {
+            return false;
+        }
+
+        // Match active first-person past-tense claims ("I created", "I've added",
+        // "I have saved") rather than the bare verbs alone. Bare-verb matching
+        // produces too many false positives in narrative summaries.
         $actionPatterns = [
-            '/\bcreated\b/i',
-            '/\bsaved\b/i',
-            '/\bupdated\b/i',
-            '/\bdeleted\b/i',
-            '/\bremoved\b/i',
-            '/\badded\b/i',
-            '/\bgranted\b/i',
-            '/\brevoked\b/i',
-            '/\bcompleted\b/i',
-            '/\bawarded\b/i',
-            '/\bdeducted\b/i',
-            '/entry created/i',
-            '/task completed/i',
-            '/points awarded/i',
-            '/permission granted/i',
+            "/\bI(?:'ve| have)?\s+(?:created|saved|updated|deleted|removed|added|granted|revoked|completed|awarded|deducted)\b/i",
+            '/\bentry created\b/i',
+            '/\btask completed\b/i',
+            '/\bpoints awarded\b/i',
+            '/\bpermission granted\b/i',
         ];
 
         foreach ($actionPatterns as $pattern) {

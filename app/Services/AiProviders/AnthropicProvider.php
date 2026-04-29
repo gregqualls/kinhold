@@ -2,6 +2,7 @@
 
 namespace App\Services\AiProviders;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -59,23 +60,48 @@ class AnthropicProvider implements AiProviderInterface
     /**
      * Send a message with tool definitions and return the full response.
      *
+     * Uses Anthropic prompt caching on the system prompt and tool definitions
+     * (the "static prefix" that's identical across every tool-use turn). After
+     * the first turn, those tokens become cache reads — they don't count
+     * against the per-minute input-token rate limit. For Kinhold's 7-tool
+     * setup that's ~6-8k tokens cached per turn.
+     *
+     * On HTTP 429 (rate limit), waits the server-suggested retry-after window
+     * (capped) and retries once. Beyond that the original error surfaces.
+     *
      * @param  array<int, array{role: string, content: mixed}>  $messages
      * @param  array<int, array{name: string, description: string, input_schema: array<string, mixed>}>  $tools
      * @return array{content: array<int, mixed>, stop_reason: string}
      */
     public function askWithTools(string $systemPrompt, array $messages, array $tools): array
     {
-        $response = Http::withHeaders([
-            'x-api-key' => $this->apiKey,
-            'anthropic-version' => '2023-06-01',
-            'Content-Type' => 'application/json',
-        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
+        // Mark the system prompt as cacheable (must be array form when using cache_control).
+        $systemBlocks = [
+            [
+                'type' => 'text',
+                'text' => $systemPrompt,
+                'cache_control' => ['type' => 'ephemeral'],
+            ],
+        ];
+
+        // Mark the tool array as cacheable. The cache_control on the LAST tool
+        // tells Anthropic to cache everything up through that point — covers
+        // all tool definitions in one cache block.
+        $cachedTools = $tools;
+        if (! empty($cachedTools)) {
+            $lastIdx = count($cachedTools) - 1;
+            $cachedTools[$lastIdx]['cache_control'] = ['type' => 'ephemeral'];
+        }
+
+        $payload = [
             'model' => $this->model,
             'max_tokens' => 4096,
-            'system' => $systemPrompt,
+            'system' => $systemBlocks,
             'messages' => $messages,
-            'tools' => $tools,
-        ]);
+            'tools' => $cachedTools,
+        ];
+
+        $response = $this->postWithRateLimitRetry($payload);
 
         if ($response->failed()) {
             Log::error('Anthropic API error (tool_use)', [
@@ -91,6 +117,41 @@ class AnthropicProvider implements AiProviderInterface
             'content' => $data['content'] ?? [],
             'stop_reason' => $data['stop_reason'] ?? 'end_turn',
         ];
+    }
+
+    /**
+     * POST to /v1/messages with one retry on 429. Honors the server's
+     * `retry-after` header (clamped to 30s) so we don't sleep an entire
+     * minute for a transient burst.
+     */
+    private function postWithRateLimitRetry(array $payload): Response
+    {
+        $url = 'https://api.anthropic.com/v1/messages';
+        $headers = [
+            'x-api-key' => $this->apiKey,
+            'anthropic-version' => '2023-06-01',
+            'Content-Type' => 'application/json',
+        ];
+
+        $response = Http::withHeaders($headers)->timeout(120)->post($url, $payload);
+
+        if ($response->status() !== 429) {
+            return $response;
+        }
+
+        // Server-suggested wait, clamped to 30s (don't block PHP-FPM longer than that).
+        $retryAfterHeader = $response->header('retry-after');
+        $retryAfter = $retryAfterHeader !== '' ? (int) $retryAfterHeader : 5;
+        $waitSeconds = max(1, min(30, $retryAfter));
+
+        Log::warning('Anthropic rate limit hit — retrying after backoff', [
+            'wait_seconds' => $waitSeconds,
+            'server_suggested' => $retryAfter,
+        ]);
+
+        sleep($waitSeconds);
+
+        return Http::withHeaders($headers)->timeout(120)->post($url, $payload);
     }
 
     public static function displayName(): string
