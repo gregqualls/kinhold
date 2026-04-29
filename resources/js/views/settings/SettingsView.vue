@@ -1100,7 +1100,7 @@
                 Download a ZIP of everything you've created in Kinhold — tasks, vault entries, points, recipes, and more.
               </p>
             </div>
-            <BaseButton variant="primary" size="sm" :loading="exportingData" @click="handleExportData">
+            <BaseButton variant="primary" size="sm" :loading="exportingData" @click="openExportModal">
               Export My Data
             </BaseButton>
           </div>
