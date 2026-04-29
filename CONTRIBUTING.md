@@ -50,6 +50,85 @@ Open http://localhost:8000. Demo accounts are created by the seeder.
 chmod +x scripts/setup-dev.sh && ./scripts/setup-dev.sh
 ```
 
+### Native Windows setup
+
+The recommended Windows path is the **Docker self-host flow** in [SELF-HOSTING.md](SELF-HOSTING.md) — `./setup-simple.sh` works under Docker Desktop or Git Bash and avoids every gotcha below. Read on only if you specifically want a native (no-Docker) dev loop.
+
+#### PHP
+
+`composer.lock` resolves Symfony 8 dependencies that require **PHP 8.4+** even though `composer.json` advertises `^8.2`. Install PHP 8.4 first; older versions fail at the `composer install` resolution step with cryptic platform errors.
+
+```powershell
+# winget matches multiple PHP packages — pin the exact id, otherwise it silently no-ops
+winget install --id PHP.PHP.8.4
+```
+
+After install, restart your shell so `PATH` updates take effect (already-running terminals — including Claude Code — won't see the new entry until restart).
+
+If you uninstall and reinstall PHP via winget, the dead `PATH` entry from the removed version is left behind — clean it up manually under **Settings → System → About → Advanced system settings → Environment Variables**, or you'll get the wrong `php` shadowing the new one.
+
+#### php.ini
+
+The winget package ships without an active `php.ini`. Locate the install dir (`where.exe php` then check the parent), copy `php.ini-development` to `php.ini`, and uncomment the Laravel-required extensions:
+
+```
+extension=openssl
+extension=pdo_pgsql
+extension=pdo_sqlite
+extension=mbstring
+extension=fileinfo
+extension=gd
+extension=sodium
+extension=intl
+extension=zip
+extension=bcmath
+extension=curl
+extension=exif
+```
+
+`php -m` confirms which are loaded.
+
+#### Composer
+
+Composer is **not** in winget under any obvious id. Use the official installer:
+
+> https://getcomposer.org/Composer-Setup.exe
+
+It auto-detects PHP and registers a global `composer` shim.
+
+#### PostgreSQL, Redis, Node
+
+```powershell
+winget install --id PostgreSQL.PostgreSQL.16
+winget install --id Redis.Redis      # or run via WSL / Docker
+winget install --id OpenJS.NodeJS.LTS
+```
+
+#### Line endings
+
+Until [#173](https://github.com/gregqualls/kinhold/issues/173) lands, the default Windows Git config (`core.autocrlf=true`) converts files to CRLF on checkout, and Pint flags every PHP file in the repo as needing a `line_ending` fix. Workaround: set `git config core.autocrlf input` **before** cloning (or run `git rm --cached -r . && git reset --hard` after switching the setting on an existing checkout). CI runs on Linux and is unaffected.
+
+#### Pre-commit hook
+
+The pre-commit hook now does its own `PATH` discovery (fixed in [#172](https://github.com/gregqualls/kinhold/pull/172)), so you no longer need to launch your editor from a shell with the right environment. If a hook ever fails to find `php` or `composer`, that's a regression — open an issue rather than working around it with `--no-verify`.
+
+#### Sanity check
+
+Once everything is installed, the standard quick-start commands from the macOS section work as-is:
+
+```powershell
+git clone https://github.com/gregqualls/kinhold.git
+cd kinhold
+copy .env.example .env
+composer install
+npm install
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+```
+
+`./vendor/bin/phpunit` should pass with the same green count CI reports.
+
 ## Code conventions
 
 - **Backend:** Laravel conventions, PSR-12 style. See [docs/CONVENTIONS.md](docs/CONVENTIONS.md).
