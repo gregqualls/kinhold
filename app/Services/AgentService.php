@@ -25,7 +25,11 @@ class AgentService
     /**
      * Process a user message through the agent loop.
      *
-     * @return array{text: string, tools_used: array<int, array{name: string, input: array<string, mixed>}>}
+     * Tokens are summed across every iteration of the agent loop — a single
+     * user turn can hit Anthropic 1–10 times depending on tool calls, and
+     * the daily-usage column reflects the full cost of that turn.
+     *
+     * @return array{text: string, tools_used: array<int, array{name: string, input: array<string, mixed>}>, input_tokens: int, output_tokens: int}
      */
     public function chat(string $message, User $user): array
     {
@@ -38,9 +42,14 @@ class AgentService
         $messages[] = ['role' => 'user', 'content' => $message];
 
         $toolsUsed = [];
+        $totalInputTokens = 0;
+        $totalOutputTokens = 0;
 
         for ($i = 0; $i < self::MAX_ITERATIONS; $i++) {
             $response = $provider->askWithTools($systemPrompt, $messages, $tools);
+
+            $totalInputTokens += $response['input_tokens'];
+            $totalOutputTokens += $response['output_tokens'];
 
             // If Claude is done (text response), validate before returning
             if ($response['stop_reason'] === 'end_turn') {
@@ -63,6 +72,8 @@ class AgentService
                 return [
                     'text' => $text,
                     'tools_used' => $toolsUsed,
+                    'input_tokens' => $totalInputTokens,
+                    'output_tokens' => $totalOutputTokens,
                 ];
             }
 
@@ -111,6 +122,8 @@ class AgentService
             return [
                 'text' => $this->extractText($response['content']),
                 'tools_used' => $toolsUsed,
+                'input_tokens' => $totalInputTokens,
+                'output_tokens' => $totalOutputTokens,
             ];
         }
 
@@ -118,6 +131,8 @@ class AgentService
         return [
             'text' => 'I wasn\'t able to complete your request — it required too many steps. Try breaking it into smaller requests.',
             'tools_used' => $toolsUsed,
+            'input_tokens' => $totalInputTokens,
+            'output_tokens' => $totalOutputTokens,
         ];
     }
 
@@ -376,29 +391,7 @@ PROMPT;
      */
     private function resolveProvider(Family $family): AnthropicProvider
     {
-        $settings = $family->settings ?? [];
-
-        $aiMode = $settings['ai_mode'] ?? 'kinhold';
-        $apiKey = null;
-
-        // BYOK mode: try family's own Anthropic key
-        if ($aiMode === 'byok' && ! empty($settings['ai_api_key'])) {
-            $providerSlug = $settings['ai_provider'] ?? 'anthropic';
-
-            // Only use BYOK key if it's an Anthropic key
-            if ($providerSlug === 'anthropic') {
-                try {
-                    $apiKey = decrypt($settings['ai_api_key']);
-                } catch (\Throwable $e) {
-                    Log::warning('Failed to decrypt family AI API key, falling back to platform key');
-                }
-            }
-        }
-
-        // Platform key fallback
-        if (empty($apiKey)) {
-            $apiKey = config('kinhold.chatbot.api_key');
-        }
+        $apiKey = self::resolveApiKey($family) ?? config('kinhold.chatbot.api_key');
 
         if (empty($apiKey)) {
             throw new \RuntimeException(
@@ -406,8 +399,51 @@ PROMPT;
             );
         }
 
-        $model = $settings['ai_model'] ?? '';
+        $model = ($family->settings['ai_model'] ?? '') ?: '';
 
         return new AnthropicProvider($apiKey, $model);
+    }
+
+    /**
+     * Try to resolve a family-owned (BYOK) Anthropic key. Returns null if the
+     * family is not in BYOK mode, the slug isn't anthropic, or decryption fails.
+     *
+     * Public/static so AiUsageService can call this without re-implementing the
+     * key-resolution logic — the limit check needs to know "is this family on
+     * the platform key?" without paying for a second decrypt.
+     */
+    public static function resolveApiKey(Family $family): ?string
+    {
+        $settings = $family->settings ?? [];
+        $aiMode = $settings['ai_mode'] ?? 'kinhold';
+
+        if ($aiMode !== 'byok' || empty($settings['ai_api_key'])) {
+            return null;
+        }
+
+        $providerSlug = $settings['ai_provider'] ?? 'anthropic';
+        if ($providerSlug !== 'anthropic') {
+            return null;
+        }
+
+        try {
+            return decrypt($settings['ai_api_key']);
+        } catch (\Throwable $e) {
+            Log::warning('Failed to decrypt family AI API key, falling back to platform key');
+
+            return null;
+        }
+    }
+
+    /**
+     * Whether the family resolves to the platform's Anthropic key (i.e. Kinhold
+     * pays per request). False when the family is BYOK with a usable key.
+     *
+     * Used by AiUsageService::shouldEnforce(). Self-hosted bypass is checked
+     * separately on the env flag.
+     */
+    public static function usesPlatformKey(Family $family): bool
+    {
+        return self::resolveApiKey($family) === null;
     }
 }

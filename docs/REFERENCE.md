@@ -53,7 +53,8 @@
 - Safety guardrails: tool-only scope, no off-topic, no prompt injection, no physical tasks. Asks clarifying questions for incomplete requests.
 - Markdown rendering in assistant responses (marked + DOMPurify for XSS safety)
 - Only Anthropic supported for agent mode (tool_use is provider-specific). BYOK + platform key modes both work.
-- **Future:** RAG for vault data, proactive reminders, multi-step workflows
+- **Per-family daily message cap** (hosted instances on the platform key only). `AiUsageService` enforces a hard cap with a 429 lockout and surfaces a usage chip + lockout panel in `ChatView.vue`. Plans live in `config('kinhold.chatbot.plans')` as `slug → { name, daily_messages, price_monthly_cents, stripe_price_id, public }`. Family stores its plan slug at `families.settings.chatbot.plan`. Numeric override available at `families.settings.chatbot.daily_message_limit` (admin/support escape hatch). BYOK families and `config('kinhold.self_hosted')` instances bypass automatically. Demo family resolves to the `demo_plan` slug for a richer baseline. Token usage (input + output, including cache hits) is captured per turn in `ai_usage_daily` and per assistant message in `chat_messages.metadata` — captured but **not** enforced in v1.
+- **Future:** RAG for vault data, proactive reminders, multi-step workflows, Stripe-driven plan switcher (#70), token-budget enforcement, 80% warning toast (skipped in v1 — chip color carries the signal)
 
 ### 6. MCP Server (IMPLEMENTED — Laravel-Native)
 - Laravel-native via `laravel/mcp` package — runs at `/mcp` endpoint, no separate process
@@ -107,7 +108,8 @@
 - `vault_permissions` — id, vault_entry_id, user_id, permission_level (enum: view/edit)
 - `documents` — id, documentable_type/id (polymorphic), uploaded_by, original_filename, stored_filename, mime_type, size, disk, path, encrypted
 - `calendar_connections` — id, user_id, provider, access_token (encrypted), refresh_token (encrypted), calendar_id, color, is_active
-- `chat_messages` — id, user_id, family_id, message, role (user/assistant)
+- `chat_messages` — id, user_id, family_id, message, role (user/assistant), metadata (JSON: tools_used, input_tokens, output_tokens)
+- `ai_usage_daily` — id, family_id, date, message_count, input_tokens, output_tokens. UNIQUE(family_id, date). One row per family per active day; daily message-count cap is enforced against this row.
 - `point_transactions` — id, family_id, user_id, type (enum), points (int), description, source_type/id (polymorphic), awarded_by
 - `rewards` — id, family_id, created_by, title, description, point_cost, icon, quantity, quantity_purchased, expires_at, visibility (enum), visible_to (JSON), min_age, max_age, reward_type (enum: standard/auction), min_bid, bid_start_at, bid_end_at, is_active, sort_order
 - `reward_purchases` — id, family_id, reward_id, user_id, points_spent, purchased_at
