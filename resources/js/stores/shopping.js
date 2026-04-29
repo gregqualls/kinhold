@@ -2,12 +2,21 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '@/services/api'
 
+const SHOPPING_WINDOW_KEY = 'kinhold_shopping_window'
+const VALID_SHOPPING_WINDOWS = ['all', '2days', '3days', 'week']
+
+const loadShoppingWindow = () => {
+  if (typeof window === 'undefined' || !window.localStorage) return 'all'
+  const saved = window.localStorage.getItem(SHOPPING_WINDOW_KEY)
+  return VALID_SHOPPING_WINDOWS.includes(saved) ? saved : 'all'
+}
+
 export const useShoppingStore = defineStore('shopping', () => {
   // State
   const lists = ref([])
   const activeList = ref(null)
   const catalogResults = ref([])
-  const shoppingWindow = ref('all')
+  const shoppingWindow = ref(loadShoppingWindow())
   const isLoading = ref(false)
   const error = ref(null)
 
@@ -288,7 +297,11 @@ export const useShoppingStore = defineStore('shopping', () => {
   // ── Local-only ──
 
   const setShoppingWindow = (value) => {
+    if (!VALID_SHOPPING_WINDOWS.includes(value)) return
     shoppingWindow.value = value
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(SHOPPING_WINDOW_KEY, value)
+    }
   }
 
   return {
