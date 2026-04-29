@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Models\ChatMessage;
 use App\Models\Family;
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
@@ -128,6 +129,11 @@ class AuthController extends Controller
                 'message' => 'Demo member not found.',
             ], 404);
         }
+
+        // Clean slate per visitor: chat is user-scoped, so clearing this
+        // demo user's history means the next visitor never sees the previous
+        // visitor's questions. Real families keep their chat permanently.
+        ChatMessage::where('user_id', $user->id)->delete();
 
         $token = $user->createToken('demo_token')->plainTextToken;
 

@@ -2,6 +2,18 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-29 — Clear demo user chat on each demo login (v1.6.1)
+
+PR [#204](https://github.com/gregqualls/kinhold/pull/204). The demo family is a single shared multi-tenant account — every visitor signs into the same `mike@demo.local` (or sarah/emma/etc.) user, so the existing user-scoped chat history meant each visitor was greeted by the previous visitor's questions. A seeded canned conversation (including a "what's the wifi password?" exchange in [DemoChatSeeder.php](database/seeders/DemoChatSeeder.php)) made the demo feel like someone else had been poking around.
+
+Real families are unaffected — chat stays permanent for them. Only the demo login flow wipes.
+
+- [`AuthController::demoLogin`](app/Http/Controllers/Api/V1/AuthController.php) deletes that demo user's `ChatMessage` rows before issuing the token, so each visitor starts blank
+- `DemoChatSeeder` removed from the [`DatabaseSeeder`](database/seeders/DatabaseSeeder.php) run list (the canned chat got wiped on first visitor login anyway, so seeding it was pointless). Seeder file kept on disk in case we want to bring a "tour script" version back later
+- New [`tests/Feature/DemoLoginTest.php`](tests/Feature/DemoLoginTest.php) covers the wipe and verifies other demo users' chat is untouched (so logging in as Mike doesn't nuke Sarah's history)
+
+Patch bump on top of the AI usage limits release: 1.6.0 → 1.6.1.
+
 ## 2026-04-29 — AI assistant usage limits with plan registry (#137)
 
 Closes [#137](https://github.com/gregqualls/kinhold/issues/137). The hosted chatbot endpoint (`POST /api/v1/chat`) was unthrottled and tracked no usage — one family looping the assistant could run an unbounded Anthropic bill. Stripe billing (#70) is still Phase B, so this lands the limit infra without the billing infra: a per-family **daily message count** cap, applied only when Kinhold's platform key is in use. BYOK families and self-hosted instances bypass automatically (their key, their cost). Hard cap, friendly lockout, no soft overage — that needs billing infra we don't have yet.
