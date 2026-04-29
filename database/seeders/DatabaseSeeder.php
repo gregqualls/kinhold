@@ -200,7 +200,6 @@ class DatabaseSeeder extends Seeder
             DemoRewardSeeder::class,    // rewards + purchases + redemption transactions
             DemoBadgeSeeder::class,     // badge definitions + awards
             DemoVaultSeeder::class,     // vault entries
-            DemoChatSeeder::class,      // chat messages
             DemoCalendarSeeder::class,  // featured events + calendar events
             DemoRecipeSeeder::class,    // recipes + ingredients (must run before MealPlan)
             DemoMealPlanSeeder::class,  // meal presets, restaurants, weekly meal plan (links to recipes)
