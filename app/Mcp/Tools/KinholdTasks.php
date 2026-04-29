@@ -197,7 +197,8 @@ class KinholdTasks extends Tool
 
         $updates = $this->mergeUpdates(
             $request,
-            simpleFields: ['title', 'description', 'due_date', 'priority', 'is_family_task'],
+            simpleFields: ['title', 'priority', 'is_family_task'],
+            nullableFields: ['description', 'due_date'],
         );
 
         // assigned_to: empty/null clears, otherwise must be a family member.

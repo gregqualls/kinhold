@@ -120,9 +120,17 @@ class AnthropicProvider implements AiProviderInterface
     }
 
     /**
-     * POST to /v1/messages with one retry on 429. Honors the server's
-     * `retry-after` header (clamped to 30s) so we don't sleep an entire
-     * minute for a transient burst.
+     * POST to /v1/messages with one retry on 429.
+     *
+     * Honors the server's `retry-after` header but caps at 5 seconds — beyond
+     * that we surface the 429 to the caller instead of blocking a PHP-FPM
+     * worker. With max_children=3 in production, blocking three workers for
+     * 30s each would freeze the entire chat endpoint for everyone.
+     *
+     * The trade-off: a fast server-suggested retry (1–5s) is silent and
+     * recovers transparently. A long suggested retry (≥6s) becomes a clear
+     * error to the user, who can wait and retry from the chat UI. Better
+     * UX than silent multi-second hangs.
      */
     private function postWithRateLimitRetry(array $payload): Response
     {
@@ -139,14 +147,23 @@ class AnthropicProvider implements AiProviderInterface
             return $response;
         }
 
-        // Server-suggested wait, clamped to 30s (don't block PHP-FPM longer than that).
         $retryAfterHeader = $response->header('retry-after');
         $retryAfter = $retryAfterHeader !== '' ? (int) $retryAfterHeader : 5;
-        $waitSeconds = max(1, min(30, $retryAfter));
 
-        Log::warning('Anthropic rate limit hit — retrying after backoff', [
+        // Worker-blocking budget: 5 seconds.
+        if ($retryAfter > 5) {
+            Log::warning('Anthropic rate limit — retry-after exceeds blocking budget, surfacing 429', [
+                'server_suggested' => $retryAfter,
+                'budget_seconds' => 5,
+            ]);
+
+            return $response;
+        }
+
+        $waitSeconds = max(1, $retryAfter);
+
+        Log::warning('Anthropic rate limit hit — retrying after short backoff', [
             'wait_seconds' => $waitSeconds,
-            'server_suggested' => $retryAfter,
         ]);
 
         sleep($waitSeconds);

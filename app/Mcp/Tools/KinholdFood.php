@@ -374,10 +374,10 @@ class KinholdFood extends Tool
 
         $data = $this->mergeUpdates(
             $request,
-            simpleFields: [
-                'title', 'description', 'instructions', 'ingredients',
-                'prep_time_minutes', 'cook_time_minutes', 'servings',
-                'image_path', 'tag_ids',
+            simpleFields: ['title', 'ingredients', 'tag_ids'],
+            nullableFields: [
+                'description', 'instructions', 'prep_time_minutes',
+                'cook_time_minutes', 'servings', 'image_path',
             ],
         );
 
@@ -763,7 +763,8 @@ class KinholdFood extends Tool
 
         $updates = $this->mergeUpdates(
             $request,
-            simpleFields: ['name', 'quantity', 'category', 'notes', 'is_recurring'],
+            simpleFields: ['name', 'is_recurring'],
+            nullableFields: ['quantity', 'category', 'notes'],
         );
 
         $item->update($updates);
@@ -1128,8 +1129,9 @@ class KinholdFood extends Tool
 
         $data = $this->mergeUpdates(
             $request,
-            simpleFields: ['date', 'meal_slot', 'notes', 'custom_title', 'servings', 'assigned_cooks', 'sort_order'],
+            simpleFields: ['date', 'meal_slot', 'servings', 'assigned_cooks', 'sort_order'],
             refFields: ['recipe_id', 'restaurant_id', 'meal_preset_id'],
+            nullableFields: ['notes', 'custom_title'],
         );
 
         $updated = app(MealPlanService::class)->updateEntry($entry, $data, $this->user());

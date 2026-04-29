@@ -247,7 +247,8 @@ class KinholdCalendar extends Tool
 
         $updateData = $this->mergeUpdates(
             $request,
-            simpleFields: ['title', 'description', 'location', 'color', 'recurrence', 'visibility', 'featured_scope', 'icon', 'all_day'],
+            simpleFields: ['title', 'recurrence', 'visibility', 'all_day'],
+            nullableFields: ['description', 'location', 'color', 'featured_scope', 'icon'],
         );
 
         // Date fields need parsing through Carbon.
@@ -443,7 +444,8 @@ class KinholdCalendar extends Tool
 
         $updates = $this->mergeUpdates(
             $request,
-            simpleFields: ['title', 'description', 'icon', 'color', 'recurrence', 'is_active', 'featured_scope'],
+            simpleFields: ['title', 'recurrence', 'is_active', 'featured_scope'],
+            nullableFields: ['description', 'icon', 'color'],
         );
 
         if ($request->get('event_date') !== null) {

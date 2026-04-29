@@ -453,10 +453,10 @@ class KinholdPoints extends Tool
         // bid_start_at, bid_end_at) can now be cleared via null/"" on update.
         $updates = $this->mergeUpdates(
             $request,
-            simpleFields: [
-                'title', 'description', 'point_cost', 'icon', 'is_active',
-                'quantity', 'expires_at', 'visibility', 'min_age', 'max_age',
-                'reward_type', 'min_bid', 'bid_start_at', 'bid_end_at',
+            simpleFields: ['title', 'point_cost', 'is_active', 'visibility', 'reward_type'],
+            nullableFields: [
+                'description', 'icon', 'quantity', 'expires_at',
+                'min_age', 'max_age', 'min_bid', 'bid_start_at', 'bid_end_at',
             ],
         );
 

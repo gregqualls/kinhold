@@ -160,10 +160,8 @@ class KinholdAchievements extends Tool
         // triggered badge or vice versa.
         $updates = $this->mergeUpdates(
             $request,
-            simpleFields: [
-                'name', 'description', 'icon', 'color', 'trigger_type',
-                'trigger_threshold', 'is_hidden', 'is_active',
-            ],
+            simpleFields: ['name', 'trigger_type', 'is_hidden', 'is_active'],
+            nullableFields: ['description', 'icon', 'color', 'trigger_threshold'],
         );
 
         $badge->update($updates);

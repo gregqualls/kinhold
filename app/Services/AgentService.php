@@ -265,15 +265,42 @@ PROMPT;
     }
 
     /**
+     * Field names that may carry user-typed sensitive content (vault notes,
+     * kudos reasons, point-deduction reasons, encrypted payloads). Logged as
+     * `[REDACTED:N chars]` so we can still see the agent reached the right
+     * field without spilling SSNs / medical info / passwords into log files.
+     *
+     * `description` and `title` are intentionally NOT here — they're the most
+     * common debugging signals and rarely contain anything privileged.
+     */
+    private const SENSITIVE_LOG_FIELDS = [
+        'data',
+        'notes',
+        'reason',
+        'sensitive_fields',
+        'body',
+        'password',
+        'api_key',
+        'encrypted_data',
+    ];
+
+    /**
      * Truncate tool input for logging — long string values get clipped, arrays
-     * shallow-copied. Avoids dumping multi-KB encrypted payloads or full meal-plan
-     * responses into the log line.
+     * shallow-copied, and known-sensitive fields redacted. Avoids dumping
+     * multi-KB encrypted payloads or PII into the log line.
      */
     private function truncateForLog(array $input): array
     {
         $max = 200;
         $truncated = [];
         foreach ($input as $key => $value) {
+            if (in_array($key, self::SENSITIVE_LOG_FIELDS, true)) {
+                $size = is_string($value) ? strlen($value) : (is_array($value) ? count($value) : 0);
+                $truncated[$key] = "[REDACTED:{$size}]";
+
+                continue;
+            }
+
             if (is_string($value)) {
                 $truncated[$key] = strlen($value) > $max
                     ? substr($value, 0, $max).'…(truncated)'
@@ -292,11 +319,20 @@ PROMPT;
     /**
      * Truncate the tool result content for logging. ToolRegistry::execute returns
      * the response body as a single string — we just need enough to diagnose
-     * "did the right thing happen" without dumping multi-KB JSON payloads.
+     * "did the right thing happen" without dumping multi-KB JSON payloads or
+     * decrypted vault data.
      */
     private function previewResult(string $content): string
     {
         $max = 300;
+
+        // Redact JSON payloads of decrypted vault data — entry_get returns a
+        // `data` object inline. Match the shape and elide it.
+        $content = preg_replace(
+            '/"(data|sensitive_fields|encrypted_data|body)":\s*(\{[^}]*\}|"[^"]*")/i',
+            '"$1":"[REDACTED]"',
+            $content,
+        ) ?? $content;
 
         return strlen($content) > $max ? substr($content, 0, $max).'…' : $content;
     }

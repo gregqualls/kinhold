@@ -322,8 +322,12 @@ class KinholdVault extends Tool
             return $denied;
         }
 
-        // Title and notes are clearable; mergeUpdates handles "absent vs explicitly null".
-        $updates = $this->mergeUpdates($request, simpleFields: ['title', 'notes']);
+        // Title is required; notes is nullable text where "" should clear.
+        $updates = $this->mergeUpdates(
+            $request,
+            simpleFields: ['title'],
+            nullableFields: ['notes'],
+        );
 
         $input = $request->all();
 
