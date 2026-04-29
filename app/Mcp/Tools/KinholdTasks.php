@@ -24,8 +24,8 @@ Tasks, completion (with points + badge side effects), and tags.
 
 Tasks:
   task_list (status?, assigned_to?) — Family tasks ordered by due date.
-  task_create (title*, description?, assigned_to?, due_date?, priority?, is_family_task?, points?, tag_ids?) — Children cannot set custom points.
-  task_update (task_id*, [any field]) — Subject to policy.
+  task_create (title*, description?, assigned_to?, due_date?, priority?, is_family_task?, points?, tag_ids?, recurrence_rule?, recurrence_end?, allow_pileup?) — Children cannot set custom points.
+  task_update (task_id*, [any field — title, description, assigned_to, due_date, priority, is_family_task, points, tag_ids, recurrence_rule, recurrence_end, sort_order]) — Subject to policy.
   task_delete (task_id*) — Subject to policy.
   task_complete (task_id*) — Awards points + checks badges. Children get 0 points for tasks they created themselves. Notifies family.
   task_uncomplete (task_id*) — Reverses points.
@@ -62,6 +62,10 @@ class KinholdTasks extends Tool
             'points' => $schema->integer()->description('Custom points (parent only)'),
             'status' => $schema->string()->enum(['pending', 'completed'])->description('Filter for task_list'),
             'tag_ids' => $schema->array()->items($schema->string())->description('Tag UUIDs to attach'),
+            'recurrence_rule' => $schema->string()->description('Recurrence pattern (e.g. RRULE string). Pass null/"" on update to clear.'),
+            'recurrence_end' => $schema->string()->description('Recurrence end date YYYY-MM-DD. Pass null/"" on update to clear.'),
+            'allow_pileup' => $schema->boolean()->description('Allow recurring task instances to pile up rather than rolling forward (task_create only)'),
+            'sort_order' => $schema->integer()->description('Sort order within the family task list (task_update only)'),
             'name' => $schema->string()->description('Tag name (required for tag_create)'),
             'color' => $schema->string()->description('Hex color for tag (e.g. #FF5733)'),
             'scope' => $schema->string()->enum(['task', 'food'])->description('Tag scope. Default for tag_create: task. Acts as filter on tag_list.'),
@@ -154,6 +158,9 @@ class KinholdTasks extends Tool
             'priority' => $request->get('priority', 'medium'),
             'is_family_task' => $request->get('is_family_task', false),
             'points' => $points,
+            'recurrence_rule' => $request->get('recurrence_rule'),
+            'recurrence_end' => $request->get('recurrence_end'),
+            'allow_pileup' => $request->get('allow_pileup', false),
             'sort_order' => Task::where('family_id', $family->id)->max('sort_order') + 1,
         ]);
 
@@ -197,8 +204,8 @@ class KinholdTasks extends Tool
 
         $updates = $this->mergeUpdates(
             $request,
-            simpleFields: ['title', 'priority', 'is_family_task'],
-            nullableFields: ['description', 'due_date'],
+            simpleFields: ['title', 'priority', 'is_family_task', 'sort_order'],
+            nullableFields: ['description', 'due_date', 'recurrence_rule', 'recurrence_end'],
         );
 
         // assigned_to: empty/null clears, otherwise must be a family member.

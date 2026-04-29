@@ -54,8 +54,8 @@ Shopping lists & items:
   shopping_update_list (list_id*, name?, store_name?).
   shopping_delete_list (list_id*).
   shopping_complete_trip (list_id*) — Mark a shopping trip as completed.
-  shopping_add_item (list_id*, name*, quantity?, category?, notes?, is_recurring?).
-  shopping_update_item (item_id*, [any field]).
+  shopping_add_item (list_id*, name*, quantity?, category?, notes?, is_recurring?, default_quantity?).
+  shopping_update_item (item_id*, [any field — name, quantity, category, notes, is_recurring, sort_order]).
   shopping_remove_item (item_id*).
   shopping_check_item (item_id*) / shopping_uncheck_item (item_id*).
   shopping_mark_on_hand (item_id*) / shopping_clear_on_hand (item_id*).
@@ -174,6 +174,7 @@ class KinholdFood extends Tool
             'quantity' => $schema->string()->description('Item quantity (shopping_add_item)'),
             'category' => $schema->string()->description('Item category'),
             'is_recurring' => $schema->boolean()->description('Mark item as recurring'),
+            'default_quantity' => $schema->string()->description('Default quantity restored when a recurring shopping item resets (shopping_add_item)'),
             'q' => $schema->string()->description('Search query (shopping_search_catalog)'),
             'ingredient_ids' => $schema->array()->items($schema->string())->description('Recipe ingredient UUIDs to add (shopping_add_recipe)'),
 
@@ -187,7 +188,7 @@ class KinholdFood extends Tool
             'selections' => $schema->array()->description('Curated entry selections for meal_plan_add_to_shopping. Array of {entry_id, ingredient_ids?}.'),
             'label' => $schema->string()->description('Meal preset label'),
             'icon' => $schema->string()->description('Icon (presets, restaurants)'),
-            'sort_order' => $schema->integer()->description('Sort order (presets, recipes, meal-plan entries)'),
+            'sort_order' => $schema->integer()->description('Sort order (presets, recipes, meal-plan entries, shopping items)'),
             'assigned_cooks' => $schema->array()->items($schema->string())->description('User UUIDs assigned as cooks for a meal-plan entry'),
 
             // Restaurant
@@ -740,6 +741,7 @@ class KinholdFood extends Tool
             'category' => $request->get('category'),
             'notes' => $request->get('notes'),
             'is_recurring' => $request->get('is_recurring'),
+            'default_quantity' => $request->get('default_quantity'),
         ], fn ($v) => $v !== null);
 
         $item = app(ShoppingListService::class)->addItem($list, $data, $this->user());
@@ -763,7 +765,7 @@ class KinholdFood extends Tool
 
         $updates = $this->mergeUpdates(
             $request,
-            simpleFields: ['name', 'is_recurring'],
+            simpleFields: ['name', 'is_recurring', 'sort_order'],
             nullableFields: ['quantity', 'category', 'notes'],
         );
 

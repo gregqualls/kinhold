@@ -24,7 +24,7 @@ Family calendar: events (manual + external + tasks), connections, and featured/c
 Actions:
   event_list (start?, end?) — Aggregated events from external calendars (Google/ICS), manual family events, and task due dates. Defaults: today → +3mo.
   event_create (title*, start_time*, end_time?, all_day?, description?, location?, color?, recurrence?, visibility?, featured_scope?, icon?, is_countdown?) — Create a manual family event.
-  event_update (event_id*, [any field]) — Creator or parent only.
+  event_update (event_id*, [any field — including is_active to soft-disable]) — Creator or parent only.
   event_delete (event_id*) — Creator or parent only.
   connection_list — List connected external calendars.
   connection_sync — Refresh sync timestamps + Google tokens for the current user's connections.
@@ -67,7 +67,7 @@ class KinholdCalendar extends Tool
             'event_date' => $schema->string()->description('Featured event date YYYY-MM-DD (required for featured_create)'),
             'event_time' => $schema->string()->description('Featured event time HH:MM'),
             'is_countdown' => $schema->boolean()->description('Whether this is THE countdown event on the dashboard (only one allowed per family)'),
-            'is_active' => $schema->boolean()->description('Whether the featured event is active'),
+            'is_active' => $schema->boolean()->description('Whether the event is active (soft-disable). Applies to event_update and featured_update.'),
         ];
     }
 
@@ -145,6 +145,7 @@ class KinholdCalendar extends Tool
                 $allEvents[] = [
                     'id' => $event->id,
                     'title' => $event->title,
+                    'description' => $event->description,
                     'start' => $event->all_day ? $occurrenceDate->toDateString() : $occurrenceDate->copy()->setTimeFrom($event->start_time)->toIso8601String(),
                     'end' => $event->end_time ? $occurrenceDate->copy()->setTimeFrom($event->end_time)->toIso8601String() : null,
                     'all_day' => $event->all_day,
@@ -247,7 +248,7 @@ class KinholdCalendar extends Tool
 
         $updateData = $this->mergeUpdates(
             $request,
-            simpleFields: ['title', 'recurrence', 'visibility', 'all_day'],
+            simpleFields: ['title', 'recurrence', 'visibility', 'all_day', 'is_active'],
             nullableFields: ['description', 'location', 'color', 'featured_scope', 'icon'],
         );
 
