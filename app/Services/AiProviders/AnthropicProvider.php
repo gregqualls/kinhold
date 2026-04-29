@@ -71,7 +71,7 @@ class AnthropicProvider implements AiProviderInterface
      *
      * @param  array<int, array{role: string, content: mixed}>  $messages
      * @param  array<int, array{name: string, description: string, input_schema: array<string, mixed>}>  $tools
-     * @return array{content: array<int, mixed>, stop_reason: string}
+     * @return array{content: array<int, mixed>, stop_reason: string, input_tokens: int, output_tokens: int}
      */
     public function askWithTools(string $systemPrompt, array $messages, array $tools): array
     {
@@ -113,9 +113,21 @@ class AnthropicProvider implements AiProviderInterface
 
         $data = $response->json();
 
+        // Sum every input-token bucket Anthropic reports. With prompt caching
+        // the response splits totals across input_tokens / cache_creation_input_tokens
+        // / cache_read_input_tokens; for billing-style accounting we want them
+        // all combined. Output is reported in a single bucket.
+        $usage = $data['usage'] ?? [];
+        $inputTokens = (int) ($usage['input_tokens'] ?? 0)
+            + (int) ($usage['cache_creation_input_tokens'] ?? 0)
+            + (int) ($usage['cache_read_input_tokens'] ?? 0);
+        $outputTokens = (int) ($usage['output_tokens'] ?? 0);
+
         return [
             'content' => $data['content'] ?? [],
             'stop_reason' => $data['stop_reason'] ?? 'end_turn',
+            'input_tokens' => $inputTokens,
+            'output_tokens' => $outputTokens,
         ];
     }
 
