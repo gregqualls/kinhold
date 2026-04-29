@@ -5,6 +5,7 @@ namespace App\Mcp\Tools;
 use App\Enums\PointRequestStatus;
 use App\Enums\PointTransactionType;
 use App\Enums\RewardVisibility;
+use App\Mcp\Tools\Concerns\MergesUpdates;
 use App\Mcp\Tools\Concerns\RequiresModule;
 use App\Mcp\Tools\Concerns\ScopesToFamily;
 use App\Models\PointRequest;
@@ -55,7 +56,7 @@ Visibility: everyone, parent_only, child_only, specific. Reward types: standard,
 DESC)]
 class KinholdPoints extends Tool
 {
-    use RequiresModule, ScopesToFamily;
+    use MergesUpdates, RequiresModule, ScopesToFamily;
 
     public const MODULE = 'points';
 
@@ -447,15 +448,22 @@ class KinholdPoints extends Tool
             return $denied;
         }
 
-        $updates = [];
-        foreach (['title', 'description', 'point_cost', 'icon', 'is_active', 'quantity', 'expires_at', 'visibility', 'min_age', 'max_age', 'reward_type', 'min_bid', 'bid_start_at', 'bid_end_at'] as $field) {
-            if ($request->get($field) !== null) {
-                $updates[$field] = $request->get($field);
-            }
-        }
+        // mergeUpdates distinguishes "field absent" from "field present-but-null".
+        // Nullable columns (quantity, expires_at, min_age, max_age, min_bid,
+        // bid_start_at, bid_end_at) can now be cleared via null/"" on update.
+        $updates = $this->mergeUpdates(
+            $request,
+            simpleFields: [
+                'title', 'description', 'point_cost', 'icon', 'is_active',
+                'quantity', 'expires_at', 'visibility', 'min_age', 'max_age',
+                'reward_type', 'min_bid', 'bid_start_at', 'bid_end_at',
+            ],
+        );
 
-        if ($request->get('visible_to') !== null) {
-            $updates['visible_to'] = $this->parseVisibleTo($request->get('visible_to'));
+        // visible_to needs custom parsing (comma-separated UUIDs → array, scoped to family).
+        $input = $request->all();
+        if (array_key_exists('visible_to', $input)) {
+            $updates['visible_to'] = $this->parseVisibleTo($input['visible_to']);
         }
 
         $reward->update($updates);

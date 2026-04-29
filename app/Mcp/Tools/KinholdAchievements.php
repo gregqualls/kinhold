@@ -2,6 +2,7 @@
 
 namespace App\Mcp\Tools;
 
+use App\Mcp\Tools\Concerns\MergesUpdates;
 use App\Mcp\Tools\Concerns\RequiresModule;
 use App\Mcp\Tools\Concerns\ScopesToFamily;
 use App\Models\Badge;
@@ -29,7 +30,7 @@ Trigger types: points_earned, tasks_completed, task_streak, kudos_received, kudo
 DESC)]
 class KinholdAchievements extends Tool
 {
-    use RequiresModule, ScopesToFamily;
+    use MergesUpdates, RequiresModule, ScopesToFamily;
 
     public const MODULE = 'badges';
 
@@ -154,12 +155,16 @@ class KinholdAchievements extends Tool
             return $denied;
         }
 
-        $updates = [];
-        foreach (['name', 'description', 'icon', 'color', 'trigger_type', 'trigger_threshold', 'is_hidden', 'is_active'] as $field) {
-            if ($request->get($field) !== null) {
-                $updates[$field] = $request->get($field);
-            }
-        }
+        // mergeUpdates allows clearing nullable fields (e.g. trigger_threshold
+        // can be cleared by passing null/"") — switching a custom badge to a
+        // triggered badge or vice versa.
+        $updates = $this->mergeUpdates(
+            $request,
+            simpleFields: [
+                'name', 'description', 'icon', 'color', 'trigger_type',
+                'trigger_threshold', 'is_hidden', 'is_active',
+            ],
+        );
 
         $badge->update($updates);
 

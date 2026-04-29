@@ -2,6 +2,7 @@
 
 namespace App\Mcp\Tools;
 
+use App\Mcp\Tools\Concerns\MergesUpdates;
 use App\Mcp\Tools\Concerns\RequiresModule;
 use App\Mcp\Tools\Concerns\ScopesToFamily;
 use App\Models\CalendarConnection;
@@ -37,7 +38,7 @@ Only one countdown event per family — setting is_countdown=true clears any exi
 DESC)]
 class KinholdCalendar extends Tool
 {
-    use RequiresModule, ScopesToFamily;
+    use MergesUpdates, RequiresModule, ScopesToFamily;
 
     public const MODULE = 'calendar';
 
@@ -244,21 +245,17 @@ class KinholdCalendar extends Tool
             return Response::error('You can only edit your own events.');
         }
 
-        $updateData = [];
-        foreach (['title', 'description', 'location', 'color', 'recurrence', 'visibility', 'featured_scope', 'icon'] as $field) {
-            if ($request->get($field) !== null) {
-                $updateData[$field] = $request->get($field);
-            }
-        }
+        $updateData = $this->mergeUpdates(
+            $request,
+            simpleFields: ['title', 'description', 'location', 'color', 'recurrence', 'visibility', 'featured_scope', 'icon', 'all_day'],
+        );
 
+        // Date fields need parsing through Carbon.
         if ($request->get('start_time') || $request->get('start')) {
             $updateData['start_time'] = Carbon::parse($request->get('start_time') ?? $request->get('start'));
         }
         if ($request->get('end_time')) {
             $updateData['end_time'] = Carbon::parse($request->get('end_time'));
-        }
-        if ($request->get('all_day') !== null) {
-            $updateData['all_day'] = $request->get('all_day');
         }
 
         $event->update($updateData);
@@ -444,12 +441,10 @@ class KinholdCalendar extends Tool
             return Response::error("Featured event not found: {$eventId}");
         }
 
-        $updates = [];
-        foreach (['title', 'description', 'icon', 'color', 'recurrence', 'is_active', 'featured_scope'] as $field) {
-            if ($request->get($field) !== null) {
-                $updates[$field] = $request->get($field);
-            }
-        }
+        $updates = $this->mergeUpdates(
+            $request,
+            simpleFields: ['title', 'description', 'icon', 'color', 'recurrence', 'is_active', 'featured_scope'],
+        );
 
         if ($request->get('event_date') !== null) {
             $startTime = Carbon::parse($request->get('event_date'));

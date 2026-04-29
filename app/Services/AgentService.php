@@ -74,13 +74,20 @@ class AgentService
                 // Execute each tool call and build tool_result messages
                 $toolResults = [];
                 foreach ($this->extractToolCalls($response['content']) as $toolCall) {
-                    Log::info('Agent executing tool', [
+                    $result = $this->toolRegistry->execute($toolCall['name'], $toolCall['input']);
+
+                    // Log the full call: input params + truncated result so we can
+                    // diagnose when the agent calls the right tool but with wrong
+                    // params, or when a tool silently no-ops on a field the LLM thinks
+                    // it set. Truncate result to keep log lines reasonable.
+                    Log::info('Agent tool call', [
                         'tool' => $toolCall['name'],
                         'action' => $toolCall['input']['action'] ?? null,
+                        'input' => $this->truncateForLog($toolCall['input']),
+                        'is_error' => $result['is_error'],
+                        'result_preview' => $this->previewResult($result['content']),
                         'user' => $user->id,
                     ]);
-
-                    $result = $this->toolRegistry->execute($toolCall['name'], $toolCall['input']);
 
                     $toolsUsed[] = [
                         'name' => $toolCall['name'],
@@ -255,6 +262,43 @@ PROMPT;
         }
 
         return false;
+    }
+
+    /**
+     * Truncate tool input for logging — long string values get clipped, arrays
+     * shallow-copied. Avoids dumping multi-KB encrypted payloads or full meal-plan
+     * responses into the log line.
+     */
+    private function truncateForLog(array $input): array
+    {
+        $max = 200;
+        $truncated = [];
+        foreach ($input as $key => $value) {
+            if (is_string($value)) {
+                $truncated[$key] = strlen($value) > $max
+                    ? substr($value, 0, $max).'…(truncated)'
+                    : $value;
+            } elseif (is_array($value)) {
+                // Don't recurse — just note the shape.
+                $truncated[$key] = '[array:'.count($value).']';
+            } else {
+                $truncated[$key] = $value;
+            }
+        }
+
+        return $truncated;
+    }
+
+    /**
+     * Truncate the tool result content for logging. ToolRegistry::execute returns
+     * the response body as a single string — we just need enough to diagnose
+     * "did the right thing happen" without dumping multi-KB JSON payloads.
+     */
+    private function previewResult(string $content): string
+    {
+        $max = 300;
+
+        return strlen($content) > $max ? substr($content, 0, $max).'…' : $content;
     }
 
     /**

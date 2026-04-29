@@ -3,6 +3,7 @@
 namespace App\Mcp\Tools;
 
 use App\Enums\MealSlot;
+use App\Mcp\Tools\Concerns\MergesUpdates;
 use App\Mcp\Tools\Concerns\RequiresModule;
 use App\Mcp\Tools\Concerns\ScopesToFamily;
 use App\Models\FamilyRestaurant;
@@ -69,8 +70,10 @@ Meal plans:
   meal_plan_current — Get-or-create the current week's plan.
   meal_plan_create (week_start*).
   meal_plan_show (plan_id*).
-  meal_plan_add_entry (plan_id*, date*, meal_slot*, recipe_id?, restaurant_id?, preset_id?, notes?).
+  meal_plan_add_entry (plan_id*, date*, meal_slot*, ONE OF: recipe_id|restaurant_id|meal_preset_id|custom_title, notes?, servings?, assigned_cooks?, sort_order?).
+    Each entry has exactly ONE source — pick recipe_id (a saved recipe), restaurant_id (eat out / takeout), meal_preset_id (a reusable label like "Leftovers" / "Fend for Yourself"), or custom_title (a free-form plain note like "Sandwiches"). `notes` is supplemental detail, NOT the entry's title.
   meal_plan_update_entry (entry_id*, [any field]).
+    To switch an entry's TYPE (e.g. from preset "Leftovers" to plain note "Sandwiches"): set the new source field AND explicitly clear the old one — `meal_preset_id: null` (or `""`) to drop a preset, same for recipe_id / restaurant_id. Just setting custom_title without clearing the preset will leave the preset taking visual precedence.
   meal_plan_remove_entry (entry_id*).
   meal_plan_move_entry (entry_id*, date*, meal_slot*).
   meal_plan_preview_shopping (plan_id*, days?, start?, shopping_list_id?) — Preview ingredients to add.
@@ -97,7 +100,7 @@ Photo uploads (recipes/restaurants) are not supported via MCP — use the API di
 DESC)]
 class KinholdFood extends Tool
 {
-    use RequiresModule, ScopesToFamily;
+    use MergesUpdates, RequiresModule, ScopesToFamily;
 
     public const MODULE = 'food';
 
@@ -130,13 +133,15 @@ class KinholdFood extends Tool
             ])->description('Action to perform'),
 
             // IDs
-            'recipe_id' => $schema->string()->description('Recipe UUID'),
+            'recipe_id' => $schema->string()->description('Recipe UUID — FK on meal_plan_add/update_entry; entry source. Pass null/"" on update to clear.'),
             'list_id' => $schema->string()->description('Shopping list UUID'),
             'item_id' => $schema->string()->description('Shopping item UUID'),
             'plan_id' => $schema->string()->description('Meal plan UUID'),
             'entry_id' => $schema->string()->description('Meal plan entry UUID'),
-            'preset_id' => $schema->string()->description('Meal preset UUID'),
-            'restaurant_id' => $schema->string()->description('Restaurant UUID'),
+            'preset_id' => $schema->string()->description('Meal preset UUID — used by meal_preset_update/meal_preset_delete (operates on the preset itself)'),
+            'meal_preset_id' => $schema->string()->description('Meal preset UUID — FK on meal_plan_add/update_entry; entry source. Pass null/"" on update to clear.'),
+            'custom_title' => $schema->string()->description('Free-form entry title (meal_plan_add/update_entry) — used when an entry is a plain note like "Sandwiches" instead of a recipe/restaurant/preset. Pass null/"" on update to clear.'),
+            'restaurant_id' => $schema->string()->description('Restaurant UUID — FK on meal_plan_add/update_entry; entry source. Pass null/"" on update to clear.'),
             'target_list_id' => $schema->string()->description('Target shopping list UUID (shopping_move_item)'),
 
             // Generic params
@@ -182,7 +187,8 @@ class KinholdFood extends Tool
             'selections' => $schema->array()->description('Curated entry selections for meal_plan_add_to_shopping. Array of {entry_id, ingredient_ids?}.'),
             'label' => $schema->string()->description('Meal preset label'),
             'icon' => $schema->string()->description('Icon (presets, restaurants)'),
-            'sort_order' => $schema->integer()->description('Sort order'),
+            'sort_order' => $schema->integer()->description('Sort order (presets, recipes, meal-plan entries)'),
+            'assigned_cooks' => $schema->array()->items($schema->string())->description('User UUIDs assigned as cooks for a meal-plan entry'),
 
             // Restaurant
             'address' => $schema->string()->description('Restaurant address'),
@@ -366,17 +372,14 @@ class KinholdFood extends Tool
             return $denied;
         }
 
-        $data = array_filter([
-            'title' => $request->get('title'),
-            'description' => $request->get('description'),
-            'instructions' => $request->get('instructions'),
-            'ingredients' => $request->get('ingredients'),
-            'prep_time_minutes' => $request->get('prep_time_minutes'),
-            'cook_time_minutes' => $request->get('cook_time_minutes'),
-            'servings' => $request->get('servings'),
-            'image_path' => $request->get('image_path'),
-            'tag_ids' => $request->get('tag_ids'),
-        ], fn ($v) => $v !== null);
+        $data = $this->mergeUpdates(
+            $request,
+            simpleFields: [
+                'title', 'description', 'instructions', 'ingredients',
+                'prep_time_minutes', 'cook_time_minutes', 'servings',
+                'image_path', 'tag_ids',
+            ],
+        );
 
         $service = app(RecipeService::class);
         $recipe = $service->updateRecipe($recipe, $data);
@@ -758,13 +761,10 @@ class KinholdFood extends Tool
             return $denied;
         }
 
-        $updates = array_filter([
-            'name' => $request->get('name'),
-            'quantity' => $request->get('quantity'),
-            'category' => $request->get('category'),
-            'notes' => $request->get('notes'),
-            'is_recurring' => $request->get('is_recurring'),
-        ], fn ($v) => $v !== null);
+        $updates = $this->mergeUpdates(
+            $request,
+            simpleFields: ['name', 'quantity', 'category', 'notes', 'is_recurring'],
+        );
 
         $item->update($updates);
 
@@ -1077,13 +1077,29 @@ class KinholdFood extends Tool
             return Response::error('date and meal_slot are required for meal_plan_add_entry.');
         }
 
+        // An entry must have exactly one "source": recipe, restaurant, preset, or custom_title.
+        $sources = array_filter([
+            $request->get('recipe_id'),
+            $request->get('restaurant_id'),
+            $request->get('meal_preset_id'),
+            $request->get('custom_title'),
+        ], fn ($v) => $v !== null && $v !== '');
+
+        if (count($sources) !== 1) {
+            return Response::error('Exactly one of recipe_id, restaurant_id, meal_preset_id, or custom_title is required (got '.count($sources).').');
+        }
+
         $data = array_filter([
             'date' => $date,
             'meal_slot' => $mealSlot,
             'recipe_id' => $request->get('recipe_id'),
             'restaurant_id' => $request->get('restaurant_id'),
-            'preset_id' => $request->get('preset_id'),
+            'meal_preset_id' => $request->get('meal_preset_id'),
+            'custom_title' => $request->get('custom_title'),
             'notes' => $request->get('notes'),
+            'servings' => $request->get('servings'),
+            'assigned_cooks' => $request->get('assigned_cooks'),
+            'sort_order' => $request->get('sort_order'),
         ], fn ($v) => $v !== null);
 
         $entry = app(MealPlanService::class)->addEntry($plan, $data, $this->user());
@@ -1110,14 +1126,11 @@ class KinholdFood extends Tool
             return $denied;
         }
 
-        $data = array_filter([
-            'date' => $request->get('date'),
-            'meal_slot' => $request->get('meal_slot'),
-            'recipe_id' => $request->get('recipe_id'),
-            'restaurant_id' => $request->get('restaurant_id'),
-            'preset_id' => $request->get('preset_id'),
-            'notes' => $request->get('notes'),
-        ], fn ($v) => $v !== null);
+        $data = $this->mergeUpdates(
+            $request,
+            simpleFields: ['date', 'meal_slot', 'notes', 'custom_title', 'servings', 'assigned_cooks', 'sort_order'],
+            refFields: ['recipe_id', 'restaurant_id', 'meal_preset_id'],
+        );
 
         $updated = app(MealPlanService::class)->updateEntry($entry, $data, $this->user());
 

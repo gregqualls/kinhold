@@ -2,6 +2,7 @@
 
 namespace App\Mcp\Tools;
 
+use App\Mcp\Tools\Concerns\MergesUpdates;
 use App\Mcp\Tools\Concerns\RequiresModule;
 use App\Mcp\Tools\Concerns\ScopesToFamily;
 use App\Models\Tag;
@@ -38,7 +39,7 @@ Priorities: low, medium, high. Status filter: pending, completed.
 DESC)]
 class KinholdTasks extends Tool
 {
-    use RequiresModule, ScopesToFamily;
+    use MergesUpdates, RequiresModule, ScopesToFamily;
 
     public const MODULE = 'tasks';
 
@@ -192,22 +193,27 @@ class KinholdTasks extends Tool
         }
 
         $user = $this->user();
+        $input = $request->all();
 
-        $updates = [];
-        foreach (['title', 'description', 'due_date', 'priority', 'is_family_task'] as $field) {
-            if ($request->get($field) !== null) {
-                $updates[$field] = $request->get($field);
+        $updates = $this->mergeUpdates(
+            $request,
+            simpleFields: ['title', 'description', 'due_date', 'priority', 'is_family_task'],
+        );
+
+        // assigned_to: empty/null clears, otherwise must be a family member.
+        if (array_key_exists('assigned_to', $input)) {
+            $assignedTo = $input['assigned_to'];
+            if ($assignedTo === '' || $assignedTo === null) {
+                $updates['assigned_to'] = null;
+            } else {
+                $this->family()->members()->findOrFail($assignedTo);
+                $updates['assigned_to'] = $assignedTo;
             }
         }
 
-        if ($request->get('assigned_to') !== null) {
-            $assignedTo = $request->get('assigned_to');
-            $this->family()->members()->findOrFail($assignedTo);
-            $updates['assigned_to'] = $assignedTo;
-        }
-
-        if ($request->get('points') !== null && $user->isParent()) {
-            $updates['points'] = $request->get('points');
+        // points: parent-only.
+        if (array_key_exists('points', $input) && $user->isParent()) {
+            $updates['points'] = $input['points'];
         }
 
         $task->update($updates);

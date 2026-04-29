@@ -2,6 +2,7 @@
 
 namespace App\Mcp\Tools;
 
+use App\Mcp\Tools\Concerns\MergesUpdates;
 use App\Mcp\Tools\Concerns\RequiresModule;
 use App\Mcp\Tools\Concerns\ScopesToFamily;
 use App\Models\VaultCategory;
@@ -42,7 +43,7 @@ Setup playbooks (read-only, no auth needed):
 DESC)]
 class KinholdVault extends Tool
 {
-    use RequiresModule, ScopesToFamily;
+    use MergesUpdates, RequiresModule, ScopesToFamily;
 
     public const MODULE = 'vault';
 
@@ -321,20 +322,21 @@ class KinholdVault extends Tool
             return $denied;
         }
 
-        $updates = [];
-        if ($request->get('title') !== null) {
-            $updates['title'] = $request->get('title');
-        }
-        if ($request->get('notes') !== null) {
-            $updates['notes'] = $request->get('notes');
-        }
-        if ($request->get('data') !== null) {
+        // Title and notes are clearable; mergeUpdates handles "absent vs explicitly null".
+        $updates = $this->mergeUpdates($request, simpleFields: ['title', 'notes']);
+
+        $input = $request->all();
+
+        // data → encrypted_data, runs through the encryption service.
+        if (array_key_exists('data', $input) && $input['data'] !== null) {
             $encryptionService = app(VaultEncryptionService::class);
-            $updates['encrypted_data'] = $encryptionService->encrypt($request->get('data'));
+            $updates['encrypted_data'] = $encryptionService->encrypt($input['data']);
         }
-        if ($request->get('category_id') !== null) {
-            VaultCategory::where('family_id', $this->familyId())->findOrFail($request->get('category_id'));
-            $updates['vault_category_id'] = $request->get('category_id');
+
+        // category_id → vault_category_id (column rename) + family-scope check.
+        if (array_key_exists('category_id', $input) && $input['category_id'] !== null && $input['category_id'] !== '') {
+            VaultCategory::where('family_id', $this->familyId())->findOrFail($input['category_id']);
+            $updates['vault_category_id'] = $input['category_id'];
         }
 
         $entry->update($updates);
