@@ -7,10 +7,13 @@ use App\Models\Family;
 use App\Models\User;
 use App\Services\AccountDeletionService;
 use App\Services\AgentService;
+use App\Services\UserDataExportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 class SettingsController extends Controller
 {
@@ -322,5 +325,35 @@ class SettingsController extends Controller
         $service->deleteUser($user);
 
         return response()->json(['message' => 'Account deleted successfully'], 200);
+    }
+
+    /**
+     * Export the authenticated user's data as a downloadable ZIP archive.
+     *
+     * Implements GDPR Article 15 (right of access). Password re-confirmation
+     * is required for accounts that have a password — limits blast radius if
+     * a session or bearer token is compromised. OAuth-only accounts (no
+     * password) are exempt so duplicate-account recovery still works.
+     */
+    public function exportData(Request $request, UserDataExportService $service): Response
+    {
+        $user = $request->user();
+
+        if ($user->password) {
+            $request->validate(['password' => 'required|string']);
+
+            if (! Hash::check($request->password, $user->password)) {
+                return response()->json(['message' => 'Incorrect password'], 403);
+            }
+        }
+
+        Log::info('user.data_export', [
+            'user_id' => $user->id,
+            'family_id' => $user->family_id,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return $service->buildExport($user);
     }
 }

@@ -297,6 +297,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/email-preferences', [SettingsController::class, 'emailPreferences']);
             Route::put('/email-preferences', [SettingsController::class, 'updateEmailPreferences']);
             Route::delete('/account', [SettingsController::class, 'deleteAccount'])->middleware('throttle:5,1');
+            Route::post('/account/data-export', [SettingsController::class, 'exportData'])->middleware('throttle:5,1');
         });
 
         // MCP Token

@@ -2,6 +2,48 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-29 — GDPR data export: synchronous ZIP download (#96)
+
+Closes the second half of [#96](https://github.com/gregqualls/kinhold/issues/96) — account deletion shipped previously, data export was the missing piece. Triggered by a real user scenario: someone created a duplicate Google OAuth account and had no way to retrieve their data. Self-hosted families need it too. Implements GDPR Article 15 (right of access).
+
+**Approach.** One service, one controller method, one route, one button, one feature test. Synchronous, single request, no queue, no email, no temp-file-with-signed-URL — just stream the ZIP back as the response. Mirrors the existing account-deletion shape (same Settings location, same `auth:sanctum` + `throttle:5,1` middleware, same inline-handler frontend pattern).
+
+**`UserDataExportService` (new).** Builds an in-memory ZIP via PHP's bundled `ZipArchive` (writes to a tmp buffer, reads back, unlinks before responding — never leaves the request). Eight per-domain JSON files plus a top-level `manifest.json`:
+
+| File | Source | Scope |
+|---|---|---|
+| `user.json` | `User` | self; `password`, `remember_token`, OAuth tokens, 2FA secrets hidden |
+| `tasks.json` | `Task` (+ `task_tag` pivot) | `created_by` OR `assigned_to`. Each row tagged with `_role: creator/assignee/both` |
+| `vault.json` | `VaultEntry` (+ `documents`) | `created_by` OR `vault_permissions.user_id`. Calls `getDecryptedData()` server-side and returns plaintext under `data`; sets `encrypted_data: null`. Documents bundled into `vault-documents/{id}/...` |
+| `points.json` | `PointTransaction`, `PointRequest`, `RewardPurchase` | `user_id` |
+| `badges.json` | `Badge` via `user_badges` | join with `earned_at`, `awarded_by` from pivot |
+| `chat.json` | `ChatMessage` | `user_id` |
+| `calendar.json` | `CalendarConnection` | `user_id`. Defensive `makeHidden` on `access_token`, `refresh_token` even though already in `$hidden` |
+| `food.json` | `Recipe` (+ ingredients/tags), `ShoppingList` (+ items), `MealPlan` (+ entries), recipe-only `Rating` | `created_by` (or `user_id` for ratings). Recipe images bundled into `recipe-images/{id}/...` |
+
+Plus avatar bundling under `avatar/{filename}` if `$user->avatar` matches `avatars/*`. `manifest.json` carries `version: '1.0'`, `exported_at` (ISO8601), `user_id`, `family_id`, `app_version`, `files: [...]`. Top-of-method guardrail: `set_time_limit(120); ini_set('memory_limit', '512M');` with a one-line comment that the trigger to switch to ZipStream-PHP is hitting these ceilings — no pre-tuning.
+
+**Controller + route.** `SettingsController::exportData(Request, UserDataExportService): Response` next to `deleteAccount`. New route `POST /api/v1/settings/account/data-export` next to the delete route, same middleware stack. POST chosen over GET because the action has side effects (decrypts vault data, writes log entries) and to avoid browser caches and referrer leakage.
+
+**Password re-confirmation, with OAuth bypass.** Initial plan skipped this for "duplicate-account recovery"; security review pushed back — Google/Apple/Twitter/iCloud all require recent password re-auth, and the blast radius if a session or bearer token is compromised is the user's full vault in plaintext. Endpoint now requires `password` for accounts with one (`Hash::check`, mirroring `deleteAccount`); OAuth-only accounts (no `password`) still skip the check so the recovery scenario still works. Frontend gates the download behind a confirmation modal that surfaces the password field only when `currentUser.has_password !== false` (new field on `UserResource`). Modal also warns the user that the resulting ZIP contains decrypted vault data and should be stored securely.
+
+**Audit log.** Each successful export emits `Log::info('user.data_export', [user_id, family_id, ip, user_agent])`. Structured enough to grep via Upsun logs if a user later reports a leak; doesn't grow a new table for an MVP-scale signal.
+
+**Frontend.** New "Your Data" SettingsSection above Danger Zone in the parent view, plus a matching `card-lg` block above the child Danger Zone (mirroring how the delete-account block is duplicated for child accounts). Inline `handleExportData` mirrors `handleDeleteAccount` style: axios POST with `responseType: 'blob'` → `URL.createObjectURL` → trigger an anchor-click download → `revokeObjectURL`. Blob over a tokenized navigation URL because sanctum auth lives in axios headers — `window.location` would lose them and force inventing a one-time download token (more code, more attack surface).
+
+**Vault permission scope.** "Entries you own or have access to" includes shared entries: an entry created by parent A and granted to parent B appears in both their exports. Once shared, B is entitled to a copy under right-of-access. A dedicated test (`test_shared_vault_entry_appears_in_both_owner_and_grantee_exports`) enforces this.
+
+**Tests.** New `tests/Feature/UserDataExportTest.php` (PHPUnit class-style, matching `SecurityTest`) covers six cases: 401 unauthenticated, ZIP contains expected files, scoping isolation across families, vault decryption in output, calendar token redaction in body, shared-vault visibility. 131/131 pass (was 125, +6 new). PHPStan clean. `npm run build` succeeds; `Export My Data` text and `/settings/account/data-export` URL confirmed present in the production bundle.
+
+**Out of scope (deliberately not built).** Queue/job, two-step "request export → download later", "your export is ready" email, encryption of the export file at rest, signed download URLs, scheduled re-exports, anonymization features, settings to choose what to export, changes to the existing account-deletion flow. The default queue driver is `sync` and `app/Jobs/` doesn't exist; family-sized data fits comfortably in one request, and the comment at the top of `buildExport` documents the upgrade trigger.
+
+**Files**
+- `app/Services/UserDataExportService.php` — new
+- `app/Http/Controllers/Api/V1/SettingsController.php` — `exportData` action
+- `routes/api.php` — new POST route at line 300
+- `resources/js/views/settings/SettingsView.vue` — "Your Data" sections (parent + child) + `handleExportData`
+- `tests/Feature/UserDataExportTest.php` — new
+
 ## 2026-04-29 — MCP consolidation: 20 tools → 7 domain routers + Phase F Step 8 food coverage
 
 The Kinhold MCP server exposed 20 separately-registered tools, each with its own JSON schema injected into every model call. With ~5,000 tokens of tool definitions burning on every turn whether tools were used or not, the AI chatbot's context budget was shrinking fast — and adding the planned food-MCP coverage (Phase F Step 8) would have made it worse. This pass rebuilds the MCP server around domain consolidation + module-gated registration.

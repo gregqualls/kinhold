@@ -1083,6 +1083,30 @@
         </div>
       </SettingsSection>
 
+      <!-- Your Data (GDPR export) -->
+      <SettingsSection
+        id="your-data"
+        title="Your Data"
+        description="Download a copy of your data"
+        :icon="ArrowDownTrayIcon"
+        :model-value="expandedSections.has('your-data')"
+        @update:model-value="val => toggleSection('your-data', val)"
+      >
+        <div class="p-4 bg-surface-sunken rounded-lg">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="font-medium text-ink-primary">Export My Data</p>
+              <p class="text-sm text-ink-secondary mt-1">
+                Download a ZIP of everything you've created in Kinhold: tasks, vault entries, points, recipes, and more.
+              </p>
+            </div>
+            <BaseButton variant="primary" size="sm" :loading="exportingData" @click="openExportModal">
+              Export My Data
+            </BaseButton>
+          </div>
+        </div>
+      </SettingsSection>
+
       <!-- Section 8: Danger Zone -->
       <SettingsSection
         id="danger"
@@ -1183,6 +1207,22 @@
         <div class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
           <span class="text-sm font-medium text-ink-primary">Version</span>
           <span class="text-sm font-mono text-ink-secondary">v{{ appVersion }}</span>
+        </div>
+      </div>
+
+      <!-- Your Data (child version) -->
+      <div class="card-lg mb-6">
+        <div class="flex items-center gap-2 mb-3">
+          <ArrowDownTrayIcon class="w-5 h-5 text-accent-lavender-bold" />
+          <h2 class="text-lg font-semibold font-heading text-ink-primary">Your Data</h2>
+        </div>
+        <div class="flex items-start justify-between gap-4">
+          <p class="text-sm text-ink-secondary">
+            Download a ZIP of everything you've created in Kinhold: tasks, points, badges, chat history, and more.
+          </p>
+          <BaseButton variant="primary" size="sm" :loading="exportingData" @click="openExportModal">
+            Export My Data
+          </BaseButton>
         </div>
       </div>
 
@@ -1352,6 +1392,45 @@
       </template>
     </BaseModal>
 
+    <!-- Export Data Modal -->
+    <BaseModal
+      :show="showExportDataModal"
+      title="Export Your Data"
+      @close="closeExportModal"
+    >
+      <div class="space-y-4">
+        <p class="text-sm text-ink-secondary">
+          Download a ZIP of everything you've created in Kinhold: tasks, vault entries, points, recipes, and more.
+        </p>
+        <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+          <p class="text-sm text-amber-700 dark:text-amber-300">
+            <strong>Heads up:</strong> the file contains decrypted vault data (passwords, SSNs, medical info). It is plaintext on your disk. Store it securely and delete it when no longer needed.
+          </p>
+        </div>
+        <BaseInput
+          v-if="currentUser?.has_password !== false"
+          v-model="exportPassword"
+          label="Confirm your password"
+          type="password"
+          placeholder="Current password"
+          :error="exportError"
+          @keydown.enter="handleExportData"
+        />
+      </div>
+
+      <div class="flex gap-2 justify-end pt-4">
+        <BaseButton variant="ghost" @click="closeExportModal">Cancel</BaseButton>
+        <BaseButton
+          variant="primary"
+          :loading="exportingData"
+          :disabled="currentUser?.has_password !== false && !exportPassword"
+          @click="handleExportData"
+        >
+          Download My Data
+        </BaseButton>
+      </div>
+    </BaseModal>
+
     <!-- Delete Account Modal -->
     <BaseModal
       :show="showDeleteAccountModal"
@@ -1483,6 +1562,7 @@ import {
   FireIcon,
   InformationCircleIcon,
   ArrowTopRightOnSquareIcon,
+  ArrowDownTrayIcon,
   XMarkIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/vue/24/outline'
@@ -2354,6 +2434,59 @@ const handleDeleteAccount = async () => {
     notificationError(msg)
   }
   deletingAccount.value = false
+}
+
+// ---- Data Export (GDPR Article 15) ----
+const showExportDataModal = ref(false)
+const exportPassword = ref('')
+const exportError = ref('')
+const exportingData = ref(false)
+
+const openExportModal = () => {
+  exportPassword.value = ''
+  exportError.value = ''
+  showExportDataModal.value = true
+}
+
+const closeExportModal = () => {
+  showExportDataModal.value = false
+  exportPassword.value = ''
+  exportError.value = ''
+}
+
+const handleExportData = async () => {
+  exportError.value = ''
+  exportingData.value = true
+  try {
+    const payload = currentUser.value?.has_password !== false
+      ? { password: exportPassword.value }
+      : {}
+    const res = await api.post('/settings/account/data-export', payload, { responseType: 'blob' })
+    const url = URL.createObjectURL(res.data)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `kinhold-export-${new Date().toISOString().slice(0, 10)}.zip`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+    closeExportModal()
+  } catch (err) {
+    let msg = 'Failed to export data'
+    // Error response is a Blob (responseType=blob); parse it as JSON.
+    if (err.response?.data instanceof Blob) {
+      try {
+        const text = await err.response.data.text()
+        msg = JSON.parse(text)?.message || msg
+      } catch { /* keep default */ }
+    } else if (err.response?.data?.message) {
+      msg = err.response.data.message
+    }
+    exportError.value = msg
+    notificationError(msg)
+  } finally {
+    exportingData.value = false
+  }
 }
 
 const handleDeleteFamily = async () => {

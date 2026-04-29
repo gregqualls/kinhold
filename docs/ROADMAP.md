@@ -64,7 +64,7 @@ These features are live and working:
 
 | Issue | Title | Priority | Status |
 |-------|-------|----------|--------|
-| [#96](https://github.com/gregqualls/kinhold/issues/96) | GDPR compliance: account deletion and data export | Critical | Account deletion done, data export pending |
+| [#96](https://github.com/gregqualls/kinhold/issues/96) | GDPR compliance: account deletion and data export | Critical | DONE |
 | [#134](https://github.com/gregqualls/kinhold/issues/134) | Separate landing page from SPA | High | |
 | [#121](https://github.com/gregqualls/kinhold/issues/121) | Bug: file uploads to the vault | High | DONE |
 | [#137](https://github.com/gregqualls/kinhold/issues/137) | AI assistant usage limits for hosted version | Medium | |
