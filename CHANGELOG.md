@@ -2,6 +2,41 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-29 — MCP consolidation: 20 tools → 7 domain routers + Phase F Step 8 food coverage
+
+The Kinhold MCP server exposed 20 separately-registered tools, each with its own JSON schema injected into every model call. With ~5,000 tokens of tool definitions burning on every turn whether tools were used or not, the AI chatbot's context budget was shrinking fast — and adding the planned food-MCP coverage (Phase F Step 8) would have made it worse. This pass rebuilds the MCP server around domain consolidation + module-gated registration.
+
+**New tool layout (7 tools, down from 20):**
+
+| Tool | Replaces | Module gate |
+|---|---|---|
+| `kinhold-family` | view-family, get-settings, search-family, manage-dashboard | Always on (core) |
+| `kinhold-calendar` | view-calendar, manage-featured-events | `calendar` |
+| `kinhold-tasks` | manage-tasks, complete-task, manage-tags | `tasks` |
+| `kinhold-food` | *(new — covers Phase F Step 8)* | `food` |
+| `kinhold-points` | view-points, manage-points, manage-point-requests, manage-rewards, purchase-reward | `points` |
+| `kinhold-vault` | manage-vault, manage-vault-access, list-playbooks, get-playbook | `vault` |
+| `kinhold-achievements` | manage-badges, view-earned-badges | `badges` |
+
+Each consolidated tool dispatches by an `action` enum: `kinhold-tasks` accepts `task_list`, `task_create`, `tag_list`, etc. — same pattern as the old `manage-*` tools used internally, just extended across full domain boundaries. Action enums are documented in each tool's `#[Description]` with a per-action params matrix so the LLM can pick correctly without us inflating the JSON schema with conditional `oneOf` constructs.
+
+**Module-gated registration via `shouldRegister()`** — every domain tool except `kinhold-family` implements `Concerns\RequiresModule`, which calls `Family::userHasModuleAccess(static::MODULE, $user)`. Families that have `food` or `vault` disabled never receive those tools' schemas — closest thing to deferred loading we can do today, since `laravel/mcp` 0.6.4 doesn't support Anthropic-style Tool Search / `tools/list_changed` upstream yet. (Tracked separately for Phase 2.)
+
+**`kinhold-food` (new — closes #155, closes #67)** — 47 actions across recipes, shopping, meal plans, meal presets, and restaurants. Wraps the existing service classes (`RecipeService`, `RecipeImportService`, `ShoppingListService`, `MealPlanService`, `RestaurantImportService`) so MCP and the API share identical business logic. Photo upload is the one gap — multipart isn't available over MCP, so `recipe_import_photo` and image uploads fall back to the API; URL-based imports (`recipe_import_url`, `restaurant_import`) work end-to-end.
+
+**Naming convention** — tool names switched from verb-led (`view-calendar`, `manage-tasks`) to domain-prefixed (`kinhold-calendar`, `kinhold-tasks`) so the LLM's tool list reads as a domain inventory rather than action grab-bag. Backward-compat is not preserved — single-user instance, no external clients pinned to old names.
+
+**Workflow fix rolled in** — also patches [.claude/commands/kickoff.md](.claude/commands/kickoff.md) and [.claude/commands/cleanup.md](.claude/commands/cleanup.md) to surface and handle diverged `local-main vs origin/main`. Local main had been silently rotting between sessions because `git pull origin main` (no `--ff-only`, no error reporting) does nothing useful on diverged history. New: explicit `git rev-list --left-right --count` check, fast-forward if behind-only, surface diverged case loudly with a recovery prompt. Same change applied to both commands — kickoff now refuses to start fresh work on stale main, and cleanup handles the squash-merge dupe pattern correctly.
+
+**Files**
+- `app/Mcp/Tools/Concerns/RequiresModule.php` — new trait
+- `app/Mcp/Tools/Kinhold{Family,Calendar,Tasks,Food,Points,Vault,Achievements}.php` — 7 new consolidated tools
+- `app/Mcp/Servers/KinholdServer.php` — `$tools` array reduced to 7 entries
+- 20 old tool files in `app/Mcp/Tools/` — deleted
+- `.claude/commands/kickoff.md` + `.claude/commands/cleanup.md` — diverged-main handling
+
+**Next steps (Phase 2, separate issue):** when `laravel/mcp` adds Anthropic Tool Search support, mark heavy domain tools (food, vault, points) as deferred so their schemas only ship when the LLM searches for them — projected another ~50% on top of what this PR delivers.
+
 ## 2026-04-28 — Fix Google OAuth login loop on production (v1.4.4)
 
 Sign in with Google looped: account-picker → pick account → land back on the login form, repeat. Root cause was a route-binding regression introduced with the MCP/Passport OAuth feature (commit `2ef576b`): `routes/web.php` registered `Route::get('/login', ...)->name('login')` bound to `GoogleAuthController::oauthLogin()`. The comment above it claimed "Uses a separate path so /login stays as the SPA catch-all (no conflict)" but the path was, in fact, `/login`. Every fresh server-side hit to `/login` issued an HTTP 302 to Google OAuth (verified in production via `curl -sI https://app.kinhold.app/login`). Google's callback ran `Auth::login()` + `redirect()->intended('/')`, which sent the SPA to `/`, which redirected to `/login`, which 302'd to Google again — the loop. Users only saw the SPA login form when Vue Router handled `/login` client-side after the SPA was already mounted; cold loads always went to Google.

@@ -2,6 +2,8 @@
 
 namespace App\Mcp\Tools;
 
+use App\Mcp\Tools\Concerns\MergesUpdates;
+use App\Mcp\Tools\Concerns\RequiresModule;
 use App\Mcp\Tools\Concerns\ScopesToFamily;
 use App\Models\Badge;
 use App\Services\BadgeService;
@@ -11,23 +13,44 @@ use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
-#[Name('manage-badges')]
-#[Description('List, create, update, delete, or manually award/revoke badges. Actions: list, create, update, delete, award, revoke. Write actions are parent-only.')]
-class ManageBadges extends Tool
+#[Name('kinhold-achievements')]
+#[Description(<<<'DESC'
+Manage badges and view earned achievements.
+
+Actions:
+  badge_list — List all family badges (children see hidden badges masked unless earned).
+  badge_create (name*, description*, trigger_type*, trigger_threshold?, icon?, color?, is_hidden?) — Parent only.
+  badge_update (badge_id*, [any field]) — Parent only.
+  badge_delete (badge_id*) — Parent only.
+  badge_award (badge_id*, user_id*) — Manually award. Parent only.
+  badge_revoke (badge_id*, user_id*) — Manually revoke. Parent only.
+  badge_earned (user_id?) — List badges earned by a user (defaults to current user).
+
+Trigger types: points_earned, tasks_completed, task_streak, kudos_received, kudos_given, rewards_purchased, login_streak, custom.
+DESC)]
+class KinholdAchievements extends Tool
 {
-    use ScopesToFamily;
+    use MergesUpdates, RequiresModule, ScopesToFamily;
+
+    public const MODULE = 'badges';
 
     public function schema($schema): array
     {
         return [
-            'action' => $schema->string()->required()->enum(['list', 'create', 'update', 'delete', 'award', 'revoke'])->description('Action to perform'),
+            'action' => $schema->string()->required()->enum([
+                'badge_list', 'badge_create', 'badge_update', 'badge_delete',
+                'badge_award', 'badge_revoke', 'badge_earned',
+            ])->description('Action to perform'),
             'badge_id' => $schema->string()->description('Badge UUID (required for update/delete/award/revoke)'),
-            'user_id' => $schema->string()->description('Target user UUID (required for award/revoke)'),
+            'user_id' => $schema->string()->description('User UUID (required for award/revoke; optional for badge_earned)'),
             'name' => $schema->string()->description('Badge name (required for create)'),
             'description' => $schema->string()->description('Badge description (required for create)'),
             'icon' => $schema->string()->description('Icon name from preset list'),
             'color' => $schema->string()->description('Hex color (e.g. #7d57a8)'),
-            'trigger_type' => $schema->string()->enum(['points_earned', 'tasks_completed', 'task_streak', 'kudos_received', 'kudos_given', 'rewards_purchased', 'login_streak', 'custom'])->description('What triggers this badge (required for create)'),
+            'trigger_type' => $schema->string()->enum([
+                'points_earned', 'tasks_completed', 'task_streak', 'kudos_received',
+                'kudos_given', 'rewards_purchased', 'login_streak', 'custom',
+            ])->description('What triggers this badge (required for create)'),
             'trigger_threshold' => $schema->integer()->description('Threshold value for auto-trigger (null for custom badges)'),
             'is_hidden' => $schema->boolean()->description('Whether badge is hidden until earned'),
             'is_active' => $schema->boolean()->description('Whether badge is active'),
@@ -37,17 +60,18 @@ class ManageBadges extends Tool
     public function handle(Request $request): Response
     {
         return match ($request->get('action')) {
-            'list' => $this->listBadges(),
-            'create' => $this->createBadge($request),
-            'update' => $this->updateBadge($request),
-            'delete' => $this->deleteBadge($request),
-            'award' => $this->awardBadge($request),
-            'revoke' => $this->revokeBadge($request),
+            'badge_list' => $this->badgeList(),
+            'badge_create' => $this->badgeCreate($request),
+            'badge_update' => $this->badgeUpdate($request),
+            'badge_delete' => $this->badgeDelete($request),
+            'badge_award' => $this->badgeAward($request),
+            'badge_revoke' => $this->badgeRevoke($request),
+            'badge_earned' => $this->badgeEarned($request),
             default => Response::error("Unknown action: {$request->get('action')}"),
         };
     }
 
-    private function listBadges(): Response
+    private function badgeList(): Response
     {
         $user = $this->user();
         $earnedBadgeIds = $user->badges()->pluck('badges.id')->toArray();
@@ -70,7 +94,6 @@ class ManageBadges extends Tool
                     'is_hidden' => $b->is_hidden,
                 ];
 
-                // Parents see full details for management; children get masked hidden badges
                 if (! $this->isParent()) {
                     $badgeData = Badge::maskHidden($badgeData, in_array($b->id, $earnedBadgeIds));
                 }
@@ -80,7 +103,7 @@ class ManageBadges extends Tool
         ]);
     }
 
-    private function createBadge(Request $request): Response
+    private function badgeCreate(Request $request): Response
     {
         if ($denied = $this->authorize('create', Badge::class)) {
             return $denied;
@@ -119,7 +142,7 @@ class ManageBadges extends Tool
         ]);
     }
 
-    private function updateBadge(Request $request): Response
+    private function badgeUpdate(Request $request): Response
     {
         $badgeId = $request->get('badge_id');
         if (! $badgeId) {
@@ -132,12 +155,14 @@ class ManageBadges extends Tool
             return $denied;
         }
 
-        $updates = [];
-        foreach (['name', 'description', 'icon', 'color', 'trigger_type', 'trigger_threshold', 'is_hidden', 'is_active'] as $field) {
-            if ($request->get($field) !== null) {
-                $updates[$field] = $request->get($field);
-            }
-        }
+        // mergeUpdates allows clearing nullable fields (e.g. trigger_threshold
+        // can be cleared by passing null/"") — switching a custom badge to a
+        // triggered badge or vice versa.
+        $updates = $this->mergeUpdates(
+            $request,
+            simpleFields: ['name', 'trigger_type', 'is_hidden', 'is_active'],
+            nullableFields: ['description', 'icon', 'color', 'trigger_threshold'],
+        );
 
         $badge->update($updates);
 
@@ -147,7 +172,7 @@ class ManageBadges extends Tool
         ]);
     }
 
-    private function deleteBadge(Request $request): Response
+    private function badgeDelete(Request $request): Response
     {
         $badgeId = $request->get('badge_id');
         if (! $badgeId) {
@@ -165,7 +190,7 @@ class ManageBadges extends Tool
         return Response::text("Badge \"{$name}\" deleted.");
     }
 
-    private function awardBadge(Request $request): Response
+    private function badgeAward(Request $request): Response
     {
         if ($denied = $this->authorize('award', Badge::class)) {
             return $denied;
@@ -186,7 +211,7 @@ class ManageBadges extends Tool
         return Response::text("Awarded \"{$badge->name}\" to {$target->name}.");
     }
 
-    private function revokeBadge(Request $request): Response
+    private function badgeRevoke(Request $request): Response
     {
         if ($denied = $this->authorize('revoke', Badge::class)) {
             return $denied;
@@ -205,5 +230,29 @@ class ManageBadges extends Tool
         $badgeService->revokeBadge($badge, $target);
 
         return Response::text("Revoked \"{$badge->name}\" from {$target->name}.");
+    }
+
+    private function badgeEarned(Request $request): Response
+    {
+        $userId = $request->get('user_id');
+        $user = $userId
+            ? $this->family()->members()->findOrFail($userId)
+            : $this->user();
+
+        $badges = $user->badges()
+            ->orderByPivot('earned_at', 'desc')
+            ->get();
+
+        return Response::json([
+            'user' => $user->name,
+            'badges' => $badges->map(fn ($b) => [
+                'id' => $b->id,
+                'name' => $b->name,
+                'description' => $b->description,
+                'icon' => $b->icon,
+                'color' => $b->color,
+                'earned_at' => $b->pivot->earned_at,
+            ])->toArray(),
+        ]);
     }
 }

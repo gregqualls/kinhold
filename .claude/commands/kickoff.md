@@ -10,10 +10,16 @@ Run the Kinhold session kickoff. Read all relevant context and present a concise
 
 2. **Read latest CHANGELOG entry** — Read the top entry from `CHANGELOG.md` to understand the most recent work.
 
-3. **Check git state** — Run:
+3. **Sync + check git state** — Always fetch first so nothing downstream uses stale refs:
+   - `git fetch origin --prune` — pick up remote changes and dead refs.
+   - **Refresh local main** — find the main repo path from `git worktree list` (the line tagged `[main]`). Then run `git -C <main-path> rev-list --left-right --count origin/main...main`:
+     - `0	0` → already current, skip.
+     - `N	0` (only behind) → `git -C <main-path> merge --ff-only origin/main` to fast-forward.
+     - `N	M` with M>0 (diverged) → STOP and surface this prominently. List the local-only commits with `git -C <main-path> log origin/main..main --oneline`. Ask Greg: "Local main has M commits not on origin/main. These are usually squash-merge dupes (PRs that were squashed by GitHub leaving local copies behind) — safe to `reset --hard origin/main`. But if any are real local work, they need to be pushed/preserved. Want me to list and decide?" Do NOT auto-reset.
    - `git status` — any uncommitted changes or untracked files?
-   - `git log --oneline -5` — last 5 commits
-   - `git branch` — current branch (should be `main` after cleanup)
+   - `git log --oneline -5` — last 5 commits.
+   - `git branch` — current branch.
+   - **Worktree freshness** — if we're inside a worktree, run `git rev-list --left-right --count origin/main...HEAD`. If the left number is > 0, flag it: "This worktree is N commits behind origin/main. Consider `/cleanup` or rebasing before starting work."
 
 4. **Scan ROADMAP** — Read `docs/ROADMAP.md` to understand current priorities and phases.
 

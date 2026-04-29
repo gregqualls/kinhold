@@ -76,21 +76,6 @@ parameters:
 			path: app/Http/Controllers/Api/V1/CalendarController.php
 
 		-
-			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/MealPlanController.php
-
-		-
-			message: "#^Cannot access property \\$value on string\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/MealPlanController.php
-
-		-
-			message: "#^Using nullsafe property access on non-nullable type string\\. Use -\\> instead\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/MealPlanController.php
-
-		-
 			message: "#^Access to an undefined property App\\\\Models\\\\FamilyEvent\\:\\:\\$computed_next_date\\.$#"
 			count: 4
 			path: app/Http/Controllers/Api/V1/FeaturedEventController.php
@@ -119,6 +104,21 @@ parameters:
 			message: "#^Parameter \\#2 \\$createdBy of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string\\|null, int given\\.$#"
 			count: 1
 			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/MealPlanController.php
+
+		-
+			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/MealPlanController.php
+
+		-
+			message: "#^Using nullsafe property access on non\\-nullable type string\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/MealPlanController.php
 
 		-
 			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$family_average_rating\\.$#"
@@ -1086,99 +1086,204 @@ parameters:
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Result of && is always false\\.$#"
+			message: "#^Access to an undefined property App\\\\Models\\\\Badge\\:\\:\\$pivot\\.$#"
 			count: 1
-			path: app/Mcp/Tools/CompleteTask.php
+			path: app/Mcp/Tools/KinholdAchievements.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
 			count: 1
-			path: app/Mcp/Tools/CompleteTask.php
-
-		-
-			message: "#^Ternary operator condition is always false\\.$#"
-			count: 1
-			path: app/Mcp/Tools/CompleteTask.php
+			path: app/Mcp/Tools/KinholdAchievements.php
 
 		-
 			message: "#^Cannot access property \\$value on string\\.$#"
 			count: 1
-			path: app/Mcp/Tools/ManageBadges.php
+			path: app/Mcp/Tools/KinholdAchievements.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdAchievements.php
 
 		-
 			message: "#^Access to an undefined property App\\\\Models\\\\FamilyEvent\\:\\:\\$computed_next_date\\.$#"
 			count: 4
-			path: app/Mcp/Tools/ManageFeaturedEvents.php
+			path: app/Mcp/Tools/KinholdCalendar.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
 			message: "#^Cannot call method format\\(\\) on string\\.$#"
 			count: 5
-			path: app/Mcp/Tools/ManageFeaturedEvents.php
-
-		-
-			message: "#^Cannot access property \\$value on string\\.$#"
-			count: 1
-			path: app/Mcp/Tools/ManagePointRequests.php
-
-		-
-			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
-			count: 1
-			path: app/Mcp/Tools/ManagePointRequests.php
-
-		-
-			message: "#^Cannot access property \\$value on string\\.$#"
-			count: 3
-			path: app/Mcp/Tools/ManageTasks.php
-
-		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
-			count: 3
-			path: app/Mcp/Tools/ManageTasks.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: app/Mcp/Tools/ManageVault.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
-			count: 1
-			path: app/Mcp/Tools/ManageVault.php
-
-		-
-			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
-			count: 1
-			path: app/Mcp/Tools/PurchaseReward.php
-
-		-
-			message: "#^Cannot access property \\$value on string\\.$#"
-			count: 1
-			path: app/Mcp/Tools/SearchFamily.php
-
-		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
-			count: 1
-			path: app/Mcp/Tools/SearchFamily.php
+			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
 			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
 			count: 3
-			path: app/Mcp/Tools/ViewCalendar.php
+			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
 			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
 			count: 1
-			path: app/Mcp/Tools/ViewCalendar.php
+			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Badge\\:\\:\\$pivot\\.$#"
+			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
 			count: 1
-			path: app/Mcp/Tools/ViewEarnedBadges.php
+			path: app/Mcp/Tools/KinholdCalendar.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 4
+			path: app/Mcp/Tools/KinholdFamily.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 3
+			path: app/Mcp/Tools/KinholdFamily.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$pivot\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\|Illuminate\\\\Database\\\\Eloquent\\\\Collection\\<int, App\\\\Models\\\\Restaurant\\>\\:\\:\\$pivot\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\ShoppingItem\\:\\:\\$on_hand_at\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdFood.php
 
 		-
 			message: "#^Cannot access property \\$value on string\\.$#"
 			count: 1
-			path: app/Mcp/Tools/ViewPoints.php
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Instanceof between string and App\\\\Enums\\\\MealSlot will always evaluate to false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Instanceof between string and DateTimeInterface will always evaluate to false\\.$#"
+			count: 2
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Parameter \\#1 \\$familyId of method App\\\\Models\\\\Restaurant\\:\\:familyAverageRating\\(\\) expects string, int given\\.$#"
+			count: 2
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type Carbon\\\\Carbon\\. Use \\-\\> instead\\.$#"
+			count: 3
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Using nullsafe property access on non\\-nullable type string\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Variable \\$selections in empty\\(\\) always exists and is not falsy\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdFood.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdPoints.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 2
+			path: app/Mcp/Tools/KinholdPoints.php
+
+		-
+			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
+			count: 2
+			path: app/Mcp/Tools/KinholdPoints.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdPoints.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdTasks.php
+
+		-
+			message: "#^Cannot access property \\$value on string\\.$#"
+			count: 3
+			path: app/Mcp/Tools/KinholdTasks.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 3
+			path: app/Mcp/Tools/KinholdTasks.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdTasks.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdTasks.php
+
+		-
+			message: "#^Ternary operator condition is always false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdTasks.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdTasks.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdVault.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdVault.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdVault.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: app/Mcp/Tools/KinholdVault.php
 
 		-
 			message: "#^Cannot call method isPast\\(\\) on string\\.$#"
