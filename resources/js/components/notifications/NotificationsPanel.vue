@@ -108,7 +108,7 @@
             <label v-if="type.channels.includes('email')" class="flex items-center gap-1 text-xs">
               <input
                 type="checkbox"
-                class="rounded border-border-subtle"
+                class="rounded border-border-subtle disabled:opacity-40 disabled:cursor-not-allowed"
                 :checked="emailValue(type.key, type.default_email)"
                 :disabled="!hasEmail"
                 @change="onEmailToggle(type.key, $event.target.checked)"
@@ -118,7 +118,7 @@
             <label v-if="type.channels.includes('push')" class="flex items-center gap-1 text-xs">
               <input
                 type="checkbox"
-                class="rounded border-border-subtle"
+                class="rounded border-border-subtle disabled:opacity-40 disabled:cursor-not-allowed"
                 :checked="pushValue(type.key, type.default_push)"
                 :disabled="!notifications.isPushActive"
                 @change="onPushToggle(type.key, $event.target.checked)"

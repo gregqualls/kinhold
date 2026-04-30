@@ -81,7 +81,7 @@ These features are live and working:
 | Issue | Title | Priority | Status |
 |-------|-------|----------|--------|
 | [#68](https://github.com/gregqualls/kinhold/issues/68) | PWA support (service worker, manifest, installable) | Very High | DONE |
-| [#69](https://github.com/gregqualls/kinhold/issues/69) | Web push notifications | Very High | IN PROGRESS (foundation merged 2026-04-30; #69b reminders + activity types up next) |
+| [#69](https://github.com/gregqualls/kinhold/issues/69) | Web push notifications | Very High | DONE |
 | [#70](https://github.com/gregqualls/kinhold/issues/70) | Stripe billing & subscription system | Critical | |
 
 **Pricing model:**

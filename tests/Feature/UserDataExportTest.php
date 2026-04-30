@@ -115,6 +115,29 @@ class UserDataExportTest extends TestCase
         $this->assertContains('food.json', $files);
     }
 
+    public function test_user_export_includes_notification_preferences(): void
+    {
+        $this->parentA->update([
+            'notification_preferences' => [
+                'email' => ['task_due_soon' => false],
+                'push' => ['task_due_soon' => true],
+                'quiet_hours' => ['enabled' => true, 'start' => '22:00', 'end' => '07:00'],
+                'muted' => false,
+                'dinner_reminder_at' => '17:30',
+            ],
+        ]);
+
+        Sanctum::actingAs($this->parentA);
+        $response = $this->post('/api/v1/settings/account/data-export', ['password' => 'Password1']);
+        $response->assertStatus(200);
+
+        $user = $this->readZipJson($response->getContent(), 'user.json');
+
+        $this->assertArrayHasKey('notification_preferences', $user, 'GDPR export must include notification_preferences');
+        $this->assertSame('17:30', $user['notification_preferences']['dinner_reminder_at']);
+        $this->assertTrue($user['notification_preferences']['push']['task_due_soon']);
+    }
+
     public function test_export_scoping_isolates_users(): void
     {
         $categoryA = VaultCategory::create([

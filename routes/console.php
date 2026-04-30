@@ -13,3 +13,8 @@ Schedule::command('app:refresh-demo')->dailyAt('03:05');
 
 // Resolve timed auctions every minute
 Schedule::command('rewards:resolve-auctions')->everyMinute();
+
+// Push notification reminders (#69b)
+Schedule::command('app:send-task-due-reminders')->dailyAt('08:00');
+Schedule::command('app:send-event-reminders')->everyFiveMinutes();
+Schedule::command('app:send-dinner-reminders')->everyMinute();
