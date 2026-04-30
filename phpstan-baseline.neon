@@ -16,6 +16,21 @@ parameters:
 			path: app/Console/Commands/SeedDefaultBadges.php
 
 		-
+			message: "#^Cannot access property \\$hour on string\\.$#"
+			count: 1
+			path: app/Console/Commands/SendCalendarEventReminders.php
+
+		-
+			message: "#^Cannot access property \\$minute on string\\.$#"
+			count: 1
+			path: app/Console/Commands/SendCalendarEventReminders.php
+
+		-
+			message: "#^Cannot access property \\$second on string\\.$#"
+			count: 1
+			path: app/Console/Commands/SendCalendarEventReminders.php
+
+		-
 			message: "#^Cannot call method format\\(\\) on string\\.$#"
 			count: 1
 			path: app/Console/Commands/SendWeeklyDigest.php
@@ -1381,9 +1396,34 @@ parameters:
 			path: app/Models/VaultPermission.php
 
 		-
+			message: "#^Call to function in_array\\(\\) with arguments mixed, array\\{\\} and true will always evaluate to false\\.$#"
+			count: 1
+			path: app/Notifications/DinnerReminderNotification.php
+
+		-
+			message: "#^Call to function is_array\\(\\) with string\\|null will always evaluate to false\\.$#"
+			count: 1
+			path: app/Notifications/DinnerReminderNotification.php
+
+		-
+			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			count: 2
+			path: app/Notifications/DinnerReminderNotification.php
+
+		-
+			message: "#^Ternary operator condition is always false\\.$#"
+			count: 1
+			path: app/Notifications/DinnerReminderNotification.php
+
+		-
 			message: "#^Cannot call method format\\(\\) on string\\.$#"
 			count: 1
 			path: app/Notifications/TaskAssignedNotification.php
+
+		-
+			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			count: 1
+			path: app/Notifications/TaskDueSoonNotification.php
 
 		-
 			message: "#^Strict comparison using \\=\\=\\= between int and string will always evaluate to false\\.$#"
@@ -1464,3 +1504,38 @@ parameters:
 			message: "#^Access to an undefined property App\\\\Models\\\\PointTransaction\\:\\:\\$total_points\\.$#"
 			count: 1
 			path: app/Services/PointsService.php
+
+		-
+			message: "#^Property App\\\\Models\\\\FamilyEvent\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\MealPlanEntry\\:\\:\\$assigned_cooks \\(string\\|null\\) does not accept array\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\MealPlanEntry\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\ShoppingItem\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\ShoppingItem\\:\\:\\$shopping_list_id \\(string\\) does not accept int\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\ShoppingList\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\Task\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php

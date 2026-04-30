@@ -79,6 +79,44 @@ return [
             'default_push' => false,
         ],
 
+        'task_due_soon' => [
+            'category' => 'tasks',
+            'label' => 'When a task I own is due today',
+            'description' => 'A reminder at 8am the day a task is due',
+            'channels' => ['email', 'push'],
+            'default_email' => false,
+            'default_push' => true,
+            'requires_module' => 'tasks',
+        ],
+
+        'shopping_item_added' => [
+            'category' => 'shopping',
+            'label' => 'When someone adds to a shared shopping list',
+            'channels' => ['push'],
+            'default_email' => false,
+            'default_push' => false,
+            'requires_module' => 'shopping',
+        ],
+
+        'calendar_event_reminder' => [
+            'category' => 'calendar',
+            'label' => 'Reminders before calendar events',
+            'description' => 'Set the lead time per event when creating it',
+            'channels' => ['email', 'push'],
+            'default_email' => false,
+            'default_push' => true,
+        ],
+
+        'dinner_reminder' => [
+            'category' => 'food',
+            'label' => "What's for dinner today",
+            'description' => "A daily push with tonight's planned meal",
+            'channels' => ['push'],
+            'default_email' => false,
+            'default_push' => false,
+            'requires_module' => 'food',
+        ],
+
     ],
 
 ];

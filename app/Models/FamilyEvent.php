@@ -20,6 +20,7 @@ class FamilyEvent extends Model
         'description',
         'start_time',
         'end_time',
+        'reminder_minutes_before',
         'all_day',
         'location',
         'color',
@@ -36,6 +37,7 @@ class FamilyEvent extends Model
         return [
             'start_time' => 'datetime',
             'end_time' => 'datetime',
+            'reminder_minutes_before' => 'integer',
             'all_day' => 'boolean',
             'is_countdown' => 'boolean',
             'is_active' => 'boolean',

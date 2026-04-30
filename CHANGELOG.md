@@ -2,6 +2,52 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-30 — Web push notifications: reminders + activity types ([#69](https://github.com/gregqualls/kinhold/issues/69), part 2 of 2)
+
+Second half of [#69](https://github.com/gregqualls/kinhold/issues/69) — closes the issue by wiring four scheduled / activity notifications on top of the foundation shipped in part 1. Also ships three #69a follow-ups (N+1 fix, GDPR regression test, a11y) since they touch the same surface.
+
+**Four new notifications:**
+
+- **`TaskDueSoonNotification`** (`task_due_soon`) — Fires once per task the morning it's due (8am). New nullable `due_reminder_sent_at` timestamp column on `tasks` + composite index on `(due_date, due_reminder_sent_at)` provides idempotency — re-running the cron never double-fires. Backfill in the migration marks all overdue incomplete tasks as already-reminded so the first deploy tick doesn't spam. Supports both email and push; defaults push-on (the headline value-add of #69b). Schedule: `dailyAt('08:00')` rather than `*/30` — `due_date` is a `date` column, so there's no datetime precision a 30-minute cron can take advantage of; one "good morning" is the right UX.
+
+- **`ShoppingListItemAddedNotification`** (`shopping_item_added`) — Fires from `ShoppingListService::addItem()` when a member manually adds an item; excluded from `addRecipeIngredients()` (a meal-plan cascade adding 12 items at once would push 12 notifications). Actor (adder) excluded from recipients. Push-only, defaults off. Tag `shopping-list-{list_id}` means three rapid adds collapse to one notification in the OS tray — the right UX for a busy shopping session.
+
+- **`CalendarEventReminderNotification`** (`calendar_event_reminder`) — Fires per-user before a family event. New nullable `reminder_minutes_before` column on `family_events` (null = reminders disabled; default null so existing events don't suddenly fire). New `event_reminder_sends` dedup table with `UNIQUE(family_event_id, occurrence_date)` — needed because a recurring event has many occurrences; a column on `family_events` would block the next instance after the first reminder fires. The cron (`everyFiveMinutes`) uses a 60-min lookahead window to stay robust against queue stall or cron drift. Supports email + push, defaults push-on.
+
+- **`DinnerReminderNotification`** (`dinner_reminder`) — Fires at the user's configured `dinner_reminder_at` time (stored in `notification_preferences`, already on the model from part 1). SQL JSON-key pre-filter on the `notification_preferences` column collapses all users down to the handful whose reminder time matches server-time right now; per-user TZ re-check inside the loop eliminates false positives. Push-only, defaults off. Reads today's dinner `MealPlanEntry`; body says "You're cooking" if the user appears in `assigned_cooks`, else "On the menu".
+
+**Three #69a follow-ups:**
+
+- **N+1 fix** — `User::wants('push', ...)` now routes through `getCachedPushSubscriptionCount()`, which honors `pushSubscriptions` eager-loaded via `with(...)` or `withCount(...)` before falling back to a fresh `COUNT(*)`. Every new command eager-loads the relation inside `chunkById` — zero subscription queries inside any dispatch loop. Instance-level memoization was considered but dropped: calling `refresh()` between subscription changes in tests left stale zeros, making the tests misleading.
+
+- **GDPR regression test** — New assertion in `UserDataExportTest` confirms `notification_preferences` (including `dinner_reminder_at`) is present in the exported `user.json`. No code change was needed — the key was already exported — but the test locks that behavior.
+
+- **a11y: disabled checkbox styling** — Both `<input type="checkbox">` elements in `NotificationsPanel.vue` now carry `disabled:opacity-40 disabled:cursor-not-allowed` so users see visual feedback when a channel toggle is unavailable (e.g., push unavailable until permission is granted).
+
+**Schedule registration** (`routes/console.php`):
+- `app:send-task-due-reminders` → `dailyAt('08:00')`
+- `app:send-event-reminders` → `everyFiveMinutes()`
+- `app:send-dinner-reminders` → `everyMinute()`
+
+**Tests** (27 new, 224 total / 588 assertions, all green):
+
+- [TaskDueSoonNotificationTest](tests/Feature/Notifications/TaskDueSoonNotificationTest.php) — both channels, strip push if no subscription, strip push during quiet hours, empty `via()` if opted out (4)
+- [ShoppingListItemAddedNotificationTest](tests/Feature/Notifications/ShoppingListItemAddedNotificationTest.php) — notifies other family members, skips adder, `addRecipeIngredients` produces no notifications (regression), `via()` is push-only (4)
+- [CalendarEventReminderNotificationTest](tests/Feature/Notifications/CalendarEventReminderNotificationTest.php) — both channels when opted in, skips opted-out, strips push when globally muted (3)
+- [DinnerReminderNotificationTest](tests/Feature/Notifications/DinnerReminderNotificationTest.php) — returns push when subscribed, empty when opted out, `via()` is push-only (3)
+- [SendTaskDueRemindersTest](tests/Feature/Console/SendTaskDueRemindersTest.php) — sends for due-today + assigned, skips already-reminded, skips completed / unassigned (3)
+- [SendCalendarEventRemindersTest](tests/Feature/Console/SendCalendarEventRemindersTest.php) — fires one-time event in window, fires the right weekly occurrence, unique constraint prevents double-fire, skips null `reminder_minutes_before` (4)
+- [SendDinnerRemindersTest](tests/Feature/Console/SendDinnerRemindersTest.php) — dispatches at user's local `dinner_reminder_at`, skips wrong local time, skips no-dinner-planned (3)
+- [PushSubscriptionCountCachingTest](tests/Unit/User/PushSubscriptionCountCachingTest.php) — eager-loaded relation avoids subscription query, `withCount` avoids subscription query (2)
+- [UserDataExportTest](tests/Feature/UserDataExportTest.php) — extended: `notification_preferences` present in `user.json` (1)
+
+**PHPStan:** 9 new baseline entries for Larastan cast-inference limitations on `start_time->hour/minute/second`, `due_date->format()`, `assigned_cooks` array checks, `entry->date->toDateString()` — same pattern as the pre-existing `TaskAssignedNotification` entry.
+
+**Files**
+
+- New: `database/migrations/2026_04_30_170000_add_due_reminder_sent_at_to_tasks_table.php`, `database/migrations/2026_04_30_170100_add_reminder_minutes_before_to_family_events_table.php`, `database/migrations/2026_04_30_170200_create_event_reminder_sends_table.php`, `app/Models/EventReminderSend.php`, `app/Notifications/TaskDueSoonNotification.php`, `app/Notifications/ShoppingListItemAddedNotification.php`, `app/Notifications/CalendarEventReminderNotification.php`, `app/Notifications/DinnerReminderNotification.php`, `app/Console/Commands/SendTaskDueReminders.php`, `app/Console/Commands/SendCalendarEventReminders.php`, `app/Console/Commands/SendDinnerReminders.php`, 8 test files
+- Modified: `config/notifications.php` (4 new registry entries), `app/Models/User.php` (N+1 fix), `app/Models/Task.php` (`due_reminder_sent_at` fillable + cast), `app/Models/FamilyEvent.php` (`reminder_minutes_before` fillable + cast), `app/Services/ShoppingListService.php` (dispatch in `addItem()`), `routes/console.php` (3 new schedule entries), `resources/js/components/notifications/NotificationsPanel.vue` (disabled-checkbox a11y classes), `phpstan-baseline.neon` (9 new entries)
+
 ## 2026-04-30 — Web push foundation ([#69](https://github.com/gregqualls/kinhold/issues/69), part 1 of 2)
 
 First half of [#69](https://github.com/gregqualls/kinhold/issues/69) — push subscription infrastructure plus a registry framework so adding a new notification type later is just "drop a class + add a config entry," not a five-file edit. Two existing notification surfaces (task assigned, kudos received) now fire push alongside email, gated by per-user prefs + quiet hours + global mute. Reminders and activity-style notifications (task due soon, shopping list activity, calendar event reminders, dinner reminder) follow in #69b against the stable channel.

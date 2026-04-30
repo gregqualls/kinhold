@@ -334,7 +334,7 @@ class User extends Authenticatable implements MustVerifyEmail
         // Push channel requires at least one active subscription. We don't gate
         // on permission here — the SW silently drops unaddressed sends, but
         // the queries that drive scheduled notifications can short-circuit.
-        if ($channel === 'push' && $this->pushSubscriptions()->count() === 0) {
+        if ($channel === 'push' && $this->getCachedPushSubscriptionCount() === 0) {
             return false;
         }
 
@@ -360,6 +360,26 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return false;
+    }
+
+    /**
+     * Push subscription count — honors eager loads from `with('pushSubscriptions')`
+     * or `loadCount('pushSubscriptions')` so the scheduled-notification commands
+     * don't trigger N+1 queries. Falls back to a single COUNT(*) when neither is
+     * available. Not memoized: the caller may mutate subscriptions between calls
+     * (see UserNotificationPreferencesTest::test_wants_push_requires_active_subscription).
+     */
+    private function getCachedPushSubscriptionCount(): int
+    {
+        if (array_key_exists('push_subscriptions_count', $this->attributes)) {
+            return (int) $this->push_subscriptions_count;
+        }
+
+        if ($this->relationLoaded('pushSubscriptions')) {
+            return $this->pushSubscriptions->count();
+        }
+
+        return $this->pushSubscriptions()->count();
     }
 
     /**

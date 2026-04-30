@@ -9,7 +9,9 @@ use App\Models\Recipe;
 use App\Models\ShoppingItem;
 use App\Models\ShoppingList;
 use App\Models\User;
+use App\Notifications\ShoppingListItemAddedNotification;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Notification;
 
 class ShoppingListService
 {
@@ -31,7 +33,7 @@ class ShoppingListService
             $data['category'] = $this->autoCategorize($data['name']);
         }
 
-        return ShoppingItem::create([
+        $item = ShoppingItem::create([
             'shopping_list_id' => $list->id,
             'family_id' => $list->family_id,
             'added_by' => $user->id,
@@ -43,8 +45,19 @@ class ShoppingListService
             'is_recurring' => $data['is_recurring'] ?? false,
             'default_quantity' => $data['default_quantity'] ?? ($data['is_recurring'] ?? false ? ($data['quantity'] ?? null) : null),
         ]);
+
+        $list->loadMissing('family.members.pushSubscriptions');
+        $recipients = $list->family?->members->where('id', '!=', $user->id) ?? collect();
+        if ($recipients->isNotEmpty()) {
+            Notification::send($recipients, new ShoppingListItemAddedNotification($item, $user));
+        }
+
+        return $item;
     }
 
+    // No notification dispatch — see addItem() for the manual-add flow.
+    // A recipe-ingredient cascade can add a dozen rows; pushing a notification
+    // per row would be hostile UX.
     public function addRecipeIngredients(ShoppingList $list, Recipe $recipe, User $user, ?string $mealPlanEntryId = null, ?string $neededDate = null, ?array $ingredientIds = null): Collection
     {
         $recipe->load('ingredients');

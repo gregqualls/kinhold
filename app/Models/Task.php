@@ -38,6 +38,7 @@ class Task extends Model
         'description',
         'due_date',
         'completed_at',
+        'due_reminder_sent_at',
         'priority',
         'sort_order',
         'is_family_task',
@@ -60,6 +61,7 @@ class Task extends Model
         return [
             'due_date' => 'date',
             'completed_at' => 'datetime',
+            'due_reminder_sent_at' => 'datetime',
             'priority' => TaskPriority::class,
             'is_family_task' => 'boolean',
             'points' => 'integer',

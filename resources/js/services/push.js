@@ -112,6 +112,10 @@ export async function sendTestPush() {
   await api.post('/push/subscriptions/test')
 }
 
+export async function sendTestPushType(key) {
+  await api.post(`/push/subscriptions/test/${key}`)
+}
+
 // VAPID public keys are base64url; PushManager.subscribe needs Uint8Array.
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)

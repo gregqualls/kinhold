@@ -6,6 +6,7 @@ import {
   isSubscribed,
   pushPermission,
   sendTestPush,
+  sendTestPushType,
   subscribePush,
   unsubscribePush,
   vapidPublicKey,
@@ -130,6 +131,16 @@ export const useNotificationsStore = defineStore('notifications', () => {
     }
   }
 
+  async function testPushForKey(key) {
+    lastError.value = ''
+    try {
+      await sendTestPushType(key)
+    } catch (e) {
+      lastError.value = e?.response?.data?.message || `Failed to send test ${key}.`
+      throw e
+    }
+  }
+
   return {
     preferences,
     registry,
@@ -149,5 +160,6 @@ export const useNotificationsStore = defineStore('notifications', () => {
     enablePush,
     disablePush,
     testPush,
+    testPushForKey,
   }
 })
