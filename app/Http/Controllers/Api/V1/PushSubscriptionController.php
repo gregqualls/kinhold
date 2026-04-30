@@ -138,7 +138,11 @@ class PushSubscriptionController extends Controller
         // Build the real notification's payload, then re-dispatch through
         // TestPushNotification so the test fires regardless of the user's
         // current preference for this key — the click is the explicit consent.
+        // Stamp a unique suffix onto the tag so repeated tests render as new
+        // toasts instead of silently replacing the previous test (the real
+        // dispatch sites use stable tags on purpose — for actual dedup).
         $message = $sample->toWebPush($user, $sample);
+        $message->tag($key.'-test-'.microtime(true));
         $user->notifyNow(new TestPushNotification($message));
 
         return response()->json([
