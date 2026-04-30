@@ -89,7 +89,9 @@ class PushSubscriptionController extends Controller
             ->body('You will see notifications here.')
             ->icon('/icons/icon-192.png')
             ->badge('/icons/badge-96.png')
-            ->tag('kinhold-push-test')
+            // Unique tag so repeated test clicks each render as a fresh
+            // notification instead of silently replacing the previous one.
+            ->tag('kinhold-push-test-'.microtime(true))
             ->data([
                 'type' => 'test',
                 'url' => '/settings',
