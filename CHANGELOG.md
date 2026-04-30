@@ -2,6 +2,35 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-29 — Overnight quick-wins batch: 4 small issues
+
+Four small, independent issues completed in a single overnight unattended session. Each one lives on its own feature branch (no PRs opened — Greg will push and PR each in the morning). Listed in suggested merge order:
+
+### Persist shopping window filter ([#163](https://github.com/gregqualls/kinhold/issues/163))
+
+Branch: `feature/163-shopping-window-persistence`. The shopping window selector (All / Next 2d / Next 3d / This week) reset to "All" on every page load. Now persisted to localStorage under `kinhold_shopping_window`, matching the existing pattern in [`stores/calendar.js`](resources/js/stores/calendar.js). Allowlist-validates the loaded value so a stale or tampered key falls back to `'all'`. Guards `window.localStorage` access for non-browser test environments.
+
+### Hide non-Anthropic chatbot providers ([#201](https://github.com/gregqualls/kinhold/issues/201))
+
+Branch: `feature/201-hide-non-anthropic-providers` (extended on `chore/overnight-quick-wins` after `/review`). `AgentService::availableProviders()` listed Anthropic, OpenAI, and Google in the BYOK picker, but the agent loop only constructs `AnthropicProvider` and `resolveApiKey()` returns null for non-Anthropic slugs — so a parent who pasted an OpenAI key was silently downgraded to the platform Anthropic key (and after [#137](https://github.com/gregqualls/kinhold/issues/137), would also hit the daily-message cap they didn't expect).
+
+The original commit removed the OpenAI/Google entries from `availableProviders()` and updated the BYOK card helper text. Code review caught two follow-on gaps:
+
+1. **API validation still accepted the removed slugs.** `SettingsController` had a hardcoded `'in:anthropic,openai,google'` rule, so a direct API or MCP caller could persist `ai_provider: openai` even though the SPA picker no longer offered it. Validation now derives from `AgentService::availableProviders()` via `Rule::in(array_column(...))` so the picker, the agent loop, and the validation rule share one source of truth — silently-removed slugs can never be persisted again.
+2. **Already-saved bad values still caused silent downgrades.** Families who saved `ai_provider: openai/google` before this change still had that value in `families.settings`; `resolveApiKey()`'s slug guard would return null and the loop would fall back to the platform Anthropic key. New migration `2026_04_30_120000_normalize_stale_ai_provider_settings` walks all family rows, resets affected ones to `ai_provider: anthropic` + clears the now-mismatched `ai_api_key` + sets `ai_mode: kinhold` (back to platform AI rather than half-broken BYOK), and logs each affected family so support can reach out if a real customer was downgraded silently.
+
+UI polish from the same review pass: the BYOK provider grid was a `grid-cols-1 sm:grid-cols-3` layout, which left a single Anthropic button in column 1 with two empty columns to its right. Now computes column count from `aiProviders.length` so it stays full-width while there's only one provider and grows back when adapters land.
+
+### Brand-aligned email theme + visible button text ([#104](https://github.com/gregqualls/kinhold/issues/104))
+
+Branch: `feature/104-email-brand-colors`. While verifying the brand-color update, discovered that the existing [`themes/kinhold.css`](resources/views/vendor/mail/html/themes/kinhold.css) had two real bugs: (1) it used `#B38A50` (the brand's pressed/active state) where `#C4975A` (Primary Gold) belonged, plus the wrong text and background tokens; (2) Laravel mail themes REPLACE `default.css` rather than stack on top of it, so the existing partial-overrides file was missing all structural CSS — and most damaging, missing `.button { color: #fff }`, which let `a { color: #B38A50 }` paint button text the same color as the button background → invisible CTAs. Confirmed by rendering `FamilyInviteNotification` to HTML and grepping inlined styles.
+
+Rewrites `kinhold.css` as a complete theme: full structural ruleset plus brand-correct colors throughout (Warm Ivory `#FAF8F5` page bg, Warm White `#FFFFFF` cards, Muted Gold `#C4975A` CTAs with explicit `color: #FFFFFF !important` to defeat the link cascade, Near Black `#1C1C1E` text, 12px card radius matching the SPA's `rounded-xl`). Heading font stack adds `'Plus Jakarta Sans', 'Inter'` ahead of the existing system-ui chain. File header notes the REPLACE-not-merge behavior so future editors don't repeat the mistake. Email size grew from 3.4kB to 13.3kB as the previously-missing structural rules now inline correctly. 6 mail/notification tests pass.
+
+### Native Windows dev setup docs ([#174](https://github.com/gregqualls/kinhold/issues/174))
+
+Branch: `feature/174-windows-dev-docs`. Adds a "Native Windows setup" section to [CONTRIBUTING.md](CONTRIBUTING.md) covering ~9 distinct gotchas a fresh Windows contributor would otherwise rediscover one at a time: PHP 8.4+ requirement (composer.lock vs composer.json), winget `--id` to dodge silent no-op, PATH refresh requires shell restart, dead PATH entries after winget uninstall, php.ini activation + Laravel extension list, Composer-Setup.exe (not winget), PostgreSQL/Redis/Node winget ids, line-ending workaround pending [#173](https://github.com/gregqualls/kinhold/issues/173), pre-commit hook self-discovery (no `--no-verify`). Frames the native flow as opt-in; the recommended path for most Windows contributors remains the Docker self-host flow.
+
 ## 2026-04-29 — Clear demo user chat on each demo login (v1.6.1)
 
 PR [#204](https://github.com/gregqualls/kinhold/pull/204). The demo family is a single shared multi-tenant account — every visitor signs into the same `mike@demo.local` (or sarah/emma/etc.) user, so the existing user-scoped chat history meant each visitor was greeted by the previous visitor's questions. A seeded canned conversation (including a "what's the wifi password?" exchange in [DemoChatSeeder.php](database/seeders/DemoChatSeeder.php)) made the demo feel like someone else had been poking around.

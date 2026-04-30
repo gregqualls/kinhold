@@ -418,7 +418,7 @@
                 </svg>
               </div>
               <p class="text-sm font-semibold text-ink-primary">My Own API Key</p>
-              <p class="text-xs text-ink-secondary mt-0.5">Anthropic, OpenAI, or Google</p>
+              <p class="text-xs text-ink-secondary mt-0.5">Anthropic Claude (others coming soon)</p>
             </button>
           </div>
 
@@ -440,8 +440,9 @@
 
           <!-- BYOK panel -->
           <div v-if="aiMode === 'byok'" class="space-y-4">
-            <!-- Provider selection -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <!-- Provider selection — single column when only one provider is
+                 available (avoids 1-of-3 dead-space layout per #201) -->
+            <div :class="['grid gap-3', aiProviders.length > 1 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1']">
               <button
                 v-for="provider in aiProviders"
                 :key="provider.slug"

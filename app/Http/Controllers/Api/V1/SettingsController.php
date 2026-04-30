@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 
 class SettingsController extends Controller
@@ -102,7 +103,10 @@ class SettingsController extends Controller
             'default_points_medium' => 'nullable|integer|min:0|max:1000',
             'default_points_high' => 'nullable|integer|min:0|max:1000',
             'ai_mode' => 'nullable|string|in:kinhold,byok',
-            'ai_provider' => 'nullable|string|in:anthropic,openai,google',
+            // Source of truth is AgentService::availableProviders(); validation
+            // tracks it so silently-removed slugs (e.g. openai/google pre tool_use
+            // adapters per #201) can't be persisted via direct API/MCP calls.
+            'ai_provider' => ['nullable', 'string', Rule::in(array_column(AgentService::availableProviders(), 'slug'))],
             'ai_api_key' => 'nullable|string|max:500',
             'ai_model' => 'nullable|string|max:100',
             'task_assignment' => 'nullable|array',
