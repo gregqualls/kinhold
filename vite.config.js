@@ -84,6 +84,7 @@ export default defineConfig({
         navigateFallback: '/',
         navigateFallbackDenylist: [
           /^\/api\//,
+          /^\/auth\//,
           /^\/mcp/,
           /^\/login/,
           /^\/oauth/,

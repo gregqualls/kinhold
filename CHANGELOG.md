@@ -2,6 +2,20 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-30 — Hotfix: Google OAuth callback intercepted by PWA service worker
+
+After PR #68 (PWA support) shipped, Google sign-in started silently breaking for any user who already had the service worker registered. Symptom: after Google consent, the browser landed on `/auth/google/callback?code=…` with the SPA shell rendering a 404 in the inner content area, and DevTools showing `POST /api/v1/auth/exchange → 422`.
+
+**Root cause** — the SW's `navigateFallbackDenylist` in [vite.config.js](vite.config.js) covered `/api/`, `/mcp`, `/login`, `/oauth`, `/sanctum`, and `/storage/`, but **not `/auth/`**. So Google's redirect to `/auth/google/callback?code=…` got intercepted by the SW's `NavigationRoute`, which served the cached `/` SPA shell instead of letting the request reach Laravel's `GoogleAuthController::callback`. The SPA's bootstrap code (`auth.js:253-260`) then read Google's raw authorization code (~70 chars, contains `/`) from the URL and POSTed it to `/api/v1/auth/exchange`, which validates `'code' => 'required|string|size:64'` (a 64-char Laravel-issued token) — hence the 422.
+
+**Fix** — one new entry, `/^\/auth\//`, in `navigateFallbackDenylist`. Broad enough to cover all current and future auth paths in [routes/web.php](routes/web.php) (`/auth/google/redirect`, `/auth/google/callback`, `/auth/google/link-callback`, `/auth/oauth-login`, `/auth/google/oauth-callback`) without needing a SW redeploy each time a new auth route is added.
+
+`vite-plugin-pwa` is configured with `registerType: 'autoUpdate'`, so already-registered clients pick up the new SW on their next non-`/auth/` page load. Users currently stranded on `/auth/google/callback` may need to navigate to `/` and hard-reload (or unregister the SW from DevTools).
+
+**Files**
+
+- Modified: `vite.config.js` (one new regex in `navigateFallbackDenylist`)
+
 ## 2026-04-30 — Web push notifications: reminders + activity types ([#69](https://github.com/gregqualls/kinhold/issues/69), part 2 of 2)
 
 Second half of [#69](https://github.com/gregqualls/kinhold/issues/69) — closes the issue by wiring four scheduled / activity notifications on top of the foundation shipped in part 1. Also ships three #69a follow-ups (N+1 fix, GDPR regression test, a11y) since they touch the same surface.
