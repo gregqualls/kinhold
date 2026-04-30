@@ -47,6 +47,27 @@ class DemoLoginTest extends TestCase
         $this->assertDatabaseCount('chat_messages', 0);
     }
 
+    public function test_demo_login_clears_that_users_push_subscriptions(): void
+    {
+        $family = Family::create([
+            'name' => 'Demo',
+            'slug' => 'q32-demo-family',
+            'invite_code' => 'DEMO',
+            'settings' => [],
+        ]);
+
+        $mike = User::factory()->create(['name' => 'Mike', 'family_id' => $family->id]);
+        $sarah = User::factory()->create(['name' => 'Sarah', 'family_id' => $family->id]);
+
+        $mike->updatePushSubscription(endpoint: 'https://example.test/leftover-mike', key: 'pk', token: 'auth');
+        $sarah->updatePushSubscription(endpoint: 'https://example.test/sarah', key: 'pk', token: 'auth');
+
+        $this->postJson('/api/v1/demo-login', ['member' => 'mike'])->assertOk();
+
+        $this->assertSame(0, $mike->pushSubscriptions()->count());
+        $this->assertSame(1, $sarah->pushSubscriptions()->count());
+    }
+
     public function test_demo_login_does_not_wipe_other_demo_users_chat(): void
     {
         $family = Family::create([

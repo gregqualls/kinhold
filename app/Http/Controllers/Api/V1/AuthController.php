@@ -135,6 +135,12 @@ class AuthController extends Controller
         // visitor's questions. Real families keep their chat permanently.
         ChatMessage::where('user_id', $user->id)->delete();
 
+        // Same reasoning for push subscriptions: a previous visitor's browser
+        // endpoint must not keep receiving demo notifications after they've
+        // moved on. Without this, anyone who ever subscribed to push as a
+        // demo user would get pinged forever for activity in the demo family.
+        $user->pushSubscriptions()->delete();
+
         $token = $user->createToken('demo_token')->plainTextToken;
 
         return response()->json([
