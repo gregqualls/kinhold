@@ -158,6 +158,26 @@ Without email configured, the app works fine — email verification banners won'
 
 ---
 
+## Single-Family Policy
+
+Kinhold is licensed under the [Elastic License 2.0](LICENSE) with a single-family addendum: **a self-hosted instance is licensed for use by a single family.** The addendum defines a "family" broadly — anyone who shares the same calendars, vault, tasks, and other family-shared resources counts as one family. Multi-family households (extended families, blended households, co-living groups) who choose to manage themselves as one shared unit are still a single family under this policy.
+
+What this means in practice:
+
+- **Just you and yours: nothing to do.** Your one Kinhold instance for your one household is exactly what self-hosted is for.
+- **Multiple unrelated families on one instance:** not licensed. If you want to run Kinhold for friends, neighbors, or paying customers, you need a [commercial license](https://github.com/gregqualls/kinhold/issues/new?title=Commercial%20license%20inquiry) or you should use the hosted version at [kinhold.app](https://kinhold.app).
+
+### How the limit is enforced
+
+Soft enforcement, by design — Kinhold doesn't phone home, doesn't check signed tokens, and doesn't block you from creating extra families. Two things happen instead:
+
+1. **A sticky warning banner** appears at the top of the SPA whenever your instance has more than one family.
+2. **A `warning`-level log line** is written to `storage/logs/laravel.log` every time a new family is created beyond the first, with the family ID and total family count.
+
+If you need to run more than one family on a single instance, you'll need a commercial license from Q Thirty Two. Open a [Commercial license inquiry](https://github.com/gregqualls/kinhold/issues/new?title=Commercial%20license%20inquiry&labels=commercial-license) on GitHub to get in touch — once a license is issued we'll send the steps for clearing the banner.
+
+---
+
 ## Upgrading
 
 ### From Git

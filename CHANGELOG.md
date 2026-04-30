@@ -2,6 +2,49 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-30 — Single-family license enforcement for self-hosted ([#138](https://github.com/gregqualls/kinhold/issues/138))
+
+Closes the last open Medium in **Phase A: Make It Solid**. Kinhold ships under the Elastic License 2.0, whose "no hosted service" clause already forbids running a competing SaaS on top of the OSS code — but the codebase enforced nothing at the instance level, so a self-hoster could quietly onboard arbitrary unrelated families and build a de facto hosted service. This adds soft, deliberately-annoying enforcement to the self-hosted path plus an explicit LICENSE addendum that defines what "a single family" actually means.
+
+**License addendum.** [LICENSE](LICENSE) now ends with a Kinhold Single-Family Addendum that defines a "family" as the group of individuals who share the same family data within an instance — calendars, vault, tasks, meal plans, household resources. Multi-family households who choose to manage themselves as one shared unit are explicitly considered a single family. Operating multiple unrelated families on a single self-hosted instance now requires a separate commercial license.
+
+**Gate strategy: warn + allow, not hard-stop.** Greg explicitly chose this over hard-stop in planning. Three reasons: (1) the existing Google OAuth flow creates a new family for every first-time login, so a hard-stop would brick legitimate spousal signups via OAuth; (2) the LICENSE clause is the actual legal teeth, and code is just a speed bump that ensures *informed* consent; (3) phone-home license checks are hostile to the privacy-first / self-host audience Kinhold is courting. There is an internal `COMMERCIAL_LICENSE_ACKNOWLEDGED` env flag that suppresses the banner once set — but **this flag is intentionally not advertised** in `.env.example`, the SPA, or self-hosting docs. Public messaging on every operator-facing surface is "contact us for a commercial license"; the bypass instructions are handed out privately once a license is issued. Standard OSS enforcement model (GitLab EE, Sentry's BSL, Elastic itself) — code is a speed bump that ensures *informed* consent, the LICENSE is the contract.
+
+**Three layers stacked:**
+
+1. **Sticky banner** — new `LicenseWarningBanner` Vue component renders amber across the top of the SPA whenever `self_hosted=true`, family count > 1, and the env flag is unset. Reads from the existing `auth.appConfig` store; no new endpoint. Designed to be readable but not dismissible per session — annoying-by-design.
+2. **Backend log line** — `Family::booted()` now registers a `created` event listener that emits `Log::warning('Self-hosted Kinhold instance created an additional family.', [...])` whenever a self-hosted instance creates an Nth (N≥2) family. Fires regardless of whether the operator has acknowledged — log line is for forensic/audit value, banner is the user-facing nag.
+3. **LICENSE addendum** — see above.
+
+**Service shape mirrors `AiUsageService`** (the pattern Greg validated with #137). New `app/Services/LicenseEnforcementService.php` exposes `shouldWarn()`, `familyCount()` (cached per request to avoid repeating the COUNT query), and `acknowledged()`. The `/api/v1/config` endpoint now resolves the service and returns a `license: { warn, family_count, commercial_license_acknowledged }` block alongside the existing `self_hosted` field — frontend reads it from the same auth-store hydration call, no extra round-trip.
+
+**Drive-by fix in `routes/api.php`.** The `/api/v1/config` endpoint was reading `env('SELF_HOSTED', false)` directly while the rest of the codebase had moved to `config('kinhold.self_hosted')` per #137. Routed through config now so tests can override deterministically.
+
+**Banner copy: contact-only, no bypass instructions.** The banner reads "to run more than one family on a single instance, you'll need a commercial license — Contact us to get one." Greg explicitly asked that no operator-facing surface broadcast the env flag — keeps the bypass mechanism functional for licensees without giving every self-hoster a flag to flip away the warning.
+
+**Tests.** Three new test files: `tests/Unit/LicenseEnforcementServiceTest.php` (8 cases — every combination of self_hosted × family_count × acknowledged), `tests/Feature/LicenseConfigEndpointTest.php` (5 cases — confirms the `license` block shape, public visibility, and that the warn flag flips correctly across all four states), `tests/Feature/FamilyCreationLoggingTest.php` (4 cases — confirms the log fires only on Nth family in self-hosted mode, never on first family or non-self-hosted, and includes the acknowledged flag in context). All follow the `config()->set('kinhold.self_hosted', true)` pattern from `AiUsageServiceTest`.
+
+**Docs.** [SELF-HOSTING.md](SELF-HOSTING.md) gets a new "Single-Family Policy" section between Configuration and Upgrading explaining what counts as a family, how the limit is enforced, and how to inquire about a commercial license. The internal `COMMERCIAL_LICENSE_ACKNOWLEDGED` flag is **not** documented in `.env.example` (intentional — see gate strategy note above).
+
+**Out of scope (captured as follow-ups):** the `GoogleAuthController::findOrCreateUser` gap — first-time OAuth always creates a new family rather than joining an existing one via invite code. On a self-hosted instance, a spouse signing in via Google ends up in their own family. Worth fixing as a separate issue, but not blocking #138 since we're warning-not-blocking. Also: per kickoff, [#99](https://github.com/gregqualls/kinhold/issues/99) (Kinhold icon in Claude Desktop MCP connector) self-resolved — Anthropic likely populated it for verified servers — should be verified and closed alongside this PR to put a bow on Phase A.
+
+**Files**
+
+- `LICENSE` — appended Kinhold Single-Family Addendum
+- `config/kinhold.php` — new `commercial_license_acknowledged` key
+- `.env.example` — documented new env var
+- `app/Services/LicenseEnforcementService.php` — new
+- `app/Models/Family.php` — `booted()` event listener
+- `routes/api.php` — `license` block in `/api/v1/config`, plus `env()` → `config()` fix
+- `resources/js/components/LicenseWarningBanner.vue` — new
+- `resources/js/App.vue` — mounts the banner
+- `tests/Unit/LicenseEnforcementServiceTest.php` — new
+- `tests/Feature/LicenseConfigEndpointTest.php` — new
+- `tests/Feature/FamilyCreationLoggingTest.php` — new
+- `SELF-HOSTING.md` — Single-Family Policy section
+- `docs/ROADMAP.md` — #138 marked DONE
+- `docs/ARCHITECTURE.md` — soft-enforcement note
+
 ## 2026-04-29 — Overnight quick-wins batch: 4 small issues
 
 Four small, independent issues completed in a single overnight unattended session. Each one lives on its own feature branch (no PRs opened — Greg will push and PR each in the morning). Listed in suggested merge order:

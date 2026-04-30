@@ -71,6 +71,14 @@
 **Reasoning:** Not everyone wants or can afford AI features. For open-source users, this should be optional. For Greg, it's a core feature.
 **Implementation:** `config('kinhold.chatbot.enabled')` checks for API key presence. Frontend conditionally shows chat tab. Backend returns 503 if chatbot is called without a key.
 
+### DEC-012: Soft Single-Family Enforcement on Self-Hosted ([#138](https://github.com/gregqualls/kinhold/issues/138))
+**Date:** 2026-04-30
+**Decision:** Enforce the LICENSE's single-family limit via a sticky SPA banner + a `Log::warning` line on Nth-family creation. Do **not** hard-stop family creation. An internal env flag (`COMMERCIAL_LICENSE_ACKNOWLEDGED=true`) suppresses the banner — handed out privately to commercial licensees, never advertised in `.env.example`, the SPA, or self-hosting docs.
+**Reasoning:** Three constraints pulled toward this shape: (1) the existing Google OAuth flow creates a new family for every first-time login — a hard-stop would brick legitimate spousal signups via OAuth; (2) Kinhold's positioning targets the privacy-first / self-host audience, who would reject any phone-home license check; (3) the LICENSE addendum is the actual legal teeth, so code only needs to ensure operators are *informed* of the limit, not technically prevented from violating it. Standard OSS enforcement model — same shape as GitLab EE, Sentry's BSL, Elastic itself: code is a speed bump for informed consent, the LICENSE is the contract.
+**Why the bypass flag is undocumented in operator-facing surfaces:** if every self-hoster sees "set this env var to clear the warning" they will, and the warning becomes meaningless. Keeping the mechanism internal means the *only* path for an operator with multiple families to clear the banner is to actually contact us — at which point we can either issue a commercial license or point them at the hosted version. This is also why the banner copy points at a GitHub issue template ("Contact us") rather than naming the env var.
+**Implementation:** `app/Services/LicenseEnforcementService.php` exposes `shouldWarn()` (true when self-hosted + family count > 1 + not acknowledged). The `/api/v1/config` response includes a `license` block consumed by `LicenseWarningBanner.vue`. `Family::booted()` registers a `created` listener that emits a forensic log line on each Nth family creation in self-hosted mode regardless of acknowledgement.
+**Why not hard-stop:** documented above and in the [LICENSE addendum](../LICENSE). The OAuth-without-invite-code gap (now in the ROADMAP parking lot) would need to be fixed first before hard-stop becomes viable; revisit if the project ever takes on commercial licensing infrastructure.
+
 ## Data Flow Patterns
 
 ### SPA → API → Database

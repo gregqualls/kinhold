@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\VaultController;
 use App\Models\Family;
 use App\Models\User;
+use App\Services\LicenseEnforcementService;
 use App\Services\UpdateCheckService;
 use Illuminate\Support\Facades\Route;
 
@@ -35,10 +36,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/google/confirm-link', [GoogleAuthController::class, 'confirmLink'])->middleware('throttle:5,1');
 
     // Public config endpoint — tells frontend what services are available
-    Route::get('/config', function () {
+    Route::get('/config', function (LicenseEnforcementService $license) {
         return response()->json([
             'app_name' => config('app.name', 'Kinhold'),
-            'self_hosted' => (bool) env('SELF_HOSTED', false),
+            'self_hosted' => (bool) config('kinhold.self_hosted', false),
             'services' => [
                 'google_oauth' => ! empty(config('services.google.client_id')),
                 'google_calendar' => ! empty(config('kinhold.google.client_id')),
@@ -51,6 +52,14 @@ Route::prefix('v1')->group(function () {
             'demo_available' => Family::where('slug', 'q32-demo-family')->exists(),
             'version' => config('version.current'),
             'update_available' => app(UpdateCheckService::class)->getStatus(),
+            'license' => [
+                'warn' => $license->shouldWarn(),
+                // Only exposed when the banner is active. Hosted Kinhold's family count
+                // is business-sensitive and shouldn't leak through this public endpoint;
+                // the SPA only reads this field when warn === true anyway.
+                'family_count' => $license->shouldWarn() ? $license->familyCount() : null,
+                'commercial_license_acknowledged' => $license->acknowledged(),
+            ],
         ]);
     });
 

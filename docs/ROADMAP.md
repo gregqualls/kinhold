@@ -68,7 +68,7 @@ These features are live and working:
 | [#134](https://github.com/gregqualls/kinhold/issues/134) | Separate landing page from SPA | High | DONE |
 | [#121](https://github.com/gregqualls/kinhold/issues/121) | Bug: file uploads to the vault | High | DONE |
 | [#137](https://github.com/gregqualls/kinhold/issues/137) | AI assistant usage limits for hosted version | Medium | DONE |
-| [#138](https://github.com/gregqualls/kinhold/issues/138) | License enforcement: single-family limit for self-hosted | Medium | |
+| [#138](https://github.com/gregqualls/kinhold/issues/138) | License enforcement: single-family limit for self-hosted | Medium | DONE |
 | [#104](https://github.com/gregqualls/kinhold/issues/104) | Brand colors in transactional email templates | Low | DONE |
 | [#99](https://github.com/gregqualls/kinhold/issues/99) | Show Kinhold icon in Claude Desktop MCP connector | Low | |
 
@@ -159,6 +159,7 @@ These features are live and working:
 
 > Ideas captured from competitive analysis and brainstorming. Not planned yet.
 
+- Google OAuth + invite codes — `GoogleAuthController::findOrCreateUser` creates a new family for every first-time OAuth user, so on a self-hosted instance a spouse signing in via Google ends up in their own family rather than joining the existing one. Should accept an invite-code query param. Follow-up from #138.
 - Plugin/module system for community extensions (under investigation)
 - Staging environment strategy (discussion pending)
 - Vault overhaul (explore Obsidian-like or Standard Notes integration)
