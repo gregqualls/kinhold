@@ -1,22 +1,29 @@
 # Session Handoff — Overnight Quick-Wins
 
-**Date:** 2026-04-29 (overnight unattended)
-**Branch:** `chore/overnight-handoff` (this branch — CHANGELOG + handoff only)
-**State:** Five branches sitting locally, none pushed, no PRs opened (per your "no Upsun preview env" instruction).
+**Date:** 2026-04-29 (overnight unattended → consolidated in the morning)
+**Branch:** `chore/overnight-quick-wins` (integration branch, four feature branches merged in with `--no-ff`)
+**State:** One branch ready to push, four feature branches still alive locally as backups.
 
-## Branches Ready For You
+## How This Branch Is Structured
 
-In suggested push/PR order — `chore/overnight-handoff` first so the CHANGELOG context lands on `main` before the feature PRs reference it.
+Originally landed as 4 independent feature branches overnight (per the "no Upsun preview env while you sleep" instruction). Consolidated in the morning into a single integration branch — one preview env, one `/review`, one PR — by merging each feature with `--no-ff` so each issue retains its own commit + merge commit for traceability.
 
-| Order | Branch | Commit | Issue | Lines |
-|---|---|---|---|---|
-| 1 | `chore/overnight-handoff` | (this) | — | CHANGELOG + handoff only |
-| 2 | `feature/163-shopping-window-persistence` | `2de4f1b` | [#163](https://github.com/gregqualls/kinhold/issues/163) | +14 −1 |
-| 3 | `feature/201-hide-non-anthropic-providers` | `dbbd07b` | [#201](https://github.com/gregqualls/kinhold/issues/201) | +7 −19 |
-| 4 | `feature/104-email-brand-colors` | `f724e91` | [#104](https://github.com/gregqualls/kinhold/issues/104) | +285 −38 |
-| 5 | `feature/174-windows-dev-docs` | `9382691` | [#174](https://github.com/gregqualls/kinhold/issues/174) | +79 |
+The four feature branches are still alive locally as backups; safe to delete after the integration PR merges.
 
-The four feature branches are independent of each other (no shared files), so push order beyond the chore branch doesn't matter — pick whichever you want to ship first.
+| Issue | Source branch | Commit | Lines |
+|---|---|---|---|
+| [#163](https://github.com/gregqualls/kinhold/issues/163) | `feature/163-shopping-window-persistence` | `2de4f1b` | +14 −1 |
+| [#201](https://github.com/gregqualls/kinhold/issues/201) | `feature/201-hide-non-anthropic-providers` | `dbbd07b` | +7 −19 |
+| [#104](https://github.com/gregqualls/kinhold/issues/104) | `feature/104-email-brand-colors` | `f724e91` | +285 −38 |
+| [#174](https://github.com/gregqualls/kinhold/issues/174) | `feature/174-windows-dev-docs` | `9382691` | +79 |
+
+## Quality State (Integrated)
+
+- **PHPUnit:** 157/157 pass (matches v1.6.1 baseline, no regressions)
+- **PHPStan:** 0 errors
+- **Vite build:** clean
+- **Pint:** clean on touched files (Windows CRLF noise on untouched files ignored per repo convention)
+- **ESLint:** 1 pre-existing warning on `SettingsView.vue`, no new ones
 
 ## Per-Branch Notes
 
@@ -101,12 +108,12 @@ Two intentional non-changes that you may want to revisit awake:
 - Do you want a separate small PR to tighten `composer.json` to `^8.4` per the Windows-doc note above? Trivial change but a real product decision (drops PHP 8.2/8.3 self-hosters).
 - The `DemoChatSeeder.php` file from PR [#204](https://github.com/gregqualls/kinhold/pull/204) is still on disk but unwired — same question as the previous handoff. No new info on that.
 
-## Suggested Morning Sequence
+## Morning Sequence
 
 1. Skim this handoff (2 min).
-2. Read each branch's commit message — they're written to be the PR body verbatim.
-3. `git push origin chore/overnight-handoff` → open PR → squash-merge (CHANGELOG goes to main).
-4. For each feature branch: `git push origin <branch>` → `gh pr create` → CI → merge.
-5. After all merge, run `/cleanup` to prune the local branches.
+2. Read the merge graph: `git log --oneline --graph -15` — four merge commits stacked on the chore commit, one per issue.
+3. Run `/review` to catch design / security / convention issues across the integrated change.
+4. `/check` for quality gates, `/pr` to push and open a single PR. CI + one Upsun preview env, instead of four.
+5. After merge, `/cleanup` will prune the integration branch and the four feature backups.
 
-If any of the four turns out to be wrong, just close the PR — local-only commits, no production impact, no leaked preview env cost.
+If `/review` flags an issue with one specific change, the four feature branches are still intact — you can drop the merge commit for that one and reset, or just fix on `chore/overnight-quick-wins` directly. The merge commits give you the rollback handle either way.
