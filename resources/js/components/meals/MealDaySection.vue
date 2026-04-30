@@ -51,31 +51,32 @@
           <span class="text-[11px] font-semibold uppercase tracking-wider text-[#9C9895]">{{ slot.label }}</span>
         </div>
 
-        <!-- Drop zone + entries -->
+        <!-- Drop zone + entries (rendered as compact rows — see MealEntryCard) -->
         <VueDraggable
           v-model="localEntries[slot.key]"
           group="meal-entries"
           :animation="200"
           ghost-class="opacity-20"
           chosen-class="meal-drag-chosen"
-          class="min-h-[36px] flex flex-col gap-1 rounded-[10px] border border-dashed border-[#E8E4DF] dark:border-[#2E2E32] p-1"
+          class="min-h-[44px] flex flex-col gap-1.5"
           @end="onDragEnd"
         >
           <MealEntryCard
             v-for="entry in localEntries[slot.key]"
             :key="entry.id"
             :entry="entry"
+            compact
             @click="$emit('entry-click', entry)"
             @delete="$emit('entry-delete', entry)"
           />
         </VueDraggable>
 
-        <!-- Add button -->
+        <!-- Add button — full-width, ≥44px tall for thumb-tap (iOS HIG min) -->
         <button
-          class="flex items-center gap-1 mt-1 py-1.5 px-2 text-xs text-[#9C9895] hover:text-[#C4975A] hover:bg-[#C4975A]/5 rounded-lg transition-colors w-full"
+          class="flex items-center justify-center gap-1.5 mt-1.5 py-3 px-3 text-sm font-medium text-[#9C9895] hover:text-[#C4975A] bg-transparent hover:bg-[#C4975A]/5 border border-dashed border-[#E8E4DF] dark:border-[#2E2E32] hover:border-[#C4975A]/40 rounded-[10px] transition-colors w-full"
           @click="$emit('add-entry', date, slot.key)"
         >
-          <PlusIcon class="w-3.5 h-3.5" />
+          <PlusIcon class="w-4 h-4" />
           Add
         </button>
       </div>

@@ -30,6 +30,16 @@
         This Week
       </button>
 
+      <!-- View mode toggle (mirrors RecipesTab/RestaurantsTab pattern) -->
+      <button
+        class="p-2 rounded-[10px] bg-surface-sunken text-ink-secondary hover:bg-surface-overlay transition-colors"
+        :title="viewMode === 'grid' ? 'Switch to list view' : 'Switch to grid view'"
+        @click="toggleViewMode"
+      >
+        <Squares2X2Icon v-if="viewMode === 'list'" class="w-4 h-4" />
+        <ListBulletIcon v-else class="w-4 h-4" />
+      </button>
+
       <!-- Add to shopping list (preview + select ingredients) -->
       <button
         v-if="mealsStore.currentPlan"
@@ -59,11 +69,30 @@
     />
 
     <template v-else>
-      <!-- Desktop: transposed grid (slots = rows, days = columns) -->
-      <div class="hidden md:block flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-6 py-3">
+      <!-- Desktop: grid view (transposed: slots = rows, days = columns) -->
+      <div
+        v-if="viewMode === 'grid'"
+        class="hidden md:block flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-6 py-3"
+      >
         <MealWeekGrid
           :dates="mealsStore.weekDates"
           :entries-by-day="mealsStore.entriesByDayAndSlot"
+          @add-entry="openEntryPicker"
+          @entry-click="openEntryEdit"
+          @entry-delete="deleteEntry"
+        />
+      </div>
+
+      <!-- Desktop: list view (day-stacked rows — same component as mobile) -->
+      <div
+        v-else
+        class="hidden md:block flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-6 py-3 space-y-3"
+      >
+        <MealDaySection
+          v-for="date in mealsStore.weekDates"
+          :key="date"
+          :date="date"
+          :entries="mealsStore.entriesByDayAndSlot[date] || { breakfast: [], lunch: [], dinner: [], snack: [] }"
           @add-entry="openEntryPicker"
           @entry-click="openEntryEdit"
           @entry-delete="deleteEntry"
@@ -233,6 +262,8 @@ import {
   MapPinIcon,
   PhoneIcon,
   ArrowTopRightOnSquareIcon,
+  Squares2X2Icon,
+  ListBulletIcon,
 } from '@heroicons/vue/24/outline'
 import { useMealsStore } from '@/stores/meals'
 import { useAuthStore } from '@/stores/auth'
@@ -255,6 +286,29 @@ const authStore = useAuthStore()
 const { success: notifySuccess, error: notifyError } = useNotification()
 
 const familyMembers = computed(() => authStore.familyMembers || [])
+
+// ── View mode (desktop only — mobile always uses day-stack scroll) ──
+// Persists across sessions; matches RecipesTab pattern. Default 'list' so the
+// dense desktop grid is opt-in rather than the surprise default.
+const VIEW_MODE_KEY = 'kinhold-meal-view'
+const allowedViewModes = ['grid', 'list']
+const initialViewMode = (() => {
+  try {
+    const saved = window.localStorage?.getItem(VIEW_MODE_KEY)
+    return allowedViewModes.includes(saved) ? saved : 'list'
+  } catch {
+    return 'list'
+  }
+})()
+const viewMode = ref(initialViewMode)
+const toggleViewMode = () => {
+  viewMode.value = viewMode.value === 'grid' ? 'list' : 'grid'
+  try {
+    window.localStorage?.setItem(VIEW_MODE_KEY, viewMode.value)
+  } catch {
+    /* ignore storage errors (private mode etc.) */
+  }
+}
 
 // ── Week range label (desktop) ──
 const weekRangeLabel = computed(() => {

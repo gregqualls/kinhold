@@ -532,6 +532,38 @@ nav[class*="bg-prussian-500"] {
   }
 }
 
+/*
+  Chat input row extends its background past its layout box to fill the
+  area behind the floating bottom nav, so the white surface is continuous
+  from textarea down to the screen edge instead of leaving a transparent
+  gap below the input. Box-shadow has zero layout impact (no reflow on
+  the messages flex-1 area). Mobile only — desktop has no floating nav.
+*/
+.chat-input-extend {
+  box-shadow: 0 96px 0 0 rgb(var(--surface-raised));
+}
+@media (min-width: 768px) {
+  .md\:chat-input-extend-none {
+    box-shadow: none;
+  }
+}
+
+/*
+  iOS Safari auto-zooms when a focused input has a computed font-size below
+  16px and refuses to pinch-zoom back. Force a 16px floor on every native
+  text-style form field at the mobile breakpoint. !important is needed
+  because Tailwind utility classes (text-[15px], text-sm) win on specificity
+  otherwise — and iOS auto-zoom is non-negotiable UX. Excludes checkbox/
+  radio/range so their tap targets don't change shape.
+*/
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+  }
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;

@@ -23,7 +23,7 @@
     </div>
 
     <!-- Messages Container -->
-    <div v-else-if="!checkingKey" ref="messagesContainer" class="flex-1 overflow-y-auto px-4 md:px-6 py-4">
+    <div v-else-if="!checkingKey" ref="messagesContainer" class="flex-1 overflow-y-auto px-4 md:px-6 pt-4 pb-2">
       <!-- Welcome / Empty State -->
       <div v-if="messages.length === 0 && !loading" class="flex items-center justify-center h-full">
         <div class="text-center max-w-sm w-full">
@@ -121,7 +121,15 @@
     </div>
 
     <!-- Input Area / Lockout State -->
-    <div v-if="!checkingKey && hasApiKey" class="border-t border-border-subtle bg-surface-raised px-4 md:px-6 py-3 pb-safe-bottom">
+    <!--
+      Mobile: -mb-4 pulls the input bar down into App.vue's main pb-24 zone so it
+      sits ~8px above the floating bottom nav instead of leaving a 24px dead gap.
+      The chat-input-extend class adds a box-shadow that paints surface-raised
+      down to the screen bottom (behind the floating nav) so there's no visible
+      seam between the input bar, the nav, and the safe-area below it.
+      md: resets margin/extension and re-enables safe-area padding for desktop.
+    -->
+    <div v-if="!checkingKey && hasApiKey" class="border-t border-border-subtle bg-surface-raised px-4 md:px-6 py-3 -mb-4 md:mb-0 md:pb-safe-bottom chat-input-extend md:chat-input-extend-none">
       <!-- Lockout: limit reached -->
       <div v-if="limitReached" class="max-w-2xl mx-auto card-lg p-4 text-center space-y-2">
         <h3 class="text-sm font-semibold text-ink-primary">
@@ -161,7 +169,7 @@
             v-model="messageInput"
             rows="1"
             placeholder="Tell Kinhold what to do..."
-            class="flex-1 px-4 py-2.5 bg-surface-sunken border border-border-subtle rounded-xl text-sm placeholder-ink-tertiary text-ink-primary focus:bg-surface-raised focus:ring-2 focus:ring-accent-lavender-bold/40 transition-all outline-none resize-none max-h-32 overflow-y-auto"
+            class="flex-1 px-4 py-2.5 bg-surface-sunken border border-border-subtle rounded-xl text-base md:text-sm placeholder-ink-tertiary text-ink-primary focus:bg-surface-raised focus:ring-2 focus:ring-accent-lavender-bold/40 transition-all outline-none resize-none max-h-32 overflow-y-auto"
             :disabled="loading"
             @keydown.enter.exact.prevent="handleSend"
             @input="autoResize"

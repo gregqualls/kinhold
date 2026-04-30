@@ -31,6 +31,9 @@
       <!-- License Warning Banner (self-hosted, multi-family) -->
       <LicenseWarningBanner v-if="!isAuthPage" />
 
+      <!-- PWA Install Prompt (#68) — only shows when installable and not yet installed -->
+      <InstallAppPrompt v-if="!isAuthPage" />
+
       <!-- Email Verification Banner -->
       <div v-if="showVerificationBanner" class="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-2 flex items-center justify-between gap-2">
         <p class="text-sm text-amber-800 dark:text-amber-300">
@@ -114,6 +117,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
 import EasterEggs from '@/components/common/EasterEggs.vue'
 import LicenseWarningBanner from '@/components/LicenseWarningBanner.vue'
+import InstallAppPrompt from '@/components/InstallAppPrompt.vue'
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { useNotification } from '@/composables/useNotification'
 import { useDarkMode } from '@/composables/useDarkMode'
