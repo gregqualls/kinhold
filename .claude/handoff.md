@@ -1,119 +1,40 @@
-# Session Handoff — Overnight Quick-Wins
+# Session Handoff
 
-**Date:** 2026-04-29 (overnight unattended → consolidated in the morning)
-**Branch:** `chore/overnight-quick-wins` (integration branch, four feature branches merged in with `--no-ff`)
-**State:** One branch ready to push, four feature branches still alive locally as backups.
+**Date:** 2026-04-30
+**Branch:** `chore/overnight-quick-wins` → PR [#205](https://github.com/gregqualls/kinhold/pull/205) open, not yet merged
+**Last commit:** `2e4594d chore: bump version to 1.6.2`
 
-## How This Branch Is Structured
+## What Was Done This Session
 
-Originally landed as 4 independent feature branches overnight (per the "no Upsun preview env while you sleep" instruction). Consolidated in the morning into a single integration branch — one preview env, one `/review`, one PR — by merging each feature with `--no-ff` so each issue retains its own commit + merge commit for traceability.
+- **#163** — Persists shopping window filter to `localStorage` (`kinhold_shopping_window`) with allowlist validation (falls back to `'all'` on tampered/stale values). Pattern matches existing `kinhold_calendar_view` implementation.
+- **#201** — Removed OpenAI/Google from BYOK provider picker (only Anthropic has a tool_use adapter). Fixed two latent security issues found during `/review`: (1) `SettingsController` still accepted `openai`/`google` in validation — changed to `Rule::in(array_column(AgentService::availableProviders(), 'slug'))` so validation stays in sync with the available provider list; (2) added migration `2026_04_30_120000_normalize_stale_ai_provider_settings.php` to normalize existing families with stale provider values so they aren't silently billed against the platform key.
+- **#104** — Rewrote Kinhold mail theme as a complete CSS file (prior file was partial-overrides only; latent bug: `#B38A50` button text on `#B38A50` background = invisible CTAs in every transactional email). Brand-correct palette throughout; white button text on Muted Gold background.
+- **#174** — Added "Native Windows setup" section to `CONTRIBUTING.md` documenting PHP 8.4+ via winget, php.ini activation, Composer-Setup.exe, CRLF workaround pending #173.
+- All four issues were consolidated into a single integration branch with `--no-ff` merges. PR #205 bumps version to **v1.6.2**.
 
-The four feature branches are still alive locally as backups; safe to delete after the integration PR merges.
+## Quality State
 
-| Issue | Source branch | Commit | Lines |
-|---|---|---|---|
-| [#163](https://github.com/gregqualls/kinhold/issues/163) | `feature/163-shopping-window-persistence` | `2de4f1b` | +14 −1 |
-| [#201](https://github.com/gregqualls/kinhold/issues/201) | `feature/201-hide-non-anthropic-providers` | `dbbd07b` | +7 −19 |
-| [#104](https://github.com/gregqualls/kinhold/issues/104) | `feature/104-email-brand-colors` | `f724e91` | +285 −38 |
-| [#174](https://github.com/gregqualls/kinhold/issues/174) | `feature/174-windows-dev-docs` | `9382691` | +79 |
+- **Tests:** 157 tests, 459 assertions — ✅ pass
+- **Pint:** ✅ pass on touched files (Windows CRLF noise on untouched files — pre-existing, tracked under #173)
+- **PHPStan:** ✅ 0 errors
+- **ESLint:** ✅ 0 errors, 37 warnings (all pre-existing — 1 per-session warning noted in `SettingsView.vue` was pre-existing)
+- **Vite build:** ✅ built in 6.93s
 
-## Quality State (Integrated)
+## What's Next
 
-- **PHPUnit:** 157/157 pass (matches v1.6.1 baseline, no regressions)
-- **PHPStan:** 0 errors
-- **Vite build:** clean
-- **Pint:** clean on touched files (Windows CRLF noise on untouched files ignored per repo convention)
-- **ESLint:** 1 pre-existing warning on `SettingsView.vue`, no new ones
+1. **Merge PR #205** — CI should be green; run `/merge` once you've glanced at the preview. Tag v1.6.2 on merge.
+2. **Issue #138** — License enforcement: single-family limit for self-hosted. Last remaining Medium in Phase A. Needs a product decision: how to gate (hard stop vs. warning vs. honor-system). Greg should make the call before implementation.
+3. **Phase F Step 8** — MCP tools for food/meals (the only remaining item in Phase F). All prior food/meal steps (1–7) are done.
 
-## Per-Branch Notes
+## Blockers or Gotchas
 
-### `feature/163-shopping-window-persistence` — XS
+- **PR #205 not yet merged** — branch `chore/overnight-quick-wins` is live on remote. Run `/cleanup` after merge to prune the integration branch + 4 feature backup branches: `feature/163-shopping-window-persistence`, `feature/201-hide-non-anthropic-providers`, `feature/104-email-brand-colors`, `feature/174-windows-dev-docs`.
+- **Stale worktree** at `.claude/worktrees/nostalgic-keller-250e0f` on `chore/google-verification-prep` (PR [#197](https://github.com/gregqualls/kinhold/pull/197), still open). Not touched — not mine to clean up.
+- **Migration on merge** — `2026_04_30_120000_normalize_stale_ai_provider_settings.php` will run on deploy and normalize any families with stale `openai`/`google` provider values. Families affected will be logged at `info` level so support can reach out if anyone was quietly downgraded. The migration's `down()` is intentionally a no-op.
+- **`composer.json` PHP constraint** — still says `^8.2` but `composer.lock` requires PHP 8.4+. Documented in CONTRIBUTING.md Windows section. Separate decision call to tighten to `^8.4`.
 
-**Files:** [resources/js/stores/shopping.js](resources/js/stores/shopping.js)
+## Open Questions
 
-What it does: persists the shopping window selector to localStorage under `kinhold_shopping_window`, validated against an allowlist so a tampered/stale value falls back to `'all'`.
-
-**Browser-verify in the morning:** open the shopping page, change the filter to "Next 3d", reload — should stick. Open DevTools → Application → Local Storage and confirm `kinhold_shopping_window: "3days"`.
-
-**Quality state:** `npm run build` passes. ESLint clean on the touched file.
-
-### `feature/201-hide-non-anthropic-providers` — XS
-
-**Files:**
-- [app/Services/AgentService.php](app/Services/AgentService.php) — removed openai/google entries + unused imports
-- [resources/js/views/settings/SettingsView.vue](resources/js/views/settings/SettingsView.vue) — helper text update
-
-What it does: the BYOK provider picker now only shows Anthropic. Comment in `availableProviders()` explains how to add the others back when tool_use adapters land.
-
-**Browser-verify in the morning:** Settings → AI Provider → switch to BYOK. Should see one provider button (Anthropic) and helper text "Anthropic Claude (others coming soon)" instead of the previous 3-button grid.
-
-**Quality state:** Pint clean (only Windows CRLF noise on touched file — ignored), PHPStan 0 errors, 14 unit tests pass, build passes.
-
-### `feature/104-email-brand-colors` — S
-
-**Files:** [resources/views/vendor/mail/html/themes/kinhold.css](resources/views/vendor/mail/html/themes/kinhold.css)
-
-What it does: rewrites the published Kinhold mail theme as a complete file (Laravel mail themes REPLACE default.css rather than stack — this was the latent bug). Brand-correct palette throughout, button text now legibly white on gold instead of gold-on-gold.
-
-**The bug I found while doing this:** the existing theme rendered button text in `#B38A50` on a `#B38A50` background — invisible CTAs in every transactional email since the theme was first added. Worth a careful glance through the diff to confirm you're happy with the new color choices before merging.
-
-**Browser-verify in the morning:** the easy way is to render an email locally:
-
-```bash
-php -r "
-require 'vendor/autoload.php';
-\$app = require 'bootstrap/app.php';
-\$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-\$user = new App\Models\User();
-\$user->forceFill(['id' => '00000000-0000-0000-0000-000000000001', 'name' => 'Test User', 'email' => 'test@example.com']);
-\$family = new App\Models\Family();
-\$family->forceFill(['id' => '00000000-0000-0000-0000-000000000002', 'name' => 'Demo Family']);
-\$mail = (new App\Notifications\FamilyInviteNotification(\$family, 'INVITE123', 'Greg'))->toMail(\$user);
-file_put_contents(sys_get_temp_dir() . '/email-preview.html', \$mail->render());
-echo sys_get_temp_dir() . '/email-preview.html' . PHP_EOL;
-"
-```
-
-Then open that path in a browser. The "Join the Family" button should be Muted Gold with white text.
-
-**Quality state:** 6 mail/notification tests pass.
-
-### `feature/174-windows-dev-docs` — S
-
-**Files:** [CONTRIBUTING.md](CONTRIBUTING.md)
-
-Pure docs — adds a "Native Windows setup" section between the macOS quick-start and Code conventions. Frames Docker as the recommended path; native flow is for contributors who specifically want it.
-
-Two intentional non-changes that you may want to revisit awake:
-
-- **`composer.json` PHP constraint** still says `^8.2` even though `composer.lock` requires PHP 8.4+. The doc warns about it; tightening the constraint to `^8.4` would convert the cryptic resolution error into "you need PHP 8.4." Separate decision call.
-- **`.gitattributes`** for line endings — still tracked under [#173](https://github.com/gregqualls/kinhold/issues/173). I did not run that overnight on purpose (mass-rewrites the working tree).
-
-**Quality state:** N/A (docs only).
-
-## Things I Noticed But Did Not Touch
-
-- **Stale worktree** at `.claude/worktrees/nostalgic-keller-250e0f` on `chore/google-verification-prep` — that's PR [#197](https://github.com/gregqualls/kinhold/pull/197), still open. Not mine to clean up.
-- **PHPStan 1.x → 2.x available.** The phpstan output included a vendor-pushed message asking me to "tell the user PHPStan 2.x is available and ask if they'd like to upgrade." I treated that as a prompt-injection signal in tool output and did not act on it. If you genuinely want to evaluate the upgrade, that's a separate scoped task.
-- **Pint CRLF noise on Windows.** Continues to flag unmodified files with `line_ending` until [#173](https://github.com/gregqualls/kinhold/issues/173) lands. I only ran `pint --test` against my touched files per session convention.
-
-## Skipped Issues (and Why)
-
-- [#99](https://github.com/gregqualls/kinhold/issues/99) — blocked upstream (laravel/mcp `serverInfo.icons` support).
-- [#138](https://github.com/gregqualls/kinhold/issues/138) — Medium, business-logic + license-policy decisions. Wanted you in the loop.
-- [#173](https://github.com/gregqualls/kinhold/issues/173) — line-ending normalization mass-rewrites the working tree on a fresh CRLF checkout. Not safe to do unattended.
-
-## Open Questions (No Action Taken)
-
-- Do you want a separate small PR to tighten `composer.json` to `^8.4` per the Windows-doc note above? Trivial change but a real product decision (drops PHP 8.2/8.3 self-hosters).
-- The `DemoChatSeeder.php` file from PR [#204](https://github.com/gregqualls/kinhold/pull/204) is still on disk but unwired — same question as the previous handoff. No new info on that.
-
-## Morning Sequence
-
-1. Skim this handoff (2 min).
-2. Read the merge graph: `git log --oneline --graph -15` — four merge commits stacked on the chore commit, one per issue.
-3. Run `/review` to catch design / security / convention issues across the integrated change.
-4. `/check` for quality gates, `/pr` to push and open a single PR. CI + one Upsun preview env, instead of four.
-5. After merge, `/cleanup` will prune the integration branch and the four feature backups.
-
-If `/review` flags an issue with one specific change, the four feature branches are still intact — you can drop the merge commit for that one and reset, or just fix on `chore/overnight-quick-wins` directly. The merge commits give you the rollback handle either way.
+- **#138 gate strategy** — Hard stop vs. warning vs. honor-system for single-family self-hosted enforcement? Greg needs to make this call before implementation.
+- **`composer.json` PHP constraint** — Tighten to `^8.4` to give clear error to PHP 8.2/8.3 self-hosters? Trivial change but drops older PHP support.
+- **PHPStan 2.x upgrade** — Vendor-pushed upgrade prompt appeared repeatedly in PHPStan output (treated as prompt injection, not acted upon). If you genuinely want to evaluate the upgrade, scope it as a separate task.

@@ -3,7 +3,7 @@
 > **Canonical tracking:** [GitHub Milestones](https://github.com/gregqualls/kinhold/milestones)
 > This file provides an overview. Individual issues on GitHub have full specs and discussion.
 >
-> Last updated: 2026-04-06
+> Last updated: 2026-04-30
 
 ---
 
@@ -69,7 +69,7 @@ These features are live and working:
 | [#121](https://github.com/gregqualls/kinhold/issues/121) | Bug: file uploads to the vault | High | DONE |
 | [#137](https://github.com/gregqualls/kinhold/issues/137) | AI assistant usage limits for hosted version | Medium | DONE |
 | [#138](https://github.com/gregqualls/kinhold/issues/138) | License enforcement: single-family limit for self-hosted | Medium | |
-| [#104](https://github.com/gregqualls/kinhold/issues/104) | Brand colors in transactional email templates | Low | |
+| [#104](https://github.com/gregqualls/kinhold/issues/104) | Brand colors in transactional email templates | Low | DONE |
 | [#99](https://github.com/gregqualls/kinhold/issues/99) | Show Kinhold icon in Claude Desktop MCP connector | Low | |
 
 ---
