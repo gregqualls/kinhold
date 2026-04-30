@@ -115,7 +115,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     try {
       const { data } = await api.get('/settings/notification-preferences')
       return data.push_status?.subscriptions ?? 0
-    } catch (e) {
+    } catch {
       return pushStatus.value.subscriptions
     }
   }

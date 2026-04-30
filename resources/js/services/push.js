@@ -33,7 +33,7 @@ export async function isSubscribed() {
     if (!reg) return false
     const sub = await reg.pushManager.getSubscription()
     return !!sub
-  } catch (e) {
+  } catch {
     return false
   }
 }
@@ -86,7 +86,7 @@ export async function unsubscribePush() {
   await sub.unsubscribe().catch(() => {})
   try {
     await api.delete('/push/subscriptions', { data: { endpoint } })
-  } catch (e) {
+  } catch {
     // Silent: even if server delete fails, the local subscription is gone.
   }
 }
