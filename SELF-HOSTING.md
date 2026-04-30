@@ -156,6 +156,28 @@ MAIL_FROM_NAME=Kinhold
 
 Without email configured, the app works fine — email verification banners won't appear and notification emails won't send.
 
+#### Web Push Notifications (browser/PWA)
+
+Enables real-time push notifications for task assignments, kudos, and reminders — works on Android Chrome and on iOS 16.4+ when Kinhold is installed to the home screen as a PWA. Without these keys, the in-app "Turn on notifications" banner stays hidden and email continues to work normally.
+
+```bash
+# Generate a fresh keypair once
+php artisan webpush:vapid
+
+# Copy the printed VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY into .env
+# along with a contact subject (any mailto: URL works):
+#   VAPID_PUBLIC_KEY=...
+#   VAPID_PRIVATE_KEY=...
+#   VAPID_SUBJECT=mailto:admin@example.com
+
+# Pick up the new keys
+php artisan config:clear
+```
+
+The keypair is local to your instance — don't reuse one between deployments, and don't commit it. Rotating the keypair invalidates all existing browser subscriptions; users will see the "Turn on notifications" banner again and re-subscribe.
+
+Per-user controls (per-type toggles, quiet hours in the user's timezone, global mute) live under **Settings → Notifications** for every account.
+
 ---
 
 ## Single-Family Policy

@@ -2,6 +2,56 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-04-30 — Web push foundation ([#69](https://github.com/gregqualls/kinhold/issues/69), part 1 of 2)
+
+First half of [#69](https://github.com/gregqualls/kinhold/issues/69) — push subscription infrastructure plus a registry framework so adding a new notification type later is just "drop a class + add a config entry," not a five-file edit. Two existing notification surfaces (task assigned, kudos received) now fire push alongside email, gated by per-user prefs + quiet hours + global mute. Reminders and activity-style notifications (task due soon, shopping list activity, calendar event reminders, dinner reminder) follow in #69b against the stable channel.
+
+**Service worker strategy.** Kept #68's `generateSW` workbox setup intact and added the `push` + `notificationclick` handlers via workbox's [`importScripts`](vite.config.js) option, which prepends `self.importScripts('/sw-push.js')` at the top of the generated SW. The custom file at [public/sw-push.js](public/sw-push.js) owns ~50 lines of native `Notification` rendering + tab-focus logic — workbox's precaching, `navigateFallback`, and runtime caching code paths are untouched. The alternative (switching to `injectManifest`) would have forced a full rewrite of #68's caching strategy for two event handlers; skipped.
+
+**Notification type registry.** New [config/notifications.php](config/notifications.php) defines categories + types in one place. Each type entry declares its category, label, supported channels (`['email']`, `['email','push']`, etc.), per-channel defaults for new users, and an optional `requires_module` gate so types are hidden when the family disables their parent module. The Settings UI iterates the registry — a new notification type appears in the right category automatically with no UI changes. The legacy four-key `email_preferences` shape is kept readable for one release for safe rollback.
+
+**User preferences shape.** New `notification_preferences` JSONB column on `users` with the shape:
+
+```json
+{
+  "email": { "task_assigned": true, ... },
+  "push":  { "task_assigned": true, ... },
+  "quiet_hours": { "enabled": false, "start": "22:00", "end": "07:00" },
+  "muted": false,
+  "dinner_reminder_at": "15:00"
+}
+```
+
+Migration backfills `notification_preferences->email` from the legacy `email_preferences` column on the same deploy. New `User::wants($channel, $key)` consults notification_preferences first, falls back to legacy `email_preferences`, and finally to the registry's `default_<channel>`. The deprecated `wantsEmail()` helper is now a thin wrapper that strips the `email_` prefix and delegates — keeps existing notification classes (`WeeklyDigestNotification`, `TaskCompletedNotification`, `FamilyInviteNotification`) working unchanged.
+
+**Quiet hours + global mute.** `User::isInQuietHours()` evaluates the window in the user's `timezone` (already stored on the model since #96), correctly handles overnight ranges (`22:00 → 07:00`), and is queried by every notification's `via()`. Global mute strips `webpush` from the channel array; email continues to deliver. Both gates live in `User::isPushSuppressed()` so notification classes don't have to re-check.
+
+**Push permission UX.** New [resources/js/components/NotificationsPrompt.vue](resources/js/components/NotificationsPrompt.vue) mirrors the [#68 InstallAppPrompt](resources/js/components/InstallAppPrompt.vue) pattern — `localStorage` 30-day cooldown, dismissible, mounted in `App.vue` immediately after the install banner. Shown only when `Notification.permission === 'default'`, the browser supports `PushManager`, the user is authenticated, and VAPID is configured server-side (read from a `<meta name="vapid-public-key">` tag injected by [app.blade.php](resources/views/app.blade.php) at build time). Click → `Notification.requestPermission()` → `pushManager.subscribe({ userVisibleOnly: true, applicationServerKey })` → POST to `/api/v1/push/subscriptions`. Never auto-subscribes — permission is a deliberate user action.
+
+**Subscription endpoints.** [PushSubscriptionController](app/Http/Controllers/Api/V1/PushSubscriptionController.php) exposes `POST/DELETE /api/v1/push/subscriptions` (upsert / remove by endpoint) and `POST /api/v1/push/subscriptions/test` (dispatches a sample push to all of the caller's subscriptions — the in-Settings "Send test" button). The package's `HasPushSubscriptions` trait handles the cross-device case: re-registering an endpoint that already belongs to another user reassigns it to the caller (covers shared-device handoff between family members).
+
+**Settings UI.** New [NotificationsPanel.vue](resources/js/components/notifications/NotificationsPanel.vue) replaces the previous email-only Notifications block. Layout: permission row (Enable / Send test / Disable) → global mute switch → quiet-hours toggle with `<input type="time">` start/end → per-category groups (registry-driven, collapsible) → each row shows the type's label + an Email × Push checkbox grid (channel toggles only render for channels the type actually supports). Same component renders for both parent and child versions of [SettingsView.vue](resources/js/views/settings/SettingsView.vue) so kids get the same controls.
+
+**VAPID configuration.** `php artisan webpush:vapid` (provided by `laravel-notification-channels/webpush`) generates the keypair. Three new env vars (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`) added to `.env.example` with a generation walkthrough; [SELF-HOSTING.md](SELF-HOSTING.md) gains a "Web Push Notifications" section under Configuration → Optional Services. The public key is exposed to the SPA via the Blade meta tag — no `/api/v1/config` round-trip — since it's a build-time constant per deploy.
+
+**Migration shape.** [push_subscriptions](database/migrations/2026_04_30_160000_create_push_subscriptions_table.php) keeps the upstream package's `bigIncrements` PK (internal-only ID, doesn't cross model boundaries) but switches the polymorphic FK to `uuidMorphs('subscribable')` so it can reference our UUID-keyed `users` table cleanly. The package's published migration was deleted and replaced rather than edited so the rename of the timestamp prefix matches our other migrations.
+
+**Tests** (22 new, 197 total / 542 assertions, all green):
+
+- [PushSubscriptionTest](tests/Feature/PushSubscriptionTest.php) — auth gating, upsert by endpoint, cross-user device handoff, destroy, test endpoint requires existing subscription
+- [NotificationPreferencesTest](tests/Feature/NotificationPreferencesTest.php) — defaults shape, persistence, registry-key filtering (unknown keys silently dropped), validation
+- [UserNotificationPreferencesTest](tests/Unit/UserNotificationPreferencesTest.php) — registry-default fallback, no-email short-circuit, push-requires-subscription, quiet hours same-day + overnight + cross-timezone, global mute
+- [KudosReceivedNotificationTest](tests/Feature/Notifications/KudosReceivedNotificationTest.php) — fires from `PointsService::giveKudos()`, skips self-kudos, push channel only when subscribed + opted in, global mute strips push
+
+One Laravel testing gotcha worth recording: `NotificationFake::sendNow` silently drops a notification when its `via()` returns `[]`. The tests for "fires when subscribed" must give the notifiable at least one enabled channel; otherwise `assertSentTo` reports "the notification was not sent" with no further hint. Test setup explicitly enables the relevant pref before dispatching.
+
+**Files**
+
+- New: `composer.json` / `composer.lock` (`laravel-notification-channels/webpush ^10.5`), `config/webpush.php`, `config/notifications.php`, `database/migrations/2026_04_30_160000_create_push_subscriptions_table.php`, `database/migrations/2026_04_30_160100_add_notification_preferences_to_users_table.php`, `app/Notifications/KudosReceivedNotification.php`, `app/Notifications/TestPushNotification.php`, `app/Http/Controllers/Api/V1/PushSubscriptionController.php`, `public/sw-push.js`, `resources/js/services/push.js`, `resources/js/stores/notifications.js`, `resources/js/components/NotificationsPrompt.vue`, `resources/js/components/notifications/NotificationsPanel.vue`, four test files
+- Modified: `app/Models/User.php` (HasPushSubscriptions trait, `wants()`, `isInQuietHours()`, `isPushMuted()`, `isPushSuppressed()`, `notification_preferences` cast + fillable, `defaultNotificationPreferences()`), `app/Notifications/TaskAssignedNotification.php` (push channel), `app/Services/PointsService.php` (kudos dispatch), `app/Http/Controllers/Api/V1/SettingsController.php` (notification-preferences endpoints + filtered registry helper), `routes/api.php`, `vite.config.js` (`importScripts`), `resources/views/app.blade.php` (VAPID meta tag), `resources/js/App.vue` (mount NotificationsPrompt), `resources/js/views/settings/SettingsView.vue` (replace email block with NotificationsPanel), `.env.example`, `SELF-HOSTING.md`
+
+**What's still pending in #69:** task-due-soon scheduler + dedup column, shopping-list-item-added activity notification, calendar event per-event reminder column + scheduler, dinner reminder (per-user time + meal-plan-aware scheduler). All additive against this foundation — see plan file for the #69b file list.
+
 ## 2026-04-30 — Phase B kickoff: PWA support + mobile UX polish ([#68](https://github.com/gregqualls/kinhold/issues/68))
 
 Opens **Phase B: Make It Reachable** by closing [#68](https://github.com/gregqualls/kinhold/issues/68) (PWA: service worker, manifest, installable) and bundling four mobile UX issues Greg flagged from daily-driving the app on his phone. All five are mobile-surface changes touching the same SPA shell — splitting them would have produced four trivial follow-up PRs for a reviewer who's already looking at the install banner.

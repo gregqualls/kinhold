@@ -71,6 +71,12 @@ export default defineConfig({
       base: '/',
       filename: 'sw.js',
       workbox: {
+        // Custom push + notificationclick handlers live in /sw-push.js so we
+        // can keep workbox's generateSW strategy for caching (no need to hand-
+        // roll a full SW). importScripts prepends `self.importScripts('/sw-push.js')`
+        // at the top of the generated file. Update sw-push.js directly — it is
+        // committed and loaded as-is at runtime, not bundled.
+        importScripts: ['/sw-push.js'],
         // App shell fallback — the SPA owns every non-API route. workbox
         // resolves this URL against the precache, so '/' MUST be in the
         // precache (see additionalManifestEntries below) or offline

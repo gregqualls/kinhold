@@ -8,34 +8,37 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\WebPush\WebPushChannel;
+use NotificationChannels\WebPush\WebPushMessage;
 
 class TaskAssignedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
     public function __construct(
         public Task $task,
         public User $assignedBy,
     ) {}
 
     /**
-     * Get the notification's delivery channels.
+     * Channels chosen per-user from the unified notification_preferences shape.
+     * Push is suppressed during quiet hours / global mute (see User::isPushSuppressed).
      */
     public function via(object $notifiable): array
     {
-        if (! $notifiable->wantsEmail('email_task_assigned')) {
-            return [];
+        $channels = [];
+
+        if ($notifiable->wants('email', 'task_assigned')) {
+            $channels[] = 'mail';
         }
 
-        return ['mail'];
+        if ($notifiable->wants('push', 'task_assigned') && ! $notifiable->isPushSuppressed()) {
+            $channels[] = WebPushChannel::class;
+        }
+
+        return $channels;
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail(object $notifiable): MailMessage
     {
         $appUrl = config('app.url');
@@ -58,5 +61,25 @@ class TaskAssignedNotification extends Notification implements ShouldQueue
             ->line($dueText)
             ->action('View Task', "{$appUrl}/tasks")
             ->line("You've got this!");
+    }
+
+    public function toWebPush(object $notifiable, Notification $notification): WebPushMessage
+    {
+        $points = $this->task->getEffectivePoints();
+        $body = $this->assignedBy->name.' assigned you a task'
+            .($points > 0 ? " ({$points} pts)" : '');
+
+        return (new WebPushMessage)
+            ->title($this->task->title)
+            ->body($body)
+            ->icon('/icons/icon-192.png')
+            ->badge('/icons/badge-96.png')
+            ->tag('task-'.$this->task->id)
+            ->data([
+                'type' => 'task_assigned',
+                'url' => '/tasks?focus='.$this->task->id,
+                'task_id' => $this->task->id,
+            ])
+            ->options(['TTL' => 60 * 60 * 24]);
     }
 }

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\MealPlanController;
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\PointRequestController;
 use App\Http\Controllers\Api\V1\PointsController;
+use App\Http\Controllers\Api\V1\PushSubscriptionController;
 use App\Http\Controllers\Api\V1\RecipeController;
 use App\Http\Controllers\Api\V1\RestaurantController;
 use App\Http\Controllers\Api\V1\RewardsController;
@@ -305,8 +306,17 @@ Route::prefix('v1')->group(function () {
             Route::put('/', [SettingsController::class, 'update']);
             Route::get('/email-preferences', [SettingsController::class, 'emailPreferences']);
             Route::put('/email-preferences', [SettingsController::class, 'updateEmailPreferences']);
+            Route::get('/notification-preferences', [SettingsController::class, 'notificationPreferences']);
+            Route::put('/notification-preferences', [SettingsController::class, 'updateNotificationPreferences']);
             Route::delete('/account', [SettingsController::class, 'deleteAccount'])->middleware('throttle:5,1');
             Route::post('/account/data-export', [SettingsController::class, 'exportData'])->middleware('throttle:5,1');
+        });
+
+        // Push subscriptions
+        Route::prefix('/push/subscriptions')->group(function () {
+            Route::post('/', [PushSubscriptionController::class, 'store'])->middleware('throttle:30,1');
+            Route::delete('/', [PushSubscriptionController::class, 'destroy'])->middleware('throttle:30,1');
+            Route::post('/test', [PushSubscriptionController::class, 'test'])->middleware('throttle:5,1');
         });
 
         // MCP Token

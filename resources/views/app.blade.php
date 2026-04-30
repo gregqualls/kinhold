@@ -38,6 +38,10 @@
         <meta name="apple-mobile-web-app-title" content="Kinhold">
         <meta name="mobile-web-app-capable" content="yes">
 
+        <!-- Web push VAPID public key (#69). Empty on instances that haven't
+             generated keys yet — the SPA hides the push UI in that case. -->
+        <meta name="vapid-public-key" content="{{ config('webpush.vapid.public_key', '') }}">
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

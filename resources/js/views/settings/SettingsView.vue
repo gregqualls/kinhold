@@ -971,35 +971,14 @@
 
       <!-- Section 6: Notifications -->
       <SettingsSection
-        v-if="currentUser?.email"
         id="notifications"
         title="Notifications"
-        description="Email notification preferences"
+        description="Push, email, quiet hours, and per-type preferences"
         :icon="BellIcon"
         :model-value="expandedSections.has('notifications')"
         @update:model-value="val => toggleSection('notifications', val)"
       >
-        <div class="space-y-3">
-          <div
-            v-for="pref in emailPreferenceOptions"
-            :key="pref.key"
-            class="p-4 bg-surface-sunken rounded-lg"
-          >
-            <KinSwitch
-              :model-value="emailPrefs[pref.key]"
-              :label="pref.label"
-              :description="pref.description"
-              color="lavender"
-              @update:model-value="emailPrefs[pref.key] = $event"
-            />
-          </div>
-        </div>
-
-        <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-border-subtle">
-          <BaseButton variant="primary" :loading="savingEmailPrefs" @click="saveEmailPreferences">
-            Save Email Preferences
-          </BaseButton>
-        </div>
+        <NotificationsPanel />
       </SettingsSection>
 
       <!-- Section 7: About -->
@@ -1172,31 +1151,12 @@
       </div>
 
       <!-- Email Notifications (if they have an email) -->
-      <div v-if="currentUser?.email" class="card-lg mb-6">
+      <div class="card-lg mb-6">
         <div class="flex items-center gap-2 mb-4">
-          <EnvelopeIcon class="w-5 h-5 text-accent-lavender-bold" />
-          <h2 class="text-lg font-semibold font-heading text-ink-primary">Email Notifications</h2>
+          <BellIcon class="w-5 h-5 text-accent-lavender-bold" />
+          <h2 class="text-lg font-semibold font-heading text-ink-primary">Notifications</h2>
         </div>
-        <div class="space-y-3">
-          <div
-            v-for="pref in emailPreferenceOptions"
-            :key="pref.key"
-            class="p-4 bg-surface-sunken rounded-lg"
-          >
-            <KinSwitch
-              :model-value="emailPrefs[pref.key]"
-              :label="pref.label"
-              :description="pref.description"
-              color="lavender"
-              @update:model-value="emailPrefs[pref.key] = $event"
-            />
-          </div>
-        </div>
-        <div class="flex gap-3 justify-end pt-4 mt-4 border-t border-border-subtle">
-          <BaseButton variant="primary" :loading="savingEmailPrefs" @click="saveEmailPreferences">
-            Save Email Preferences
-          </BaseButton>
-        </div>
+        <NotificationsPanel />
       </div>
 
       <!-- About (child version — just version number) -->
@@ -1536,7 +1496,7 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BaseInput from '@/components/common/BaseInput.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
-import KinAvatar from '@/components/design-system/KinAvatar.vue'
+import NotificationsPanel from '@/components/notifications/NotificationsPanel.vue'
 import AvatarEditor from '@/components/common/AvatarEditor.vue'
 import ToggleSwitch from '@/components/common/ToggleSwitch.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
@@ -1801,61 +1761,9 @@ const showSwitchToModal = ref(false)
 const switchingToMember = ref(null)
 const switchingTo = ref(false)
 
-// Email preferences
-const savingEmailPrefs = ref(false)
-const emailPrefs = reactive({
-  email_task_completed: true,
-  email_task_assigned: true,
-  email_weekly_digest: true,
-  email_family_invite: true,
-})
-
-const emailPreferenceOptions = [
-  {
-    key: 'email_task_completed',
-    label: 'Task Completed',
-    description: 'Get notified when a family member completes a task',
-  },
-  {
-    key: 'email_task_assigned',
-    label: 'Task Assigned',
-    description: 'Get notified when a task is assigned to you',
-  },
-  {
-    key: 'email_weekly_digest',
-    label: 'Weekly Digest',
-    description: 'Receive a weekly summary of family activity',
-  },
-  {
-    key: 'email_family_invite',
-    label: 'Family Invites',
-    description: 'Receive email when invited to join a family',
-  },
-]
-
-const loadEmailPreferences = async () => {
-  try {
-    const { data } = await api.get('/settings/email-preferences')
-    const prefs = data.email_preferences || {}
-    emailPrefs.email_task_completed = prefs.email_task_completed !== false
-    emailPrefs.email_task_assigned = prefs.email_task_assigned !== false
-    emailPrefs.email_weekly_digest = prefs.email_weekly_digest !== false
-    emailPrefs.email_family_invite = prefs.email_family_invite !== false
-  } catch {
-    // Use defaults on error
-  }
-}
-
-const saveEmailPreferences = async () => {
-  savingEmailPrefs.value = true
-  try {
-    await api.put('/settings/email-preferences', { ...emailPrefs })
-    success('Email preferences saved!')
-  } catch (err) {
-    notificationError(err.response?.data?.message || 'Failed to save email preferences')
-  }
-  savingEmailPrefs.value = false
-}
+// Notifications: per-user preferences live in the unified
+// notification_preferences column and are managed entirely by NotificationsPanel
+// (which reads/writes through the notifications store).
 
 // ---- Module access helpers ----
 const setModuleMode = (moduleId, mode, extra = []) => {
@@ -2572,10 +2480,7 @@ onMounted(async () => {
   // Check if update was previously dismissed
   checkDismissedUpdate()
 
-  // Load email preferences
-  if (currentUser.value?.email) {
-    await loadEmailPreferences()
-  }
+  // Notification preferences are loaded inside NotificationsPanel on mount.
 
   // Load invite code for parents
   if (isParent.value) {

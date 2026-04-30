@@ -303,6 +303,146 @@ class SettingsController extends Controller
     }
 
     /**
+     * Get the current user's full notification preferences (email + push +
+     * quiet hours + global mute), the type registry filtered to this family's
+     * enabled modules, and the current push-subscription status.
+     */
+    public function notificationPreferences(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $family = $user->currentFamily()->first();
+
+        $prefs = $user->notification_preferences ?? User::defaultNotificationPreferences();
+
+        return response()->json([
+            'preferences' => [
+                'email' => $prefs['email'] ?? [],
+                'push' => $prefs['push'] ?? [],
+                'quiet_hours' => $prefs['quiet_hours'] ?? [
+                    'enabled' => false,
+                    'start' => '22:00',
+                    'end' => '07:00',
+                ],
+                'muted' => (bool) ($prefs['muted'] ?? false),
+                'dinner_reminder_at' => $prefs['dinner_reminder_at'] ?? '15:00',
+            ],
+            'registry' => $this->filteredRegistry($family),
+            'push_status' => [
+                'subscriptions' => $user->pushSubscriptions()->count(),
+                'vapid_configured' => ! empty(config('webpush.vapid.public_key'))
+                    && ! empty(config('webpush.vapid.private_key')),
+            ],
+        ]);
+    }
+
+    /**
+     * Update the unified notification_preferences JSON column.
+     *
+     * Accepts arbitrary email/push keys but silently drops any that aren't in
+     * the type registry — keeps stale toggles from accumulating after a type
+     * is removed from config/notifications.php.
+     */
+    public function updateNotificationPreferences(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'email' => 'sometimes|array',
+            'email.*' => 'boolean',
+            'push' => 'sometimes|array',
+            'push.*' => 'boolean',
+            'quiet_hours' => 'sometimes|array',
+            'quiet_hours.enabled' => 'sometimes|boolean',
+            'quiet_hours.start' => ['sometimes', 'string', 'regex:/^[0-9]{1,2}:[0-9]{2}$/'],
+            'quiet_hours.end' => ['sometimes', 'string', 'regex:/^[0-9]{1,2}:[0-9]{2}$/'],
+            'muted' => 'sometimes|boolean',
+            'dinner_reminder_at' => ['sometimes', 'string', 'regex:/^[0-9]{1,2}:[0-9]{2}$/'],
+        ]);
+
+        $registry = config('notifications.types', []);
+        $allowedKeys = array_keys($registry);
+
+        $existing = $user->notification_preferences ?? User::defaultNotificationPreferences();
+
+        if (isset($validated['email'])) {
+            $existing['email'] = collect($validated['email'])
+                ->only($allowedKeys)
+                ->map(fn ($v) => (bool) $v)
+                ->all();
+        }
+
+        if (isset($validated['push'])) {
+            $existing['push'] = collect($validated['push'])
+                ->only($allowedKeys)
+                ->map(fn ($v) => (bool) $v)
+                ->all();
+        }
+
+        if (isset($validated['quiet_hours'])) {
+            $existing['quiet_hours'] = array_merge(
+                $existing['quiet_hours'] ?? [],
+                $validated['quiet_hours'],
+            );
+            // Cast enabled to bool; preserve start/end strings.
+            if (isset($existing['quiet_hours']['enabled'])) {
+                $existing['quiet_hours']['enabled'] = (bool) $existing['quiet_hours']['enabled'];
+            }
+        }
+
+        if (array_key_exists('muted', $validated)) {
+            $existing['muted'] = (bool) $validated['muted'];
+        }
+
+        if (isset($validated['dinner_reminder_at'])) {
+            $existing['dinner_reminder_at'] = $validated['dinner_reminder_at'];
+        }
+
+        $user->update(['notification_preferences' => $existing]);
+
+        return response()->json([
+            'preferences' => $user->fresh()->notification_preferences,
+            'message' => 'Notification preferences updated.',
+        ]);
+    }
+
+    /**
+     * Filter the type registry to the modules enabled for this user's family,
+     * grouped by category for the Settings UI.
+     */
+    private function filteredRegistry(?Family $family): array
+    {
+        $types = config('notifications.types', []);
+        $categories = config('notifications.categories', []);
+        $modules = $family?->settings['modules'] ?? [
+            'tasks' => true, 'vault' => true, 'calendar' => true,
+            'chat' => true, 'points' => true, 'badges' => true,
+        ];
+
+        $grouped = [];
+        foreach ($types as $key => $type) {
+            $required = $type['requires_module'] ?? null;
+            if ($required && empty($modules[$required])) {
+                continue;
+            }
+            $category = $type['category'] ?? 'family';
+            $grouped[$category] ??= [];
+            $grouped[$category][] = [
+                'key' => $key,
+                'label' => $type['label'] ?? $key,
+                'description' => $type['description'] ?? null,
+                'channels' => $type['channels'] ?? ['email'],
+                'default_email' => (bool) ($type['default_email'] ?? false),
+                'default_push' => (bool) ($type['default_push'] ?? false),
+            ];
+        }
+
+        return [
+            'categories' => $categories,
+            'types_by_category' => $grouped,
+        ];
+    }
+
+    /**
      * Delete the authenticated user's account.
      */
     public function deleteAccount(Request $request, AccountDeletionService $service): JsonResponse
