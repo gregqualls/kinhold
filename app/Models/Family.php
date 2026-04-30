@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @property array<string, mixed>|null $settings
@@ -38,6 +39,31 @@ class Family extends Model
         return [
             'settings' => 'json',
         ];
+    }
+
+    /**
+     * Forensic log line whenever a self-hosted instance creates an Nth (N>=2)
+     * family — supplements the SPA banner so violations are also visible in
+     * server logs. Hosted Kinhold (self_hosted=false) is unaffected.
+     */
+    protected static function booted(): void
+    {
+        static::created(function (Family $family): void {
+            if (! (bool) config('kinhold.self_hosted', false)) {
+                return;
+            }
+
+            $count = static::count();
+            if ($count <= 1) {
+                return;
+            }
+
+            Log::warning('Self-hosted Kinhold instance created an additional family.', [
+                'family_id' => $family->id,
+                'family_count' => $count,
+                'commercial_license_acknowledged' => (bool) config('kinhold.commercial_license_acknowledged', false),
+            ]);
+        });
     }
 
     /**

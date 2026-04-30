@@ -13,6 +13,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Commercial License Acknowledged
+    |--------------------------------------------------------------------------
+    | Internal flag — not advertised in .env.example or the SPA. Operators who
+    | obtain a commercial license from the Kinhold project owner are given
+    | instructions privately to set this to true; that suppresses the
+    | single-family warning banner. The flag asserts the operator has a
+    | license; it does not grant one.
+    */
+    'commercial_license_acknowledged' => (bool) env('COMMERCIAL_LICENSE_ACKNOWLEDGED', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Vault Configuration
     |--------------------------------------------------------------------------
     */

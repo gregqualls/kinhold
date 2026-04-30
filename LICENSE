@@ -91,4 +91,24 @@ these terms.
 
 ---
 
+## Kinhold Single-Family Addendum
+
+This addendum supplements (and does not replace) the Elastic License 2.0 above
+for the Kinhold software specifically.
+
+For the purposes of this license, a "family" is the group of individuals who
+share the same family data within a Kinhold instance — including, but not
+limited to, calendars, vault entries, tasks, meal plans, and household
+resources. Multi-family households (e.g., extended families, blended households,
+co-living groups) who choose to manage themselves as one shared unit are
+considered a single family under this addendum.
+
+Self-hosted Kinhold instances are licensed for use by a single family as
+defined above. Operating multiple unrelated families on a single instance —
+for example, hosting Kinhold as a service for friends, neighbors, or paying
+customers — requires a separate commercial license. Contact the Kinhold project
+owner for commercial licensing terms.
+
+---
+
 Copyright (c) 2026 Greg Qualls
