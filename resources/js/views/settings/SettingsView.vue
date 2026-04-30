@@ -418,7 +418,7 @@
                 </svg>
               </div>
               <p class="text-sm font-semibold text-ink-primary">My Own API Key</p>
-              <p class="text-xs text-ink-secondary mt-0.5">Anthropic, OpenAI, or Google</p>
+              <p class="text-xs text-ink-secondary mt-0.5">Anthropic Claude (others coming soon)</p>
             </button>
           </div>
 
