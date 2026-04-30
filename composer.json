@@ -7,6 +7,7 @@
         "php": "^8.2",
         "google/apiclient": "^2.0",
         "guzzlehttp/guzzle": "^7.0",
+        "laravel-notification-channels/webpush": "^10.5",
         "laravel/framework": "^11.0",
         "laravel/mcp": "^0.6.4",
         "laravel/passport": "^13.7.1",

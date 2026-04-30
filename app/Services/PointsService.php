@@ -9,6 +9,7 @@ use App\Models\Reward;
 use App\Models\RewardPurchase;
 use App\Models\Task;
 use App\Models\User;
+use App\Notifications\KudosReceivedNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -75,7 +76,7 @@ class PointsService
             ]);
         }
 
-        return PointTransaction::create([
+        $transaction = PointTransaction::create([
             'family_id' => $to->family_id,
             'user_id' => $to->id,
             'type' => PointTransactionType::Kudos,
@@ -83,6 +84,13 @@ class PointsService
             'description' => $reason,
             'awarded_by' => $from->id,
         ]);
+
+        // Notify the recipient (skip if giving to self).
+        if ($to->getKey() !== $from->getKey()) {
+            $to->notify(new KudosReceivedNotification($from, $reason, $transaction));
+        }
+
+        return $transaction;
     }
 
     /**

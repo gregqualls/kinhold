@@ -1,0 +1,84 @@
+<?php
+
+/**
+ * Kinhold notification type registry.
+ *
+ * Adding a new push/email notification type:
+ * 1. Drop a class in app/Notifications/ that uses User::wants($channel, $key) inside via().
+ * 2. Add an entry to 'types' below — the Settings UI and User::wants() pick it up automatically.
+ * 3. Wire the dispatch site (controller, service, scheduled command, etc).
+ *
+ * Categories drive the grouped accordion in the Settings UI. Adding a new category
+ * is just a new key here plus a translatable label.
+ */
+return [
+
+    'categories' => [
+        'tasks' => 'Tasks',
+        'points' => 'Points & Kudos',
+        'shopping' => 'Shopping',
+        'calendar' => 'Calendar',
+        'food' => 'Food & Meals',
+        'family' => 'Family activity',
+    ],
+
+    /*
+     * Each type entry:
+     *   - category:        which group it appears under in Settings
+     *   - label:           one-line user-facing description ("When ...")
+     *   - description:     optional secondary line (sub-text under the toggle row)
+     *   - channels:        which delivery channels are SUPPORTED (controls which switches render)
+     *   - default_email:   on/off default for new users (only meaningful if 'email' in channels)
+     *   - default_push:    on/off default for new users (only meaningful if 'push' in channels)
+     *   - requires_module: optional Family module key ('tasks', 'points', etc) — type is hidden
+     *                      from Settings if the family has the module disabled
+     */
+    'types' => [
+
+        'task_assigned' => [
+            'category' => 'tasks',
+            'label' => 'When someone assigns me a task',
+            'channels' => ['email', 'push'],
+            'default_email' => true,
+            'default_push' => true,
+            'requires_module' => 'tasks',
+        ],
+
+        'task_completed' => [
+            'category' => 'tasks',
+            'label' => 'When a task I created is completed',
+            'channels' => ['email'],
+            'default_email' => true,
+            'default_push' => false,
+            'requires_module' => 'tasks',
+        ],
+
+        'kudos_received' => [
+            'category' => 'points',
+            'label' => 'When a family member gives me kudos',
+            'channels' => ['email', 'push'],
+            'default_email' => false,
+            'default_push' => true,
+            'requires_module' => 'points',
+        ],
+
+        'weekly_digest' => [
+            'category' => 'family',
+            'label' => 'Weekly digest',
+            'description' => 'Sunday morning summary of your week',
+            'channels' => ['email'],
+            'default_email' => true,
+            'default_push' => false,
+        ],
+
+        'family_invite' => [
+            'category' => 'family',
+            'label' => 'Family invitations',
+            'channels' => ['email'],
+            'default_email' => true,
+            'default_push' => false,
+        ],
+
+    ],
+
+];

@@ -103,6 +103,7 @@ class AccountDeletionService
     public function clearTokensAndSessions(User $user): void
     {
         $user->tokens()->delete();
+        $user->pushSubscriptions()->delete();
         DB::table('sessions')->where('user_id', $user->id)->delete();
     }
 
