@@ -20,6 +20,14 @@
         @deny="handleDeny"
       />
 
+      <!-- Quick-give kudos — top of page so it's reachable without scrolling -->
+      <KinFlatCard padding="md" class="flex-shrink-0">
+        <p class="text-xs text-ink-tertiary uppercase tracking-widest font-semibold mb-2">
+          Give Kudos
+        </p>
+        <KudosInput :members="familyMembers" @kudos="handleKudos" />
+      </KinFlatCard>
+
       <!-- Hero balance card -->
       <KinHeroMetricCard
         variant="iridescent"
@@ -59,11 +67,6 @@
             accent-color="lavender"
             size="sm"
           />
-        </div>
-
-        <!-- Kudos compose strip -->
-        <div class="p-3 border-t border-border-subtle flex-shrink-0">
-          <KudosInput :members="familyMembers" @kudos="handleKudos" />
         </div>
       </KinFlatCard>
     </div>

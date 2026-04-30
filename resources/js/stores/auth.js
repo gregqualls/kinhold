@@ -195,6 +195,24 @@ export const useAuthStore = defineStore('auth', () => {
       isAuthenticated.value = false
       error.value = null
       aiReady.value = false
+
+      // Purge service-worker response caches. The PWA SW (#68) caches
+      // /api/* with NetworkFirst — those responses contain the previous
+      // user's data. On a shared device, the next visitor (or the same
+      // user logging into a different account) must NOT see them when
+      // they navigate offline / before the network call returns.
+      if (typeof window !== 'undefined' && 'caches' in window) {
+        try {
+          const keys = await window.caches.keys()
+          await Promise.all(
+            keys
+              .filter((k) => k.startsWith('kinhold-'))
+              .map((k) => window.caches.delete(k))
+          )
+        } catch {
+          /* cache API unavailable / blocked — best-effort */
+        }
+      }
     } catch {
       // Logout failed — clear local state anyway
     } finally {

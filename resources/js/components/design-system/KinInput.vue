@@ -99,10 +99,12 @@ const hasLabel  = computed(() => Boolean(props.label))
 const hasSuffix = computed(() => false) // resolved at template via $slots
 
 // ── Size-to-class maps ───────────────────────────────────────────────────────
+// `text-[16px] md:text-[<smaller>]` keeps mobile inputs at 16px so iOS Safari
+// doesn't auto-zoom on focus, while desktop keeps its original compact density.
 const sizeClasses = computed(() => {
   const map = {
-    sm: 'h-8  px-3   text-[13px] rounded-[10px]',
-    md: 'h-10 px-3.5 text-[15px] rounded-field',
+    sm: 'h-8  px-3   text-[16px] md:text-[13px] rounded-[10px]',
+    md: 'h-10 px-3.5 text-[16px] md:text-[15px] rounded-field',
     lg: 'h-12 px-4   text-[16px] rounded-field',
   }
   return map[props.size] ?? map.md

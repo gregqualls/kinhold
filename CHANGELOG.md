@@ -2,7 +2,70 @@
 
 > Updated at the end of every working session. Newest entries first.
 
-## 2026-04-30 — Single-family license enforcement for self-hosted ([#138](https://github.com/gregqualls/kinhold/issues/138))
+## 2026-04-30 — Phase B kickoff: PWA support + mobile UX polish ([#68](https://github.com/gregqualls/kinhold/issues/68))
+
+Opens **Phase B: Make It Reachable** by closing [#68](https://github.com/gregqualls/kinhold/issues/68) (PWA: service worker, manifest, installable) and bundling four mobile UX issues Greg flagged from daily-driving the app on his phone. All five are mobile-surface changes touching the same SPA shell — splitting them would have produced four trivial follow-up PRs for a reviewer who's already looking at the install banner.
+
+**PWA infrastructure.** Adds `vite-plugin-pwa` (workbox `generateSW` strategy) wired into [vite.config.js](vite.config.js). The plugin emits `sw.js` + `workbox-*.js` to `public/build/` (laravel-vite-plugin's hashed-asset directory), which would give the SW a `/build/` scope — too narrow to control the SPA. A small `promoteServiceWorkerToRoot()` Vite plugin defined in the same file copies both files to `public/` after build so the SW lands at `/sw.js` with full `/` scope. The companion fix for the precache URLs uses `modifyURLPrefix: { 'assets/': '/build/assets/' }` so workbox-generated cache entries resolve through Laravel's hashed-asset path. Precache scope is deliberately tight — `globPatterns: ['assets/app-*.{js,css}']` covers only the entry chunk + global CSS (3 entries, ~790 KiB) instead of every code-split route chunk (would have been 208 entries, 2.7 MiB); route chunks get cached at runtime on first visit via the `CacheFirst` destination-based handler. API requests use `NetworkFirst` with a 4-second timeout so offline degrades gracefully without crippling latency when online.
+
+**Manifest + iOS hints.** [public/manifest.json](public/manifest.json) gets `scope`, `orientation`, `categories`, a maskable-purpose icon entry (Android adaptive icons), and a `shortcuts` array (Tasks/Calendar/Vault/Points) for app-icon long-press. [resources/views/app.blade.php](resources/views/app.blade.php) gains the iOS PWA quartet: `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style: black-translucent`, `apple-mobile-web-app-title`, plus the deprecated `mobile-web-app-capable` alias for older Android.
+
+**Install prompt.** New [resources/js/components/InstallAppPrompt.vue](resources/js/components/InstallAppPrompt.vue) listens for `beforeinstallprompt` (Android/Chrome) and renders a brand-gold dismissible banner styled after [LicenseWarningBanner](resources/js/components/LicenseWarningBanner.vue). For iOS Safari (which doesn't fire that event), it detects `iPad|iPhone|iPod` UA + Safari (excluding `CriOS`/`FxiOS`/`EdgiOS` wrappers) and shows the share-icon hint instead. Hides itself when already in standalone mode (`display-mode: standalone` or `navigator.standalone`) and when recently dismissed (30-day cool-down via `localStorage`). Mounts in [App.vue](resources/js/App.vue) right after `<LicenseWarningBanner />`.
+
+**iOS input auto-zoom fix.** Added a global mobile-only CSS rule to [resources/css/app.css](resources/css/app.css):
+```css
+@media (max-width: 767px) {
+  input:not([type="checkbox"])..., textarea, select {
+    font-size: max(16px, 1em) !important;
+  }
+}
+```
+The `!important` is necessary — Tailwind's `text-[15px]` / `text-sm` utility classes win on specificity otherwise, and iOS auto-zoom is non-negotiable UX. Also hardens [KinInput.vue](resources/js/components/design-system/KinInput.vue) at the source: sm/md sizes now use `text-[16px] md:text-[<smaller>]` so mobile gets 16px and desktop keeps its compact density. ChatView's textarea explicitly bumps from `text-sm` to `text-base md:text-sm` for the same reason.
+
+**Chat view spacing.** The chat input bar sat 24px above the floating bottom nav — visually disconnected because [App.vue](resources/js/App.vue)'s `pb-24` (96px) over-reserves clearance for views where the input *is* the bottom UI. Added `-mb-4 md:mb-0` to ChatView's input container so on mobile it pulls down into that pad-zone, leaving an 8px gap to the nav. Desktop reverts to `mb-0` + `pb-safe-bottom`. The messages container also gets `pt-4 pb-2` (was `py-4`) so the last message has tight breathing room above the input strip.
+
+**Quick-give kudos.** [PointsFeedView](resources/js/views/points/PointsFeedView.vue) previously parked `<KudosInput />` at the bottom of the activity-feed card — meaning every kudos required scrolling past the entire feed first. Moved it to a dedicated `<KinFlatCard>` above the hero balance, where it's reachable in one tap from the page top. Same component, same `handleKudos` handler — pure layout change. The bottom strip is removed; the activity feed card collapses to its pre-strip footer.
+
+**Meal-plan list view default on desktop.** [MealsTab](resources/js/views/food/MealsTab.vue) had a single desktop view: the dense transposed `MealWeekGrid` (slots as rows, days as columns) with each cell at MIN_DAY_COL_PX = 140px — cramped on anything narrower than 1280px. Added a viewMode toggle mirroring the [RecipesTab](resources/js/views/food/RecipesTab.vue) pattern (`'grid' | 'list'`, persisted to `localStorage` under `kinhold-meal-view`). List mode reuses the existing mobile `MealDaySection` component on desktop — same day-stacked rows the mobile view already showed. **Default is `'list'`** so the dense grid is opt-in. Mobile is unchanged (still uses MealDaySection with infinite scroll).
+
+**QA round 2 — meal entry as a row + chat-bar bg continuation.** Two follow-ups after Greg saw the result on his phone:
+
+- **Meal entries on mobile felt card-heavy.** Each entry inside `MealDaySection` was rendering as the same image-on-top card used in `MealWeekGrid` — full gradient hero + tiny title below. Fine for a 140px grid cell; cramped on a 343px-wide phone row where you want to scan the day at a glance. Added a `compact` prop to [MealEntryCard.vue](resources/js/components/meals/MealEntryCard.vue) that renders a row layout instead: 44px thumbnail (image OR per-type gradient wash matching the recipe/restaurant compact-row palette so a recipe-type entry looks visually consistent with how the recipe appears in `RecipesTab`'s compact view) + title + servings + cook avatars + an always-visible delete button (hover-reveal is hostile on touch). `MealDaySection` now passes `compact` to every entry. Card mode is preserved for `MealWeekGrid` (no-prop default).
+- **"+ Add" button was a 28px-tall ghost link.** Bumped to 46px tall (`py-3` + `text-sm`) with a dashed border so it reads as a tappable affordance, not a footnote — clears iOS HIG's 44pt touch-target minimum.
+- **Chat input bar's white background didn't reach the screen edge.** The input row sat 8px above the floating bottom nav, but the area between/below the nav was app-background (not white) — the input bar looked detached from the bottom of the viewport. Added a `chat-input-extend` class in `app.css` that paints a 96px box-shadow downward in `var(--surface-raised)`, filling the entire bottom strip behind the floating nav. Zero layout impact (no reflow on the messages flex-1 area), dark-mode-aware via the CSS variable, mobile-only via the `md:chat-input-extend-none` companion class.
+- **Kudos recipient picker was eating half the row.** The `<KinSelect>` recipient dropdown was 128px wide, leaving the kudos-text input clipped to ~"Kud" on a 343px-wide phone. Replaced with a 40px circular avatar button (`UserAvatar` of the chosen recipient, or a dashed `+` placeholder) that opens a bottom-sheet modal — `<Teleport>`-ed to body, full-width on mobile / centered card on `sm:`, with each member as a tappable row. Selecting a member closes the modal, updates the avatar button, enables the reason input (which was disabled with "Pick a recipient first" placeholder), and auto-focuses the input so typing starts immediately. The reason input now has 189px of horizontal room (was ~58px) and "Give Kudos" shrinks to "Give" since the avatar already telegraphs the action's target.
+
+**Review-pass fixes (`/review` blocked nothing, but flagged five warnings — all addressed):**
+
+- **Offline navigation fallback now actually works.** [vite.config.js](vite.config.js)'s `navigateFallback: '/'` resolves the URL against the precache, so the app shell at `/` had to *be* in the precache for offline navigation to return anything but a 404. Added `additionalManifestEntries: [{ url: '/', revision: 'kin-${Date.now()}' }]` so each build invalidates the cached shell (preventing stale HTML pointing at deleted hashed-asset URLs). Precache went from 3 entries → 4.
+- **SW response cache no longer survives logout.** The `NetworkFirst` runtime cache on `/api/*` would happily serve a previous user's cached `/api/v1/me` (and similar) on a shared device after they signed out and the next visitor's network call timed out. [stores/auth.js](resources/js/stores/auth.js)'s `logout()` now iterates `caches.keys()` and deletes every cache prefixed `kinhold-` (matching the `cacheName` convention in `vite.config.js`'s runtime caching block). Best-effort, wrapped in `try/catch` since the Cache API can be unavailable in private mode.
+- **Kudos modal keyboard a11y.** Added `@keydown.esc` on the dialog to close it, and auto-focus the close button when the modal opens (so screen-reader / keyboard users land *inside* the dialog, not somewhere outside it). The reason-input auto-focus now uses a template `ref` (`reasonInputRef.value.$el.querySelector('input')`) instead of a fragile placeholder-prefix CSS selector — survives copy edits and i18n.
+- **MealEntryCard rows are now keyboard-operable.** Both render modes (compact row + dense card) use `<div>` roots — switching to `<button>` would have been illegal HTML because the inner delete + maps-link `<button>`/`<a>` can't be nested inside a `<button>`. Instead, added `role="button"`, `tabindex="0"`, `aria-label="Edit {title}"`, and `@keydown.enter` / `@keydown.space` handlers (with `.prevent` on Space to stop page scroll). Plus `focus:ring-2 focus:ring-[#C4975A]/40` so keyboard users see where they are.
+- **Dependencies.** New devDep `vite-plugin-pwa` ships 4 high-severity transitive vulns in `serialize-javascript ≤7.0.4` (RCE / CPU-DoS) via `@rollup/plugin-terser → workbox-build`. All build-time-only (devDependency tree, not runtime). `npm audit fix --force` would downgrade vite-plugin-pwa to 0.19.8 (breaking, loses workbox 7 features). Accepted; will reassess when [vite-pwa-org/vite-plugin-pwa](https://github.com/vite-pwa/vite-plugin-pwa/releases) bumps workbox-build.
+
+**Files**
+
+- `vite.config.js` — `vite-plugin-pwa` config + `promoteServiceWorkerToRoot()` post-build copy plugin
+- `package.json`, `package-lock.json` — `vite-plugin-pwa` devDependency
+- `public/manifest.json` — scope, orientation, categories, maskable icon, shortcuts
+- `resources/views/app.blade.php` — iOS PWA meta tags
+- `resources/js/app.js` — explicit `registerSW({ immediate: true })`
+- `resources/js/components/InstallAppPrompt.vue` — new
+- `resources/js/App.vue` — mount InstallAppPrompt
+- `resources/js/components/design-system/KinInput.vue` — 16px mobile floor on sm/md sizes
+- `resources/css/app.css` — global 16px mobile floor for native form fields
+- `resources/js/views/chat/ChatView.vue` — textarea 16px on mobile, input bar `-mb-4` to tighten nav gap
+- `resources/js/views/points/PointsFeedView.vue` — KudosInput moved to top
+- `resources/js/views/food/MealsTab.vue` — viewMode toggle + list default
+- `resources/js/components/meals/MealEntryCard.vue` — `compact` prop + row layout
+- `resources/js/components/meals/MealDaySection.vue` — `compact` prop pass-through, larger Add button
+- `resources/js/components/points/KudosInput.vue` — avatar button + bottom-sheet modal (was inline select); Esc-to-close, focus management, ref-based input focus
+- `resources/js/stores/auth.js` — `logout()` purges SW response caches
+- `.gitignore` — ignore generated `public/sw.js` + `public/workbox-*.js`
+- `docs/ROADMAP.md` — #68 marked DONE
+- `CHANGELOG.md` — this entry
+
+
 
 Closes the last open Medium in **Phase A: Make It Solid**. Kinhold ships under the Elastic License 2.0, whose "no hosted service" clause already forbids running a competing SaaS on top of the OSS code — but the codebase enforced nothing at the instance level, so a self-hoster could quietly onboard arbitrary unrelated families and build a de facto hosted service. This adds soft, deliberately-annoying enforcement to the self-hosted path plus an explicit LICENSE addendum that defines what "a single family" actually means.
 

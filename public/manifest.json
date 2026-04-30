@@ -3,19 +3,56 @@
   "short_name": "Kinhold",
   "description": "The family hub for calendars, tasks, documents, and more.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#1B3A4B",
   "theme_color": "#1B3A4B",
+  "categories": ["productivity", "lifestyle"],
   "icons": [
     {
       "src": "/images/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/images/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tasks",
+      "short_name": "Tasks",
+      "url": "/tasks",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Calendar",
+      "short_name": "Calendar",
+      "url": "/calendar",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Vault",
+      "short_name": "Vault",
+      "url": "/vault",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Points",
+      "short_name": "Points",
+      "url": "/points",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

@@ -78,11 +78,11 @@ These features are live and working:
 
 **Goal:** Get the app onto phones, enable notifications, and start accepting payments.
 
-| Issue | Title | Priority |
-|-------|-------|----------|
-| [#68](https://github.com/gregqualls/kinhold/issues/68) | PWA support (service worker, manifest, installable) | Very High |
-| [#69](https://github.com/gregqualls/kinhold/issues/69) | Web push notifications | Very High |
-| [#70](https://github.com/gregqualls/kinhold/issues/70) | Stripe billing & subscription system | Critical |
+| Issue | Title | Priority | Status |
+|-------|-------|----------|--------|
+| [#68](https://github.com/gregqualls/kinhold/issues/68) | PWA support (service worker, manifest, installable) | Very High | DONE |
+| [#69](https://github.com/gregqualls/kinhold/issues/69) | Web push notifications | Very High | |
+| [#70](https://github.com/gregqualls/kinhold/issues/70) | Stripe billing & subscription system | Critical | |
 
 **Pricing model:**
 - Self-hosted: Free forever (Elastic License 2.0)
