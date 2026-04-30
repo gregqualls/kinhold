@@ -1504,3 +1504,38 @@ parameters:
 			message: "#^Access to an undefined property App\\\\Models\\\\PointTransaction\\:\\:\\$total_points\\.$#"
 			count: 1
 			path: app/Services/PointsService.php
+
+		-
+			message: "#^Property App\\\\Models\\\\FamilyEvent\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\MealPlanEntry\\:\\:\\$assigned_cooks \\(string\\|null\\) does not accept array\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\MealPlanEntry\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\ShoppingItem\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\ShoppingItem\\:\\:\\$shopping_list_id \\(string\\) does not accept int\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\ShoppingList\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+
+		-
+			message: "#^Property App\\\\Models\\\\Task\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php

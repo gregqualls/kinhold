@@ -125,6 +125,16 @@
               />
               <span class="text-ink-secondary">Push</span>
             </label>
+            <button
+              v-if="canTest(type.key)"
+              type="button"
+              class="text-xs px-2 py-1 rounded border border-border-subtle text-ink-secondary hover:text-ink-primary hover:bg-surface-sunken/60 disabled:opacity-40 disabled:cursor-not-allowed"
+              :disabled="!notifications.isPushActive || testingKey === type.key"
+              :title="`Send a sample push for: ${type.label}`"
+              @click="testForKey(type.key)"
+            >
+              {{ testingKey === type.key ? '…' : 'Test' }}
+            </button>
           </div>
         </div>
       </div>
@@ -152,6 +162,29 @@ const groupedTypes = computed(() => notifications.registry.types_by_category || 
 const enabling = ref(false)
 const disabling = ref(false)
 const testing = ref(false)
+const testingKey = ref('')
+
+// Registry keys that have a server-side sample dispatcher. Keep in sync with
+// PushSubscriptionController::testType().
+const TESTABLE_KEYS = new Set([
+  'task_due_soon',
+  'shopping_item_added',
+  'calendar_event_reminder',
+  'dinner_reminder',
+])
+
+function canTest(key) {
+  return TESTABLE_KEYS.has(key)
+}
+
+async function testForKey(key) {
+  testingKey.value = key
+  try {
+    await notifications.testPushForKey(key)
+  } finally {
+    testingKey.value = ''
+  }
+}
 
 function emailValue(key, def) {
   const v = notifications.preferences.email?.[key]

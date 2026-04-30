@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Notifications\TestPushNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\Sanctum;
 use NotificationChannels\WebPush\PushSubscription;
 use Tests\TestCase;
@@ -115,5 +117,50 @@ class PushSubscriptionTest extends TestCase
         $response = $this->postJson('/api/v1/push/subscriptions/test');
 
         $response->assertStatus(422);
+    }
+
+    public function test_typed_test_endpoint_requires_a_subscription(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $response = $this->postJson('/api/v1/push/subscriptions/test/task_due_soon');
+
+        $response->assertStatus(422)
+            ->assertJsonFragment(['message' => 'No push subscriptions registered for this user.']);
+    }
+
+    public function test_typed_test_endpoint_rejects_unknown_keys(): void
+    {
+        $user = User::factory()->create();
+        $user->updatePushSubscription(endpoint: 'https://example.test/p', key: 'pk', token: 'auth');
+        Sanctum::actingAs($user);
+
+        $response = $this->postJson('/api/v1/push/subscriptions/test/not_a_real_type');
+
+        $response->assertStatus(422);
+    }
+
+    public function test_typed_test_endpoint_dispatches_each_supported_key(): void
+    {
+        $user = User::factory()->create();
+        $user->updatePushSubscription(endpoint: 'https://example.test/p', key: 'pk', token: 'auth');
+        Sanctum::actingAs($user);
+
+        Notification::fake();
+
+        // Each typed test endpoint runs the real notification's toWebPush() and
+        // then wraps the resulting message in TestPushNotification so the dispatch
+        // bypasses preference gating — clicking "Test" is explicit consent.
+        $keys = ['task_due_soon', 'shopping_item_added', 'calendar_event_reminder', 'dinner_reminder'];
+        foreach ($keys as $key) {
+            $this->postJson("/api/v1/push/subscriptions/test/{$key}")->assertOk();
+        }
+
+        Notification::assertSentToTimes(
+            $user,
+            TestPushNotification::class,
+            count($keys),
+        );
     }
 }
