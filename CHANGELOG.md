@@ -2,7 +2,7 @@
 
 > Updated at the end of every working session. Newest entries first.
 
-## 2026-04-30 — Hotfix: Google OAuth callback intercepted by PWA service worker
+## 2026-04-30 — Hotfix (v1.8.2): Google OAuth callback intercepted by PWA service worker
 
 After PR #68 (PWA support) shipped, Google sign-in started silently breaking for any user who already had the service worker registered. Symptom: after Google consent, the browser landed on `/auth/google/callback?code=…` with the SPA shell rendering a 404 in the inner content area, and DevTools showing `POST /api/v1/auth/exchange → 422`.
 
