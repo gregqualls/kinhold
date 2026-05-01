@@ -981,6 +981,19 @@
         <NotificationsPanel />
       </SettingsSection>
 
+      <!-- Section 6b: Billing (only visible to the family billing owner when BILLING_ENABLED) -->
+      <SettingsSection
+        v-if="canSeeBilling"
+        id="billing"
+        title="Billing & subscription"
+        description="Manage your plan, payment method, and invoices"
+        :icon="CreditCardIcon"
+        :model-value="expandedSections.has('billing')"
+        @update:model-value="val => toggleSection('billing', val)"
+      >
+        <BillingPanel />
+      </SettingsSection>
+
       <!-- Section 7: About -->
       <SettingsSection
         id="about"
@@ -1497,6 +1510,7 @@ import BaseInput from '@/components/common/BaseInput.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
 import NotificationsPanel from '@/components/notifications/NotificationsPanel.vue'
+import BillingPanel from '@/components/billing/BillingPanel.vue'
 import AvatarEditor from '@/components/common/AvatarEditor.vue'
 import ToggleSwitch from '@/components/common/ToggleSwitch.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
@@ -1520,6 +1534,7 @@ import {
   ShieldCheckIcon,
   SwatchIcon,
   BellIcon,
+  CreditCardIcon,
   FireIcon,
   InformationCircleIcon,
   ArrowTopRightOnSquareIcon,
@@ -1574,6 +1589,16 @@ const dismissUpdate = () => {
   localStorage.setItem(`kinhold:dismissed_update:${update.latest_version}`, 'true')
   updateDismissed.value = true
 }
+
+// ---- Billing section visibility (70-B / #215) ----
+// Section is hidden by default. Shows only when the BILLING_ENABLED gate is on
+// AND the signed-in user is the family's billing owner. Other parents see no
+// billing UI — only the designated owner manages the subscription.
+const canSeeBilling = computed(() => {
+  if (!appConfig.value?.billing_enabled) return false
+  const ownerId = family.value?.billing_owner_id
+  return !!ownerId && ownerId === currentUser.value?.id
+})
 
 // ---- Section expand/collapse state ----
 const expandedSections = ref(new Set())

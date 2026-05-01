@@ -2,6 +2,43 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-01 — Billing panel: base plan checkout + lifecycle UI (v1.8.4, [#215](https://github.com/gregqualls/kinhold/issues/215) / [#70](https://github.com/gregqualls/kinhold/issues/70)-B)
+
+Second slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. Adds the `/api/v1/billing/*` endpoints and the `BillingPanel` Settings section. Still hidden behind `BILLING_ENABLED=false` — no production impact.
+
+**API surface (5 new endpoints, all under `auth` middleware):**
+
+- `GET /api/v1/billing/current` — returns a `BillingSummary` snapshot: plan token, Stripe subscription status, trial/grace-period flags, payment method card brand + last4, trial eligibility, price.
+- `POST /api/v1/billing/checkout-session` — creates a Stripe Checkout session and returns the hosted URL. Applies trial days for trial-eligible families (first checkout, `trial_days > 0`).
+- `POST /api/v1/billing/portal-session` — returns a Stripe Customer Portal URL for invoice history and payment-method management.
+- `POST /api/v1/billing/cancel` — cancels at period end (grace period; service stays active until `ends_at`).
+- `POST /api/v1/billing/resume` — resumes a grace-period cancellation.
+
+All endpoints 403 when `BILLING_ENABLED=false` or the caller is not the family's billing owner. Checkout and portal endpoints throttled 10 req/min; cancel/resume throttled 5 req/min.
+
+**`BillingService` extended** with `summary()`, `createBaseCheckout()`, `billingPortalUrl()`, `cancel()`, and `resume()`. PHPStan-safe: uses `$checkout->asStripeCheckoutSession()->url` and `$paymentMethod->asStripePaymentMethod()->card` to avoid `__get` magic-property inference errors.
+
+**Trial-aware copy.** Hosted Kinhold has no permanent free tier — `plan: 'none'` replaces the earlier `'free'` token (self-hosted stays `'self_hosted'`). The `BillingPanel` surfaces three distinct states:
+
+- **Trial eligible** (never subscribed, trial days configured) — "Start your free trial" headline, "Try the full Kinhold experience free for N days. After your trial, \$10/mo." description, "Start N-day free trial" CTA.
+- **No active subscription** (trial ended / returning family) — "No active subscription" headline, "Your trial has ended. Subscribe to continue using Kinhold." description, "Subscribe — \$10/mo" CTA.
+- **Subscribed** — plan/status badge, payment-method line, "Manage payment & invoices" portal button, "Cancel subscription" ghost button.
+- **Grace period (cancelled, not yet lapsed)** — "Cancelling" badge, lifecycle date, "Resume subscription" primary button.
+
+**Settings integration.** The `Billing & subscription` section appears only when `billing_enabled && family.billing_owner_id === currentUser.id` — non-owner parents and children never see it. `billing_owner_id` is now serialized in `AuthController::user()` and `FamilyResource`.
+
+**Tests** (13 new, 248 total / all green):
+
+- `BillingControllerTest` — owner gets correct summary JSON; 403 for billing-disabled / non-owner / child / unauthenticated; checkout validates URLs and returns mocked Stripe URL; portal 422 without Stripe ID; cancel 422 without subscription; resume 422 without grace period.
+- `BillingFoundationTest` updated: `'free'` → `'none'` token.
+
+**Filed alongside this PR:** [#223](https://github.com/gregqualls/kinhold/issues/223) (70-I — subscription paywall/splash after trial expiry) and [#224](https://github.com/gregqualls/kinhold/issues/224) (replace `window.confirm` cancel dialog with `BaseModal`).
+
+**Files:**
+
+- New: `app/Http/Controllers/Api/V1/BillingController.php`, `resources/js/components/billing/BillingPanel.vue`, `resources/js/stores/billing.js`, `tests/Feature/Billing/BillingControllerTest.php`
+- Modified: `app/Services/BillingService.php` (extended), `app/Http/Controllers/Api/V1/AuthController.php` (`billing_owner_id` in family payload), `app/Http/Resources/FamilyResource.php` (`@mixin Family` + `billing_owner_id`), `resources/js/views/settings/SettingsView.vue` (billing section + `canSeeBilling`), `routes/api.php` (billing routes), `config/version.php` (1.8.4), `phpstan-baseline.neon` (removed 4 stale FamilyResource entries)
+
 ## 2026-05-01 — Billing foundation: Cashier + `BILLING_ENABLED` gate (v1.8.3, [#214](https://github.com/gregqualls/kinhold/issues/214) / [#70](https://github.com/gregqualls/kinhold/issues/70)-A)
 
 First slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. Lands the plumbing — no user-visible features. Every subsequent billing PR (70-B…70-H) is invisible-by-default until launch under `BILLING_ENABLED=false`. Public flip happens at v1.9.0.
