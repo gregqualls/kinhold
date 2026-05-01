@@ -105,6 +105,8 @@ class DatabaseSeeder extends Seeder
             'onboarding_completed_at' => $now,
         ]);
 
+        $family->update(['billing_owner_id' => $mike->id]);
+
         $sarah = User::create([
             'name' => 'Sarah',
             'email' => 'sarah@demo.local',

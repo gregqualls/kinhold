@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Family;
 use App\Models\MealPlanEntry;
 use App\Models\ShoppingItem;
 use App\Policies\MealPlanPolicy;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Cashier\Cashier;
 use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
+
+        // Cashier bills the Family (one billing owner per family) rather than
+        // individual users — see #70 / #214. The Billable trait lives on Family.
+        Cashier::useCustomerModel(Family::class);
 
         // Passport OAuth configuration for MCP server
         Passport::tokensExpireIn(now()->addDays(15));

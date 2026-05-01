@@ -9,13 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
+use Laravel\Cashier\Billable;
 
 /**
  * @property array<string, mixed>|null $settings
  */
 class Family extends Model
 {
-    use HasFactory, HasUuids;
+    use Billable, HasFactory, HasUuids;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +28,7 @@ class Family extends Model
         'slug',
         'invite_code',
         'settings',
+        'billing_owner_id',
     ];
 
     /**

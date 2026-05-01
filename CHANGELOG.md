@@ -2,6 +2,32 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-01 — Billing foundation: Cashier + `BILLING_ENABLED` gate (v1.8.3, [#214](https://github.com/gregqualls/kinhold/issues/214) / [#70](https://github.com/gregqualls/kinhold/issues/70)-A)
+
+First slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. Lands the plumbing — no user-visible features. Every subsequent billing PR (70-B…70-H) is invisible-by-default until launch under `BILLING_ENABLED=false`. Public flip happens at v1.9.0.
+
+**Cashier on Family, not User.** Per the [#70](https://github.com/gregqualls/kinhold/issues/70) decision (2026-05-01), Stripe customers are scoped to `families` rather than individual users — one billing owner per family. The wrinkle: Cashier defaults to a User billable with auto-incrementing IDs, but `Family` is UUID-keyed (`HasUuids`). Three adjustments make this work end-to-end:
+
+1. **`Cashier::useCustomerModel(Family::class)`** in [`AppServiceProvider::boot()`](app/Providers/AppServiceProvider.php) — points the trait at the Family model.
+2. **Consolidated migrations.** The vendor-published Cashier migrations target `users` with `foreignId('user_id')`. Replaced them with four Kinhold-flavored migrations dated `2026_05_01_*` that target `families` and use `uuid('family_id')` with a real FK to `families.id`. Cashier's `subscriptions()` relation reads `$this->getForeignKey()` against the Billable model — putting `Billable` on `Family` makes Eloquent return `family_id` automatically, no override needed.
+3. **`add_billing_owner_id_to_families_table`** — `billing_owner_id` UUID nullable + FK to `users.id` (`nullOnDelete`), index, and a PHP-level backfill (cross-DB safe — runs on PostgreSQL hosted and SQLite self-hosted/CI) that picks the oldest parent in each family.
+
+**Pre-flight closed in this PR.** Stripe sandbox `acct_1TSN2SABMDyP0kfq` had only the base plan ("Household Hosting", $10/mo) when this work started. Created the four missing products via the Stripe MCP during execution: Storage Overage ($1/mo placeholder — reconfigured to metered usage in 70-C), AI Lite ($5/mo), AI Standard ($15/mo), AI Pro ($30/mo). Resulting price IDs are documented in the PR body for Greg to paste into `.env`. The AI tier IDs reuse the `STRIPE_PRICE_AI_*` env slots that have been reserved in `config/kinhold.php` since [#137](https://github.com/gregqualls/kinhold/issues/137); 70-D wires them.
+
+**`BILLING_ENABLED` gate.** Mirrors the `SELF_HOSTED` pattern from [#138](https://github.com/gregqualls/kinhold/issues/138) 1:1 — defined in `config/kinhold.php`, exposed via `/api/v1/config` (the same inline-closure endpoint that already exposes `self_hosted` and `license`), defaults `false`. The `BillingService` skeleton lives at [`app/Services/BillingService.php`](app/Services/BillingService.php) with two methods: `isEnabled()` and `resolveCurrentPlan(Family $family)` returning `'self_hosted' | 'free' | 'base'`. No Stripe calls yet — that surface area opens up in 70-B.
+
+**Tests** (7 new, 235 total / 608 assertions, all green):
+
+- `BillingFoundationTest` — `/api/v1/config` exposes `billing_enabled` correctly in both states; `BillingService::isEnabled()` and `resolveCurrentPlan()` return the right tokens; the migration's parent-picking backfill algorithm is correct; the `Billable` trait wires up against a UUID-keyed `Family` (`hasStripeId()` and `subscriptions` relation work without throwing).
+
+**Files**
+
+- New deps: `laravel/cashier ^16.5`, `stripe/stripe-php ^17.6`, `moneyphp/money ^4.8`
+- New: `database/migrations/2026_05_01_000000_add_billing_owner_id_to_families_table.php`, `database/migrations/2026_05_01_000001_add_cashier_columns_to_families_table.php`, `database/migrations/2026_05_01_000002_create_subscriptions_table.php`, `database/migrations/2026_05_01_000003_create_subscription_items_table.php`, `app/Services/BillingService.php`, `tests/Feature/Billing/BillingFoundationTest.php`, `config/cashier.php` (vendor-published)
+- Modified: `app/Models/Family.php` (Billable trait, `billing_owner_id` fillable), `app/Providers/AppServiceProvider.php` (Cashier customer model binding), `config/kinhold.php` (`billing_enabled` + `billing.*` block), `config/services.php` (Stripe credentials block), `config/version.php` (1.8.3), `routes/api.php` (one new line in `/api/v1/config` payload), `.env.example` (Stripe + billing entries)
+
+**Out of scope (deferred to later 70-X PRs):** any UI, webhook handlers, storage metering, AI tier purchase wiring, BYOK key UX, public landing page, onboarding plan picker, lifecycle emails. PR #197 (Google OAuth verification prep, dormant since 2026-04-28) was closed here too — Greg will revisit with a different approach.
+
 ## 2026-04-30 — Hotfix (v1.8.2): Google OAuth callback intercepted by PWA service worker
 
 After PR #68 (PWA support) shipped, Google sign-in started silently breaking for any user who already had the service worker registered. Symptom: after Google consent, the browser landed on `/auth/google/callback?code=…` with the SPA shell rendering a 404 in the inner content area, and DevTools showing `POST /api/v1/auth/exchange → 422`.
