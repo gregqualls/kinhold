@@ -25,6 +25,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Billing (Stripe / Cashier) — see #70 umbrella
+    |--------------------------------------------------------------------------
+    | `billing_enabled` gates every billing surface in the SPA + API. Self-hosted
+    | instances default to false (free forever under EL2). Hosted Kinhold flips
+    | this to true once #70-A through #70-H have shipped (target: v1.9.0).
+    |
+    | Stripe Product/Price IDs follow the same pattern as `chatbot.plans.*`
+    | (env-resolved, null until configured). 70-D moves the AI tier price IDs
+    | from chatbot.plans into billing.ai.* — out of scope for 70-A.
+    */
+    'billing_enabled' => (bool) env('BILLING_ENABLED', false),
+
+    'billing' => [
+        'base_plan' => [
+            'stripe_price_id' => env('STRIPE_PRICE_BASE_PLAN'),
+            'price_monthly_cents' => 1000,
+        ],
+        'storage' => [
+            'included_gb' => 5,
+            'stripe_price_id' => env('STRIPE_PRICE_STORAGE_OVERAGE'),
+            'overage_cents_per_gb' => 100,
+        ],
+        'trial_days' => (int) env('BILLING_TRIAL_DAYS', 14),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Vault Configuration
     |--------------------------------------------------------------------------
     */

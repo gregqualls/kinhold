@@ -41,6 +41,7 @@ Route::prefix('v1')->group(function () {
         return response()->json([
             'app_name' => config('app.name', 'Kinhold'),
             'self_hosted' => (bool) config('kinhold.self_hosted', false),
+            'billing_enabled' => (bool) config('kinhold.billing_enabled', false),
             'services' => [
                 'google_oauth' => ! empty(config('services.google.client_id')),
                 'google_calendar' => ! empty(config('kinhold.google.client_id')),
