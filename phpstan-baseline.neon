@@ -226,26 +226,6 @@ parameters:
 			path: app/Http/Resources/DocumentResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyResource\\:\\:\\$id\\.$#"
-			count: 1
-			path: app/Http/Resources/FamilyResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyResource\\:\\:\\$name\\.$#"
-			count: 1
-			path: app/Http/Resources/FamilyResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyResource\\:\\:\\$settings\\.$#"
-			count: 1
-			path: app/Http/Resources/FamilyResource.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyResource\\:\\:\\$slug\\.$#"
-			count: 1
-			path: app/Http/Resources/FamilyResource.php
-
-		-
 			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyRestaurantResource\\:\\:\\$id\\.$#"
 			count: 1
 			path: app/Http/Resources/FamilyRestaurantResource.php

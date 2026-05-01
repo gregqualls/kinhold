@@ -439,6 +439,7 @@ class AuthController extends Controller
                 'slug' => $user->family->slug,
                 'invite_code' => $user->isParent() ? $user->family->invite_code : null,
                 'settings' => $user->family->settings ?? [],
+                'billing_owner_id' => $user->family->billing_owner_id,
                 'module_access' => $user->family->getAllModuleAccess(),
                 'members' => $user->family->members->map(fn ($m) => [
                     'id' => $m->id,

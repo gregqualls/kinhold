@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BadgesController;
+use App\Http\Controllers\Api\V1\BillingController;
 use App\Http\Controllers\Api\V1\CalendarController;
 use App\Http\Controllers\Api\V1\ChatController;
 use App\Http\Controllers\Api\V1\DashboardController;
@@ -311,6 +312,17 @@ Route::prefix('v1')->group(function () {
             Route::put('/notification-preferences', [SettingsController::class, 'updateNotificationPreferences']);
             Route::delete('/account', [SettingsController::class, 'deleteAccount'])->middleware('throttle:5,1');
             Route::post('/account/data-export', [SettingsController::class, 'exportData'])->middleware('throttle:5,1');
+        });
+
+        // Billing — Stripe Checkout, Customer Portal, cancel/resume.
+        // Every action is gated by BILLING_ENABLED + billing-owner check
+        // inside the controller. See BillingController::authorizeBilling().
+        Route::prefix('/billing')->group(function () {
+            Route::get('/current', [BillingController::class, 'current']);
+            Route::post('/checkout-session', [BillingController::class, 'checkoutSession'])->middleware('throttle:10,1');
+            Route::post('/portal-session', [BillingController::class, 'portalSession'])->middleware('throttle:10,1');
+            Route::post('/cancel', [BillingController::class, 'cancel'])->middleware('throttle:5,1');
+            Route::post('/resume', [BillingController::class, 'resume'])->middleware('throttle:5,1');
         });
 
         // Push subscriptions

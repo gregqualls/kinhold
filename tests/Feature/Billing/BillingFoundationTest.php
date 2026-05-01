@@ -50,14 +50,17 @@ class BillingFoundationTest extends TestCase
         $this->assertSame('self_hosted', $plan);
     }
 
-    public function test_resolve_current_plan_returns_free_when_enabled_without_subscription(): void
+    public function test_resolve_current_plan_returns_none_when_enabled_without_subscription(): void
     {
         config()->set('kinhold.billing_enabled', true);
         $family = Family::factory()->create();
 
         $plan = app(BillingService::class)->resolveCurrentPlan($family);
 
-        $this->assertSame('free', $plan);
+        // Hosted Kinhold has no permanent free tier — 'none' means "no
+        // subscription, trial available or expired" as opposed to 'self_hosted'
+        // which means billing is globally off.
+        $this->assertSame('none', $plan);
     }
 
     public function test_billing_owner_id_backfill_picks_oldest_parent(): void
