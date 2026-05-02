@@ -110,6 +110,7 @@
 - `calendar_connections` — id, user_id, provider, access_token (encrypted), refresh_token (encrypted), calendar_id, color, is_active
 - `chat_messages` — id, user_id, family_id, message, role (user/assistant), metadata (JSON: tools_used, input_tokens, output_tokens)
 - `ai_usage_daily` — id, family_id, date, message_count, input_tokens, output_tokens. UNIQUE(family_id, date). One row per family per active day; daily message-count cap is enforced against this row.
+- `family_storage_usages` — id, family_id (unique), total_bytes, reported_bytes, last_calculated_at, last_reported_at. One row per family. `total_bytes` is the live sum of `documents.size` joined through every polymorphic owner that ladders up to a family (today: VaultEntry only). `reported_bytes` is the last absolute total pushed to Stripe so the nightly tally pushes only deltas (Stripe meter events are additive). Kept warm in real time by `Document::created`/`deleted` hooks; fully recomputed nightly by `kinhold:tally-storage` (#216 / 70-C).
 - `point_transactions` — id, family_id, user_id, type (enum), points (int), description, source_type/id (polymorphic), awarded_by
 - `rewards` — id, family_id, created_by, title, description, point_cost, icon, quantity, quantity_purchased, expires_at, visibility (enum), visible_to (JSON), min_age, max_age, reward_type (enum: standard/auction), min_bid, bid_start_at, bid_end_at, is_active, sort_order
 - `reward_purchases` — id, family_id, reward_id, user_id, points_spent, purchased_at
@@ -144,7 +145,7 @@ kinhold/
 │   ├── Models/                    # Eloquent models (incl. PointTransaction, Reward, RewardPurchase, Badge)
 │   ├── Services/                  # Business logic (GoogleCalendar, VaultEncryption, Agent, Points, Badge)
 │   ├── Policies/                  # Authorization (Task, TaskList, VaultEntry, Family, Badge, Tag, Reward, FeaturedEvent)
-│   ├── Console/Commands/          # Artisan (GenerateRecurringTasks, rewards:resolve-auctions)
+│   ├── Console/Commands/          # Artisan (GenerateRecurringTasks, rewards:resolve-auctions, kinhold:tally-storage)
 │   ├── Enums/                     # FamilyRole, TaskPriority, PermissionLevel, PointTransactionType, BadgeTriggerType
 │   └── Mcp/                       # Laravel-native MCP server (Servers/, Tools/, Tools/Concerns/)
 ├── database/migrations/           # Timestamped migrations

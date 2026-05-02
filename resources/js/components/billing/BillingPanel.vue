@@ -44,6 +44,43 @@
       </div>
     </div>
 
+    <!-- Storage usage (hidden until we've actually measured something) -->
+    <div
+      v-if="!billing.lastError && hasFetched && storage.last_calculated_at"
+      class="p-4 bg-surface-sunken rounded-lg space-y-2"
+      data-testid="billing-storage"
+    >
+      <div class="flex items-baseline justify-between gap-3">
+        <p class="text-sm font-semibold text-ink-primary">Storage</p>
+        <p class="text-xs text-ink-secondary">
+          {{ formatBytes(storage.used_bytes) }} of {{ formatBytes(storage.included_bytes) }} included
+        </p>
+      </div>
+
+      <div
+        class="h-2 w-full rounded-full bg-surface-base overflow-hidden"
+        role="progressbar"
+        :aria-valuenow="storagePercent"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        :aria-label="storageAriaLabel"
+      >
+        <div
+          class="h-full transition-all"
+          :class="storage.over_limit ? 'bg-amber-500 dark:bg-amber-400' : 'bg-accent-lavender-bold'"
+          :style="{ width: storageBarWidth }"
+        ></div>
+      </div>
+
+      <p
+        v-if="storage.over_limit"
+        class="text-xs text-amber-700 dark:text-amber-300"
+      >
+        +{{ storage.overage_gb }} GB at $1/GB·month — adds
+        ${{ (storage.overage_cents / 100).toFixed(2) }} to your next invoice.
+      </p>
+    </div>
+
     <!-- Action buttons -->
     <div class="flex flex-wrap gap-2">
       <!-- No active subscription: trial-eligible families see a free-trial CTA;
@@ -94,6 +131,34 @@ import BaseButton from '@/components/common/BaseButton.vue'
 
 const billing = useBillingStore()
 const hasFetched = ref(false)
+
+const storage = computed(() => billing.summary.storage || {})
+
+const storagePercent = computed(() => {
+  const used = Number(storage.value.used_bytes) || 0
+  const included = Number(storage.value.included_bytes) || 1
+  return Math.round(Math.min(100, Math.max(0, (used / included) * 100)))
+})
+
+const storageBarWidth = computed(() => `${storagePercent.value.toFixed(1)}%`)
+
+const storageAriaLabel = computed(
+  () => `Storage usage: ${formatBytes(storage.value.used_bytes)} of ${formatBytes(storage.value.included_bytes)} included`,
+)
+
+function formatBytes(bytes) {
+  const n = Number(bytes) || 0
+  if (n < 1024) return `${n} B`
+  const units = ['KB', 'MB', 'GB', 'TB']
+  let value = n / 1024
+  let unit = 'KB'
+  for (const u of units) {
+    unit = u
+    if (value < 1024) break
+    value /= 1024
+  }
+  return `${value.toFixed(value >= 100 ? 0 : value >= 10 ? 1 : 2)} ${unit}`
+}
 
 onMounted(async () => {
   try {

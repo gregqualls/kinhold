@@ -23,6 +23,8 @@ use Laravel\Cashier\PaymentMethod;
  */
 class BillingService
 {
+    public function __construct(private readonly StorageMeteringService $storage) {}
+
     public function isEnabled(): bool
     {
         return (bool) config('kinhold.billing_enabled', false);
@@ -78,6 +80,7 @@ class BillingService
                 'brand' => $card->brand,
                 'last4' => $card->last4,
             ] : null,
+            'storage' => $this->storage->summaryFor($family),
         ];
     }
 
@@ -100,6 +103,15 @@ class BillingService
         $trialDays = (int) config('kinhold.billing.trial_days', 0);
 
         $builder = $family->newSubscription('default', $priceId);
+
+        // Layer the metered storage price onto the same subscription so the
+        // first invoice already has the line item we need to push usage to.
+        // Acts as the forward-compat path; the nightly tally also lazy-adds
+        // the price as a self-healing safety net.
+        $storagePriceId = config('kinhold.billing.storage.stripe_price_id');
+        if (! empty($storagePriceId) && is_string($storagePriceId)) {
+            $builder->meteredPrice($storagePriceId);
+        }
 
         if ($trialDays > 0 && ! $family->hasStripeId()) {
             $builder->trialDays($trialDays);

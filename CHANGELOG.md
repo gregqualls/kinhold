@@ -2,6 +2,62 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-02 — Storage metering: nightly tally + soft overage UI (v1.8.5, [#216](https://github.com/gregqualls/kinhold/issues/216) / [#70](https://github.com/gregqualls/kinhold/issues/70)-C)
+
+Third slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. Teaches the system to **measure how much storage each family is using and bill transparently for anything over the included 5 GB**. Still hidden behind `BILLING_ENABLED=false` — no production impact.
+
+**Product model: soft + metered, no upload blocking.** Families go past 5 GB freely; the nightly tally pushes overage to Stripe at $1/GB·month and the BillingPanel surfaces a usage bar + an inline "+N GB at $1/GB·month" callout when over. Hard caps were considered and explicitly rejected for v1 (per [#216](https://github.com/gregqualls/kinhold/issues/216)) — they create support tickets and surprise users. Can be revisited if abuse appears.
+
+**Denormalized current-totals table** ([`family_storage_usages`](database/migrations/2026_05_02_000000_create_family_storage_usages_table.php)). One row per family — mirrors the [`AiUsageDaily`](app/Models/AiUsageDaily.php) shape but per-family rather than per-day, since the BillingPanel only needs the current total. Columns:
+
+- `total_bytes` — fresh sum of all the family's `documents.size`
+- `reported_bytes` — last absolute total we successfully pushed to Stripe. Lets us push **deltas only** (Stripe meter events are additive under `sum` aggregation; absolute pushes would double-count nightly)
+- `last_calculated_at`, `last_reported_at`
+
+**[`StorageMeteringService`](app/Services/StorageMeteringService.php).** Single source of truth — the artisan command, the Document model events, and `BillingService::summary()` all read through it. Public API:
+
+- `recalcFamily(Family)` — sums `documents.size` for one family by joining through every registered polymorphic owner that ladders up to a `family_id`. Today: `VaultEntry → vault_entries.family_id`. The `OWNERS` registry is a one-line addition when Tasks/Recipes/etc. gain `morphMany(Document)`.
+- `reportToStripe(Family)` — recalcs, then pushes the unreported overage delta as a meter event via Cashier 16's `SubscriptionItem::reportUsage()` (uses Stripe v2 Meter Events under the hood). Lazy-adds the metered price via `Subscription::addMeteredPrice()` if missing on a subscribed family — self-healing safety net for any family that subscribed before the storage item was wired in.
+- `tallyAll()` — iterates every family, returns `['recalculated' => N, 'reported' => M]`.
+- `summaryFor(Family)` — payload for `BillingService::summary()`.
+
+Skipped (no Stripe call) when: `BILLING_ENABLED=false`; the family has no active subscription; `STRIPE_PRICE_STORAGE_OVERAGE` is unset; new overage ≤ already-reported overage.
+
+**Real-time freshness.** [`Document::booted()`](app/Models/Document.php) hooks `created` + `deleted` to call `StorageMeteringService::onDocumentChange()`, which resolves the family via the polymorphic registry and recalcs synchronously. Cheap (one aggregate per family) and keeps the UI number warm without waiting for the nightly tally. Stripe push stays nightly.
+
+**Reporting unit: GB rounded up, base-1024.** `ceil((total_bytes − 5 × 1024³) / 1024³)`. 5 GiB exactly → 0 overage; 5 GiB + 1 byte → 1 GB; 6 GiB → 1 GB; 6 GiB + 1 byte → 2 GB. Documented in `StorageMeteringTest::test_overage_math_rounds_up_full_gib_base_1024`.
+
+**Artisan + schedule.** `kinhold:tally-storage` runs nightly at `02:00` ([`routes/console.php`](routes/console.php)). Idempotent — pushes deltas only, so re-running mid-day is a no-op for the second run. Safe to invoke ad-hoc for a forced refresh.
+
+**Checkout includes the metered price upfront.** `BillingService::createBaseCheckout()` now calls `$builder->meteredPrice($storagePriceId)` so the first invoice already has the line item we need to push usage to. The lazy-add safety net in the tally covers any family who somehow subscribed before this code shipped.
+
+**SPA: storage bar in `BillingPanel`.** New section under the plan card. Progress bar fills proportional to `used / included`; flips amber at 100%. When over: shows "+N GB at $1/GB·month — adds $X.XX to your next invoice." Hidden until the first tally has populated `last_calculated_at` so brand-new families don't see a misleading "0 of 5 GB" before any Documents exist. The `billing.js` store gains a `summary.storage` block with bytes/overage/timestamps, hydrated from `/api/v1/billing/current`.
+
+**Manual Stripe-side step (one-time, before flipping `BILLING_ENABLED=true`).** The Stripe sandbox "Storage Overage" product currently holds a $1/mo flat placeholder from 70-A's pre-flight. Before this code does anything in Stripe, Greg needs to:
+
+1. Create a Stripe Meter — `event_name=kinhold_storage_gb`, `default_aggregation.formula=sum`, `customer_mapping.event_payload_key=stripe_customer_id`, `customer_mapping.type=by_id`, `value_settings.event_payload_key=value`.
+2. On the existing `prod_URGFwoBloTkb6h` ("Kinhold Storage Overage") product, create a metered Price — `unit_amount=100`, `currency=usd`, `recurring.interval=month`, `recurring.usage_type=metered`, `recurring.meter=<meter_id>`.
+3. Archive the old `price_1TSNjmABMDyP0kfqZYQrt7z8` flat price.
+4. Update `STRIPE_PRICE_STORAGE_OVERAGE` in `.env` with the new price ID.
+
+The Stripe MCP doesn't expose Billing Meter operations, so this is dashboard-only. The implementation is config-aware and no-ops cleanly until step 4.
+
+**Tests** (12 new, 260 total / 677 assertions, all green):
+
+- Tally correctness across multiple VaultEntries; multi-family isolation
+- Real-time hook fires on Document created + deleted
+- Polymorphic registry rejects unknown `documentable_type` without crashing
+- Overage math: ceil-base-1024 across boundary cases
+- Summary payload: zero state + populated state
+- `reportToStripe()` gates: billing disabled, no subscription, price unconfigured
+- `tallyAll()` recalculates without pushing when no subscriptions exist
+- Artisan command runs cleanly on empty state
+
+**Files**
+
+- New: `database/migrations/2026_05_02_000000_create_family_storage_usages_table.php`, `app/Models/FamilyStorageUsage.php`, `app/Services/StorageMeteringService.php`, `app/Console/Commands/TallyStorage.php`, `tests/Feature/Billing/StorageMeteringTest.php`
+- Modified: `app/Models/Document.php` (`booted()` hooks), `app/Models/Family.php` (`storageUsage()` `HasOne`), `app/Services/BillingService.php` (`summary().storage`, `createBaseCheckout()` adds metered price), `routes/console.php` (nightly schedule), `resources/js/stores/billing.js` (`storage` block in `DEFAULT_SUMMARY`), `resources/js/components/billing/BillingPanel.vue` (storage bar + overage callout), `config/version.php` (1.8.5)
+
 ## 2026-05-01 — Billing panel: base plan checkout + lifecycle UI (v1.8.4, [#215](https://github.com/gregqualls/kinhold/issues/215) / [#70](https://github.com/gregqualls/kinhold/issues/70)-B)
 
 Second slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. Adds the `/api/v1/billing/*` endpoints and the `BillingPanel` Settings section. Still hidden behind `BILLING_ENABLED=false` — no production impact.
