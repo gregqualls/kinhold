@@ -371,8 +371,8 @@
             AI Access
           </label>
 
-          <!-- Two-tab selector -->
-          <div class="grid grid-cols-2 gap-3 mb-5">
+          <!-- Two-tab selector — hidden on self-hosted (BYOK is the only option) -->
+          <div v-if="billingEnabled" class="grid grid-cols-2 gap-3 mb-5">
             <!-- Kinhold AI tab -->
             <button
               :class="[
@@ -422,8 +422,8 @@
             </button>
           </div>
 
-          <!-- Kinhold AI panel -->
-          <div v-if="aiMode === 'kinhold'" class="p-4 bg-accent-lavender-soft/30 border border-accent-lavender-soft rounded-lg">
+          <!-- Kinhold AI panel — billing-only -->
+          <div v-if="billingEnabled && aiMode === 'kinhold'" class="p-4 bg-accent-lavender-soft/30 border border-accent-lavender-soft rounded-lg">
             <div class="flex items-start gap-3">
               <svg class="w-5 h-5 text-accent-lavender-bold mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -437,8 +437,8 @@
             </div>
           </div>
 
-          <!-- BYOK panel -->
-          <div v-if="aiMode === 'byok'" class="space-y-4">
+          <!-- BYOK panel — always shown on self-hosted -->
+          <div v-if="!billingEnabled || aiMode === 'byok'" class="space-y-4">
             <!-- Provider selection — single column when only one provider is
                  available (avoids 1-of-3 dead-space layout per #201) -->
             <div :class="['grid gap-3', aiProviders.length > 1 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1']">
@@ -526,7 +526,7 @@
 
           <div class="flex flex-wrap gap-3 justify-end pt-4">
             <BaseButton
-              v-if="aiMode === 'byok' && aiConfig.hasSavedKey"
+              v-if="(!billingEnabled || aiMode === 'byok') && aiConfig.hasSavedKey"
               variant="ghost"
               :loading="clearingAi"
               @click="showClearKeyModal = true"
@@ -534,7 +534,7 @@
               Clear saved key
             </BaseButton>
             <BaseButton
-              v-if="aiMode === 'byok'"
+              v-if="!billingEnabled || aiMode === 'byok'"
               variant="ghost"
               :disabled="!aiConfig.apiKey"
               :loading="testingAi"
@@ -1651,6 +1651,10 @@ const canSeeBilling = computed(() => {
   return !!ownerId && ownerId === currentUser.value?.id
 })
 
+// Self-hosted instances (BILLING_ENABLED=false) only ever offer BYOK — there's
+// no managed-AI tier to opt into when no one is billing for token usage.
+const billingEnabled = computed(() => !!appConfig.value?.billing_enabled)
+
 // ---- Section expand/collapse state ----
 const expandedSections = ref(new Set())
 
@@ -2592,7 +2596,10 @@ onMounted(async () => {
       aiConfig.maskedKey = s.ai_api_key_masked || ''
       aiConfig.hasSavedKey = s.ai_has_key || false
       aiProviders.value = s.ai_providers || []
-      aiMode.value = s.ai_mode || (s.ai_has_key ? 'byok' : 'kinhold')
+      // Self-hosted has no Kinhold-managed AI tier — pin to BYOK regardless of stored mode.
+      aiMode.value = !appConfig.value?.billing_enabled
+        ? 'byok'
+        : (s.ai_mode || (s.ai_has_key ? 'byok' : 'kinhold'))
     } catch {
       // Defaults are fine
     }

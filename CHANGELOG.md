@@ -26,6 +26,8 @@ Fifth slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe
 
 **SPA: BillingPanel cross-link** ([BillingPanel.vue](resources/js/components/billing/BillingPanel.vue)). When the active AI tier is `byok`, render one line under the radio group: *"Manage your Anthropic API key in [AI & Integrations](#ai-integrations)."* The existing `SettingsSection` hash-watcher ([SettingsSection.vue:100-112](resources/js/components/settings/SettingsSection.vue)) auto-opens and scrolls — no new routing logic.
 
+**Self-host parity for the AI mode tabs.** Caught during Upsun preview smoke (`BILLING_ENABLED=false` instance was still showing the "Use Kinhold AI · Powered by Claude · Included with your trial" tab). On self-hosted instances there is no managed-AI tier — no one is fronting the Anthropic bill — so the two-tab selector and the "we handle it for you" panel are now gated on a `billingEnabled` computed (`appConfig.value?.billing_enabled`). Self-hosters see only the BYOK panel; `aiMode` is force-loaded to `'byok'` regardless of the stored value, and the Test / Clear / Save action row uses `!billingEnabled || aiMode === 'byok'` so the buttons remain visible.
+
 **Tests** (11 new, all green; full suite remains green):
 
 - `AiKeyTestEndpointTest` (6): unauth → 401 · child → 403 · missing `api_key` → 422 · success path → 200 + `valid:true` · 401 from Anthropic → 200 + `valid:false` + "Invalid API key." · key is **not** persisted to `family.settings.ai_api_key` after a successful test.
