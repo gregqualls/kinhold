@@ -30,11 +30,14 @@ applications:
           root: "public"
     workers:
       queue:
+        container_profile: BALANCED
         commands:
           start: php artisan queue:work
-      scheduler:
+    crons:
+      schedule:
+        spec: "* * * * *"
         commands:
-          start: php artisan schedule:work
+          start: php artisan schedule:run --no-interaction
     variables:
       env:
         N_PREFIX: "/app/.global"

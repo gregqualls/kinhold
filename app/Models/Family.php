@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Billable;
 
@@ -148,6 +149,14 @@ class Family extends Model
         return $this->belongsToMany(Restaurant::class, 'family_restaurants')
             ->withPivot('notes', 'is_favorite')
             ->withTimestamps();
+    }
+
+    /**
+     * Denormalized current storage total — see StorageMeteringService (#216).
+     */
+    public function storageUsage(): HasOne
+    {
+        return $this->hasOne(FamilyStorageUsage::class);
     }
 
     /**

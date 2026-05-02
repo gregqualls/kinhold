@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\StorageMeteringService;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,21 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class Document extends Model
 {
     use HasFactory, HasUuids;
+
+    /**
+     * Keep the per-family storage total warm in real time so the BillingPanel
+     * doesn't have to wait for the nightly tally to surface a fresh number.
+     * Stripe usage push stays nightly via `kinhold:tally-storage` (#216 / 70-C).
+     */
+    protected static function booted(): void
+    {
+        $touch = function (Document $document): void {
+            app(StorageMeteringService::class)->onDocumentChange($document);
+        };
+
+        static::created($touch);
+        static::deleted($touch);
+    }
 
     /**
      * The attributes that are mass assignable.

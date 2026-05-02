@@ -18,3 +18,6 @@ Schedule::command('rewards:resolve-auctions')->everyMinute();
 Schedule::command('app:send-task-due-reminders')->dailyAt('08:00');
 Schedule::command('app:send-event-reminders')->everyFiveMinutes();
 Schedule::command('app:send-dinner-reminders')->everyMinute();
+
+// Storage metering — sum docs per family + push overage to Stripe (#216 / 70-C)
+Schedule::command('kinhold:tally-storage')->dailyAt('02:00');
