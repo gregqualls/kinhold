@@ -1,0 +1,29 @@
+# Normalize all text files to LF in the repo. Working tree can be whatever
+# the OS prefers — Git converts on checkout/commit so Windows contributors
+# don't end up shipping CRLF to a Linux server.
+* text=auto eol=lf
+
+# Explicit overrides for files where line endings matter.
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+*.sh        text eol=lf
+
+# Binary — never touch.
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.webp      binary
+*.pdf       binary
+*.zip       binary
+*.gz        binary
+*.tar       binary
+*.woff      binary
+*.woff2     binary
+*.ttf       binary
+*.eot       binary
+*.mp4       binary
+*.mp3       binary
+*.wav       binary
