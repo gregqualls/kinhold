@@ -439,6 +439,20 @@
 
           <!-- BYOK panel — always shown on self-hosted -->
           <div v-if="!billingEnabled || aiMode === 'byok'" class="space-y-4">
+            <!-- Security reassurance — keys are encrypted at rest with AES-256
+                 (Laravel encrypt() / APP_KEY) and only decrypted in-memory at
+                 the moment a chat request is made. We never log or display
+                 raw keys; the UI only ever shows a masked preview. -->
+            <div class="flex items-start gap-2.5 p-3 rounded-lg bg-status-success-soft/40 dark:bg-status-success-soft/20 border border-status-success-soft">
+              <svg class="w-4 h-4 mt-0.5 shrink-0 text-status-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <div class="text-xs text-ink-secondary leading-relaxed">
+                <span class="font-semibold text-ink-primary">Your key stays private.</span>
+                Encrypted with AES-256 before it touches the database, decrypted only in memory the instant a chat request runs, and never logged or shown back to you in plaintext — only a masked preview.
+              </div>
+            </div>
+
             <!-- Provider selection — single column when only one provider is
                  available (avoids 1-of-3 dead-space layout per #201) -->
             <div :class="['grid gap-3', aiProviders.length > 1 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1']">
