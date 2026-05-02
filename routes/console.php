@@ -21,3 +21,6 @@ Schedule::command('app:send-dinner-reminders')->everyMinute();
 
 // Storage metering — sum docs per family + push overage to Stripe (#216 / 70-C)
 Schedule::command('kinhold:tally-storage')->dailyAt('02:00');
+
+// Grace period sweep — day-3 reminders + day-7 downgrades (#221 / 70-H)
+Schedule::command('kinhold:enforce-grace-period')->dailyAt('03:00');
