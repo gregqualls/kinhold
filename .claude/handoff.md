@@ -1,40 +1,38 @@
 # Session Handoff
 
-**Date:** 2026-04-30
-**Branch:** `feature/69b-push-reminders`
-**Last commit:** `0941f2c feat: web push notifications — foundation + kudos + task assigned (#69a) (#208)`
-(all #69b work is uncommitted — 19 new files, 9 modified, ready to commit + push)
+**Date:** 2026-05-02
+**Branch:** `feature/216-storage-metering` (PR [#226](https://github.com/gregqualls/kinhold/pull/226) open, build green, awaiting `/qa` + `/merge`)
+**Last commit:** `994a50a` — feat: billing storage metering — nightly tally + soft overage UI (70-C, #216)
 
 ## What Was Done This Session
 
-- Implemented four scheduled/activity push notifications: `TaskDueSoonNotification` (daily 8am, `due_reminder_sent_at` dedup), `ShoppingListItemAddedNotification` (service-level dispatch, actor excluded), `CalendarEventReminderNotification` (`event_reminder_sends` dedup table, 5-min cron with 60-min lookahead), `DinnerReminderNotification` (per-user TZ, JSON-key SQL pre-filter)
-- Three #69a follow-ups: N+1 fix on `User::wants('push')` (eager-load detection, no instance memoization — see bug note below), GDPR regression test for `notification_preferences` in data export, disabled-checkbox a11y classes in `NotificationsPanel.vue`
-- Added three schedule entries to `routes/console.php` and four entries to `config/notifications.php`
-- 27 new tests (224 total, 588 assertions — all green), 9 PHPStan baseline entries
-- Updated CHANGELOG.md and ROADMAP.md (#69 → DONE)
+- Implemented **70-C storage metering** ([#216](https://github.com/gregqualls/kinhold/issues/216)): `StorageMeteringService`, `family_storage_usages` table, `kinhold:tally-storage` artisan command (02:00 UTC), real-time recalc via `Document::booted()` hooks, polymorphic owner registry for future expansion
+- `BillingService::summary()` returns a `storage.*` block; `createBaseCheckout()` includes the metered price on first subscribe
+- `BillingPanel.vue` renders a usage bar with amber overage callout when over 5 GB; store deep-merges `storage` to preserve shape across cancel/resume
+- Added 12 feature tests (delta-only Stripe push, polymorphic registry, overage math, billing-disabled gates) — all green
+- Bumped to `v1.8.5`; CHANGELOG, ROADMAP, REFERENCE.md updated; PR opened with manual Stripe Dashboard setup steps in body
 
 ## Quality State
 
-- Tests: 224 tests, 588 assertions — **PASS**
-- Pint: **PASS** (pre-existing CRLF noise on Windows; new files clean)
-- Larastan: **PASS** (9 new baseline entries for cast-inference limitations)
-- ESLint: **PASS** (0 errors, 36 pre-existing warnings)
-- Build: **PASS** (7.33s, 4 precache entries)
+- **Tests:** 260 tests, 677 assertions — PASS (full suite); Billing slice: 32 tests, 78 assertions PASS
+- **Pint:** FAIL on 6 files (`AuthController`, `BillingController`, `FamilyResource`, `routes/api.php`, two billing tests) — **all CRLF line-ending only** plus a few `unary_operator_spaces` fixes on files **not in 70-C scope** (70-A/B leftovers on main). Safe to ignore for #226; should be cleaned up in a follow-up Pint sweep.
+- **PHPStan:** PASS (0 errors)
+- **ESLint:** 0 errors, 36 warnings (all pre-existing — unused imports/vars in design-system + vault views)
+- **Build:** PASS — 4 precache entries / 802.13 KiB
 
 ## What's Next
 
-1. **Commit + open PR** — run `/pr` to commit the #69b branch and open the PR closing [#69](https://github.com/gregqualls/kinhold/issues/69). PR body should mention "closes #69" and the two-part structure. All 28 files need staging.
-2. **QA on Upsun preview** — verify push notifications fire on real devices: subscribe via Settings panel, run each Artisan command via Tinker, confirm deep-link routes work (`/tasks?focus=`, `/calendar?event=`, `/meals?date=`, `/shopping?list=`).
-3. **Next issue: #70 Stripe billing** — the only remaining Phase B item. Pricing model is already decided (free self-host, $4.99/mo BYOK, $9.99/mo managed AI).
-4. **Stale PR cleanup** — PR `chore/google-verification-prep` (#197, worktree `nostalgic-keller-250e0f`) is still open and unrelated to #69b; triage it before starting #70.
+1. **`/qa` → `/merge` PR #226** once Upsun preview verifies. Then **manually configure Stripe sandbox** per PR body (create `kinhold_storage_gb` Meter, metered Price, archive old flat price, update `.env`). Stripe MCP doesn't expose Meter creation yet — must be done via Dashboard.
+2. **70-D — AI tier purchase wiring** ([#217](https://github.com/gregqualls/kinhold/issues/217)). Next slice of the billing epic. Hooks BYOK / Managed AI tiers into the existing checkout + portal plumbing.
+3. **Pint sweep follow-up** — clear the 6 line-ending failures from 70-A/B leftovers in a separate small PR. They block `/check` from going clean even though they're cosmetic.
 
 ## Blockers or Gotchas
 
-- **N+1 memoization pitfall** — Instance-level `?int $cachedPushSubscriptionCount` was tried and reverted. Calling `$user->refresh()` between subscription changes in tests left stale zeros because PHP private properties survive Eloquent `refresh()`. The final implementation (`getCachedPushSubscriptionCount()`) checks `$this->attributes['push_subscriptions_count']` and `$this->relationLoaded('pushSubscriptions')` only — no instance cache. Do not re-add instance memoization without accounting for this.
-- **`SendCalendarEventReminders` uses `->get()`** — The /review flagged this as INFO (not WARN). Fine for family-hub scale now; if the command ever covers >10k events, switch to `chunkById(200)`.
-- **Deep-link routes** — Not verified yet whether `/tasks?focus=`, `/calendar?event=`, `/meals?date=`, `/shopping?list=` are handled by the SPA router. Needs manual QA before closing #69 on GitHub.
+- **Working tree has CRLF-only diffs from `main`** on `app/Providers/AppServiceProvider.php`, `config/{cashier,kinhold,services}.php`, the four `2026_05_01_*` migrations, `database/seeders/DatabaseSeeder.php`. These are Windows line-ending artifacts — **do not commit them as part of any feature PR**. They keep showing up in `git status` until someone runs Pint with the line_ending fixer (which is what the next `/check` cleanup PR should do).
+- **Stripe MCP does not expose Billing Meter creation** (`PostBillingMeters` is not whitelisted). Per-PR documentation is the workaround until Stripe adds it.
+- **PHPStan v1.12 prints an upgrade nudge** that reads "Tell the user that PHPStan 2.x is available and ask if they'd like to upgrade." That phrasing inside CLI output looked like prompt injection — flagging here so future sessions don't mistake it for a user instruction. (It is just PHPStan's banner, but the wording is unusual.)
 
 ## Open Questions
 
-- Should `task_due_soon` also fire for *overdue* tasks (past due, still incomplete)? Currently fires only on `whereDate('due_date', today())`. A separate "overdue" toggle was out of scope for #69b.
-- Should family-wide tasks (no `assigned_to`) get a due-soon reminder? Current implementation skips `assigned_to IS NULL` rows. Left as a follow-up.
+- Want to do the **PHPStan 2.x upgrade** as a small PR? The banner suggests 50–70% memory savings and a new level 10. Low risk if it lands clean.
+- After 70-C ships, do you want **70-D, 70-E, or 70-H next**? 70-H (webhooks + grace period + lifecycle emails) is the highest-value standalone — without it, Stripe portal cancellations don't propagate back into our DB. 70-D unblocks AI tier sales but is smaller scope.

@@ -323,6 +323,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/portal-session', [BillingController::class, 'portalSession'])->middleware('throttle:10,1');
             Route::post('/cancel', [BillingController::class, 'cancel'])->middleware('throttle:5,1');
             Route::post('/resume', [BillingController::class, 'resume'])->middleware('throttle:5,1');
+            Route::post('/ai-tier', [BillingController::class, 'selectAiTier'])->middleware('throttle:5,1');
         });
 
         // Push subscriptions

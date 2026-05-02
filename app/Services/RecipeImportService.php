@@ -80,7 +80,10 @@ If any field cannot be determined, set it to null.
 Return valid JSON only.
 PROMPT;
 
-    public function __construct(private RecipeService $recipeService) {}
+    public function __construct(
+        private RecipeService $recipeService,
+        private AiUsageService $usage,
+    ) {}
 
     /**
      * Import a recipe from a URL.
@@ -523,6 +526,8 @@ PROMPT;
             throw new HttpException(500, 'Something went wrong with recipe extraction. Please try again.');
         }
 
+        $this->trackUsage($family, $response->json('usage'));
+
         return $this->parseLlmResponse($response->json());
     }
 
@@ -579,7 +584,29 @@ PROMPT;
             throw new HttpException(500, 'Something went wrong with recipe extraction. Please try again.');
         }
 
+        $this->trackUsage($family, $response->json('usage'));
+
         return $this->parseLlmResponse($response->json());
+    }
+
+    /**
+     * Record an Anthropic call against the family's daily usage cap. Mirrors
+     * ChatController's pattern — skip when the family pays its own bill
+     * (BYOK / self-hosted) so we don't count requests Kinhold isn't paying for.
+     *
+     * @param  array<string, mixed>|null  $usage
+     */
+    private function trackUsage(Family $family, ?array $usage): void
+    {
+        if (! $this->usage->shouldEnforce($family)) {
+            return;
+        }
+
+        $this->usage->recordMessage(
+            $family,
+            (int) ($usage['input_tokens'] ?? 0),
+            (int) ($usage['output_tokens'] ?? 0),
+        );
     }
 
     /**

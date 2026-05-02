@@ -81,6 +81,56 @@
       </p>
     </div>
 
+    <!-- AI Assistant tier picker (only when subscribed to base plan) -->
+    <div
+      v-if="!billing.lastError && hasFetched && billing.isSubscribed"
+      class="p-4 bg-surface-sunken rounded-lg space-y-3"
+      data-testid="billing-ai-tier"
+    >
+      <div class="flex items-baseline justify-between gap-3">
+        <p class="text-sm font-semibold text-ink-primary">AI Assistant</p>
+        <p v-if="aiUsageNote" class="text-xs text-ink-secondary">{{ aiUsageNote }}</p>
+      </div>
+
+      <div role="radiogroup" aria-label="AI tier" class="space-y-1">
+        <button
+          v-for="opt in aiTierOptions"
+          :key="opt.slug"
+          type="button"
+          role="radio"
+          :aria-checked="opt.slug === currentAiTier"
+          :disabled="opt.disabled || billing.loading"
+          class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-md border text-left transition"
+          :class="[
+            opt.slug === currentAiTier
+              ? 'border-accent-lavender-bold bg-accent-lavender-soft/40'
+              : 'border-border-subtle bg-surface-base hover:border-accent-lavender-bold',
+            (opt.disabled || billing.loading) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+          ]"
+          @click="onAiTier(opt.slug)"
+        >
+          <span class="flex-1 min-w-0">
+            <span class="block text-sm font-medium text-ink-primary">{{ opt.label }}</span>
+            <span v-if="opt.detail" class="block text-xs text-ink-secondary">{{ opt.detail }}</span>
+          </span>
+          <span
+            v-if="opt.disabled"
+            class="text-[11px] uppercase tracking-wide text-ink-secondary"
+          >Coming soon</span>
+        </button>
+      </div>
+    </div>
+
+    <div
+      v-else-if="!billing.lastError && hasFetched && !billing.isSubscribed"
+      class="p-4 bg-surface-sunken rounded-lg"
+    >
+      <p class="text-sm font-semibold text-ink-primary">AI Assistant</p>
+      <p class="text-xs text-ink-secondary mt-1">
+        Subscribe to a plan to add an AI tier.
+      </p>
+    </div>
+
     <!-- Action buttons -->
     <div class="flex flex-wrap gap-2">
       <!-- No active subscription: trial-eligible families see a free-trial CTA;
@@ -266,6 +316,46 @@ async function onCancel() {
 async function onResume() {
   try {
     await billing.resume()
+  } catch {
+    // Error already on store.
+  }
+}
+
+const aiTier = computed(() => billing.summary.ai_tier || {})
+
+const currentAiTier = computed(() => {
+  const t = aiTier.value
+  if (t.mode === 'byok') return 'byok'
+  const managed = ['lite', 'standard', 'pro']
+  if (t.mode === 'kinhold' && managed.includes(t.plan)) return t.plan
+  return 'off'
+})
+
+const aiTierOptions = computed(() => {
+  const tiers = Array.isArray(aiTier.value.tiers) ? aiTier.value.tiers : []
+  const managed = tiers.map((t) => ({
+    slug: t.slug,
+    label: t.name,
+    detail: `${t.daily_messages} msg/day · $${(t.price_cents / 100).toFixed(0)}/mo`,
+    disabled: !t.configured,
+  }))
+  return [
+    { slug: 'off', label: 'Off', detail: 'No AI assistant.', disabled: false },
+    { slug: 'byok', label: 'BYOK — Bring your own key', detail: 'Use your own Anthropic API key.', disabled: false },
+    ...managed,
+  ]
+})
+
+const aiUsageNote = computed(() => {
+  const u = aiTier.value.usage
+  if (!u || !u.enforced) return null
+  return `${u.count} / ${u.limit} messages today`
+})
+
+async function onAiTier(slug) {
+  if (slug === currentAiTier.value) return
+  try {
+    await billing.selectAiTier(slug)
   } catch {
     // Error already on store.
   }

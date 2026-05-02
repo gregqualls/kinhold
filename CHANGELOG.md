@@ -2,6 +2,61 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-02 — AI tier purchase wiring + recipe-import usage tracking (v1.8.6, [#217](https://github.com/gregqualls/kinhold/issues/217) / [#70](https://github.com/gregqualls/kinhold/issues/70)-D)
+
+Fourth slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. Connects the **already-built** AI usage infrastructure (`AiUsageDaily`, `AiUsageService`, plan tiers in `config/kinhold.php`) to actual Stripe purchases. Adding/swapping/removing an AI subscription item now flips `families.settings.chatbot.plan` (the slug `AiUsageService::planFor()` reads) so the existing daily-cap enforcement applies the right limit. Still gated behind `BILLING_ENABLED=false` — no production exposure until 70-H ships.
+
+**Settings shape (no migration; `families.settings` is JSON):**
+
+- `settings.ai_mode` — `'kinhold'` | `'byok'` (already used by `AgentService::resolveApiKey`)
+- `settings.ai_api_key` — encrypted BYOK key (already used). Cleared when switching to a managed tier.
+- `settings.chatbot.plan` — slug ∈ `lite|standard|pro`. Read by `AiUsageService::planFor()` for cap resolution. Cleared on Off/BYOK.
+
+**`BillingService::selectAiTier(Family, tier)`** ([app/Services/BillingService.php](app/Services/BillingService.php)). Single coordinator for the matrix. Tier values: `off`, `byok`, `lite`, `standard`, `pro`.
+
+| Current → Target | Stripe action | Settings writes |
+|---|---|---|
+| any → `off` | `Subscription::removePrice()` (drops AI item) | `ai_mode='kinhold'`, clears `ai_api_key` and `chatbot.plan` |
+| any → `byok` | Drops AI item | `ai_mode='byok'`, clears `chatbot.plan` (key entry is 70-E) |
+| off/byok → managed | `Subscription::addPriceAndInvoice()` (prorated) | `ai_mode='kinhold'`, `chatbot.plan=$tier`, clears `ai_api_key` |
+| managed → managed | `Subscription::swap([base, storage, $newAi])` (prorated swap) | Updates `chatbot.plan` |
+
+Stripe call goes first, then settings persist on success — the whole sequence is wrapped in `DB::transaction` so a partial failure leaves pre-existing settings intact rather than pointing at a tier whose Stripe item never landed.
+
+Pre-flight gates (all 422 except billing-disabled which is 403):
+
+- Family has no active base subscription → "Subscribe to the base plan before adding an AI tier."
+- Tier slug not in the registry → "Unknown AI tier."
+- Target tier not marked `public: true` or `stripe_price_id` empty → "That AI tier is not available yet."
+
+**`POST /api/v1/billing/ai-tier`** ([routes/api.php](routes/api.php), [BillingController::selectAiTier()](app/Http/Controllers/Api/V1/BillingController.php)). Mirrors the existing billing-endpoint pattern — `authorizeBilling()` guard (BILLING_ENABLED + billing_owner), throttle:5,1, returns the fresh `BillingService::summary()` so the SPA reconciles in one round-trip.
+
+**`BillingService::summary()`** now returns an `ai_tier` block with `mode`, `plan`, the existing `usage` payload (count/limit/remaining/reset_at), and a data-driven `tiers` catalogue — only public plans, with a `configured` flag so the SPA can disable rows whose Stripe price ID isn't set yet ("Coming soon" state).
+
+**SPA: tier picker in `BillingPanel`** ([resources/js/components/billing/BillingPanel.vue](resources/js/components/billing/BillingPanel.vue)). Five-radio group between the storage card and the action buttons: **Off · BYOK · Lite · Standard · Pro**. Picker is hidden until the family has an active base subscription (replaced with a "Subscribe to a plan to add an AI tier." hint). Current selection derived from `mode` + `plan`. `billing.js` store gains `selectAiTier(slug)` action that POSTs and deep-merges the response.
+
+**Closes #137 regression: recipe imports now count toward the daily cap.** [RecipeImportService](app/Services/RecipeImportService.php) makes two Anthropic calls (`extractViaLlm` for HTML and `extractFromPhoto` for vision) that previously bypassed `AiUsageService::recordMessage()`. New `trackUsage()` helper reads `usage.input_tokens` / `usage.output_tokens` from each response and records — skipping when `! $usage->shouldEnforce($family)` to mirror ChatController's BYOK/self-hosted handling.
+
+**Tests** (10 new, all green; full suite remains green):
+
+- `AiTierTest`: 403 when billing disabled · 403 for non-owner · 422 for invalid tier slug · 422 for no base subscription · 200 success delegates to service and returns summary · `summary` includes `ai_tier` block · daily cap resolves from `chatbot.plan` slug (regression for `AiUsageService::limitFor`).
+- `RecipeImportUsageTest`: photo import records usage with token counts · URL import records usage on LLM fallback (JSON-LD path correctly skips since no Anthropic call) · BYOK family does NOT record (regression on `shouldEnforce` gating).
+
+**Manual Stripe-side step (one-time, before flipping `BILLING_ENABLED=true`).** For each managed tier, create a recurring Price on a single "Kinhold AI" product:
+
+1. AI Lite — $5/mo recurring
+2. AI Standard — $15/mo recurring
+3. AI Pro — $30/mo recurring
+
+Then set `STRIPE_PRICE_AI_LITE`, `STRIPE_PRICE_AI_STANDARD`, `STRIPE_PRICE_AI_PRO` in `.env`. The implementation is config-aware and the picker grays out unconfigured tiers cleanly.
+
+**Out of scope (per #217):** BYOK key entry UI → 70-E. Webhook sync of cancellations back to `chatbot.plan` → 70-H.
+
+**Files**
+
+- New: `tests/Feature/Billing/AiTierTest.php`, `tests/Feature/Services/RecipeImportUsageTest.php`
+- Modified: `app/Services/BillingService.php` (selectAiTier, currentAiPriceId, buildSwapPriceList, configuredAiPriceIds, aiTierSummary, AiUsageService dependency), `app/Http/Controllers/Api/V1/BillingController.php` (selectAiTier action), `app/Services/RecipeImportService.php` (AiUsageService dependency, trackUsage helper called after both Anthropic responses), `routes/api.php` (POST /billing/ai-tier), `resources/js/components/billing/BillingPanel.vue` (tier picker card), `resources/js/stores/billing.js` (DEFAULT_AI_TIER, selectAiTier action), `config/version.php` (1.8.6)
+
 ## 2026-05-02 — Storage metering: nightly tally + soft overage UI (v1.8.5, [#216](https://github.com/gregqualls/kinhold/issues/216) / [#70](https://github.com/gregqualls/kinhold/issues/70)-C)
 
 Third slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. Teaches the system to **measure how much storage each family is using and bill transparently for anything over the included 5 GB**. Still hidden behind `BILLING_ENABLED=false` — no production impact.
