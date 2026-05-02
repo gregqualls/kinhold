@@ -132,8 +132,16 @@ class BillingService
      * Checkout instance whose `->url` is the redirect target. Throws via
      * HttpResponseException if the price ID isn't configured — that turns
      * what would be a 500 into a clean 422 the SPA can render.
+     *
+     * `$aiTier` is the onboarding picker's pre-selection. If set, it must be
+     * one of SELECTABLE_TIERS — managed tiers (lite/standard/pro) ride along
+     * as a third line item so the first invoice already reflects the family's
+     * choice. The matching `families.settings` keys are written *after* Stripe
+     * accepts the session so a Cashier failure doesn't leave us pointing at a
+     * tier that isn't billed (mirrors the no-transaction approach in
+     * selectAiTier — see lines 207–211).
      */
-    public function createBaseCheckout(Family $family, string $successUrl, string $cancelUrl): Checkout
+    public function createBaseCheckout(Family $family, string $successUrl, string $cancelUrl, ?string $aiTier = null): Checkout
     {
         $priceId = config('kinhold.billing.base_plan.stripe_price_id');
 
@@ -141,6 +149,20 @@ class BillingService
             throw new HttpResponseException(response()->json([
                 'message' => 'Base plan is not configured. Contact your administrator.',
             ], 422));
+        }
+
+        if ($aiTier !== null && ! in_array($aiTier, self::SELECTABLE_TIERS, true)) {
+            $this->fail('Unknown AI tier.');
+        }
+
+        $plans = config('kinhold.chatbot.plans', []);
+        $aiPriceId = null;
+        if (in_array($aiTier, ['lite', 'standard', 'pro'], true)) {
+            $row = $plans[$aiTier] ?? null;
+            if (! $row || empty($row['public']) || empty($row['stripe_price_id'])) {
+                $this->fail('That AI tier is not available yet.');
+            }
+            $aiPriceId = (string) $row['stripe_price_id'];
         }
 
         $trialDays = (int) config('kinhold.billing.trial_days', 0);
@@ -156,14 +178,64 @@ class BillingService
             $builder->meteredPrice($storagePriceId);
         }
 
+        if ($aiPriceId !== null) {
+            $builder->price($aiPriceId);
+        }
+
         if ($trialDays > 0 && ! $family->hasStripeId()) {
             $builder->trialDays($trialDays);
         }
 
-        return $builder->checkout([
+        $checkout = $builder->checkout([
             'success_url' => $successUrl,
             'cancel_url' => $cancelUrl,
         ]);
+
+        if ($aiTier !== null) {
+            $this->writeAiTierSettings($family, $aiTier);
+        }
+
+        return $checkout;
+    }
+
+    /**
+     * Persist `families.settings` keys for the chosen AI tier. Extracted from
+     * selectAiTier() so onboarding's pre-checkout pick lands the same shape.
+     * No Stripe side-effect — caller is responsible for billing reconciliation.
+     */
+    private function writeAiTierSettings(Family $family, string $tier): void
+    {
+        $settings = $family->settings ?? [];
+        $chatbot = is_array($settings['chatbot'] ?? null) ? $settings['chatbot'] : [];
+
+        switch ($tier) {
+            case 'byok':
+                $settings['ai_mode'] = 'byok';
+                Arr::forget($chatbot, 'plan');
+                break;
+
+            case 'off':
+                $settings['ai_mode'] = 'kinhold';
+                Arr::forget($settings, 'ai_api_key');
+                Arr::forget($chatbot, 'plan');
+                break;
+
+            case 'lite':
+            case 'standard':
+            case 'pro':
+                $settings['ai_mode'] = 'kinhold';
+                Arr::forget($settings, 'ai_api_key');
+                $chatbot['plan'] = $tier;
+                break;
+        }
+
+        if (empty($chatbot)) {
+            Arr::forget($settings, 'chatbot');
+        } else {
+            $settings['chatbot'] = $chatbot;
+        }
+
+        $family->forceFill(['settings' => $settings])->save();
     }
 
     /**

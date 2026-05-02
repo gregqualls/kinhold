@@ -10,7 +10,10 @@ export const useOnboardingStore = defineStore('onboarding', () => {
   const selectedPresets = ref(new Set())
   const isCompleting = ref(false)
 
-  const totalSteps = 6
+  // Upper bound for goToStep; parent flow can include the BillingStep (7) when
+  // BILLING_ENABLED. The actual rendered step count comes from
+  // OnboardingView's `activeSteps` array — this is just a clamp.
+  const totalSteps = 7
   const progress = computed(() => Math.min((currentStep.value / (totalSteps - 1)) * 100, 100))
   const isFirstStep = computed(() => currentStep.value === 0)
   const isLastStep = computed(() => currentStep.value === totalSteps - 1)

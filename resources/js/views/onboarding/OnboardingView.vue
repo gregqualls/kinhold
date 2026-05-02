@@ -79,6 +79,7 @@ import CalendarStep from './steps/CalendarStep.vue'
 import TagsStep from './steps/TagsStep.vue'
 import FeaturesStep from './steps/FeaturesStep.vue'
 import FeaturesExplainerStep from './steps/FeaturesExplainerStep.vue'
+import BillingStep from './steps/BillingStep.vue'
 import CompleteStep from './steps/CompleteStep.vue'
 import KinButton from '@/components/design-system/KinButton.vue'
 
@@ -88,11 +89,20 @@ const authStore = useAuthStore()
 const store = useOnboardingStore()
 const stepLoading = ref(false)
 
-// Parents get the full wizard; joining members get a simplified flow
+// Parents get the full wizard; joining members get a simplified flow.
+// BillingStep is appended for the billing owner (who is always a parent
+// today) on hosted instances — self-hosters skip it entirely so the wizard
+// length matches the pre-billing flow.
 const activeSteps = computed(() => {
   if (authStore.isParent) {
-    // Welcome → Add Family → Calendar → Tags → Features → Complete
-    return [WelcomeStep, InviteStep, CalendarStep, TagsStep, FeaturesStep, CompleteStep]
+    const billingEnabled = !!authStore.appConfig?.billing_enabled
+    const isBillingOwner = authStore.user?.id === authStore.family?.billing_owner_id
+    const steps = [WelcomeStep, InviteStep, CalendarStep, TagsStep, FeaturesStep]
+    if (billingEnabled && isBillingOwner) {
+      steps.push(BillingStep)
+    }
+    steps.push(CompleteStep)
+    return steps
   }
   // Joining member: Welcome → Calendar → What You Can Do → Complete
   return [WelcomeStep, CalendarStep, FeaturesExplainerStep, CompleteStep]
@@ -144,6 +154,16 @@ onMounted(async () => {
   const step = route.query.step
   if (step !== undefined) {
     store.goToStep(parseInt(step))
+  }
+
+  // Handle Stripe Checkout return: success → jump to CompleteStep so the user
+  // doesn't re-walk earlier steps; cancel → land back on BillingStep.
+  const billing = route.query.billing
+  if (billing === 'success') {
+    store.goToStep(activeSteps.value.length - 1)
+  } else if (billing === 'cancel') {
+    const billingIdx = activeSteps.value.indexOf(BillingStep)
+    if (billingIdx >= 0) store.goToStep(billingIdx)
   }
 })
 </script>

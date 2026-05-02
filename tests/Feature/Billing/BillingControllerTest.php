@@ -118,6 +118,30 @@ class BillingControllerTest extends TestCase
             ->assertJson(['url' => 'https://checkout.stripe.com/test-session']);
     }
 
+    public function test_checkout_session_forwards_ai_tier_to_billing_service(): void
+    {
+        [$family, $owner] = $this->ownerSetup();
+        Sanctum::actingAs($owner);
+
+        $stripeSession = (object) ['url' => 'https://checkout.stripe.com/test-session'];
+        $checkout = Mockery::mock(Checkout::class);
+        $checkout->shouldReceive('asStripeCheckoutSession')->andReturn($stripeSession);
+
+        $mock = Mockery::mock(BillingService::class)->makePartial();
+        $mock->shouldReceive('isEnabled')->andReturn(true);
+        $mock->shouldReceive('createBaseCheckout')
+            ->once()
+            ->withArgs(fn ($f, $success, $cancel, $tier) => $f->id === $family->id && $tier === 'standard')
+            ->andReturn($checkout);
+        $this->app->instance(BillingService::class, $mock);
+
+        $this->postJson('/api/v1/billing/checkout-session', [
+            'success_url' => 'https://example.test/settings#billing',
+            'cancel_url' => 'https://example.test/settings#billing',
+            'ai_tier' => 'standard',
+        ])->assertStatus(200);
+    }
+
     public function test_checkout_session_returns_403_when_billing_disabled(): void
     {
         config()->set('kinhold.billing_enabled', false);

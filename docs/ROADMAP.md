@@ -82,7 +82,7 @@ These features are live and working:
 |-------|-------|----------|--------|
 | [#68](https://github.com/gregqualls/kinhold/issues/68) | PWA support (service worker, manifest, installable) | Very High | DONE |
 | [#69](https://github.com/gregqualls/kinhold/issues/69) | Web push notifications | Very High | DONE |
-| [#70](https://github.com/gregqualls/kinhold/issues/70) | Stripe billing & subscription system | Critical | IN PROGRESS (70-A/B/C/D/E merged; 70-G/H/I remain) |
+| [#70](https://github.com/gregqualls/kinhold/issues/70) | Stripe billing & subscription system | Critical | IN PROGRESS (70-A/B/C/D/E/G merged; 70-F shipped out-of-tree on Cloudflare; 70-H/I remain) |
 
 **Pricing model:**
 - Self-hosted: Free forever (Elastic License 2.0)
