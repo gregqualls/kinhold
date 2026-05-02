@@ -11,6 +11,13 @@ const DEFAULT_STORAGE = () => ({
   last_calculated_at: null,
 })
 
+const DEFAULT_AI_TIER = () => ({
+  mode: 'kinhold',
+  plan: null,
+  usage: { count: 0, limit: 0, remaining: 0, reset_at: null, enforced: false, plan: { slug: 'free', name: 'Free' } },
+  tiers: [],
+})
+
 const DEFAULT_SUMMARY = () => ({
   plan: 'none',
   status: null,
@@ -24,6 +31,7 @@ const DEFAULT_SUMMARY = () => ({
   base_price_cents: 0,
   payment_method: null,
   storage: DEFAULT_STORAGE(),
+  ai_tier: DEFAULT_AI_TIER(),
 })
 
 export const useBillingStore = defineStore('billing', () => {
@@ -42,6 +50,7 @@ export const useBillingStore = defineStore('billing', () => {
       ...DEFAULT_SUMMARY(),
       ...incoming,
       storage: { ...DEFAULT_STORAGE(), ...(incoming.storage || {}) },
+      ai_tier: { ...DEFAULT_AI_TIER(), ...(incoming.ai_tier || {}) },
     }
   }
 
@@ -118,6 +127,20 @@ export const useBillingStore = defineStore('billing', () => {
     }
   }
 
+  async function selectAiTier(tier) {
+    loading.value = true
+    lastError.value = ''
+    try {
+      const { data } = await api.post('/billing/ai-tier', { tier })
+      summary.value = mergeSummary(data)
+    } catch (e) {
+      lastError.value = e?.response?.data?.message || 'Failed to update AI tier.'
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     summary,
     loading,
@@ -131,5 +154,6 @@ export const useBillingStore = defineStore('billing', () => {
     openPortal,
     cancel,
     resume,
+    selectAiTier,
   }
 })

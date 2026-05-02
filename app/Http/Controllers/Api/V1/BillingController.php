@@ -143,6 +143,33 @@ class BillingController extends Controller
     }
 
     /**
+     * Set the family's AI tier (Off / BYOK / Lite / Standard / Pro). Adds,
+     * swaps, or removes a Stripe subscription item and writes the matching
+     * settings.* keys atomically — see BillingService::selectAiTier(). Returns
+     * the fresh summary so the SPA can update without a second round-trip.
+     */
+    public function selectAiTier(Request $request): JsonResponse
+    {
+        $this->authorizeBilling($request);
+
+        $validated = $request->validate([
+            'tier' => 'required|string|in:off,byok,lite,standard,pro',
+        ]);
+
+        $family = $request->user()->family;
+
+        try {
+            $this->billing->selectAiTier($family, $validated['tier']);
+        } catch (ApiErrorException $e) {
+            return response()->json([
+                'message' => 'Could not update AI tier. '.$e->getMessage(),
+            ], 422);
+        }
+
+        return response()->json($this->billing->summary($family));
+    }
+
+    /**
      * Single guard used by every endpoint. Three things have to be true:
      * billing is enabled, the user has a family, and the user IS the family's
      * billing owner. Anything else → 403.

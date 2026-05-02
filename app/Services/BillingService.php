@@ -4,8 +4,11 @@ namespace App\Services;
 
 use App\Models\Family;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Arr;
 use Laravel\Cashier\Checkout;
 use Laravel\Cashier\PaymentMethod;
+use Laravel\Cashier\Subscription;
+use Laravel\Cashier\SubscriptionItem;
 
 /**
  * Billing facade. 70-A landed the gate + plan resolver. 70-B (#215) extends
@@ -23,7 +26,15 @@ use Laravel\Cashier\PaymentMethod;
  */
 class BillingService
 {
-    public function __construct(private readonly StorageMeteringService $storage) {}
+    /** Tiers a billing owner can select via the AI tier endpoint. `free` is
+     *  the default-state slug and is intentionally not selectable here — picking
+     *  "Off" routes through `'off'` and clears the slug entirely. */
+    private const SELECTABLE_TIERS = ['off', 'byok', 'lite', 'standard', 'pro'];
+
+    public function __construct(
+        private readonly StorageMeteringService $storage,
+        private readonly AiUsageService $usage,
+    ) {}
 
     public function isEnabled(): bool
     {
@@ -81,6 +92,38 @@ class BillingService
                 'last4' => $card->last4,
             ] : null,
             'storage' => $this->storage->summaryFor($family),
+            'ai_tier' => $this->aiTierSummary($family),
+        ];
+    }
+
+    /**
+     * Snapshot of the family's AI tier state + the catalogue of selectable
+     * managed tiers (data-driven so the SPA picker can render whichever tiers
+     * are configured). The `usage` block is the same payload `/api/v1/chat`
+     * already returns, so the picker can show "X / Y messages today" without
+     * a second round-trip.
+     *
+     * @return array<string, mixed>
+     */
+    public function aiTierSummary(Family $family): array
+    {
+        $settings = $family->settings ?? [];
+
+        return [
+            'mode' => $settings['ai_mode'] ?? 'kinhold',
+            'plan' => $settings['chatbot']['plan'] ?? null,
+            'usage' => $this->usage->payloadFor($family),
+            'tiers' => collect(config('kinhold.chatbot.plans', []))
+                ->filter(fn ($p) => (bool) ($p['public'] ?? false))
+                ->map(fn ($p, $slug) => [
+                    'slug' => $slug,
+                    'name' => $p['name'] ?? ucfirst($slug),
+                    'daily_messages' => (int) ($p['daily_messages'] ?? 0),
+                    'price_cents' => (int) ($p['price_monthly_cents'] ?? 0),
+                    'configured' => ! empty($p['stripe_price_id']),
+                ])
+                ->values()
+                ->all(),
         ];
     }
 
@@ -150,5 +193,170 @@ class BillingService
     public function resume(Family $family): void
     {
         $family->subscription('default')?->resume();
+    }
+
+    /**
+     * Set the family's AI tier. Coordinates two stores that have to stay in
+     * lock-step: a Stripe subscription item (the bill) and `families.settings`
+     * (the keys `AiUsageService::planFor()` and `AgentService::resolveApiKey()`
+     * read to enforce caps and route API calls).
+     *
+     * Tier values: 'off' | 'byok' | 'lite' | 'standard' | 'pro'.
+     *
+     * Stripe call goes first; settings persist only on success. No DB
+     * transaction is used — a transaction can't roll back the Stripe side
+     * anyway, and wrapping a network call would hold a connection open for
+     * the entire Stripe round-trip. The single settings write is naturally
+     * atomic at the DB level.
+     */
+    public function selectAiTier(Family $family, string $tier): void
+    {
+        if (! $this->isEnabled()) {
+            $this->fail('Billing is not enabled.', 403);
+        }
+
+        if (! in_array($tier, self::SELECTABLE_TIERS, true)) {
+            $this->fail('Unknown AI tier.');
+        }
+
+        $subscription = $family->subscription('default');
+
+        if (! $subscription || ! $family->subscribed('default')) {
+            $this->fail('Subscribe to the base plan before adding an AI tier.');
+        }
+
+        $plans = config('kinhold.chatbot.plans', []);
+
+        if (in_array($tier, ['lite', 'standard', 'pro'], true)) {
+            $row = $plans[$tier] ?? null;
+            if (! $row || empty($row['public']) || empty($row['stripe_price_id'])) {
+                $this->fail('That AI tier is not available yet.');
+            }
+        }
+
+        $aiPriceIds = $this->configuredAiPriceIds();
+        $currentAiPriceId = $this->currentAiPriceId($subscription, $aiPriceIds);
+        $newAiPriceId = in_array($tier, ['lite', 'standard', 'pro'], true)
+            ? (string) $plans[$tier]['stripe_price_id']
+            : null;
+
+        // 1. Reconcile Stripe first — if it throws, settings stay untouched.
+        if ($currentAiPriceId !== $newAiPriceId) {
+            if ($currentAiPriceId !== null && $newAiPriceId !== null) {
+                // Tier → tier: swap with proration.
+                $subscription->swap($this->buildSwapPriceList($subscription, $newAiPriceId));
+            } elseif ($newAiPriceId !== null) {
+                // None → managed: add the new item and invoice the prorated amount now.
+                $subscription->addPriceAndInvoice($newAiPriceId);
+            } elseif ($currentAiPriceId !== null) {
+                // Managed → off/byok: drop the AI item.
+                $subscription->removePrice($currentAiPriceId);
+            }
+        }
+
+        // 2. Persist settings (after Stripe success).
+        $settings = $family->settings ?? [];
+        $chatbot = is_array($settings['chatbot'] ?? null) ? $settings['chatbot'] : [];
+
+        switch ($tier) {
+            case 'byok':
+                $settings['ai_mode'] = 'byok';
+                Arr::forget($chatbot, 'plan');
+                break;
+
+            case 'off':
+                $settings['ai_mode'] = 'kinhold';
+                Arr::forget($settings, 'ai_api_key');
+                Arr::forget($chatbot, 'plan');
+                break;
+
+            case 'lite':
+            case 'standard':
+            case 'pro':
+                $settings['ai_mode'] = 'kinhold';
+                Arr::forget($settings, 'ai_api_key');
+                $chatbot['plan'] = $tier;
+                break;
+        }
+
+        if (empty($chatbot)) {
+            Arr::forget($settings, 'chatbot');
+        } else {
+            $settings['chatbot'] = $chatbot;
+        }
+
+        $family->forceFill(['settings' => $settings])->save();
+    }
+
+    /**
+     * Find the AI subscription item (if any) currently on the subscription, by
+     * matching against the configured AI price IDs. Returns the price ID, not
+     * the item ID — the caller wants to know "which tier is active right now".
+     *
+     * @param  array<int, string>  $aiPriceIds
+     */
+    private function currentAiPriceId(Subscription $subscription, array $aiPriceIds): ?string
+    {
+        if (empty($aiPriceIds)) {
+            return null;
+        }
+
+        foreach ($subscription->items as $item) {
+            /** @var SubscriptionItem $item */
+            $priceId = $item->stripe_price;
+            if (in_array($priceId, $aiPriceIds, true)) {
+                return $priceId;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Build the price list for `Subscription::swap()` when changing managed
+     * tiers. Cashier's swap replaces the item set wholesale, so we have to
+     * include every non-AI price (base + storage + anything else) plus the
+     * new AI price. Storage stays metered-aware via Cashier's existing item
+     * detection.
+     *
+     * @return array<int, string>
+     */
+    private function buildSwapPriceList(Subscription $subscription, string $newAiPriceId): array
+    {
+        $aiPriceIds = $this->configuredAiPriceIds();
+        $prices = [];
+
+        foreach ($subscription->items as $item) {
+            /** @var SubscriptionItem $item */
+            $priceId = $item->stripe_price;
+            if (in_array($priceId, $aiPriceIds, true)) {
+                continue; // drop the old AI item
+            }
+            $prices[] = $priceId;
+        }
+
+        $prices[] = $newAiPriceId;
+
+        return array_values(array_unique($prices));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function configuredAiPriceIds(): array
+    {
+        return collect(config('kinhold.chatbot.plans', []))
+            ->pluck('stripe_price_id')
+            ->filter(fn ($id) => is_string($id) && $id !== '')
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return never
+     */
+    private function fail(string $message, int $status = 422): void
+    {
+        throw new HttpResponseException(response()->json(['message' => $message], $status));
     }
 }

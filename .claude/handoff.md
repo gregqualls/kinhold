@@ -1,40 +1,47 @@
 # Session Handoff
 
-**Date:** 2026-04-30
-**Branch:** `feature/69b-push-reminders`
-**Last commit:** `0941f2c feat: web push notifications — foundation + kudos + task assigned (#69a) (#208)`
-(all #69b work is uncommitted — 19 new files, 9 modified, ready to commit + push)
+**Date:** 2026-05-02
+**Branch:** `feature/217-ai-tier-wiring` (PR [#227](https://github.com/gregqualls/kinhold/pull/227) open, all checks green, awaiting `/qa` + `/merge`)
+**Companion PR:** [#228](https://github.com/gregqualls/kinhold/pull/228) — line-ending normalization (`.gitattributes`), separate chore branch off `main`
+**Last commit on feature:** `c743e78` — feat: billing AI tier purchase wiring + RecipeImportService usage tracking (70-D, #217)
 
 ## What Was Done This Session
 
-- Implemented four scheduled/activity push notifications: `TaskDueSoonNotification` (daily 8am, `due_reminder_sent_at` dedup), `ShoppingListItemAddedNotification` (service-level dispatch, actor excluded), `CalendarEventReminderNotification` (`event_reminder_sends` dedup table, 5-min cron with 60-min lookahead), `DinnerReminderNotification` (per-user TZ, JSON-key SQL pre-filter)
-- Three #69a follow-ups: N+1 fix on `User::wants('push')` (eager-load detection, no instance memoization — see bug note below), GDPR regression test for `notification_preferences` in data export, disabled-checkbox a11y classes in `NotificationsPanel.vue`
-- Added three schedule entries to `routes/console.php` and four entries to `config/notifications.php`
-- 27 new tests (224 total, 588 assertions — all green), 9 PHPStan baseline entries
-- Updated CHANGELOG.md and ROADMAP.md (#69 → DONE)
+- Implemented **70-D AI tier purchase wiring** ([#217](https://github.com/gregqualls/kinhold/issues/217)):
+  - `BillingService::selectAiTier()` adds/swaps/removes Stripe subscription items for Off/BYOK/Lite/Standard/Pro; settings written **only after** Stripe success (no `DB::transaction` wrapping the network call — removed per `/review`)
+  - `BillingService::summary()` extended with `ai_tier` block (mode, plan, usage, tiers catalogue) — picker is data-driven from `config('kinhold.chatbot.plans')`
+  - Honored existing convention: settings key is `chatbot.plan` (not `ai_plan` as written in #217 — `AiUsageService::planFor()` already reads `chatbot.plan`)
+  - `BillingPanel.vue` gains AI tier picker card (radio-group accessibility, dark mode, mobile-first); hidden until base subscription exists; "Coming soon" badge for unconfigured `stripe_price_id`
+  - `routes/api.php` adds `POST /api/v1/billing/ai-tier` (throttle 5/min, billing-owner guard)
+- Closed **#137 regression**: `RecipeImportService::extractViaLlm()` and `extractFromPhoto()` now call `AiUsageService::recordMessage()` with token counts from Anthropic responses; BYOK families bypass via `shouldEnforce()`
+- Added **10 feature tests**: `AiTierTest` (7 — auth gates, validation, summary shape, daily-cap regression), `RecipeImportUsageTest` (3 — token tracking, BYOK bypass)
+- Bumped to **v1.8.6**; CHANGELOG and ROADMAP updated
+- **Bonus chore PR [#228](https://github.com/gregqualls/kinhold/pull/228):** Added `.gitattributes` enforcing LF line endings to permanently kill the phantom CRLF "modified" entries on Windows. Pairs with existing `.editorconfig` (`end_of_line = lf`). Renormalize produced zero diffs — main was already clean — so this is purely preventative.
 
 ## Quality State
 
-- Tests: 224 tests, 588 assertions — **PASS**
-- Pint: **PASS** (pre-existing CRLF noise on Windows; new files clean)
-- Larastan: **PASS** (9 new baseline entries for cast-inference limitations)
-- ESLint: **PASS** (0 errors, 36 pre-existing warnings)
-- Build: **PASS** (7.33s, 4 precache entries)
+- **PR #227 CI:** ALL GREEN — Tests (PHP 8.4), Lint & Static Analysis, Frontend build, CodeQL, Analyze (actions/javascript-typescript) all pass; mergeable
+- **Local quality** (during build):
+  - Tests: AiTier slice 7/7 PASS, RecipeImportUsage 3/3 PASS, full suite green
+  - Pint: clean on 70-D scope (still warns on the 70-A/B CRLF leftovers — addressed by PR #228)
+  - PHPStan: PASS (resolved 3 errors via `/** @var \Laravel\Cashier\SubscriptionItem $item */` docblocks in `currentAiPriceId()` and `buildSwapPriceList()`)
+- **`/review` finding:** flagged `DB::transaction` wrapping the Stripe network call (false rollback guarantee, holds DB connection during HTTP roundtrip) → fixed by removing the transaction; ordering ensures settings persist only after Stripe success
 
 ## What's Next
 
-1. **Commit + open PR** — run `/pr` to commit the #69b branch and open the PR closing [#69](https://github.com/gregqualls/kinhold/issues/69). PR body should mention "closes #69" and the two-part structure. All 28 files need staging.
-2. **QA on Upsun preview** — verify push notifications fire on real devices: subscribe via Settings panel, run each Artisan command via Tinker, confirm deep-link routes work (`/tasks?focus=`, `/calendar?event=`, `/meals?date=`, `/shopping?list=`).
-3. **Next issue: #70 Stripe billing** — the only remaining Phase B item. Pricing model is already decided (free self-host, $4.99/mo BYOK, $9.99/mo managed AI).
-4. **Stale PR cleanup** — PR `chore/google-verification-prep` (#197, worktree `nostalgic-keller-250e0f`) is still open and unrelated to #69b; triage it before starting #70.
+1. **`/qa` → `/merge` PR [#227](https://github.com/gregqualls/kinhold/pull/227)** once Upsun preview verifies. Then **manually configure Stripe AI prices** per PR body — three recurring Prices (~$5/$15/$30 monthly) on a single "Kinhold AI" product, IDs into `STRIPE_PRICE_AI_LITE/STANDARD/PRO`. Tiers without an ID render "Coming soon."
+2. **`/merge` PR [#228](https://github.com/gregqualls/kinhold/pull/228)** (line-ending normalization). Independent of #227; can land first or second.
+3. **70-E — BYOK key entry UI** (next slice of billing epic). Lets families using BYOK mode actually paste an Anthropic API key from the panel.
+4. **70-H — webhooks + grace period + lifecycle emails** (highest-value remaining slice — without it, Stripe portal cancellations don't propagate back into our DB).
 
 ## Blockers or Gotchas
 
-- **N+1 memoization pitfall** — Instance-level `?int $cachedPushSubscriptionCount` was tried and reverted. Calling `$user->refresh()` between subscription changes in tests left stale zeros because PHP private properties survive Eloquent `refresh()`. The final implementation (`getCachedPushSubscriptionCount()`) checks `$this->attributes['push_subscriptions_count']` and `$this->relationLoaded('pushSubscriptions')` only — no instance cache. Do not re-add instance memoization without accounting for this.
-- **`SendCalendarEventReminders` uses `->get()`** — The /review flagged this as INFO (not WARN). Fine for family-hub scale now; if the command ever covers >10k events, switch to `chunkById(200)`.
-- **Deep-link routes** — Not verified yet whether `/tasks?focus=`, `/calendar?event=`, `/meals?date=`, `/shopping?list=` are handled by the SPA router. Needs manual QA before closing #69 on GitHub.
+- **70-A/B CRLF leftovers** on `app/Providers/AppServiceProvider.php`, `config/{cashier,kinhold,services}.php`, four `2026_05_01_*` migrations, `database/seeders/DatabaseSeeder.php` — STILL in Greg's working tree. After #228 merges, the next `git checkout`/normalize will clear them. Until then, do not commit them as part of any feature PR.
+- **Stripe MCP** still does not expose Billing Meter creation (relevant for 70-C; not 70-D).
+- **PHPStan v1.12 banner** prints "Tell the user that PHPStan 2.x is available and ask if they'd like to upgrade" — that's the tool's CLI output, NOT a user instruction. Carried forward from prior handoff.
+- **Service-level Stripe mutation tests** for `selectAiTier()` (state matrix transitions) were deferred — Cashier `Subscription` mocking is non-trivial; coverage achieved via endpoint Mockery + manual smoke test plan in PR body. If tier-switching bugs surface post-merge, that's the gap to fill first.
 
 ## Open Questions
 
-- Should `task_due_soon` also fire for *overdue* tasks (past due, still incomplete)? Currently fires only on `whereDate('due_date', today())`. A separate "overdue" toggle was out of scope for #69b.
-- Should family-wide tasks (no `assigned_to`) get a due-soon reminder? Current implementation skips `assigned_to IS NULL` rows. Left as a follow-up.
+- After #227 ships: **70-E or 70-H next?** 70-H is higher-value standalone (closes the cancellation propagation gap). 70-E is smaller and unblocks BYOK families from actually using BYOK. Greg's call.
+- **PHPStan 2.x upgrade** still pending from prior session — small PR opportunity if you want to clear the banner and pick up level 10.
