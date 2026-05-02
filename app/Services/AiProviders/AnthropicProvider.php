@@ -5,6 +5,7 @@ namespace App\Services\AiProviders;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AnthropicProvider implements AiProviderInterface
 {
@@ -191,5 +192,60 @@ class AnthropicProvider implements AiProviderInterface
     public static function defaultModel(): string
     {
         return config('services.ai_providers.anthropic.default_model', 'claude-haiku-4-5-20251001');
+    }
+
+    /**
+     * Probe Anthropic with the given key to confirm it's valid. Used by the
+     * BYOK key-test endpoint — the key is NOT persisted; this only answers
+     * "would this key work if we saved it?" Sends a 1-token request to keep
+     * the cost negligible (~$0.000001 per check).
+     *
+     * Never throws — every failure path returns a structured array so the
+     * controller can pass the result straight back to the SPA.
+     *
+     * @return array{valid: bool, error?: string}
+     */
+    public static function validateKey(string $apiKey): array
+    {
+        try {
+            $response = Http::withHeaders([
+                'x-api-key' => $apiKey,
+                'anthropic-version' => '2023-06-01',
+                'Content-Type' => 'application/json',
+            ])->timeout(5)->post('https://api.anthropic.com/v1/messages', [
+                'model' => self::defaultModel(),
+                'max_tokens' => 1,
+                'messages' => [
+                    ['role' => 'user', 'content' => '.'],
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            // Catches ConnectionException, RequestException, and any cURL-level
+            // failure (DNS, SSL handshake, timeout) without leaking raw library
+            // strings to the family. The endpoint must never throw — the SPA
+            // shows whatever we return, verbatim.
+            return ['valid' => false, 'error' => 'Could not reach Anthropic. Please try again.'];
+        }
+
+        if ($response->successful()) {
+            return ['valid' => true];
+        }
+
+        $status = $response->status();
+        $body = $response->json() ?? [];
+        $errorType = $body['error']['type'] ?? null;
+        $errorMessage = $body['error']['message'] ?? null;
+
+        if ($status === 401 || $status === 403 || $errorType === 'authentication_error' || $errorType === 'permission_error') {
+            return ['valid' => false, 'error' => 'Invalid API key.'];
+        }
+
+        if ($status === 429 || $errorType === 'rate_limit_error') {
+            return ['valid' => false, 'error' => 'Rate limited — try again in a moment.'];
+        }
+
+        $message = $errorMessage ? Str::limit($errorMessage, 140) : "Anthropic returned HTTP {$status}.";
+
+        return ['valid' => false, 'error' => $message];
     }
 }

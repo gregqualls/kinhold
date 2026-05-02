@@ -312,6 +312,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/notification-preferences', [SettingsController::class, 'updateNotificationPreferences']);
             Route::delete('/account', [SettingsController::class, 'deleteAccount'])->middleware('throttle:5,1');
             Route::post('/account/data-export', [SettingsController::class, 'exportData'])->middleware('throttle:5,1');
+            Route::post('/ai/test', [SettingsController::class, 'testAiKey'])->middleware('throttle:5,1');
         });
 
         // Billing — Stripe Checkout, Customer Portal, cancel/resume.

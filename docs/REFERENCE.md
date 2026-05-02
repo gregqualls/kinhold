@@ -128,7 +128,7 @@ All routes prefixed with `/api/v1/`. Auth routes are public; everything else req
 - **Calendar:** `GET /calendar/events`, `GET /calendar/connections`, `POST /calendar/connect`, `POST /calendar/sync`
 - **Family:** `GET /family`, `GET /family/members`, `POST /family/invite`, `PUT /family/settings`
 - **Chat:** `POST /chat`, `GET /chat/history`
-- **Settings:** `GET /settings`, `PUT /settings`
+- **Settings:** `GET /settings`, `PUT /settings`, `POST /settings/ai/test`
 - **Points:** `GET /points/bank`, `GET /points/leaderboard`, `GET /points/feed`, `POST /points/kudos`, `POST /points/deduct`
 - **Rewards:** CRUD on `/rewards`, `POST /rewards/{id}/purchase`, `GET /rewards/purchases`
 - **Badges:** CRUD on `/badges`, `POST /badges/{id}/award`, `DELETE /badges/{id}/revoke/{user}`, `GET /badges/earned`

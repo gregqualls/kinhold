@@ -7,6 +7,7 @@ use App\Models\Family;
 use App\Models\User;
 use App\Services\AccountDeletionService;
 use App\Services\AgentService;
+use App\Services\AiProviders\AnthropicProvider;
 use App\Services\UserDataExportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -242,6 +243,26 @@ class SettingsController extends Controller
                 'meal_slots' => $settings['meal_slots'] ?? ['breakfast', 'lunch', 'dinner', 'snack'],
             ],
         ], 200);
+    }
+
+    /**
+     * Validate a BYOK Anthropic API key without persisting it. Probes
+     * Anthropic with a 1-token request and returns whether the key works.
+     * Saving remains a separate PUT /settings call.
+     */
+    public function testAiKey(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $family = $user->currentFamily()->firstOrFail();
+
+        // Same authorization as settings update — parents only.
+        $this->authorize('update', $family);
+
+        $validated = $request->validate([
+            'api_key' => 'required|string|max:500',
+        ]);
+
+        return response()->json(AnthropicProvider::validateKey($validated['api_key']));
     }
 
     /**

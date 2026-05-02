@@ -2,6 +2,51 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-02 — BYOK key UX: test, clear, billing cross-link (v1.8.7, [#218](https://github.com/gregqualls/kinhold/issues/218) / [#70](https://github.com/gregqualls/kinhold/issues/70)-E)
+
+Fifth slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. The BYOK input UI in **AI & Integrations** ([SettingsView.vue:359-514](resources/js/views/settings/SettingsView.vue)) already handled save / mask / show-hide, but a family pasting a key had no way to **verify** it actually worked until they fired off a real chat message — and the only way to remove a saved key was to clear the field and re-save (non-obvious). 70-D's tier picker also left users stranded when they picked **BYOK** with no hint that a key UI existed in another section. This slice closes those gaps without touching the `BILLING_ENABLED` gate (key UI is canonical in AI & Integrations, so self-hosters get it for free).
+
+**New endpoint: `POST /api/v1/settings/ai/test`** ([SettingsController::testAiKey()](app/Http/Controllers/Api/V1/SettingsController.php), [routes/api.php](routes/api.php)). Lives with the rest of `/settings` rather than `/billing` so it works for self-hosters with `BILLING_ENABLED=false`. Throttled 5/min. Parent-only via the existing `update` Family policy. Body: `{api_key}`. Delegates to `AnthropicProvider::validateKey()` and returns the verdict verbatim — **never persists**. Saving stays a separate `PUT /settings` call.
+
+**`AnthropicProvider::validateKey(string): array`** ([app/Services/AiProviders/AnthropicProvider.php](app/Services/AiProviders/AnthropicProvider.php)). Static (no instance needed for an unverified key). Probes Anthropic with `max_tokens: 1` against the default model — total cost ~$0.000001 per check. 5-second timeout. Never throws. Returns:
+
+| Condition | Response |
+|---|---|
+| 2xx | `['valid' => true]` |
+| 401/403 / `authentication_error` / `permission_error` | `['valid' => false, 'error' => 'Invalid API key.']` |
+| 429 / `rate_limit_error` | `['valid' => false, 'error' => 'Rate limited — try again in a moment.']` |
+| Other 4xx | `['valid' => false, 'error' => '<truncated message>']` |
+| `ConnectionException` | `['valid' => false, 'error' => 'Could not reach Anthropic. Please try again.']` |
+
+**SPA: Test + Clear + status display** ([SettingsView.vue](resources/js/views/settings/SettingsView.vue)). Three additions to the existing BYOK panel:
+
+1. **Test key** button (between Reset and Save) — disabled until something is typed; on click, POSTs the in-memory value, never the saved blob (saved keys aren't round-tripped to the client). Inline status badge appears under the input — green check + "Key is valid." or red X + the error message. A `watch(aiConfig.apiKey)` clears the verdict on the next keystroke so a stale "valid" can't linger next to a fresh paste.
+2. **Clear saved key** button — only renders when `aiConfig.hasSavedKey === true`. Confirms via `BaseModal` (sized `sm`, danger button) — explicitly **not** `window.confirm` (#224 tracks the existing BillingPanel cancel-flow violation). On confirm, PUTs `ai_api_key: ''` to the existing settings endpoint, which already treats empty string as a clear.
+3. **Help text** under the input rewritten per #218 acceptance: "Find your key at [console.anthropic.com](https://console.anthropic.com). We encrypt it at rest and never see your key in plaintext."
+
+**SPA: BillingPanel cross-link** ([BillingPanel.vue](resources/js/components/billing/BillingPanel.vue)). When the active AI tier is `byok`, render one line under the radio group: *"Manage your Anthropic API key in [AI & Integrations](#ai-integrations)."* The existing `SettingsSection` hash-watcher ([SettingsSection.vue:100-112](resources/js/components/settings/SettingsSection.vue)) auto-opens and scrolls — no new routing logic.
+
+**Security reassurance card on the BYOK panel.** Pasting an API key into someone else's web form is a leap of faith. A small green card now sits above the provider picker: *"Your key stays private. Encrypted with AES-256 before it touches the database, decrypted only in memory the instant a chat request runs, and never logged or shown back to you in plaintext — only a masked preview."* Accurate to the implementation — `SettingsController::update` runs Laravel's `encrypt()` (AES-256-CBC keyed by `APP_KEY`) before writing `families.settings['ai_api_key']`, and `SettingsController::maskApiKey` is the only path that ever surfaces a saved key to the SPA.
+
+**Self-host parity for the AI mode tabs.** Caught during Upsun preview smoke (`BILLING_ENABLED=false` instance was still showing the "Use Kinhold AI · Powered by Claude · Included with your trial" tab). On self-hosted instances there is no managed-AI tier — no one is fronting the Anthropic bill — so the two-tab selector and the "we handle it for you" panel are now gated on a `billingEnabled` computed (`appConfig.value?.billing_enabled`). Self-hosters see only the BYOK panel; `aiMode` is force-loaded to `'byok'` regardless of the stored value, and the Test / Clear / Save action row uses `!billingEnabled || aiMode === 'byok'` so the buttons remain visible.
+
+**Tests** (11 new, all green; full suite remains green):
+
+- `AiKeyTestEndpointTest` (6): unauth → 401 · child → 403 · missing `api_key` → 422 · success path → 200 + `valid:true` · 401 from Anthropic → 200 + `valid:false` + "Invalid API key." · key is **not** persisted to `family.settings.ai_api_key` after a successful test.
+- `AnthropicValidateKeyTest` (5 unit): 200 → `valid:true` · `authentication_error` → "Invalid API key." · `rate_limit_error` → "Rate limited" · `ConnectionException` → "Could not reach Anthropic" · other 4xx → truncated error message.
+
+**Bonus copy fix:** Replaced misleading "Free in beta" / "free during the beta period" wording in the Kinhold AI tab with trial-aware copy ("Included with your trial" / "Included free with your 14-day trial; pick a paid AI tier from the Billing panel to keep using it after"). Discovered during smoke testing — the panel was promising a beta-period freebie that no longer matches the billing model.
+
+**Out of scope (follow-ups filed):**
+
+- **Multi-provider BYOK (OpenAI + Gemini)** — original product intent was any major LLM, but per [#201](https://github.com/gregqualls/kinhold/issues/201) `AgentService::askWithTools` only has an Anthropic tool-use adapter. Re-exposing other providers today would let users save keys that pass validation but silently fall back to platform Anthropic in chat. Filed [#229 BYOK multi-provider](https://github.com/gregqualls/kinhold/issues/229) as the unblocking work (function-calling JSON-schema adapters for OpenAI/Gemini, revert the [`2026_04_30_120000` normalization](database/migrations/2026_04_30_120000_normalize_stale_ai_provider_settings.php), per-provider validate probes).
+- **Trial includes AI Lite; upgrade ends trial early** — the new copy promises a behavior the billing layer doesn't actually implement yet. Filed [#230](https://github.com/gregqualls/kinhold/issues/230) to grant Lite-tier limits during `trialing` status without a Stripe item, expose the AI picker during trial, and wire Standard/Pro selection to `Subscription::endTrial()` + start real billing.
+
+**Files**
+
+- New: `tests/Feature/Settings/AiKeyTestEndpointTest.php`, `tests/Unit/AnthropicValidateKeyTest.php`
+- Modified: `app/Services/AiProviders/AnthropicProvider.php` (+`validateKey`), `app/Http/Controllers/Api/V1/SettingsController.php` (+`testAiKey`), `routes/api.php` (POST `/settings/ai/test`), `resources/js/views/settings/SettingsView.vue` (Test + Clear + status + helper text + BaseModal confirm), `resources/js/components/billing/BillingPanel.vue` (BYOK cross-link), `config/version.php` (1.8.7), `docs/ROADMAP.md`
+
 ## 2026-05-02 — AI tier purchase wiring + recipe-import usage tracking (v1.8.6, [#217](https://github.com/gregqualls/kinhold/issues/217) / [#70](https://github.com/gregqualls/kinhold/issues/70)-D)
 
 Fourth slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. Connects the **already-built** AI usage infrastructure (`AiUsageDaily`, `AiUsageService`, plan tiers in `config/kinhold.php`) to actual Stripe purchases. Adding/swapping/removing an AI subscription item now flips `families.settings.chatbot.plan` (the slug `AiUsageService::planFor()` reads) so the existing daily-cap enforcement applies the right limit. Still gated behind `BILLING_ENABLED=false` — no production exposure until 70-H ships.
