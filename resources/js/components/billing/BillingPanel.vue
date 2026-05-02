@@ -119,6 +119,11 @@
           >Coming soon</span>
         </button>
       </div>
+
+      <p v-if="currentAiTier === 'byok'" class="text-xs text-ink-secondary">
+        Manage your Anthropic API key in
+        <a href="#ai-integrations" class="text-accent-lavender-bold hover:underline">AI &amp; Integrations</a>.
+      </p>
     </div>
 
     <div

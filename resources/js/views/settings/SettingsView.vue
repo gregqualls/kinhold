@@ -394,7 +394,7 @@
                 </svg>
               </div>
               <p class="text-sm font-semibold text-ink-primary">Use Kinhold AI</p>
-              <p class="text-xs text-ink-secondary mt-0.5">Powered by Claude · Free in beta</p>
+              <p class="text-xs text-ink-secondary mt-0.5">Powered by Claude · Included with your trial</p>
             </button>
 
             <!-- BYOK tab -->
@@ -431,8 +431,7 @@
               <div>
                 <p class="text-sm font-medium text-accent-lavender-bold">You're all set</p>
                 <p class="text-xs text-accent-lavender-bold mt-0.5">
-                  Kinhold AI is powered by Anthropic's Claude. No API key needed — we handle it for you.
-                  This is free during the beta period.
+                  Kinhold AI is powered by Anthropic's Claude. No API key needed — we handle it for you. Included free with your 14-day trial; pick a paid AI tier from the Billing panel to keep using it after.
                 </p>
               </div>
             </div>
@@ -484,7 +483,9 @@
                   <template v-if="aiConfig.hasSavedKey && !aiConfig.apiKey">
                     Current key: <span class="font-mono">{{ aiConfig.maskedKey }}</span>
                   </template>
-                  <template v-else>Keep this secret — stored encrypted.</template>
+                  <template v-else>
+                    Find your key at <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" class="text-accent-lavender-bold hover:underline">console.anthropic.com</a>. We encrypt it at rest and never see your key in plaintext.
+                  </template>
                 </p>
                 <a
                   :href="selectedProviderHelpUrl" target="_blank" rel="noopener noreferrer"
@@ -492,6 +493,22 @@
                 >
                   Get API key →
                 </a>
+              </div>
+
+              <!-- Inline test-key status -->
+              <div
+                v-if="aiTestStatus"
+                class="mt-2 flex items-start gap-2 text-xs"
+                :class="aiTestStatus.valid ? 'text-status-success' : 'text-status-danger'"
+                role="status"
+              >
+                <svg v-if="aiTestStatus.valid" class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <svg v-else class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span>{{ aiTestStatus.valid ? 'Key is valid.' : aiTestStatus.error }}</span>
               </div>
             </div>
 
@@ -507,7 +524,24 @@
             </div>
           </div>
 
-          <div class="flex gap-3 justify-end pt-4">
+          <div class="flex flex-wrap gap-3 justify-end pt-4">
+            <BaseButton
+              v-if="aiMode === 'byok' && aiConfig.hasSavedKey"
+              variant="ghost"
+              :loading="clearingAi"
+              @click="showClearKeyModal = true"
+            >
+              Clear saved key
+            </BaseButton>
+            <BaseButton
+              v-if="aiMode === 'byok'"
+              variant="ghost"
+              :disabled="!aiConfig.apiKey"
+              :loading="testingAi"
+              @click="testAiKey"
+            >
+              Test key
+            </BaseButton>
             <BaseButton variant="ghost" @click="resetAiConfig">Reset</BaseButton>
             <BaseButton variant="primary" :loading="savingAi" @click="saveAiSettings">Save AI Settings</BaseButton>
           </div>
@@ -1492,11 +1526,28 @@
         </BaseButton>
       </div>
     </BaseModal>
+
+    <!-- Confirm clearing the saved BYOK Anthropic key. Encrypted blob is
+         removed from families.settings; chat falls back to platform key. -->
+    <BaseModal
+      :show="showClearKeyModal"
+      title="Clear saved API key?"
+      size="sm"
+      @close="showClearKeyModal = false"
+    >
+      <p class="text-sm text-ink-secondary">
+        Your encrypted Anthropic key will be removed from this family. AI features will fall back to Kinhold's hosted key (subject to daily limits).
+      </p>
+      <template #footer>
+        <BaseButton variant="ghost" @click="showClearKeyModal = false">Cancel</BaseButton>
+        <BaseButton variant="danger" :loading="clearingAi" @click="clearAiKey">Clear key</BaseButton>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted, nextTick } from 'vue'
+import { reactive, ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
@@ -1645,6 +1696,9 @@ const familyErrors = reactive({ name: '' })
 
 // AI config
 const savingAi = ref(false)
+const testingAi = ref(false)
+const clearingAi = ref(false)
+const showClearKeyModal = ref(false)
 const showAiKey = ref(false)
 const aiProviders = ref([])
 const aiMode = ref('kinhold') // 'kinhold' = use our key, 'byok' = bring your own
@@ -1655,6 +1709,10 @@ const aiConfig = reactive({
   maskedKey: '',
   hasSavedKey: false,
 })
+// Inline test result: { valid: true } or { valid: false, error: '...' }.
+// Cleared automatically on next keystroke so old verdicts don't linger after
+// the user pastes a different key.
+const aiTestStatus = ref(null)
 
 // MCP Token
 const mcpLoading = ref(false)
@@ -2122,6 +2180,47 @@ const selectAiProvider = (slug) => {
 const resetAiConfig = () => {
   aiConfig.apiKey = ''
   aiConfig.model = ''
+  aiTestStatus.value = null
+}
+
+// Wipe stale verdicts the moment the user edits the field — otherwise a
+// "Key is valid" badge could linger next to a brand-new untested paste.
+watch(() => aiConfig.apiKey, () => { aiTestStatus.value = null })
+
+const testAiKey = async () => {
+  if (!aiConfig.apiKey) return
+  testingAi.value = true
+  aiTestStatus.value = null
+  try {
+    const { data } = await api.post('/settings/ai/test', { api_key: aiConfig.apiKey })
+    aiTestStatus.value = data
+  } catch (err) {
+    aiTestStatus.value = {
+      valid: false,
+      error: err.response?.data?.message || 'Could not reach the test endpoint.',
+    }
+  }
+  testingAi.value = false
+}
+
+const clearAiKey = async () => {
+  clearingAi.value = true
+  try {
+    const { data } = await api.put('/settings', { ai_api_key: '' })
+    if (data.settings) {
+      aiConfig.maskedKey = data.settings.ai_api_key_masked || ''
+      aiConfig.hasSavedKey = data.settings.ai_has_key || false
+    }
+    aiConfig.apiKey = ''
+    aiTestStatus.value = null
+    showClearKeyModal.value = false
+    await authStore.fetchUser()
+    authStore.fetchAiReady()
+    success('API key cleared.')
+  } catch (err) {
+    notificationError(err.response?.data?.message || 'Failed to clear API key.')
+  }
+  clearingAi.value = false
 }
 
 const saveAiSettings = async () => {
