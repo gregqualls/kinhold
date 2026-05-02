@@ -6,14 +6,17 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon as IlluminateCarbon;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Billable;
 
 /**
  * @property array<string, mixed>|null $settings
+ * @property IlluminateCarbon|null $payment_failed_at
  */
 class Family extends Model
 {
@@ -41,7 +44,39 @@ class Family extends Model
     {
         return [
             'settings' => 'json',
+            'payment_failed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The user designated as billing owner for this family. Webhook handlers
+     * notify this user (not the family at large) about payment lifecycle events.
+     */
+    public function billingOwner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'billing_owner_id');
+    }
+
+    /**
+     * Has Stripe reported a failed payment that hasn't been resolved yet?
+     * Used by the BillingPanel + grace period scheduler to gate dunning UX.
+     */
+    public function inGracePeriod(): bool
+    {
+        return $this->payment_failed_at !== null;
+    }
+
+    /**
+     * Days elapsed since `payment_failed_at`. Returns 0 if not in grace period.
+     * Drives the day-0/3/7 state machine in `kinhold:enforce-grace-period`.
+     */
+    public function gracePeriodDaysElapsed(): int
+    {
+        if ($this->payment_failed_at === null) {
+            return 0;
+        }
+
+        return (int) $this->payment_failed_at->diffInDays(IlluminateCarbon::now());
     }
 
     /**

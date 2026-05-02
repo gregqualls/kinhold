@@ -20,6 +20,7 @@ return [
         'calendar' => 'Calendar',
         'food' => 'Food & Meals',
         'family' => 'Family activity',
+        'billing' => 'Billing & subscription',
     ],
 
     /*
@@ -115,6 +116,18 @@ return [
             'default_email' => false,
             'default_push' => false,
             'requires_module' => 'food',
+        ],
+
+        // Billing lifecycle — sent only to the family's billing owner. These are
+        // transactional (failed payments, cancellations, downgrades), so default
+        // is on and most users won't toggle this. Opt-out remains possible.
+        'billing' => [
+            'category' => 'billing',
+            'label' => 'Billing & subscription notices',
+            'description' => 'Failed payments, trial endings, cancellations',
+            'channels' => ['email'],
+            'default_email' => true,
+            'default_push' => false,
         ],
 
     ],

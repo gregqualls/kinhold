@@ -332,6 +332,16 @@ class VaultController extends Controller
             return response()->json(['message' => 'File uploads are disabled for the demo family.'], 403);
         }
 
+        // Block new uploads when the family is in a billing-failed soft cap
+        // (set by the day-7 grace-period downgrade — see EnforceGracePeriod).
+        // Existing data is never deleted; only new uploads are blocked until
+        // payment is restored. See 70-H (#221).
+        if ($family && ! empty($family->settings['storage_soft_capped'])) {
+            return response()->json([
+                'message' => 'New uploads are paused while your subscription is past due. Restore your subscription to upload new files.',
+            ], 402);
+        }
+
         $validated = $request->validate([
             'file' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,gif,webp,doc,docx,xls,xlsx,txt,csv',
         ]);

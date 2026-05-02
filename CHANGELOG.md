@@ -2,6 +2,37 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-02 — Stripe webhooks + grace period + lifecycle emails (v1.8.9, [#221](https://github.com/gregqualls/kinhold/issues/221) / [#70](https://github.com/gregqualls/kinhold/issues/70)-H)
+
+Seventh slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella, and the last patch before v1.9.0 (the public billing flip). Every prior 70-X slice wrote local state assuming a webhook would eventually sync the truth back from Stripe — without that loop closed, a card decline, a portal-side cancellation, a trial-end, or a successful subscription activation are all invisible to our DB. 70-H delivers the receiver, the idempotency ledger, the 7-day grace-period state machine, and six branded lifecycle emails.
+
+**Backend:**
+
+- **`StripeWebhookController`** ([app/Http/Controllers/Webhooks/StripeWebhookController.php](app/Http/Controllers/Webhooks/StripeWebhookController.php)) extends Cashier's base controller — inherits the `VerifyWebhookSignature` middleware (auto-attached when `STRIPE_WEBHOOK_SECRET` is set in `config/cashier.php`) plus the built-in `customer.subscription.{created,updated,deleted}` handlers that mirror Stripe state into the `subscriptions` table. Wraps `handleWebhook()` with row-locked idempotency: a `(provider, event_id)` row in `webhook_events` is created in a short transaction; on duplicate deliveries we ack 200 and bail. Adds new handlers for `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.trial_will_end`, and overrides `customer.subscription.deleted` to layer on the cancellation email after Cashier's parent runs.
+- **Grace period bookkeeping.** `invoice.payment_failed` sets `families.payment_failed_at = now()` exactly once per failure (replays don't restart the clock — the dunning state machine relies on the original timestamp), and dispatches `PaymentFailedNotification` immediately. `invoice.paid` clears `payment_failed_at`, restores any previously downgraded AI tier via `BillingService::selectAiTier()`, and dispatches `SubscriptionResumedNotification`.
+- **`kinhold:enforce-grace-period`** ([app/Console/Commands/EnforceGracePeriod.php](app/Console/Commands/EnforceGracePeriod.php)) sweeps families with `payment_failed_at` set, scheduled daily at 03:00 (1hr after the 02:00 storage tally). Day 3 → `PaymentRetryNotification` + `settings.grace_day_3_sent_at` marker. Day 7 → captures current `chatbot.plan` into `settings.ai_plan_before_downgrade`, calls `BillingService::selectAiTier($family, 'off')` to drop the AI line item from Stripe, sets `settings.storage_soft_capped = true` + `settings.downgraded_at`, dispatches `SubscriptionDowngradedNotification`. Each step is gated on its own marker — re-running the command on the same day is a no-op for already-handled families.
+- **`webhook_events` table** ([new migration](database/migrations/2026_05_03_000000_create_webhook_events_table.php)) — generic across providers (`provider` + `event_id` unique), so future Plaid/Postmark integrations reuse the dedupe key. UUID PK, `processed_at` written after the inner handler returns successfully.
+- **`families.payment_failed_at`** ([new migration](database/migrations/2026_05_03_000001_add_payment_failed_at_to_families_table.php)) nullable timestamp, cast to `datetime` on the model. New `Family` helpers: `billingOwner(): BelongsTo`, `inGracePeriod(): bool`, `gracePeriodDaysElapsed(): int`.
+- **Six new branded lifecycle Notifications** under `app/Notifications/Billing/`: `TrialEndingNotification`, `PaymentFailedNotification`, `PaymentRetryNotification`, `SubscriptionDowngradedNotification`, `SubscriptionCancelledNotification`, `SubscriptionResumedNotification`. All `ShouldQueue`, all addressed to `family.billingOwner` (not the family at large — billing actions belong to the designated owner). Each gates on `wantsEmail('billing')`, with `'billing'` added as a new category + type to `config/notifications.php` so the Settings UI picks it up automatically (default opt-in since these are transactional).
+- **Branded HTML email templates** under [resources/views/emails/billing/](resources/views/emails/billing/) — one shared `layout.blade.php` (Plus Jakarta Sans wordmark, brand-warm-ivory `#FAF8F5` shell, near-black CTA buttons, gold accent `#C4975A` for the "Restore" button per [BRAND_GUIDE.md](docs/BRAND_GUIDE.md)) plus six per-notification content templates extending it. The footer always links to the billing portal.
+- **Webhook route** added to `routes/api.php` outside the `auth:sanctum` group: `POST /api/v1/stripe/webhook` named `cashier.webhook`, signature middleware as the gate, throttle middleware bypassed (Stripe replays could otherwise be 429'd).
+
+**Tests** (15 new, all green — suite 288 → 303, 745 → 791 assertions):
+
+- `tests/Feature/Billing/WebhookTest.php` (8): each handler with a valid HMAC-SHA256 signed request (helper builds the `t=…,v1=…` header from `STRIPE_WEBHOOK_SECRET`), idempotency replay (3× same `event_id` → 1 notification + 1 ledger row), 403 on bad signature, payment-failed not restarting an existing grace clock.
+- `tests/Feature/Billing/GracePeriodTest.php` (7): day-3 fires once, day-3 marker prevents resend, day-7 downgrades + captures previous tier (mocking `BillingService::selectAiTier`), day-7 with no AI tier still flags soft-cap + sends email, families without `payment_failed_at` skipped, double-run is idempotent, `inGracePeriod()`/`gracePeriodDaysElapsed()` helpers reflect state correctly.
+
+**Out of scope (deliberately deferred):**
+
+- Refund self-service UI (manual via Stripe dashboard for v1).
+- Tax handling, promo codes, custom dunning cadence (use the 0/3/7 default).
+- **#230 (Lite-free-during-trial)** ships as a separate slice immediately after — must land before flipping `BILLING_ENABLED=true` so trial users who pick Lite during onboarding aren't charged on day 1.
+
+**Files**
+
+- New: `app/Http/Controllers/Webhooks/StripeWebhookController.php`, `app/Console/Commands/EnforceGracePeriod.php`, `app/Models/WebhookEvent.php`, 6× `app/Notifications/Billing/*Notification.php`, 7× `resources/views/emails/billing/*.blade.php`, 2× migrations, `tests/Feature/Billing/WebhookTest.php`, `tests/Feature/Billing/GracePeriodTest.php`.
+- Modified: `app/Models/Family.php` (cast + helpers + `billingOwner()` relation), `routes/api.php` (route), `routes/console.php` (schedule), `config/notifications.php` (billing category + type).
+
 ## 2026-05-02 — Onboarding billing step (v1.8.8, [#220](https://github.com/gregqualls/kinhold/issues/220) / [#70](https://github.com/gregqualls/kinhold/issues/70)-G)
 
 Sixth slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. The billing back-end has been complete since 70-E, but new hosted users had no in-flow prompt to pick a plan — the first thing they had to do post-onboarding was open Settings → Billing and find the picker themselves. 70-G drops a `BillingStep` into the existing onboarding wizard so the choice happens *during* the wizard, with a 14-day no-card trial and a Stripe Checkout handoff that reflects the picked AI tier in the very first invoice. 70-F (public landing page) was completed out-of-tree on Cloudflare from a separate repo and is closing as done-elsewhere.
