@@ -68,14 +68,16 @@ export const useBillingStore = defineStore('billing', () => {
     }
   }
 
-  async function startCheckout(returnUrls) {
+  async function startCheckout(returnUrls, options = {}) {
     loading.value = true
     lastError.value = ''
     try {
-      const { data } = await api.post('/billing/checkout-session', {
+      const payload = {
         success_url: returnUrls.success,
         cancel_url: returnUrls.cancel,
-      })
+      }
+      if (options.aiTier) payload.ai_tier = options.aiTier
+      const { data } = await api.post('/billing/checkout-session', payload)
       window.location.assign(data.url)
     } catch (e) {
       lastError.value = e?.response?.data?.message || 'Failed to start checkout.'

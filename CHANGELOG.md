@@ -2,6 +2,45 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-02 — Onboarding billing step (v1.8.8, [#220](https://github.com/gregqualls/kinhold/issues/220) / [#70](https://github.com/gregqualls/kinhold/issues/70)-G)
+
+Sixth slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. The billing back-end has been complete since 70-E, but new hosted users had no in-flow prompt to pick a plan — the first thing they had to do post-onboarding was open Settings → Billing and find the picker themselves. 70-G drops a `BillingStep` into the existing onboarding wizard so the choice happens *during* the wizard, with a 14-day no-card trial and a Stripe Checkout handoff that reflects the picked AI tier in the very first invoice. 70-F (public landing page) was completed out-of-tree on Cloudflare from a separate repo and is closing as done-elsewhere.
+
+**Backend:**
+
+- **`BillingService::createBaseCheckout()`** ([app/Services/BillingService.php](app/Services/BillingService.php)) gains an optional `?string $aiTier` parameter. Validates against the same `SELECTABLE_TIERS` registry and per-tier `public:true` + `stripe_price_id` gates as `selectAiTier()`. Managed tiers (lite/standard/pro) ride along as a third line item via `$builder->price($priceId)`; off/byok don't add Stripe items. After the Cashier session is created, `families.settings` keys (`ai_mode`, `chatbot.plan`, optional clear of `ai_api_key`) are written via a new private `writeAiTierSettings()` helper — *after* the Stripe call succeeds, mirroring the no-transaction approach already documented at lines 207–211 (network round-trip shouldn't hold a DB transaction; settings write is atomic on its own).
+- **`POST /api/v1/billing/checkout-session`** ([BillingController](app/Http/Controllers/Api/V1/BillingController.php)) accepts an optional `ai_tier` field validated `in:off,byok,lite,standard,pro` and forwards to `createBaseCheckout()`. Existing throttle, BILLING_ENABLED gate, and billing-owner authorization unchanged.
+- **`GET /api/v1/onboarding/status`** ([OnboardingController](app/Http/Controllers/Api/V1/OnboardingController.php)) gains two new fields the wizard reads: `billing_enabled` (mirror of the public config gate, co-located so the wizard doesn't need a second round-trip) and `billing_step_complete` (true when self-host, OR an active subscription exists, OR the family has already written `chatbot.plan`/`ai_mode=byok`). Replaces the implicit "always rerun the step" behaviour with a positive done-marker that survives reload after Checkout success.
+
+**Frontend:**
+
+- **New `BillingStep.vue`** ([resources/js/views/onboarding/steps/BillingStep.vue](resources/js/views/onboarding/steps/BillingStep.vue)). Mounted between FeaturesStep and CompleteStep in `OnboardingView`'s `activeSteps` computed — gated on `appConfig.billing_enabled && user.id === family.billing_owner_id` so self-hosters and non-owner parents don't see it (step count stays the same as before billing for those flows). Renders:
+  - Static base-plan card ($10/mo Hosted Family + storage disclosure).
+  - AI tier radio group reusing `summary.ai_tier.tiers` from `BillingService::aiTierSummary()` — automatically filters to `public:true` and disables tiers whose `stripe_price_id` env is unset ("Coming soon" treatment).
+  - Dynamic monthly total = base + selected tier price.
+  - Trial banner driven by `summary.trial_eligible && summary.trial_days` ("14-day free trial — no card charged until the trial ends.").
+  - Already-subscribed short-circuit card when the family hits the step with an active subscription (e.g., webhook beat them back to the wizard) — a single Continue advances normally.
+- **`registerContinue` handler** in BillingStep calls `billing.startCheckout({ success, cancel }, { aiTier })` which redirects to Stripe; returns `false` so `OnboardingView.handleContinue()` does not increment `currentStep` locally — the redirect is the advance.
+- **`OnboardingView.vue`** reads `?billing=success|cancel` query on mount: success jumps to the last step (CompleteStep) so the user doesn't re-walk Welcome→Features after Checkout; cancel lands back on BillingStep.
+- **`useBillingStore().startCheckout(returnUrls, options)`** ([resources/js/stores/billing.js](resources/js/stores/billing.js)) gains an `options.aiTier` second argument that's forwarded as `ai_tier` in the POST body; existing call sites pass nothing and behave identically.
+- **`useOnboardingStore().totalSteps`** bumped 6 → 7 (clamp upper bound for `goToStep`); the rendered count still comes from `OnboardingView.activeSteps.length`.
+
+**Tests** (6 new, all green — total suite 288 → 294):
+
+- `tests/Feature/Onboarding/BillingStepTest.php` (5): checkout-session forwards `ai_tier` and persists `chatbot.plan` + `ai_mode` after the mock Stripe success · invalid `ai_tier` → 422 · billing disabled → 403 · unconfigured managed tier (Stripe price ID null) → 422 with settings unchanged · `/onboarding/status` reports `billing_enabled` + `billing_step_complete` correctly across enabled/disabled and pre/post-pick states.
+- `tests/Feature/Billing/BillingControllerTest.php` (1 added): `checkout-session` with `ai_tier=standard` calls `BillingService::createBaseCheckout` with the tier as the fourth arg.
+
+**Out of scope (deliberately deferred):**
+
+- Trial-end notification / `trial_will_end` webhook reconciliation → 70-H.
+- Storage add-on toggle UI (issue acceptance was informational-only; storage auto-meters today).
+- Annual billing toggle ("monthly only for v1" per umbrella).
+
+**Files**
+
+- New: `resources/js/views/onboarding/steps/BillingStep.vue`, `tests/Feature/Onboarding/BillingStepTest.php`
+- Modified: `app/Services/BillingService.php` (+`createBaseCheckout` ai_tier param, +`writeAiTierSettings`), `app/Http/Controllers/Api/V1/BillingController.php` (+`ai_tier` validation), `app/Http/Controllers/Api/V1/OnboardingController.php` (+`billing_enabled`, `billing_step_complete`), `resources/js/views/onboarding/OnboardingView.vue` (+BillingStep import + gate + `?billing=` query handling), `resources/js/stores/billing.js` (+`options.aiTier`), `resources/js/stores/onboarding.js` (totalSteps bump), `tests/Feature/Billing/BillingControllerTest.php` (+ai_tier test), `config/version.php` (1.8.8)
+
 ## 2026-05-02 — BYOK key UX: test, clear, billing cross-link (v1.8.7, [#218](https://github.com/gregqualls/kinhold/issues/218) / [#70](https://github.com/gregqualls/kinhold/issues/70)-E)
 
 Fifth slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella. The BYOK input UI in **AI & Integrations** ([SettingsView.vue:359-514](resources/js/views/settings/SettingsView.vue)) already handled save / mask / show-hide, but a family pasting a key had no way to **verify** it actually worked until they fired off a real chat message — and the only way to remove a saved key was to clear the field and re-save (non-obvious). 70-D's tier picker also left users stranded when they picked **BYOK** with no hint that a key UI existed in another section. This slice closes those gaps without touching the `BILLING_ENABLED` gate (key UI is canonical in AI & Integrations, so self-hosters get it for free).

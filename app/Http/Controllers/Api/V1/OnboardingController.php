@@ -18,6 +18,19 @@ class OnboardingController extends Controller
         $user = $request->user();
         $family = $user->currentFamily()->firstOrFail();
 
+        $billingEnabled = (bool) config('kinhold.billing_enabled', false);
+        // The billing step is "done" when either the family already has an
+        // active subscription OR they've made a tier pick that wrote
+        // chatbot.plan / ai_mode=byok. Self-hosters and the wizard's own
+        // skip-when-disabled gate also count as done so nothing blocks the
+        // last step.
+        $chatbotPlan = $family->settings['chatbot']['plan'] ?? null;
+        $aiMode = $family->settings['ai_mode'] ?? null;
+        $billingStepComplete = ! $billingEnabled
+            || $family->subscribed('default')
+            || $chatbotPlan !== null
+            || $aiMode === 'byok';
+
         return response()->json([
             'family_name' => $family->name,
             'invite_code' => $user->isParent() ? $family->invite_code : null,
@@ -32,6 +45,8 @@ class OnboardingController extends Controller
                 'chat' => $family->settings['modules']['chat'] ?? true,
                 'vault' => $family->settings['modules']['vault'] ?? true,
             ],
+            'billing_enabled' => $billingEnabled,
+            'billing_step_complete' => $billingStepComplete,
             'onboarding_completed_at' => $user->onboarding_completed_at,
             'is_parent' => $user->isParent(),
         ]);

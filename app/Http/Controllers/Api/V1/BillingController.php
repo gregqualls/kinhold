@@ -47,6 +47,7 @@ class BillingController extends Controller
         $validated = $request->validate([
             'success_url' => 'required|url',
             'cancel_url' => 'required|url',
+            'ai_tier' => 'nullable|string|in:off,byok,lite,standard,pro',
         ]);
 
         try {
@@ -54,6 +55,7 @@ class BillingController extends Controller
                 $request->user()->family,
                 $validated['success_url'],
                 $validated['cancel_url'],
+                $validated['ai_tier'] ?? null,
             );
         } catch (ApiErrorException $e) {
             return response()->json([
