@@ -379,7 +379,7 @@ const aiTierOptions = computed(() => {
     }
   })
   const offDetail = billing.isOnTrial
-    ? 'AI Lite is included free during your trial — but you can use the app without AI too.'
+    ? 'AI Lite is included free during your trial, but you can use the app without AI too.'
     : 'No AI assistant. All other app features still work.'
   return [
     { slug: 'off', label: 'No AI', detail: offDetail, disabled: false, includedInTrial: false },
