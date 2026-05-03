@@ -446,6 +446,7 @@ class AuthController extends Controller
                 'id' => $user->family->id,
                 'name' => $user->family->name,
                 'slug' => $user->family->slug,
+                'is_demo' => app(BillingService::class)->isDemoFamily($user->family),
                 'invite_code' => $user->isParent() ? $user->family->invite_code : null,
                 'settings' => $user->family->settings ?? [],
                 'billing_owner_id' => $user->family->billing_owner_id,

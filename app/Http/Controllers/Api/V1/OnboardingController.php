@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\CalendarConnection;
 use App\Models\Tag;
+use App\Services\BillingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,14 +20,16 @@ class OnboardingController extends Controller
         $family = $user->currentFamily()->firstOrFail();
 
         $billingEnabled = (bool) config('kinhold.billing_enabled', false);
+        $isDemoFamily = app(BillingService::class)->isDemoFamily($family);
         // The billing step is "done" when either the family already has an
         // active subscription OR they've made a tier pick that wrote
-        // chatbot.plan / ai_mode=byok. Self-hosters and the wizard's own
-        // skip-when-disabled gate also count as done so nothing blocks the
-        // last step.
+        // chatbot.plan / ai_mode=byok. Self-hosters, the demo family, and the
+        // wizard's own skip-when-disabled gate also count as done so nothing
+        // blocks the last step.
         $chatbotPlan = $family->settings['chatbot']['plan'] ?? null;
         $aiMode = $family->settings['ai_mode'] ?? null;
         $billingStepComplete = ! $billingEnabled
+            || $isDemoFamily
             || $family->subscribed('default')
             || $chatbotPlan !== null
             || $aiMode === 'byok';

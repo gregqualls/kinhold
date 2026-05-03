@@ -97,8 +97,9 @@ const activeSteps = computed(() => {
   if (authStore.isParent) {
     const billingEnabled = !!authStore.appConfig?.billing_enabled
     const isBillingOwner = authStore.user?.id === authStore.family?.billing_owner_id
+    const isDemo = !!authStore.family?.is_demo
     const steps = [WelcomeStep, InviteStep, CalendarStep, TagsStep, FeaturesStep]
-    if (billingEnabled && isBillingOwner) {
+    if (billingEnabled && isBillingOwner && !isDemo) {
       steps.push(BillingStep)
     }
     steps.push(CompleteStep)

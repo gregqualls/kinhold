@@ -41,6 +41,16 @@ class BillingService
         return (bool) config('kinhold.billing_enabled', false);
     }
 
+    /**
+     * The kinhold.app marketing demo runs nightly `app:refresh-demo`, so any
+     * Stripe state created against this family is meaningless. We block billing
+     * mutations and hide the billing UI to keep the demo posture clean.
+     */
+    public function isDemoFamily(Family $family): bool
+    {
+        return $family->slug === 'q32-demo-family';
+    }
+
     public function resolveCurrentPlan(Family $family): string
     {
         if (! $this->isEnabled()) {

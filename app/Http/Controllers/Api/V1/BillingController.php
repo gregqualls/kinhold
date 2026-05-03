@@ -189,6 +189,10 @@ class BillingController extends Controller
             abort(403, 'No family on this account.');
         }
 
+        if ($this->billing->isDemoFamily($family)) {
+            abort(403, 'Billing is disabled for the demo. Sign up at kinhold.app to manage a real subscription.');
+        }
+
         if ($family->billing_owner_id !== $user->id) {
             abort(403, 'Only the family billing owner can manage billing.');
         }
