@@ -108,10 +108,15 @@ class BillingService
     public function aiTierSummary(Family $family): array
     {
         $settings = $family->settings ?? [];
+        $onTrial = (bool) $family->subscription('default')?->onTrial();
 
         return [
             'mode' => $settings['ai_mode'] ?? 'kinhold',
             'plan' => $settings['chatbot']['plan'] ?? null,
+            'on_trial' => $onTrial,
+            // Slug of the tier auto-granted free during trial (#230). SPA reads
+            // this to swap the price for an "Included with trial" badge.
+            'included_in_trial' => $onTrial ? 'lite' : null,
             'usage' => $this->usage->payloadFor($family),
             'tiers' => collect(config('kinhold.chatbot.plans', []))
                 ->filter(fn ($p) => (bool) ($p['public'] ?? false))
@@ -303,6 +308,29 @@ class BillingService
             $row = $plans[$tier] ?? null;
             if (! $row || empty($row['public']) || empty($row['stripe_price_id'])) {
                 $this->fail('That AI tier is not available yet.');
+            }
+        }
+
+        // Trial-aware branches (#230). Lite-during-trial = settings-only; the
+        // trial fallback in AiUsageService::planFor() already grants Lite limits,
+        // and writing the explicit slug honors the user's pick. Standard/Pro =
+        // "I'm ready to pay" — end the trial first so Stripe bills today instead
+        // of waiting for trial_end, then fall through to the existing add-price
+        // path. The trial-end webhook clears any implicit grant so users who
+        // never picked don't keep Lite limits after their first paid invoice.
+        if ($subscription->onTrial()) {
+            if ($tier === 'lite') {
+                $this->writeAiTierSettings($family, 'lite');
+
+                return;
+            }
+
+            if (in_array($tier, ['standard', 'pro'], true)) {
+                if (! $family->hasDefaultPaymentMethod()) {
+                    $this->fail('Add a payment method before upgrading mid-trial.');
+                }
+                $subscription->endTrial();
+                $subscription->refresh();
             }
         }
 

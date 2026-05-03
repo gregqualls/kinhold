@@ -27,8 +27,16 @@ class AiUsageService
     }
 
     /**
-     * Resolve the plan row that applies to this family. See planFor() precedence
-     * comment for the rules.
+     * Resolve the plan row that applies to this family.
+     *
+     * Precedence:
+     *   1. Numeric override (`settings.chatbot.daily_message_limit`) — admin escape hatch.
+     *   2. Family-set plan slug (`settings.chatbot.plan`) — explicit pick from BillingPanel.
+     *   3. Trial fallback — Cashier-trialing families with no explicit pick get Lite
+     *      free (issue #230). Settings stay null so the trial-end webhook can clear
+     *      the implicit grant cleanly without diffing.
+     *   4. Demo family default (`kinhold.chatbot.demo_plan`).
+     *   5. Global default (`kinhold.chatbot.default_plan`).
      *
      * @return array{name: string, daily_messages: int, slug: string}
      */
@@ -54,7 +62,16 @@ class AiUsageService
             return $this->planRow($familySlug, $plans[$familySlug]);
         }
 
-        // 3. Demo family default.
+        // 3. Trial fallback — see precedence note above. Skip the subscription
+        // lookup entirely for families that can't possibly be on a Cashier trial
+        // (no Stripe customer = never went through checkout). Avoids loading the
+        // subscriptions relation per chat message in the BILLING_ENABLED=false
+        // and self-hosted cases (the chat hot path).
+        if ($family->stripe_id && isset($plans['lite']) && $family->subscription('default')?->onTrial()) {
+            return $this->planRow('lite', $plans['lite']);
+        }
+
+        // 4. Demo family default.
         if ($family->slug === 'q32-demo-family') {
             $demoSlug = config('kinhold.chatbot.demo_plan', 'lite');
             if (isset($plans[$demoSlug])) {
@@ -62,7 +79,7 @@ class AiUsageService
             }
         }
 
-        // 4. Global default.
+        // 5. Global default.
         $defaultSlug = config('kinhold.chatbot.default_plan', 'free');
         if (isset($plans[$defaultSlug])) {
             return $this->planRow($defaultSlug, $plans[$defaultSlug]);

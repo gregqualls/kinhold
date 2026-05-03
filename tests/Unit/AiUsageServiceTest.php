@@ -113,6 +113,91 @@ class AiUsageServiceTest extends TestCase
         $this->assertSame(7, $plan['daily_messages']);
     }
 
+    public function test_plan_for_skips_subscription_lookup_for_families_without_stripe_id(): void
+    {
+        // Self-hosted / pre-billing-flip families have no Stripe customer and
+        // therefore can't be on a Cashier trial. Guards against an N+1 lookup
+        // on the chat hot path. We simulate by verifying no `subscriptions`
+        // relation load occurs even when a (stale) trialing record exists.
+        $family = Family::factory()->create(['settings' => []]);
+        $family->subscriptions()->create([
+            'type' => 'default',
+            'stripe_id' => 'sub_orphan_'.uniqid(),
+            'stripe_status' => 'trialing',
+            'stripe_price' => 'price_base',
+            'quantity' => 1,
+            'trial_ends_at' => CarbonImmutable::now()->addDays(7),
+        ]);
+
+        // Without stripe_id on the family, the trial fallback short-circuits
+        // before checking subscriptions — falls through to the global default.
+        $plan = $this->service->planFor($family->fresh());
+
+        $this->assertSame('free', $plan['slug']);
+    }
+
+    public function test_plan_for_trialing_family_with_no_pick_falls_back_to_lite(): void
+    {
+        $family = Family::factory()->create([
+            'stripe_id' => 'cus_trial_'.uniqid(),
+            'settings' => [],
+        ]);
+        $family->subscriptions()->create([
+            'type' => 'default',
+            'stripe_id' => 'sub_trial_'.uniqid(),
+            'stripe_status' => 'trialing',
+            'stripe_price' => 'price_base',
+            'quantity' => 1,
+            'trial_ends_at' => CarbonImmutable::now()->addDays(7),
+        ]);
+
+        $plan = $this->service->planFor($family->fresh());
+
+        $this->assertSame('lite', $plan['slug']);
+        $this->assertSame(50, $plan['daily_messages']);
+    }
+
+    public function test_plan_for_trialing_family_with_explicit_pick_keeps_explicit(): void
+    {
+        $family = Family::factory()->create([
+            'stripe_id' => 'cus_trial_pro_'.uniqid(),
+            'settings' => ['chatbot' => ['plan' => 'pro']],
+        ]);
+        $family->subscriptions()->create([
+            'type' => 'default',
+            'stripe_id' => 'sub_trial_pro_'.uniqid(),
+            'stripe_status' => 'trialing',
+            'stripe_price' => 'price_base',
+            'quantity' => 1,
+            'trial_ends_at' => CarbonImmutable::now()->addDays(7),
+        ]);
+
+        $plan = $this->service->planFor($family->fresh());
+
+        $this->assertSame('pro', $plan['slug']);
+    }
+
+    public function test_plan_for_post_trial_family_with_no_pick_returns_default(): void
+    {
+        // Trial ended yesterday, no pick — must NOT be lite.
+        $family = Family::factory()->create([
+            'stripe_id' => 'cus_post_trial_'.uniqid(),
+            'settings' => [],
+        ]);
+        $family->subscriptions()->create([
+            'type' => 'default',
+            'stripe_id' => 'sub_post_trial_'.uniqid(),
+            'stripe_status' => 'active',
+            'stripe_price' => 'price_base',
+            'quantity' => 1,
+            'trial_ends_at' => CarbonImmutable::now()->subDay(),
+        ]);
+
+        $plan = $this->service->planFor($family->fresh());
+
+        $this->assertSame('free', $plan['slug']);
+    }
+
     public function test_plan_for_demo_family_uses_demo_plan(): void
     {
         $family = Family::factory()->create([

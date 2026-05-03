@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Webhooks;
 
 use App\Models\Family;
 use App\Models\WebhookEvent;
+use App\Notifications\Billing\LiteTrialEndedNotification;
 use App\Notifications\Billing\PaymentFailedNotification;
 use App\Notifications\Billing\SubscriptionCancelledNotification;
 use App\Notifications\Billing\SubscriptionResumedNotification;
@@ -11,6 +12,7 @@ use App\Notifications\Billing\TrialEndingNotification;
 use App\Services\BillingService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -281,6 +283,77 @@ class StripeWebhookController extends CashierWebhookController
         $subscription = $family->subscription('default');
         if ($subscription && $subscription->stripe_id === $deletedStripeId) {
             $this->notifyOwner($family, new SubscriptionCancelledNotification($family));
+        }
+
+        return $response;
+    }
+
+    /**
+     * `customer.subscription.updated` fires for many transitions; we only act on
+     * trialing → active|past_due (issue #230). When the family auto-converts off
+     * trial without ever picking a paid AI tier, the implicit Lite grant from
+     * `AiUsageService::planFor()` would silently keep applying — clear the slug
+     * (or 'lite' if they explicitly picked it during trial, since that was free
+     * too) so the family falls back to the global default plan post-trial.
+     * Cashier's parent handler runs first to mirror the Stripe state into our
+     * subscriptions table.
+     */
+    protected function handleCustomerSubscriptionUpdated(array $payload): Response
+    {
+        $response = parent::handleCustomerSubscriptionUpdated($payload);
+
+        $object = $payload['data']['object'] ?? [];
+        $previous = $payload['data']['previous_attributes'] ?? [];
+        $customerId = $object['customer'] ?? null;
+
+        $statusFlippedFromTrial = ($previous['status'] ?? null) === 'trialing'
+            && in_array($object['status'] ?? null, ['active', 'past_due'], true);
+
+        if (! $statusFlippedFromTrial || ! $customerId) {
+            return $response;
+        }
+
+        /** @var Family|null $family */
+        $family = Cashier::findBillable($customerId);
+        if (! $family) {
+            return $response;
+        }
+
+        $hadExplicitLitePick = DB::transaction(function () use ($family): bool {
+            $locked = Family::query()->whereKey($family->getKey())->lockForUpdate()->first();
+            if ($locked === null) {
+                return false;
+            }
+
+            $settings = $locked->settings ?? [];
+            $currentPlan = $settings['chatbot']['plan'] ?? null;
+
+            // Only clear the implicit-trial cases. Standard/Pro/BYOK during trial
+            // already paid (trial was ended via selectAiTier()), so their settings
+            // and Stripe state are in lock-step — don't touch them.
+            if ($currentPlan !== null && $currentPlan !== 'lite') {
+                return false;
+            }
+
+            $chatbot = is_array($settings['chatbot'] ?? null) ? $settings['chatbot'] : [];
+            Arr::forget($chatbot, 'plan');
+
+            if (empty($chatbot)) {
+                Arr::forget($settings, 'chatbot');
+            } else {
+                $settings['chatbot'] = $chatbot;
+            }
+
+            $locked->forceFill(['settings' => $settings])->save();
+
+            // Email only when the family had explicitly picked Lite — null-plan
+            // families never saw a "Lite" UI affordance, so an email about it
+            // would confuse more than help.
+            return $currentPlan === 'lite';
+        });
+
+        if ($hadExplicitLitePick) {
+            $this->notifyOwner($family->fresh(), new LiteTrialEndedNotification($family->fresh()));
         }
 
         return $response;

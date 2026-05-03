@@ -114,7 +114,11 @@
             <span v-if="opt.detail" class="block text-xs text-ink-secondary">{{ opt.detail }}</span>
           </span>
           <span
-            v-if="opt.disabled"
+            v-if="opt.includedInTrial"
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-sand-100 dark:bg-sand-900/40 text-sand-700 dark:text-sand-300 whitespace-nowrap"
+          >Included with trial</span>
+          <span
+            v-else-if="opt.disabled"
             class="text-[11px] uppercase tracking-wide text-ink-secondary"
           >Coming soon</span>
         </button>
@@ -176,6 +180,28 @@
         Resume subscription
       </BaseButton>
     </div>
+
+    <!-- Mid-trial upgrade confirmation: picking Standard/Pro ends the trial today. -->
+    <BaseModal
+      :show="!!pendingUpgradeTier"
+      title="End your free trial?"
+      size="md"
+      @close="cancelUpgrade"
+    >
+      <p class="text-sm text-ink-primary">
+        Picking <strong>{{ pendingUpgradeLabel }}</strong> ends your free trial today and starts billing immediately.
+        Your card will be charged the prorated amount for the rest of this month.
+      </p>
+      <p class="text-xs text-ink-secondary mt-2">
+        If you'd like to stay on the free trial, choose <strong>AI Lite</strong> — it's included free until your trial ends.
+      </p>
+      <template #footer>
+        <BaseButton variant="ghost" :loading="billing.loading" @click="cancelUpgrade">Cancel</BaseButton>
+        <BaseButton variant="primary" :loading="billing.loading" @click="confirmUpgrade">
+          End trial &amp; subscribe
+        </BaseButton>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
@@ -183,6 +209,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useBillingStore } from '@/stores/billing'
 import BaseButton from '@/components/common/BaseButton.vue'
+import BaseModal from '@/components/common/BaseModal.vue'
 
 const billing = useBillingStore()
 const hasFetched = ref(false)
@@ -338,18 +365,59 @@ const currentAiTier = computed(() => {
 
 const aiTierOptions = computed(() => {
   const tiers = Array.isArray(aiTier.value.tiers) ? aiTier.value.tiers : []
-  const managed = tiers.map((t) => ({
-    slug: t.slug,
-    label: t.name,
-    detail: `${t.daily_messages} msg/day · $${(t.price_cents / 100).toFixed(0)}/mo`,
-    disabled: !t.configured,
-  }))
+  const includedSlug = aiTier.value.included_in_trial || null
+  const managed = tiers.map((t) => {
+    const includedInTrial = includedSlug === t.slug
+    return {
+      slug: t.slug,
+      label: t.name,
+      detail: includedInTrial
+        ? `${t.daily_messages} msg/day · free during trial`
+        : `${t.daily_messages} msg/day · $${(t.price_cents / 100).toFixed(0)}/mo`,
+      disabled: !t.configured,
+      includedInTrial,
+    }
+  })
+  const offDetail = billing.isOnTrial
+    ? 'AI Lite is included free during your trial, but you can use the app without AI too.'
+    : 'No AI assistant. All other app features still work.'
   return [
-    { slug: 'off', label: 'Off', detail: 'No AI assistant.', disabled: false },
-    { slug: 'byok', label: 'BYOK — Bring your own key', detail: 'Use your own Anthropic API key.', disabled: false },
+    { slug: 'off', label: 'No AI', detail: offDetail, disabled: false, includedInTrial: false },
+    { slug: 'byok', label: 'BYOK — Bring your own key', detail: 'Use your own Anthropic API key.', disabled: false, includedInTrial: false },
     ...managed,
   ]
 })
+
+// When a trialing family picks Standard/Pro, surface a BaseModal first — those
+// tiers end the trial early via Subscription::endTrial() on the backend.
+const pendingUpgradeTier = ref(null)
+const pendingUpgradeLabel = computed(() => {
+  if (!pendingUpgradeTier.value) return ''
+  const opt = aiTierOptions.value.find((o) => o.slug === pendingUpgradeTier.value)
+  return opt?.label || pendingUpgradeTier.value
+})
+
+function isTrialUpgradeTier(slug) {
+  return billing.isOnTrial && (slug === 'standard' || slug === 'pro')
+}
+
+async function applyTier(slug) {
+  try {
+    await billing.selectAiTier(slug)
+  } catch {
+    // Error already on store.
+  }
+}
+
+function cancelUpgrade() {
+  pendingUpgradeTier.value = null
+}
+
+async function confirmUpgrade() {
+  const slug = pendingUpgradeTier.value
+  pendingUpgradeTier.value = null
+  if (slug) await applyTier(slug)
+}
 
 const aiUsageNote = computed(() => {
   const u = aiTier.value.usage
@@ -359,11 +427,11 @@ const aiUsageNote = computed(() => {
 
 async function onAiTier(slug) {
   if (slug === currentAiTier.value) return
-  try {
-    await billing.selectAiTier(slug)
-  } catch {
-    // Error already on store.
+  if (isTrialUpgradeTier(slug)) {
+    pendingUpgradeTier.value = slug
+    return
   }
+  await applyTier(slug)
 }
 
 function formatBrand(brand) {

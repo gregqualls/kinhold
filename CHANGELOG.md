@@ -2,6 +2,42 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-03 — Trial includes AI Lite; mid-trial upgrade ends trial early (v1.8.10, [#230](https://github.com/gregqualls/kinhold/issues/230) / [#70](https://github.com/gregqualls/kinhold/issues/70))
+
+Final patch of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella before the v1.9.0 public flip. Settings copy already promised "AI Lite included with trial," but the wiring didn't match: a fresh-trial family who didn't actively pick a tier landed on the global `default_plan` ('free' = 25 msg/day) instead of Lite (50/day), the BillingPanel listed Lite at full price during trial, and picking Standard/Pro mid-trial silently called `addPriceAndInvoice` while Stripe still had the family in `trialing` (proration math wrong, no warning to the user). #230 closes those gaps.
+
+**Backend:**
+
+- **`AiUsageService::planFor()`** ([app/Services/AiUsageService.php](app/Services/AiUsageService.php)) gains a 5th-precedence trial-fallback layer: when `family->subscription('default')?->onTrial()` is true and `chatbot.plan` is unset, return the Lite plan row (50 msg/day). Settings stay null so the trial-end webhook can clear the implicit grant cleanly without diffing. Updated docblock spells out the precedence order: numeric override > family-set slug > **trial fallback** > demo default > global default.
+- **`BillingService::aiTierSummary()`** surfaces two new keys to the SPA: `on_trial: bool` and `included_in_trial: 'lite'|null`. The picker reads `included_in_trial` to swap the dollar price for an "Included with trial" sand-toned badge instead of needing extra round-trips to read trial state.
+- **`BillingService::selectAiTier()`** branches on `subscription->onTrial()` before the Stripe reconciliation block. **Lite-during-trial** is settings-only (no `addPriceAndInvoice` call) — the trial fallback in `planFor()` already grants Lite limits, and writing the explicit slug honors the user's pick. **Standard/Pro-during-trial** calls `Subscription::endTrial()` first (Cashier-native; sets `trial_ends_at = null` locally and PUTs `trial_end=now` to Stripe), then refreshes the model and falls through to the existing add-price path so the prorated amount bills today instead of waiting for trial_end. A 422 guard on `hasDefaultPaymentMethod()` blocks the upgrade if no PM is on file (Stripe would refuse the immediate invoice anyway).
+- **`StripeWebhookController::handleCustomerSubscriptionUpdated()`** ([app/Http/Controllers/Webhooks/StripeWebhookController.php](app/Http/Controllers/Webhooks/StripeWebhookController.php)) overridden to fire on the `trialing → active|past_due` transition (detected via `previous_attributes.status === 'trialing'`). Calls Cashier's parent first to mirror the subscription state into the DB, then row-locks the family and clears `chatbot.plan` if it's null or `'lite'` (the implicit/free-during-trial cases). Explicit Standard/Pro/BYOK picks are preserved — those families already have Stripe items billing them, so resetting the slug would silently drop the wrong limit. Other status transitions (active→past_due, etc.) are ignored. When the cleared plan was an explicit `'lite'` pick (the family clicked Lite during trial and saw it labeled as their plan), a `LiteTrialEndedNotification` fires to the billing owner so the limit drop isn't silent — null-plan families never saw a "Lite" UI affordance, so they don't get the email.
+- **`LiteTrialEndedNotification`** ([app/Notifications/Billing/LiteTrialEndedNotification.php](app/Notifications/Billing/LiteTrialEndedNotification.php)) — seventh queued billing notification, gates on `wantsEmail('billing')` like the rest of the family. Branded HTML template at [resources/views/emails/billing/lite-trial-ended.blade.php](resources/views/emails/billing/lite-trial-ended.blade.php) explains the limit change and CTAs back to the billing portal.
+
+**Performance guard:** `AiUsageService::planFor()` short-circuits the trial-fallback subscription lookup when `family->stripe_id` is null (self-hosted, BILLING_ENABLED=false, or pre-checkout families). Avoids loading the `subscriptions` relation per chat message in the hot path — only families that actually went through Stripe checkout pay the lookup cost.
+
+**Frontend:**
+
+- **`BillingPanel.vue`** ([resources/js/components/billing/BillingPanel.vue](resources/js/components/billing/BillingPanel.vue)) — Lite row renders an "Included with trial" badge (sand pill) and "free during trial" detail text when `ai_tier.included_in_trial === 'lite'`. Picking Standard or Pro during the trial opens a `BaseModal` confirmation ("Picking *X* ends your free trial today and starts billing immediately. Your card will be charged the prorated amount.") — only on confirm does the request fire. Off / BYOK / Lite changes still apply instantly. Cancel-subscription `window.confirm` (issue #224) is intentionally untouched and ships in its own focused PR.
+
+**Tests** (12 new — total suite 307 → 319):
+
+- `tests/Unit/AiUsageServiceTest.php` (4): family without `stripe_id` short-circuits even with a stale trialing subscription record (perf-guard regression test); trialing family with no pick → Lite; trialing family with explicit Pro pick → Pro wins; post-trial family with no pick → free (the precedence boundary).
+- `tests/Feature/Billing/TrialAiTierTest.php` (8, new): summary surfaces `on_trial` + `included_in_trial`; non-trialing family doesn't get the flag; selecting Lite during trial writes settings without any Stripe call (proves we short-circuit before reconciliation); 422 guard fires when upgrading to Standard mid-trial without a PM; webhook clears explicit `lite` plan on trial→active transition AND fires `LiteTrialEndedNotification`; webhook clears null plan silently (no email — null-plan families never saw a "Lite" label); webhook preserves explicit Pro pick (no email); webhook ignores non-trial transitions (active→past_due, no email).
+
+**Out of scope (deliberately deferred):**
+
+- The Standard/Pro `endTrial` + `addPriceAndInvoice` integration path is not exercised in feature tests — it requires a real Cashier swap which the existing test suite already treats as the Stripe boundary (other AiTierTest cases Mockery::makePartial the service for the same reason). Manual verification covers it under the v1.9.0 flip protocol.
+- #224 (replace `window.confirm` in cancel flow) — separate issue with its own focused PR.
+- #223 (70-I subscription-required paywall splash) — depends on this slice but ships separately.
+
+**v1.9.0 readiness:** With #230 done, the `BILLING_ENABLED=true` production flip is safe — trial users who don't actively pick a paid AI tier won't be incorrectly charged or capped. v1.9.0 = next merge to main with the env flag flipped.
+
+**Files**
+
+- New: `tests/Feature/Billing/TrialAiTierTest.php`, `app/Notifications/Billing/LiteTrialEndedNotification.php`, `resources/views/emails/billing/lite-trial-ended.blade.php`.
+- Modified: `app/Services/AiUsageService.php` (+trial fallback, +stripe_id perf-guard), `app/Services/BillingService.php` (+`on_trial`/`included_in_trial` in summary, +trial branches in `selectAiTier`), `app/Http/Controllers/Webhooks/StripeWebhookController.php` (+`handleCustomerSubscriptionUpdated` override, +`Arr` import, +`LiteTrialEndedNotification` dispatch), `resources/js/components/billing/BillingPanel.vue` (+included badge, +BaseModal upgrade confirm), `tests/Unit/AiUsageServiceTest.php` (+4 tests), `config/version.php` (1.8.10).
+
 ## 2026-05-02 — Stripe webhooks + grace period + lifecycle emails (v1.8.9, [#221](https://github.com/gregqualls/kinhold/issues/221) / [#70](https://github.com/gregqualls/kinhold/issues/70)-H)
 
 Seventh slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella, and the last patch before v1.9.0 (the public billing flip). Every prior 70-X slice wrote local state assuming a webhook would eventually sync the truth back from Stripe — without that loop closed, a card decline, a portal-side cancellation, a trial-end, or a successful subscription activation are all invisible to our DB. 70-H delivers the receiver, the idempotency ledger, the 7-day grace-period state machine, and six branded lifecycle emails.
