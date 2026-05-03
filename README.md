@@ -36,9 +36,10 @@ Live at [kinhold.app](https://kinhold.app).
 - **Task Management** — Multiple task lists, priorities, due dates, assignees. Family tasks anyone can claim. Recurring tasks via RRULE (daily, weekly, monthly). Points awarded on completion.
 - **Family Calendar** — Aggregate Google Calendars + ICS feeds from every family member, plus manual events anyone can create. Recurrence (weekly/monthly/yearly), visibility controls (visible/busy/private), and "feature on dashboard" with countdown banners. Tasks with due dates show on the calendar automatically. Month/week/day views, mobile-optimized.
 - **Secure Vault** — Encrypted storage for sensitive family info (SSNs, medical records, insurance, financial data). WYSIWYG markdown editor, role-based permissions, tap-to-reveal sensitive fields, auto-clear clipboard, document uploads. AI-guided playbooks for common data entry.
-- **Food & Meal Planning** — Recipe library with photo upload, ingredients, steps, tags, and family ratings. Weekly meal planner. Restaurant list with tags. Shopping lists with pre-shop checklists, per-item assignment, and one-tap "build shopping list from this week's meals."
+- **Food** — Recipe library with photo upload (or AI import from a URL or photo), ingredients, steps, tags, and family ratings. Restaurant list with tags and ratings. Weekly meal planner that pulls from both recipes and restaurants.
+- **Shopping** — Shopping lists with pre-shop checklists, per-item assignment, and one-tap "build shopping list from this week's meals." Integrated with the Food module so meal plans flow straight into the cart.
 - **AI Assistant** — Natural language interface to all family data via MCP tools: "What tasks are due this week?", "Create a dentist appointment for Friday", "What's the wifi password?" Powered by Claude's tool_use API.
-- **MCP Server** — 20 tools for managing Kinhold through Claude Desktop or Claude Code. Full CRUD on tasks, vault, calendar, points, rewards, badges, dashboard, and family data. Laravel-native, no separate process.
+- **MCP Server** — 7 grouped tools for managing Kinhold through Claude Desktop or Claude Code. Full coverage of tasks, vault, calendar, points, badges, food, and family data. Laravel-native, no separate process.
 
 ### Gamification
 
@@ -53,7 +54,7 @@ Turn chores into a game your kids actually want to play.
 ### Quality of Life
 
 - **Dark Mode** — Full dark mode across every view and component, with subtle gradient depth effects
-- **Color Themes** — 5 built-in themes (Prussian, Wisteria, Lavender, Sand, Ink) applied via CSS custom properties
+- **Kin Design System** — Unified component library and design tokens across every authenticated view, with gradient accent surfaces and a built-in design-system page for reference
 - **Mobile-First** — Designed for phones first, scales to desktop with a sidebar layout
 - **Feature Toggles** — Parents can enable/disable any module (calendar, tasks, vault, chat, points, badges)
 - **Parent/Child Roles** — Parents get full control; children see only what's shared with them
@@ -73,7 +74,7 @@ Turn chores into a game your kids actually want to play.
 | Cache/Queue | Redis 7 |
 | Auth | Laravel Sanctum + Google OAuth via Socialite |
 | AI | Anthropic Claude API (multi-provider ready) |
-| MCP Server | Laravel-native (PHP, 20 tools) |
+| MCP Server | Laravel-native (PHP, 7 grouped tools) |
 | Build | Vite 5 |
 | Hosting | [Upsun](https://upsun.com) |
 
@@ -149,7 +150,7 @@ Copy `.env.example` to `.env` and configure:
 | `DB_*` | PostgreSQL connection |
 | `REDIS_*` | Redis connection |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth + Calendar |
-| `ANTHROPIC_API_KEY` | AI chat (optional) |
+| `ANTHROPIC_API_KEY` | AI chat (optional). Self-hosters bring their own Anthropic key; Kinhold supports BYOK out of the box. |
 
 ### Google Calendar + OAuth
 
@@ -189,7 +190,7 @@ Authentication uses Sanctum bearer tokens. Generate a token in **Settings > MCP 
   "mcpServers": {
     "kinhold": {
       "type": "streamableHttp",
-      "url": "https://kinhold.app/mcp",
+      "url": "https://app.kinhold.app/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_SANCTUM_TOKEN"
       }
@@ -200,32 +201,21 @@ Authentication uses Sanctum bearer tokens. Generate a token in **Settings > MCP 
 
 For local development, use `http://localhost:8000/mcp` as the URL.
 
-### Available Tools (20)
+### Available Tools (7)
 
-| Tool | Description |
-|------|-------------|
-| ManageTasks | Create, update, delete, and list tasks |
-| ManageDashboard | Configure dashboard widgets for a family member |
-| CompleteTask | Mark tasks complete or incomplete |
-| ManageTags | Create, update, delete, and list tags |
-| ViewPoints | View point balances, leaderboard, and activity feed |
-| ManagePoints | Give kudos and deduct points |
-| ManagePointRequests | Handle point requests from family members |
-| ManageRewards | Create, update, delete, and list rewards |
-| PurchaseReward | Purchase a reward with points |
-| ManageBadges | Create, update, delete, and list badges |
-| ViewEarnedBadges | View earned badges for family members |
-| ManageFeaturedEvents | Set and manage featured/countdown events on the dashboard |
-| ViewCalendar | View, create, update, and delete calendar events from all sources |
-| ManageVault | Create, update, delete, and list vault entries |
-| ManageVaultAccess | Set per-user permissions on vault entries |
-| ListPlaybooks | List available vault playbooks for guided data entry |
-| GetPlaybook | Get a specific playbook's content |
-| ViewFamily | View family members and family info |
-| GetSettings | Retrieve app and family settings |
-| SearchFamily | Search across tasks, vault, and calendar |
+Each tool is action-driven, accepting an `action` parameter (e.g. `list`, `create`, `update`, `delete`) plus payload, so a single tool covers an entire module.
 
-All tools are scoped to the authenticated user's family. Featured event and countdown management require the `parent` role. Calendar event CRUD is available to all family members (creator or parent can edit/delete).
+| Tool | Covers |
+|------|--------|
+| kinhold-tasks | Tasks, completion (with points and badge side effects), and tags |
+| kinhold-calendar | Family calendar: events (manual, external, and tasks), connections, featured and countdown events |
+| kinhold-vault | Encrypted family vault with categories, entries, per-user access, and playbooks |
+| kinhold-food | Recipes, restaurants, meal plans, meal presets, and shopping lists |
+| kinhold-points | Points, kudos, point requests, rewards store, and auctions |
+| kinhold-achievements | Badges and earned achievements |
+| kinhold-family | Family info, settings, dashboard layout, and cross-module search |
+
+All tools are scoped to the authenticated user's family. Parent-only operations (featured events, granting badges, family settings) are enforced server-side regardless of which client calls the tool.
 
 ## Project Structure
 
@@ -293,19 +283,24 @@ Found a bug or have an idea? Open an issue on [GitHub Issues](https://github.com
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan. Recently shipped and coming up:
 
 **Recently shipped:**
-- ~~Food & Meal Planning~~ — Recipes, weekly meal plans, restaurants, shopping lists with pre-shop checklists
-- ~~Kin design-system overhaul~~ — Every authenticated view, dashboard widget, and auth/onboarding surface unified onto Kin tokens & components
+- ~~Food, meal planning, restaurants, and shopping~~ — Recipes (with URL and photo import), restaurant list, weekly meal planner, integrated shopping lists
+- ~~MCP-powered AI assistant~~ — Natural language interface across 7 grouped tools (tasks, calendar, vault, food, points, achievements, family)
+- ~~PWA support~~ — Installable, offline-capable, with web push notifications
+- ~~Kin design-system overhaul~~ — Every authenticated view, dashboard widget, and auth/onboarding surface unified onto Kin tokens and components
 - ~~Public demo at `/demo`~~ — Deep-linkable Johnson-family walkthrough for marketing
 - ~~Manual calendar mode~~ — Create events without Google, recurrence, visibility, featured on dashboard
 - ~~Profile pictures and avatars~~ — Photo upload, 26 icon presets, color picker
-- ~~MCP-powered AI assistant~~ — Natural language interface to all 20 tools
 - ~~Vault overhaul~~ — WYSIWYG markdown editor, playbooks, kids personal vault
+- ~~GDPR data export and account deletion~~ ([#96](https://github.com/gregqualls/kinhold/issues/96))
+- ~~Landing page split from SPA~~ ([#134](https://github.com/gregqualls/kinhold/issues/134))
+- ~~Self-host single-family enforcement and AI usage limits~~ ([#137](https://github.com/gregqualls/kinhold/issues/137), [#138](https://github.com/gregqualls/kinhold/issues/138))
 
 **Coming up:**
-- Food/meal MCP tools (Phase F Step 8)
-- AI usage limits for hosted version ([#137](https://github.com/gregqualls/kinhold/issues/137))
-- Self-hosted single-family enforcement ([#138](https://github.com/gregqualls/kinhold/issues/138))
-- PWA support (installable, offline-capable)
+- Two-way Google Calendar sync ([#71](https://github.com/gregqualls/kinhold/issues/71))
+- AI photo-to-calendar: snap a flyer, extract events ([#74](https://github.com/gregqualls/kinhold/issues/74))
+- Family announcements and bulletin board ([#72](https://github.com/gregqualls/kinhold/issues/72))
+- Allowance and money tracking for kids ([#73](https://github.com/gregqualls/kinhold/issues/73))
+- Dashboard rearrange ([#26](https://github.com/gregqualls/kinhold/issues/26))
 
 ## License
 
