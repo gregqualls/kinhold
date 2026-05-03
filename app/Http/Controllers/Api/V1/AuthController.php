@@ -11,6 +11,7 @@ use App\Models\Family;
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
 use App\Services\BadgeService;
+use App\Services\BillingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -427,9 +428,17 @@ class AuthController extends Controller
     /**
      * Get the authenticated user with family data.
      */
-    public function user(Request $request): JsonResponse
+    public function user(Request $request, BillingService $billing): JsonResponse
     {
         $user = $request->user()->load('family.members');
+
+        // The billing owner is one of the already-loaded members, so look up
+        // the name from the collection instead of letting paywallStatus() pull
+        // it through the `billingOwner` relation (which would trigger a fresh
+        // User query on every page-load).
+        $billingOwnerName = $user->family
+            ? optional($user->family->members->firstWhere('id', $user->family->billing_owner_id))->name
+            : null;
 
         return response()->json([
             'user' => UserResource::make($user),
@@ -440,6 +449,7 @@ class AuthController extends Controller
                 'invite_code' => $user->isParent() ? $user->family->invite_code : null,
                 'settings' => $user->family->settings ?? [],
                 'billing_owner_id' => $user->family->billing_owner_id,
+                'billing' => $billing->paywallStatus($user->family, $user->id, $billingOwnerName),
                 'module_access' => $user->family->getAllModuleAccess(),
                 'members' => $user->family->members->map(fn ($m) => [
                     'id' => $m->id,
