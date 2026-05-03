@@ -2,6 +2,30 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-03 — Demo family billing lockdown + v1.9.0 (v1.9.0, [#238](https://github.com/gregqualls/kinhold/issues/238) / [#70](https://github.com/gregqualls/kinhold/issues/70))
+
+This release closes the #70 Stripe billing umbrella. With #237 (subscription paywall splash) already on main and this PR landing the demo lockdown, every functional gate is in place. The v1.9.0 flip itself is an Upsun env var change (`BILLING_ENABLED=true`), not a code change — tagging the version here makes the release boundary match the milestone.
+
+Last functional gate before the `BILLING_ENABLED=true` flip. Once billing is on in production, the kinhold.app demo family ('q32-demo-family') would otherwise expose a working "Start trial" CTA in Settings, and any visitor clicking it would create a real Stripe customer + checkout session against the demo family record. Nightly `app:refresh-demo` wipes the family server-side, but Stripe-side artifacts accumulate and a mid-day visitor could see "Subscription active" on what's supposed to be a sandbox tour. #238 makes the demo non-billable end-to-end.
+
+**Backend:**
+
+- **`BillingService::isDemoFamily(Family)`** ([app/Services/BillingService.php](app/Services/BillingService.php)) — single source of truth, slug match against the reserved `q32-demo-family` constant the seeder uses.
+- **`BillingController::authorizeBilling()`** gains a demo check between the family-presence and billing-owner checks. Returns 403 with "Billing is disabled for the demo. Sign up at kinhold.app to manage a real subscription." across all six endpoints (current, checkout-session, portal-session, cancel, resume, ai-tier).
+- **`AuthController::user()`** exposes `family.is_demo: bool` so the SPA doesn't have to know the slug.
+- **`OnboardingController::status()`** marks `billing_step_complete: true` for demo families so the wizard wouldn't block on it even if a demo user re-entered onboarding (defensive — demo seed users have `onboarding_completed_at` set already).
+
+**Frontend:**
+
+- **`SettingsView.canSeeBilling`** ([resources/js/views/settings/SettingsView.vue](resources/js/views/settings/SettingsView.vue)) returns `false` for demo families. The whole BillingPanel section disappears from Settings, so demo visitors can't reach a "Start trial" CTA.
+- **`OnboardingView.activeSteps`** ([resources/js/views/onboarding/OnboardingView.vue](resources/js/views/onboarding/OnboardingView.vue)) skips `BillingStep` for demo families.
+
+**Tests:** [tests/Feature/Billing/DemoFamilyBillingLockdownTest.php](tests/Feature/Billing/DemoFamilyBillingLockdownTest.php) covers the slug match, all six endpoints returning 403, real-family endpoints still working, the auth payload `is_demo` flag for both demo and real, and the onboarding step short-circuit.
+
+**Closes:** [#238](https://github.com/gregqualls/kinhold/issues/238). Unblocks the v1.9.0 `BILLING_ENABLED=true` flip.
+
+---
+
 ## 2026-05-03 — Subscription paywall splash (v1.8.11, [#223](https://github.com/gregqualls/kinhold/issues/223) / [#70](https://github.com/gregqualls/kinhold/issues/70)-I)
 
 Final functional slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella before the v1.9.0 `BILLING_ENABLED=true` flip. 70-G covers new-signup onboarding (pick a plan up front) and 70-H syncs subscription state from Stripe (webhooks + 7-day grace period). Neither gates an existing user from *using* the app once their state turns bad: a family whose trial expired without subscribing, whose card died past the grace window, or whose Stripe status went `past_due`/`unpaid`/`incomplete_expired` could still load every screen and just see a stale BillingPanel buried in Settings. 70-I closes that hole with a non-dismissible SPA-side overlay above the routed view, gated on a server-derived `requires_payment` flag so the gate decisions match what Stripe says is true right now.

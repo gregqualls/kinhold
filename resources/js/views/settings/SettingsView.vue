@@ -1661,6 +1661,7 @@ const dismissUpdate = () => {
 // billing UI — only the designated owner manages the subscription.
 const canSeeBilling = computed(() => {
   if (!appConfig.value?.billing_enabled) return false
+  if (family.value?.is_demo) return false
   const ownerId = family.value?.billing_owner_id
   return !!ownerId && ownerId === currentUser.value?.id
 })
