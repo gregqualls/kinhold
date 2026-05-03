@@ -7,22 +7,22 @@
 
 ---
 
-## 🚀 v1.0.0 Launch (Due: April 12, 2026)
+## 🚀 v1.0.0 Launched (April 12, 2026)
 
-**Goal:** Get Kinhold ready for the r/selfhosted post. Self-hosted experience must be polished, demo must be compelling, versioning must exist.
+Launch shipped on schedule. Current version: **v1.8.8** (see [CHANGELOG.md](../CHANGELOG.md)). Original launch checklist below for history — all P0 done; only [#143](https://github.com/gregqualls/kinhold/issues/143) (demo banner CTA) remains as a P1 polish item.
 
 **Full plan:** [docs/LAUNCH-PLAN.md](LAUNCH-PLAN.md)
 
-| Issue | Title | Priority |
-|-------|-------|----------|
-| [#139](https://github.com/gregqualls/kinhold/issues/139) | Self-hosted mode: skip landing page on local installs | P0 |
-| [#140](https://github.com/gregqualls/kinhold/issues/140) | OG/Twitter meta tags for social sharing | P0 |
-| [#141](https://github.com/gregqualls/kinhold/issues/141) | Quick fixes: license text, domain refs, 404 page | P0 |
-| [#117](https://github.com/gregqualls/kinhold/issues/117) | Versioning, GitHub Releases, update notifications | P0 |
-| [#142](https://github.com/gregqualls/kinhold/issues/142) | Docker polish: sessions, .dockerignore, env defaults | P1 |
-| [#124](https://github.com/gregqualls/kinhold/issues/124) | Demo family outdated — refresh seed data | P1 |
-| [#126](https://github.com/gregqualls/kinhold/issues/126) | Demo email verification bug | P1 |
-| [#143](https://github.com/gregqualls/kinhold/issues/143) | Demo banner: "install on your server" CTA | P1 |
+| Issue | Title | Priority | Status |
+|-------|-------|----------|--------|
+| [#139](https://github.com/gregqualls/kinhold/issues/139) | Self-hosted mode: skip landing page on local installs | P0 | DONE |
+| [#140](https://github.com/gregqualls/kinhold/issues/140) | OG/Twitter meta tags for social sharing | P0 | DONE |
+| [#141](https://github.com/gregqualls/kinhold/issues/141) | Quick fixes: license text, domain refs, 404 page | P0 | DONE |
+| [#117](https://github.com/gregqualls/kinhold/issues/117) | Versioning, GitHub Releases, update notifications | P0 | DONE |
+| [#142](https://github.com/gregqualls/kinhold/issues/142) | Docker polish: sessions, .dockerignore, env defaults | P1 | DONE |
+| [#124](https://github.com/gregqualls/kinhold/issues/124) | Demo family outdated — refresh seed data | P1 | DONE |
+| [#126](https://github.com/gregqualls/kinhold/issues/126) | Demo email verification bug | P1 | DONE |
+| [#143](https://github.com/gregqualls/kinhold/issues/143) | Demo banner: "install on your server" CTA | P1 | |
 
 ---
 
@@ -82,7 +82,7 @@ These features are live and working:
 |-------|-------|----------|--------|
 | [#68](https://github.com/gregqualls/kinhold/issues/68) | PWA support (service worker, manifest, installable) | Very High | DONE |
 | [#69](https://github.com/gregqualls/kinhold/issues/69) | Web push notifications | Very High | DONE |
-| [#70](https://github.com/gregqualls/kinhold/issues/70) | Stripe billing & subscription system | Critical | IN PROGRESS (70-A/B/C/D/E/G merged; 70-F shipped out-of-tree on Cloudflare; 70-H/I remain) |
+| [#70](https://github.com/gregqualls/kinhold/issues/70) | Stripe billing & subscription system | Critical | IN PROGRESS (70-A/B/C/D/E/G/H + #230 merged; 70-F shipped out-of-tree on Cloudflare; v1.9.0 = `BILLING_ENABLED=true` flip; 70-I paywall splash remains) |
 
 **Pricing model:**
 - Self-hosted: Free forever (Elastic License 2.0)
