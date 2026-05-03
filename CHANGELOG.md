@@ -2,6 +2,43 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-03 — Subscription paywall splash (v1.8.11, [#223](https://github.com/gregqualls/kinhold/issues/223) / [#70](https://github.com/gregqualls/kinhold/issues/70)-I)
+
+Final functional slice of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella before the v1.9.0 `BILLING_ENABLED=true` flip. 70-G covers new-signup onboarding (pick a plan up front) and 70-H syncs subscription state from Stripe (webhooks + 7-day grace period). Neither gates an existing user from *using* the app once their state turns bad: a family whose trial expired without subscribing, whose card died past the grace window, or whose Stripe status went `past_due`/`unpaid`/`incomplete_expired` could still load every screen and just see a stale BillingPanel buried in Settings. 70-I closes that hole with a non-dismissible SPA-side overlay above the routed view, gated on a server-derived `requires_payment` flag so the gate decisions match what Stripe says is true right now.
+
+**Backend:**
+
+- **`BillingService::paywallReason(Family)`** ([app/Services/BillingService.php](app/Services/BillingService.php)) — new method returns one of `'trial_expired' | 'past_due' | 'cancelled_expired' | null`. Returns `null` (no paywall) for self-host (`BILLING_ENABLED=false`), pre-onboarding families (no `stripe_id`, handled by 70-G's wizard), inside the 7-day dunning grace window (`Family::inGracePeriod()` true), or holding a currently-valid subscription (active, trialing, or cancelled-but-still-in-period via Cashier's `valid()` semantics). Otherwise checks `stripe_status` for `past_due`/`unpaid`/`incomplete_expired`, then `ends_at?->isPast()` for cancelled-expired, then `trial_ends_at?->isPast()` for trial-expired.
+- **`BillingService::requiresPayment(Family): bool`** — thin wrapper around `paywallReason()`. The companion the SPA composable's `requiresPayment` ref reads.
+- **`BillingService::paywallStatus(Family, ?string $viewerId): ?array`** — compact payload for the `/api/v1/user` shell. Returns `null` when billing is disabled (so self-host gets a clean payload), otherwise the four keys the SPA needs: `requires_payment`, `paywall_reason`, `is_billing_owner`, `billing_owner_name`, plus `cancelled_ends_at` for the cancelled-expired copy. Deliberately skips the `defaultPaymentMethod()` Stripe round-trip that `summary()` makes (every authed page-load would otherwise hit Stripe — too expensive for a shell endpoint).
+- **`AuthController::user()`** ([app/Http/Controllers/Api/V1/AuthController.php](app/Http/Controllers/Api/V1/AuthController.php)) gains a `BillingService` constructor injection and emits a new `family.billing` block by calling `paywallStatus($user->family, $user->id)`. Block is `null` for self-host so the SPA composable resolves to `requires_payment=false` everywhere off the hosted product.
+- **`BillingService::summary()`** also surfaces `requires_payment` + `paywall_reason` so the BillingPanel + portal flows can share the same derived state without re-implementing the truth table client-side.
+
+**Frontend:**
+
+- **`useBillingGate()`** ([resources/js/composables/useBillingGate.js](resources/js/composables/useBillingGate.js), new) — single source of truth wrapping the auth store's `family.billing` block. Exposes `requiresPayment`, `paywallReason`, `isBillingOwner`, `billingOwnerName`, `cancelledEndsAt` as computed refs.
+- **`SubscriptionPaywall.vue`** ([resources/js/components/billing/SubscriptionPaywall.vue](resources/js/components/billing/SubscriptionPaywall.vue), new) — full-screen modal (`fixed inset-0 z-50` over a backdrop-blurred prussian wash). Non-dismissible: no close button, no escape-key listener. Copy variants keyed off `paywallReason`: `trial_expired` ("Welcome back, your trial has ended"), `past_due` ("Your last payment didn't go through"), `cancelled_expired` ("Your subscription ended on {ends_at}"). Primary CTA wires through to the existing `useBillingStore()` actions: `past_due` calls `openPortal()` (Stripe-hosted portal updates the card), `trial_expired` and `cancelled_expired` call `startCheckout()`. Non-billing-owner viewers see the same modal but with a read-only message naming the billing contact instead of a CTA. The only escape hatch is a "Sign out" link that calls `authStore.logout()` and routes to `/login`.
+- **`App.vue`** ([resources/js/App.vue](resources/js/App.vue)) mounts `<SubscriptionPaywall>` as a sibling of `<main>` — the routed view stays in the tree (avoids unmount/remount thrash on resolve) but is unreachable behind the overlay. Auth pages (`Login`, `Register`, `Demo`, `Onboarding`, etc.) and the pre-resolution chromeless window are excluded by the existing `isAuthPage` guard so the logout flow can complete without trapping the user.
+
+**Tests** (18 new — total suite 319 → 337):
+
+- `tests/Feature/Billing/BillingServiceRequiresPaymentTest.php` (11): truth-table coverage for `paywallReason()` — billing disabled, no `stripe_id`, active, trialing, in-grace, trial-expired (`trial_ends_at` past), each of `past_due`/`unpaid`/`incomplete_expired`, cancelled-with-`ends_at`-past, cancelled-with-`ends_at`-future.
+- `tests/Feature/Billing/SubscriptionPaywallGateTest.php` (7): hits `GET /api/v1/user` and locks the `family.billing` shape the SPA composable consumes — billing owner with expired trial → actionable; non-owner parent same family state → read-only with owner name; active/trialing/in-grace → no paywall; self-host → `family.billing === null`; `past_due` → paywall with `paywall_reason: 'past_due'`.
+
+**Out of scope (deliberately deferred):**
+
+- In-app pre-paywall warnings ("3 days until your trial ends") — already covered by 70-H lifecycle emails.
+- Tier-specific paywalls (locking just AI behind an AI plan) — that's 70-D's territory, already shipped.
+- Replacing the cancel-flow `window.confirm` — separate issue [#224](https://github.com/gregqualls/kinhold/issues/224).
+- Closing [#219](https://github.com/gregqualls/kinhold/issues/219) (70-F landing page) as done-elsewhere on Cloudflare.
+
+**v1.9.0 readiness:** With #223 done, every functional gate in #70 is in place. Remaining work for the public flip: close out #219, address Dependabot alerts, run the umbrella's 10-step end-to-end verification with `BILLING_ENABLED=true` + Stripe test keys, then flip to live keys.
+
+**Files**
+
+- New: `resources/js/components/billing/SubscriptionPaywall.vue`, `resources/js/composables/useBillingGate.js`, `tests/Feature/Billing/BillingServiceRequiresPaymentTest.php`, `tests/Feature/Billing/SubscriptionPaywallGateTest.php`.
+- Modified: `app/Services/BillingService.php` (+`paywallReason`/`requiresPayment`/`paywallStatus`, +summary keys), `app/Http/Controllers/Api/V1/AuthController.php` (+`BillingService` injection, +`family.billing` block), `resources/js/App.vue` (+paywall mount, +`useBillingGate`), `config/version.php` (1.8.11).
+
 ## 2026-05-03 — Trial includes AI Lite; mid-trial upgrade ends trial early (v1.8.10, [#230](https://github.com/gregqualls/kinhold/issues/230) / [#70](https://github.com/gregqualls/kinhold/issues/70))
 
 Final patch of the [#70](https://github.com/gregqualls/kinhold/issues/70) Stripe billing umbrella before the v1.9.0 public flip. Settings copy already promised "AI Lite included with trial," but the wiring didn't match: a fresh-trial family who didn't actively pick a tier landed on the global `default_plan` ('free' = 25 msg/day) instead of Lite (50/day), the BillingPanel listed Lite at full price during trial, and picking Standard/Pro mid-trial silently called `addPriceAndInvoice` while Stripe still had the family in `trialing` (proration math wrong, no warning to the user). #230 closes those gaps.

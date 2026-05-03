@@ -105,6 +105,12 @@
 
     <!-- Easter Eggs -->
     <EasterEggs v-if="!isAuthPage" ref="easterEggsRef" />
+
+    <!-- Subscription Paywall (70-I) — non-dismissible, blocks the routed view
+         when the family's hosted subscription has lapsed. Mounted as a sibling
+         of <main> so the underlying route stays in the tree (avoids unmount
+         thrash on resolve) but is unreachable behind the overlay. -->
+    <SubscriptionPaywall v-if="showPaywall" />
   </div>
 </template>
 
@@ -122,6 +128,8 @@ import EasterEggs from '@/components/common/EasterEggs.vue'
 import LicenseWarningBanner from '@/components/LicenseWarningBanner.vue'
 import InstallAppPrompt from '@/components/InstallAppPrompt.vue'
 import NotificationsPrompt from '@/components/NotificationsPrompt.vue'
+import SubscriptionPaywall from '@/components/billing/SubscriptionPaywall.vue'
+import { useBillingGate } from '@/composables/useBillingGate'
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { useNotification } from '@/composables/useNotification'
 import { useDarkMode } from '@/composables/useDarkMode'
@@ -132,6 +140,7 @@ const authStore = useAuthStore()
 const { notifications } = useNotification()
 const { isLoading, currentUser, family } = storeToRefs(authStore)
 const familyName = computed(() => family.value?.name || 'Kinhold')
+const billingGate = useBillingGate()
 const { init: initDarkMode } = useDarkMode()
 const { init: initTheme } = useTheme()
 initDarkMode()
@@ -152,6 +161,8 @@ const isAuthPage = computed(() => {
   if (!route.name) return true
   return ['Login', 'Register', 'Demo', 'Privacy', 'Terms', 'Onboarding', 'DesignSystem'].includes(route.name)
 })
+
+const showPaywall = computed(() => !isAuthPage.value && billingGate.requiresPayment.value)
 
 // Email verification banner
 const verificationDismissed = ref(false)

@@ -51,6 +51,108 @@ class BillingService
     }
 
     /**
+     * Why the SPA should hard-gate this family behind the paywall splash, or
+     * null if it shouldn't. Drives 70-I (#223). Three reasons surface:
+     *   - 'trial_expired'      — trial ended without ever activating a paid sub
+     *   - 'past_due'           — Stripe says past_due / unpaid / incomplete_expired
+     *   - 'cancelled_expired'  — was cancelled and ends_at has now passed
+     *
+     * Returns null when self-hosted, billing-disabled, pre-checkout (no Stripe
+     * customer yet — onboarding handles them), inside the 7-day dunning grace
+     * window, or holding a currently-valid subscription (active, trialing, or
+     * cancelled-but-still-in-period).
+     */
+    public function paywallReason(Family $family): ?string
+    {
+        return $this->resolvePaywall($family)['reason'];
+    }
+
+    public function requiresPayment(Family $family): bool
+    {
+        return $this->paywallReason($family) !== null;
+    }
+
+    /**
+     * Single pass over Cashier state that returns both the paywall reason
+     * (if any) and the Subscription it was derived from. Sharing the resolved
+     * row lets `paywallStatus()` read `ends_at` without hitting the DB twice.
+     *
+     * @return array{reason: ?string, subscription: ?Subscription}
+     */
+    private function resolvePaywall(Family $family): array
+    {
+        if (! $this->isEnabled()) {
+            return ['reason' => null, 'subscription' => null];
+        }
+
+        // Brand-new families that never went through checkout fall through to
+        // the onboarding plan picker (70-G), not the paywall splash.
+        if (! $family->hasStripeId()) {
+            return ['reason' => null, 'subscription' => null];
+        }
+
+        // 7-day dunning window — the grace-period scheduler is still cycling
+        // through retry / day-3 / day-7 emails. Don't paywall mid-cycle.
+        if ($family->inGracePeriod()) {
+            return ['reason' => null, 'subscription' => null];
+        }
+
+        $sub = $family->subscription('default');
+        if (! $sub) {
+            return ['reason' => null, 'subscription' => null];
+        }
+
+        if ($sub->active() || $sub->onTrial() || $sub->onGracePeriod()) {
+            return ['reason' => null, 'subscription' => $sub];
+        }
+
+        if (in_array($sub->stripe_status, ['past_due', 'unpaid', 'incomplete_expired'], true)) {
+            return ['reason' => 'past_due', 'subscription' => $sub];
+        }
+
+        if ($sub->ends_at?->isPast()) {
+            return ['reason' => 'cancelled_expired', 'subscription' => $sub];
+        }
+
+        if ($sub->trial_ends_at?->isPast()) {
+            return ['reason' => 'trial_expired', 'subscription' => $sub];
+        }
+
+        return ['reason' => null, 'subscription' => $sub];
+    }
+
+    /**
+     * Compact paywall payload for `/api/v1/user`. Cheaper than `summary()` —
+     * skips the Stripe `defaultPaymentMethod()` round-trip since the SPA
+     * shell only needs to know whether to mount the splash and who to name
+     * if the viewer isn't the billing owner.
+     *
+     * `$billingOwnerName` is passed in so AuthController can read it from the
+     * already-loaded `family.members` collection without triggering a fresh
+     * User query via the `billingOwner` relation.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function paywallStatus(Family $family, int|string|null $viewerId, ?string $billingOwnerName = null): ?array
+    {
+        if (! $this->isEnabled()) {
+            return null;
+        }
+
+        ['reason' => $reason, 'subscription' => $sub] = $this->resolvePaywall($family);
+
+        return [
+            'requires_payment' => $reason !== null,
+            'paywall_reason' => $reason,
+            'is_billing_owner' => $viewerId !== null && (string) $viewerId === (string) $family->billing_owner_id,
+            'billing_owner_name' => $billingOwnerName,
+            'cancelled_ends_at' => $reason === 'cancelled_expired'
+                ? $sub?->ends_at?->toIso8601String()
+                : null,
+        ];
+    }
+
+    /**
      * Snapshot of the current billing state — what the BillingPanel renders.
      * Returns null payment fields when there's no Stripe customer yet so the
      * SPA can show "no payment method" without needing extra API round-trips.
@@ -76,6 +178,8 @@ class BillingService
         $trialDays = (int) config('kinhold.billing.trial_days', 0);
         $trialEligible = $trialDays > 0 && ! $family->hasStripeId();
 
+        $paywallReason = $this->paywallReason($family);
+
         return [
             'plan' => $this->resolveCurrentPlan($family),
             'status' => $subscription?->stripe_status,
@@ -93,6 +197,8 @@ class BillingService
             ] : null,
             'storage' => $this->storage->summaryFor($family),
             'ai_tier' => $this->aiTierSummary($family),
+            'requires_payment' => $paywallReason !== null,
+            'paywall_reason' => $paywallReason,
         ];
     }
 
