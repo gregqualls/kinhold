@@ -76,12 +76,15 @@
           <p class="text-sm font-medium text-ink-secondary">Monthly total</p>
           <p class="text-base font-semibold text-ink-primary">{{ totalLabel }}</p>
         </div>
-        <p
+        <div
           v-if="billing.summary.trial_eligible && billing.summary.trial_days"
-          class="text-xs text-accent-lavender-bold"
+          class="flex items-center gap-2 px-3 py-2 rounded-md bg-accent-lavender-soft/40 border border-accent-lavender-bold/30"
         >
-          {{ billing.summary.trial_days }}-day free trial — no card charged until the trial ends.
-        </p>
+          <span class="text-sm font-semibold text-accent-lavender-bold">
+            {{ billing.summary.trial_days }}-day free trial
+          </span>
+          <span class="text-sm text-ink-secondary">— no card charged until the trial ends.</span>
+        </div>
         <p v-if="billing.lastError" class="text-xs text-rose-700 dark:text-rose-300">
           {{ billing.lastError }}
         </p>

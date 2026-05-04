@@ -90,6 +90,7 @@ import {
   StarIcon,
   ChatBubbleLeftRightIcon,
   LockClosedIcon,
+  ShoppingCartIcon,
 } from '@heroicons/vue/24/outline'
 import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
 import KinCheckbox from '@/components/design-system/KinCheckbox.vue'
@@ -137,6 +138,12 @@ const features = [
     description: 'Encrypted storage for sensitive info — SSNs, insurance, medical records. Parents see everything; children only see what\'s shared with them.',
     icon: LockClosedIcon,
   },
+  {
+    key: 'food',
+    name: 'Food & Shopping',
+    description: 'Meal planning, recipes, and shared shopping lists for the whole family.',
+    icon: ShoppingCartIcon,
+  },
 ]
 
 const accessOptions = [
@@ -153,6 +160,7 @@ const moduleState = reactive({
   badges: { mode: 'all' },
   chat: { mode: 'all' },
   vault: { mode: 'all' },
+  food: { mode: 'all' },
 })
 
 function isActiveMode(key, mode) {
