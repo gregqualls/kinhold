@@ -304,6 +304,11 @@ class BillingService
         }
 
         if ($trialDays > 0 && ! $family->hasStripeId()) {
+            // Stripe counts whole days remaining from checkout creation to trial_end.
+            // If the session is created just before midnight UTC, the preview may
+            // display (trialDays - 1). If this consistently shows 13 for a 14-day
+            // trial, set BILLING_TRIAL_DAYS=15 in the env — Stripe will display
+            // "14 days free" while granting a 15-day trial (~24h buffer).
             $builder->trialDays($trialDays);
         }
 

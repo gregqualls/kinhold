@@ -14,6 +14,7 @@ use App\Services\BadgeService;
 use App\Services\BillingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -27,35 +28,47 @@ class AuthController extends Controller
     {
         $family = null;
         $role = 'child';
-
-        if ($request->filled('invite_code')) {
-            $family = Family::where('invite_code', $request->validated('invite_code'))->firstOrFail();
-            // SECURITY: Always assign 'child' role when joining via invite code.
-            // Parents can promote members after they join.
-            $role = 'child';
-        } else {
-            $family = Family::create([
-                'name' => $request->validated('family_name'),
-                'slug' => Str::slug($request->validated('family_name')),
-                'invite_code' => Str::random(16),
-            ]);
-            $role = 'parent';
-        }
-
         $isNewFamily = ! $request->filled('invite_code');
 
-        $user = User::create([
-            'name' => $request->validated('name'),
-            'email' => $request->validated('email'),
-            'password' => Hash::make($request->validated('password')),
-            'family_id' => $family->id,
-            'family_role' => $role,
-        ]);
+        [$family, $user] = DB::transaction(function () use ($request, &$role, $isNewFamily) {
+            if (! $isNewFamily) {
+                $family = Family::where('invite_code', $request->validated('invite_code'))->firstOrFail();
+                // SECURITY: Always assign 'child' role when joining via invite code.
+                // Parents can promote members after they join.
+                $role = 'child';
+            } else {
+                $base = Str::slug($request->validated('family_name')) ?: 'family';
+                $slug = $base;
+                $n = 2;
+                while (Family::where('slug', $slug)->exists() && $n <= 20) {
+                    $slug = $base.'-'.$n++;
+                }
 
-        // Seed default badges for newly created families
-        if ($isNewFamily) {
-            BadgeService::createDefaultBadges($family->id, $user->id);
-        }
+                $family = Family::create([
+                    'name' => $request->validated('family_name'),
+                    'slug' => $slug,
+                    'invite_code' => Str::random(16),
+                ]);
+                $role = 'parent';
+            }
+
+            $user = User::create([
+                'name' => $request->validated('name'),
+                'email' => $request->validated('email'),
+                'password' => Hash::make($request->validated('password')),
+                'family_id' => $family->id,
+                'family_role' => $role,
+            ]);
+
+            if ($isNewFamily) {
+                $family->billing_owner_id = (string) $user->id;
+                $family->save();
+
+                BadgeService::createDefaultBadges($family->id, $user->id);
+            }
+
+            return [$family, $user];
+        });
 
         // Send welcome email
         $user->notify(new WelcomeNotification($family, $isNewFamily));
