@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ChatMessage;
 use App\Services\AgentService;
 use App\Services\AiUsageService;
+use App\Services\BillingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,7 @@ class ChatController extends Controller
     public function __construct(
         private AgentService $agentService,
         private AiUsageService $usageService,
+        private BillingService $billingService,
     ) {}
 
     /**
@@ -27,6 +29,42 @@ class ChatController extends Controller
 
         $user = $request->user();
         $family = $user->currentFamily()->first();
+
+        // Demo-family layered caps (#266). Run before the family-wide check so
+        // session/monthly limits surface a more relevant message than the
+        // generic "daily limit reached" copy.
+        //
+        // Per-visitor key: the Sanctum access token ID. Demo logins create one
+        // token per browser (demoLogin returns a fresh plainTextToken), so this
+        // gives us the "one slot per browser" semantics the issue asks for
+        // without requiring a stateful session — the API is stateless. Falls
+        // back to user_id|ip when no token row is available (still rate-limits
+        // per IP for the unusual case).
+        $isDemo = $this->billingService->isDemoFamily($family);
+        $demoSessionKey = null;
+        if ($isDemo) {
+            $token = $user->currentAccessToken();
+            $tokenId = is_object($token) && isset($token->id) ? (string) $token->id : null;
+            $demoSessionKey = $tokenId
+                ? 'token:'.$tokenId
+                : 'fallback:'.$user->id.'|'.$request->ip();
+        }
+
+        if ($isDemo && $this->usageService->isDemoMonthExhausted($family)) {
+            return response()->json([
+                'error' => 'demo_monthly_limit_reached',
+                'message' => 'The demo is taking a breather this month. Sign up for a free trial to chat with the assistant.',
+                'usage' => $this->usageService->payloadFor($family),
+            ], 429);
+        }
+
+        if ($isDemo && $this->usageService->isDemoSessionExhausted($demoSessionKey)) {
+            return response()->json([
+                'error' => 'demo_session_limit_reached',
+                'message' => 'You\'ve used your '.$this->usageService->demoSessionLimit().' demo messages. Sign up for a free trial to keep chatting.',
+                'usage' => $this->usageService->payloadFor($family),
+            ], 429);
+        }
 
         // Pre-flight limit check. Recording happens after a successful response
         // so failed calls (Anthropic timeouts, validation errors) don't burn a
@@ -63,6 +101,13 @@ class ChatController extends Controller
                     $result['input_tokens'],
                     $result['output_tokens'],
                 );
+            }
+
+            // Demo session counter ticks regardless of shouldEnforce — the
+            // session cap exists specifically to prevent one visitor from
+            // burning the demo's daily allotment.
+            if ($demoSessionKey !== null) {
+                $this->usageService->incrementDemoSession($demoSessionKey);
             }
 
             $metadata = [];

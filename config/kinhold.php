@@ -92,6 +92,16 @@ return [
                 'stripe_price_id' => null,
                 'public' => false,
             ],
+            // Demo tier (#266) — caps the shared marketing-demo family. Lower
+            // than Lite because the demo is shared across every visitor and we
+            // pay the API bill. Not user-selectable (`public` => false).
+            'demo' => [
+                'name' => 'Demo',
+                'daily_messages' => (int) env('CHATBOT_DEMO_DAILY_MESSAGES', 10),
+                'price_monthly_cents' => 0,
+                'stripe_price_id' => null,
+                'public' => false,
+            ],
             'lite' => [
                 'name' => 'AI Lite',
                 'daily_messages' => 50,
@@ -115,7 +125,25 @@ return [
             ],
         ],
         'default_plan' => env('CHATBOT_DEFAULT_PLAN', 'free'),
-        'demo_plan' => env('CHATBOT_DEMO_PLAN', 'lite'),
+        'demo_plan' => env('CHATBOT_DEMO_PLAN', 'demo'),
+
+        // Per-session cap for the shared demo family (#266). Even when the
+        // family-wide daily cap has remaining capacity, a single visitor can
+        // only send this many messages per browser session before being asked
+        // to sign up.
+        'demo_session_limit' => (int) env('CHATBOT_DEMO_SESSION_LIMIT', 3),
+
+        // Monthly USD circuit-breaker for the shared demo family (#266). When
+        // estimated month-to-date Anthropic spend exceeds this, demo AI is
+        // disabled with a "demo is taking a breather" message until next month.
+        'demo_monthly_cost_ceiling_cents' => (int) env('CHATBOT_DEMO_COST_CEILING_CENTS', 1000),
+
+        // Pricing used to estimate the demo monthly spend. Per-million-token
+        // rates from Anthropic Haiku 4.5. Update if the demo model changes.
+        'demo_cost' => [
+            'input_per_million_cents' => (int) env('CHATBOT_DEMO_COST_INPUT_PER_M_CENTS', 80),
+            'output_per_million_cents' => (int) env('CHATBOT_DEMO_COST_OUTPUT_PER_M_CENTS', 400),
+        ],
     ],
 
     /*
