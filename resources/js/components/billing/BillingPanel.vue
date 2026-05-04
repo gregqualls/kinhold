@@ -202,6 +202,30 @@
         </BaseButton>
       </template>
     </BaseModal>
+
+    <!-- Cancel-subscription confirmation (#263) — replaces window.confirm. -->
+    <BaseModal
+      :show="showCancelConfirm"
+      title="Cancel your subscription?"
+      size="md"
+      @close="showCancelConfirm = false"
+    >
+      <p class="text-sm text-ink-primary">
+        Your subscription stays active until the end of the current billing period
+        <template v-if="billing.summary.ends_at || billing.summary.trial_ends_at">
+          (<strong>{{ formatDate(billing.summary.ends_at || billing.summary.trial_ends_at) }}</strong>)
+        </template>.
+      </p>
+      <p class="text-xs text-ink-secondary mt-2">
+        You can resume any time before then. After that date you'll lose access to hosted features unless you start a new subscription.
+      </p>
+      <template #footer>
+        <BaseButton variant="ghost" :loading="billing.loading" @click="showCancelConfirm = false">Keep subscription</BaseButton>
+        <BaseButton variant="danger" :loading="billing.loading" @click="confirmCancel">
+          Cancel subscription
+        </BaseButton>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
@@ -334,10 +358,14 @@ async function onPortal() {
   }
 }
 
-async function onCancel() {
-  if (!window.confirm('Cancel your subscription at the end of the current billing period?')) {
-    return
-  }
+const showCancelConfirm = ref(false)
+
+function onCancel() {
+  showCancelConfirm.value = true
+}
+
+async function confirmCancel() {
+  showCancelConfirm.value = false
   try {
     await billing.cancel()
   } catch {
