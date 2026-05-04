@@ -226,6 +226,32 @@
         </BaseButton>
       </template>
     </BaseModal>
+
+    <!-- AI tier swap proration explainer (#261). Surfaces Stripe proration
+         math in plain language so the user knows what to expect on the next
+         invoice instead of being surprised. -->
+    <BaseModal
+      :show="!!pendingTierChange"
+      :title="`Switch to ${pendingTierLabel}?`"
+      size="md"
+      @close="cancelTierChange"
+    >
+      <p class="text-sm text-ink-primary">
+        You're switching from <strong>{{ currentTierLabel }}</strong> to <strong>{{ pendingTierLabel }}</strong><span v-if="pendingTierPriceLabel"> ({{ pendingTierPriceLabel }})</span>.
+      </p>
+      <div class="mt-3 p-3 bg-surface-sunken rounded-md text-xs text-ink-secondary space-y-1.5">
+        <p><strong class="text-ink-primary">Today:</strong> nothing is charged right now. Your billing cycle stays the same.</p>
+        <p>
+          <strong class="text-ink-primary">Next invoice:</strong> Stripe prorates the change automatically — you'll see two line items, a credit for the unused portion of <strong>{{ currentTierLabel }}</strong> and a charge for the used portion of <strong>{{ pendingTierLabel }}</strong>. The net amount depends on how far through the month you are.
+        </p>
+      </div>
+      <template #footer>
+        <BaseButton variant="ghost" :loading="billing.loading" @click="cancelTierChange">Keep current tier</BaseButton>
+        <BaseButton variant="primary" :loading="billing.loading" @click="confirmTierChange">
+          Confirm switch
+        </BaseButton>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
@@ -404,14 +430,15 @@ const aiTierOptions = computed(() => {
         : `${t.daily_messages} msg/day · $${(t.price_cents / 100).toFixed(0)}/mo`,
       disabled: !t.configured,
       includedInTrial,
+      priceCents: t.price_cents,
     }
   })
   const offDetail = billing.isOnTrial
     ? 'AI Lite is included free during your trial, but you can use the app without AI too.'
     : 'No AI assistant. All other app features still work.'
   return [
-    { slug: 'off', label: 'No AI', detail: offDetail, disabled: false, includedInTrial: false },
-    { slug: 'byok', label: 'BYOK — Bring your own key', detail: 'Use your own Anthropic API key.', disabled: false, includedInTrial: false },
+    { slug: 'off', label: 'No AI', detail: offDetail, disabled: false, includedInTrial: false, priceCents: 0 },
+    { slug: 'byok', label: 'BYOK — Bring your own key', detail: 'Use your own Anthropic API key.', disabled: false, includedInTrial: false, priceCents: 0 },
     ...managed,
   ]
 })
@@ -453,13 +480,55 @@ const aiUsageNote = computed(() => {
   return `${u.count} / ${u.limit} messages today`
 })
 
+// AI tier swap confirmation (#261). Non-trial swaps go through Stripe's
+// proration: the user is credited for the unused portion of their current tier
+// and charged for the used portion of the new tier on the next invoice. The
+// confirmation modal makes the timing + line-item structure explicit so users
+// don't think we're double-charging them.
+const pendingTierChange = ref(null)
+const pendingTierLabel = computed(() => {
+  if (!pendingTierChange.value) return ''
+  const opt = aiTierOptions.value.find((o) => o.slug === pendingTierChange.value)
+  return opt?.label || pendingTierChange.value
+})
+const currentTierLabel = computed(() => {
+  const opt = aiTierOptions.value.find((o) => o.slug === currentAiTier.value)
+  return opt?.label || currentAiTier.value || 'No AI'
+})
+const pendingTierPriceLabel = computed(() => {
+  const opt = aiTierOptions.value.find((o) => o.slug === pendingTierChange.value)
+  if (!opt || opt.priceCents == null) return null
+  if (opt.priceCents === 0) return null
+  return `$${(opt.priceCents / 100).toFixed(0)}/mo`
+})
+
+function isFreeTier(slug) {
+  return slug === 'off' || slug === 'byok'
+}
+
 async function onAiTier(slug) {
   if (slug === currentAiTier.value) return
   if (isTrialUpgradeTier(slug)) {
     pendingUpgradeTier.value = slug
     return
   }
-  await applyTier(slug)
+  // Free → free swaps (off/byok) are no-cost — apply immediately.
+  if (isFreeTier(slug) && isFreeTier(currentAiTier.value)) {
+    await applyTier(slug)
+    return
+  }
+  // Anything that affects billing routes through the proration confirmation.
+  pendingTierChange.value = slug
+}
+
+function cancelTierChange() {
+  pendingTierChange.value = null
+}
+
+async function confirmTierChange() {
+  const slug = pendingTierChange.value
+  pendingTierChange.value = null
+  if (slug) await applyTier(slug)
 }
 
 function formatBrand(brand) {
