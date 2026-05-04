@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\BillingRequired;
 use App\Http\Middleware\CheckModuleAccess;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Application;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'verified' => EnsureEmailIsVerified::class,
             'module' => CheckModuleAccess::class,
+            'billing.required' => BillingRequired::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
