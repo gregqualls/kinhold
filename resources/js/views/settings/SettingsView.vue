@@ -22,1107 +22,1119 @@
     <!-- PARENT VIEW — Collapsible Sections           -->
     <!-- ============================================ -->
     <template v-if="isParent">
-      <!-- Section 1: Family -->
-      <SettingsSection
-        id="family"
-        title="Family"
-        description="Manage your family info, members, and invites"
-        :icon="UsersIcon"
-        :model-value="expandedSections.has('family')"
-        @update:model-value="val => toggleSection('family', val)"
-      >
-        <!-- Family Name -->
-        <form class="space-y-4 mb-6" @submit.prevent="updateFamily">
-          <BaseInput
-            v-model="familyForm.name"
-            label="Family Name"
-            placeholder="The Johnsons"
-            :error="familyErrors.name"
-          />
-          <div class="flex gap-3 justify-end">
-            <BaseButton variant="ghost" @click="cancelEditFamily">Cancel</BaseButton>
-            <BaseButton variant="primary" :loading="savingFamily">Save Changes</BaseButton>
-          </div>
-        </form>
+      <!-- GDPR mode: paywalled users land here with `?gdpr=1` from the
+           SubscriptionPaywall escape hatch. Hide everything except the export
+           and danger sections so they can't bypass the paywall via Settings. -->
+      <div v-if="gdprMode" class="card-lg mb-6 p-4 bg-surface-sunken">
+        <p class="text-sm font-medium text-ink-primary mb-1">Account management</p>
+        <p class="text-xs text-ink-secondary">
+          Your subscription has ended. You can still export a copy of your data or delete your account here.
+        </p>
+      </div>
 
-        <!-- Invite Code -->
-        <div class="border-t border-border-subtle pt-4 mb-6">
-          <h3 class="font-semibold text-ink-primary mb-2">Family Invite Code</h3>
-          <p class="text-sm text-ink-secondary mb-4">
-            Share this code with family members so they can join during registration.
-          </p>
-
-          <div class="flex items-center gap-3">
-            <div class="flex-1 px-4 py-3 bg-surface-sunken rounded-lg font-mono text-lg tracking-widest text-ink-primary text-center">
-              {{ inviteCode || '...' }}
-            </div>
-            <BaseButton variant="secondary" size="sm" :disabled="!inviteCode" @click="copyInviteCode">
-              <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-              {{ copied ? 'Copied!' : 'Copy' }}
-            </BaseButton>
-          </div>
-
-          <!-- Send invite by email -->
-          <div class="mt-4 pt-4 border-t border-border-subtle">
-            <p class="text-sm font-medium text-ink-secondary mb-2">Send Invite by Email</p>
-            <form class="flex items-end gap-3" @submit.prevent="handleSendInviteEmail">
-              <div class="flex-1">
-                <KinInput
-                  v-model="inviteEmail"
-                  type="email"
-                  placeholder="name@example.com"
-                  required
-                />
-              </div>
-              <BaseButton variant="secondary" size="sm" :loading="sendingInvite" :disabled="!inviteCode">
-                <EnvelopeIcon class="w-4 h-4 mr-1" />
-                Send
-              </BaseButton>
-            </form>
-            <p v-if="inviteEmailSent" class="text-sm text-status-success dark:text-status-success mt-2">
-              Invite sent!
-            </p>
-          </div>
-        </div>
-
-        <!-- Family Members -->
-        <div class="border-t border-border-subtle pt-4 mb-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="font-semibold text-ink-primary">Family Members</h3>
-            <BaseButton variant="secondary" size="sm" @click="openAddMemberModal">
-              <PlusIcon class="w-4 h-4 mr-2" />
-              Add Member
-            </BaseButton>
-          </div>
-
-          <div class="space-y-3">
-            <div
-              v-for="member in familyMembers"
-              :key="member.id"
-              class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg"
-            >
-              <div class="flex items-center gap-3">
-                <button
-                  class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-surface-sunken transition-all"
-                  title="Change avatar"
-                  @click="openAvatarEditor(member)"
-                >
-                  <UserAvatar :user="member" size="md" />
-                </button>
-                <div>
-                  <p class="font-semibold text-ink-primary">{{ member.name }}</p>
-                  <p v-if="member.email" class="text-xs text-ink-secondary">{{ member.email }}</p>
-                  <p v-else class="text-xs text-ink-secondary italic">Managed account</p>
-                  <div class="flex items-center gap-2 mt-1">
-                    <span
-                      :class="[
-                        'text-xs px-2 py-0.5 rounded-full font-medium',
-                        member.family_role === 'parent' || member.role === 'parent'
-                          ? 'bg-accent-lavender-soft/40 text-accent-lavender-bold dark:bg-accent-lavender-soft/40 dark:text-accent-lavender-bold'
-                          : 'bg-surface-sunken text-ink-secondary dark:bg-surface-overlay dark:text-ink-tertiary'
-                      ]"
-                    >
-                      {{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}
-                    </span>
-                    <span v-if="member.is_managed" class="text-xs px-2 py-0.5 rounded-full bg-accent-peach-soft/60 text-accent-peach-bold font-medium">
-                      Managed
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="member.id !== currentUser?.id" class="flex items-center gap-1">
-                <button
-                  v-if="member.is_managed"
-                  class="p-2 hover:bg-accent-lavender-soft/40 rounded-lg transition-colors"
-                  title="Switch to this profile"
-                  @click="openSwitchToModal(member)"
-                >
-                  <ArrowsRightLeftIcon class="w-4 h-4 text-accent-lavender-bold" />
-                </button>
-                <button
-                  class="p-2 hover:bg-surface-overlay rounded-lg transition-colors"
-                  title="Edit member"
-                  @click="openEditMemberModal(member)"
-                >
-                  <PencilIcon class="w-4 h-4 text-ink-secondary dark:text-ink-tertiary" />
-                </button>
-                <button
-                  class="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                  title="Remove member"
-                  @click="confirmRemoveMember(member)"
-                >
-                  <TrashIcon class="w-4 h-4 text-status-failed" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Setup Wizard (relocated here from bottom) -->
-        <div class="border-t border-border-subtle pt-4">
-          <h3 class="font-semibold text-ink-primary mb-2">Setup Wizard</h3>
-          <p class="text-sm text-ink-secondary mb-4">
-            Re-run the setup wizard to invite members, connect calendars, or configure features.
-          </p>
-          <BaseButton variant="secondary" @click="$router.push({ name: 'Onboarding' })">
-            Re-run Setup Wizard
-          </BaseButton>
-        </div>
-      </SettingsSection>
-
-      <!-- Section 2: Tasks & Points -->
-      <SettingsSection
-        v-if="moduleToggles.tasks || moduleToggles.points"
-        id="tasks-points"
-        title="Tasks & Points"
-        description="Configure task behavior, points, and rewards"
-        :icon="ClipboardDocumentListIcon"
-        :model-value="expandedSections.has('tasks-points')"
-        @update:model-value="val => toggleSection('tasks-points', val)"
-      >
-        <!-- Tasks module access -->
-        <div class="mb-6">
-          <div
-            v-for="module in tasksPointsModules"
-            :key="module.id"
-            class="p-4 bg-surface-sunken rounded-lg mb-3"
-          >
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-              <div>
-                <p class="font-medium text-ink-primary">{{ module.name }}</p>
-                <p class="text-xs text-ink-secondary">{{ module.description }}</p>
-              </div>
-              <div class="flex gap-1.5 shrink-0">
-                <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                  @click="setModuleMode(module.id, 'all')"
-                >
-                  Everyone
-                </button>
-                <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                  @click="setModuleMode(module.id, 'roles', ['parent'])"
-                >
-                  Parents Only
-                </button>
-                <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-status-failed text-white shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                  @click="setModuleMode(module.id, 'off')"
-                >
-                  Off
-                </button>
-                <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                  @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
-                >
-                  Custom
-                </button>
-              </div>
-            </div>
-
-            <!-- Per-member checkboxes -->
-            <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-border-subtle dark:border-border-subtle">
-              <p class="text-xs font-medium text-ink-secondary mb-2">Select family members:</p>
-              <div class="flex flex-wrap gap-2">
-                <label
-                  v-for="member in familyMembers"
-                  :key="member.id"
-                  class="flex items-center gap-2 px-3 py-2 bg-surface-raised rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
-                >
-                  <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
-                  <UserAvatar :user="member" size="xs" />
-                  <span class="text-sm text-ink-primary">{{ member.name }}</span>
-                  <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-ink-tertiary italic">(always)</span>
-                </label>
-              </div>
-            </div>
-
-            <p class="text-xs text-ink-primary mt-2">
-              <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
-              <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
-              <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
-              <template v-else-if="moduleAccessState[module.id]?.mode === 'users'">{{ getSelectedMemberNames(module.id) || 'No members selected (parents always have access).' }}</template>
-            </p>
-          </div>
-        </div>
-
-        <!-- Leaderboard Period -->
-        <div v-if="moduleToggles.points" class="border-t border-border-subtle pt-4 mb-4">
-          <label class="block text-sm font-medium text-ink-secondary mb-2">
-            Leaderboard Reset Period
-          </label>
-          <KinSelect
-            v-model="leaderboardPeriod"
-            class="w-full max-w-xs"
-            :options="leaderboardPeriodOptions"
-          />
-          <p class="text-xs text-ink-secondary mt-1">
-            How often the leaderboard resets. Does not affect point balances.
-          </p>
-
-          <!-- Kudos Cost Toggle -->
-          <div class="mt-4">
-            <div class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg gap-4">
-              <div class="flex-1">
-                <p class="font-medium text-ink-primary">Kudos cost points</p>
-                <p class="text-xs text-ink-secondary mt-0.5">Giving kudos deducts 1 point from the giver's bank. Prevents trading kudos back and forth.</p>
-              </div>
-              <KinSwitch
-                :model-value="kudosCostEnabled"
-                color="lavender"
-                @update:model-value="kudosCostEnabled = $event"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Default Task Points -->
-        <div v-if="moduleToggles.tasks && moduleToggles.points" class="border-t border-border-subtle pt-4 mb-4">
-          <h3 class="font-semibold text-ink-primary mb-2">Default Task Points</h3>
-          <p class="text-sm text-ink-secondary mb-4">
-            Set how many points are awarded by default for each task priority level. Tasks with explicitly set points are not affected.
-          </p>
-
-          <div class="space-y-3">
-            <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
-              <div class="flex-1">
-                <label class="block text-sm font-medium text-ink-secondary">Low Priority</label>
-              </div>
-              <KinInput v-model.number="defaultPoints.low" type="number" min="0" max="1000" class="w-24 text-center" />
-              <span class="text-sm text-ink-secondary">pts</span>
-            </div>
-            <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
-              <div class="flex-1">
-                <label class="block text-sm font-medium text-ink-secondary">Medium Priority</label>
-              </div>
-              <KinInput v-model.number="defaultPoints.medium" type="number" min="0" max="1000" class="w-24 text-center" />
-              <span class="text-sm text-ink-secondary">pts</span>
-            </div>
-            <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
-              <div class="flex-1">
-                <label class="block text-sm font-medium text-ink-secondary">High Priority</label>
-              </div>
-              <KinInput v-model.number="defaultPoints.high" type="number" min="0" max="1000" class="w-24 text-center" />
-              <span class="text-sm text-ink-secondary">pts</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Task Assignment -->
-        <div v-if="moduleToggles.tasks" class="border-t border-border-subtle pt-4 mb-4">
-          <h3 class="font-semibold text-ink-primary mb-2">Task Assignment</h3>
-          <p class="text-sm text-ink-secondary mb-4">
-            Control which family members can assign tasks to others. Parents can always assign tasks to anyone.
-          </p>
-
-          <div class="space-y-3">
-            <label
-              v-for="option in taskAssignmentOptions"
-              :key="option.value"
-              class="flex items-start gap-3 p-4 bg-surface-sunken rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
-            >
-              <input v-model="taskAssignment.mode" type="radio" :value="option.value" name="task_assignment_mode" class="mt-0.5 rounded-full" />
-              <div class="flex-1">
-                <p class="font-medium text-ink-primary">{{ option.label }}</p>
-                <p class="text-xs text-ink-secondary">{{ option.description }}</p>
-              </div>
-            </label>
-          </div>
-
-          <div v-if="taskAssignment.mode === 'users'" class="mt-4 pl-4 border-l-2 border-accent-lavender-soft">
-            <p class="text-sm font-medium text-ink-secondary mb-3">Select which children can assign tasks to others:</p>
-            <div class="space-y-2">
-              <label
-                v-for="child in childMembers"
-                :key="child.id"
-                class="flex items-center gap-3 p-3 bg-surface-sunken rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
-              >
-                <input v-model="taskAssignment.users" type="checkbox" :value="child.id" class="rounded" />
-                <span class="text-sm font-medium text-ink-primary">{{ child.name }}</span>
-              </label>
-              <p v-if="childMembers.length === 0" class="text-sm text-ink-secondary italic">
-                No child members in the family yet.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Save button -->
-        <div class="flex justify-end pt-4 border-t border-border-subtle">
-          <BaseButton variant="primary" :loading="savingTasksPoints" @click="saveTasksPointsSection">
-            Save Changes
-          </BaseButton>
-        </div>
-      </SettingsSection>
-
-      <!-- Section 3: AI & Integrations -->
-      <SettingsSection
-        id="ai-integrations"
-        title="AI & Integrations"
-        description="API keys, calendar connections, and MCP"
-        :icon="CpuChipIcon"
-        :model-value="expandedSections.has('ai-integrations')"
-        @update:model-value="val => toggleSection('ai-integrations', val)"
-      >
-        <!-- AI Mode Toggle -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-ink-secondary mb-3">
-            AI Access
-          </label>
-
-          <!-- Two-tab selector — hidden on self-hosted (BYOK is the only option) -->
-          <div v-if="billingEnabled" class="grid grid-cols-2 gap-3 mb-5">
-            <!-- Kinhold AI tab -->
-            <button
-              :class="[
-                'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
-                aiMode === 'kinhold'
-                  ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
-                  : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
-              ]"
-              @click="aiMode = 'kinhold'"
-            >
-              <div v-if="aiMode === 'kinhold'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div class="w-8 h-8 rounded-lg bg-accent-lavender-soft/40 flex items-center justify-center mb-2">
-                <svg class="w-4 h-4 text-accent-lavender-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <p class="text-sm font-semibold text-ink-primary">Use Kinhold AI</p>
-              <p class="text-xs text-ink-secondary mt-0.5">Powered by Claude · Included with your trial</p>
-            </button>
-
-            <!-- BYOK tab -->
-            <button
-              :class="[
-                'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
-                aiMode === 'byok'
-                  ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
-                  : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
-              ]"
-              @click="aiMode = 'byok'"
-            >
-              <div v-if="aiMode === 'byok'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div class="w-8 h-8 rounded-lg bg-golden-100 dark:bg-golden-900/40 flex items-center justify-center mb-2">
-                <svg class="w-4 h-4 text-golden-600 dark:text-golden-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                </svg>
-              </div>
-              <p class="text-sm font-semibold text-ink-primary">My Own API Key</p>
-              <p class="text-xs text-ink-secondary mt-0.5">Anthropic Claude (others coming soon)</p>
-            </button>
-          </div>
-
-          <!-- Kinhold AI panel — billing-only -->
-          <div v-if="billingEnabled && aiMode === 'kinhold'" class="p-4 bg-accent-lavender-soft/30 border border-accent-lavender-soft rounded-lg">
-            <div class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-accent-lavender-bold mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div>
-                <p class="text-sm font-medium text-accent-lavender-bold">You're all set</p>
-                <p class="text-xs text-accent-lavender-bold mt-0.5">
-                  Kinhold AI is powered by Anthropic's Claude. No API key needed — we handle it for you. Included free with your 14-day trial; pick a paid AI tier from the Billing panel to keep using it after.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- BYOK panel — always shown on self-hosted -->
-          <div v-if="!billingEnabled || aiMode === 'byok'" class="space-y-4">
-            <!-- Security reassurance — keys are encrypted at rest with AES-256
-                 (Laravel encrypt() / APP_KEY) and only decrypted in-memory at
-                 the moment a chat request is made. We never log or display
-                 raw keys; the UI only ever shows a masked preview. -->
-            <div class="flex items-start gap-2.5 p-3 rounded-lg bg-status-success-soft/40 dark:bg-status-success-soft/20 border border-status-success-soft">
-              <svg class="w-4 h-4 mt-0.5 shrink-0 text-status-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              <div class="text-xs text-ink-secondary leading-relaxed">
-                <span class="font-semibold text-ink-primary">Your key stays private.</span>
-                Encrypted with AES-256 before it touches the database, decrypted only in memory the instant a chat request runs, and never logged or shown back to you in plaintext — only a masked preview.
-              </div>
-            </div>
-
-            <!-- Provider selection — single column when only one provider is
-                 available (avoids 1-of-3 dead-space layout per #201) -->
-            <div :class="['grid gap-3', aiProviders.length > 1 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1']">
-              <button
-                v-for="provider in aiProviders"
-                :key="provider.slug"
-                :class="[
-                  'relative flex flex-col items-center p-3 rounded-xl border-2 transition-all duration-200 text-center',
-                  aiConfig.provider === provider.slug
-                    ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
-                    : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
-                ]"
-                @click="selectAiProvider(provider.slug)"
-              >
-                <div class="w-8 h-8 mb-1.5 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
-                  <span class="text-base font-bold">{{ providerIcon(provider.slug) }}</span>
-                </div>
-                <p class="text-xs font-semibold text-ink-primary">{{ provider.name }}</p>
-              </button>
-            </div>
-
-            <!-- API Key -->
-            <div>
-              <label class="block text-sm font-medium text-ink-secondary mb-1.5">
-                {{ selectedProviderName }} API Key
-              </label>
-              <div class="relative">
-                <KinInput
-                  v-model="aiConfig.apiKey"
-                  :type="showAiKey ? 'text' : 'password'"
-                  :placeholder="selectedProviderPlaceholder"
-                />
-                <button
-                  type="button" class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs font-medium text-ink-secondary hover:text-ink-primary transition-colors z-10"
-                  @click="showAiKey = !showAiKey"
-                >
-                  {{ showAiKey ? 'Hide' : 'Show' }}
-                </button>
-              </div>
-              <div class="flex items-center justify-between mt-1">
-                <p class="text-xs text-ink-secondary">
-                  <template v-if="aiConfig.hasSavedKey && !aiConfig.apiKey">
-                    Current key: <span class="font-mono">{{ aiConfig.maskedKey }}</span>
-                  </template>
-                  <template v-else>
-                    Find your key at <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" class="text-accent-lavender-bold hover:underline">console.anthropic.com</a>. We encrypt it at rest and never see your key in plaintext.
-                  </template>
-                </p>
-                <a
-                  :href="selectedProviderHelpUrl" target="_blank" rel="noopener noreferrer"
-                  class="text-xs text-accent-lavender-bold hover:underline whitespace-nowrap ml-2"
-                >
-                  Get API key →
-                </a>
-              </div>
-
-              <!-- Inline test-key status -->
-              <div
-                v-if="aiTestStatus"
-                class="mt-2 flex items-start gap-2 text-xs"
-                :class="aiTestStatus.valid ? 'text-status-success' : 'text-status-danger'"
-                role="status"
-              >
-                <svg v-if="aiTestStatus.valid" class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                <svg v-else class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                <span>{{ aiTestStatus.valid ? 'Key is valid.' : aiTestStatus.error }}</span>
-              </div>
-            </div>
-
-            <!-- Model override -->
-            <div>
-              <label class="block text-sm font-medium text-ink-secondary mb-1.5">
-                Model Override <span class="font-normal text-ink-tertiary">(optional)</span>
-              </label>
-              <KinInput v-model="aiConfig.model" type="text" :placeholder="selectedProviderDefaultModel" />
-              <p class="text-xs text-ink-secondary mt-1">
-                Leave blank to use {{ selectedProviderDefaultModel }}.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap gap-3 justify-end pt-4">
-            <BaseButton
-              v-if="(!billingEnabled || aiMode === 'byok') && aiConfig.hasSavedKey"
-              variant="ghost"
-              :loading="clearingAi"
-              @click="showClearKeyModal = true"
-            >
-              Clear saved key
-            </BaseButton>
-            <BaseButton
-              v-if="!billingEnabled || aiMode === 'byok'"
-              variant="ghost"
-              :disabled="!aiConfig.apiKey"
-              :loading="testingAi"
-              @click="testAiKey"
-            >
-              Test key
-            </BaseButton>
-            <BaseButton variant="ghost" @click="resetAiConfig">Reset</BaseButton>
-            <BaseButton variant="primary" :loading="savingAi" @click="saveAiSettings">Save AI Settings</BaseButton>
-          </div>
-        </div>
-
-        <!-- Connect AI Assistant (MCP Token) -->
-        <div class="border-t border-border-subtle pt-4 mb-6">
-          <h3 class="font-semibold text-ink-primary mb-2">Connect AI Assistant</h3>
-          <p class="text-sm text-ink-secondary mb-4">
-            Connect any MCP-compatible AI assistant to manage your family hub.
-          </p>
-
-          <!-- OAuth quick-connect info -->
-          <div class="p-4 bg-accent-lavender-soft/30 border border-accent-lavender-soft rounded-lg mb-4">
-            <p class="text-sm font-medium text-accent-lavender-bold mb-1">Quick Connect (Claude Desktop / ChatGPT)</p>
-            <p class="text-xs text-accent-lavender-bold mb-2">
-              Add Kinhold as a custom connector using OAuth — no token needed:
-            </p>
-            <div class="space-y-1 text-xs text-accent-lavender-bold dark:text-accent-lavender-bold">
-              <div class="flex items-start gap-2">
-                <span class="font-medium min-w-[40px]">Name</span>
-                <code class="font-mono bg-accent-lavender-soft/40 px-1.5 py-0.5 rounded">Kinhold</code>
-              </div>
-              <div class="flex items-start gap-2">
-                <span class="font-medium min-w-[40px]">URL</span>
-                <code class="font-mono bg-accent-lavender-soft/40 px-1.5 py-0.5 rounded break-all">{{ mcpGenerated.mcpUrl || (appOrigin + '/mcp') }}</code>
-              </div>
-            </div>
-            <p class="text-xs text-accent-lavender-bold dark:text-accent-lavender-bold mt-2">
-              Leave OAuth fields blank. You'll be prompted to sign in with Google when you connect.
-            </p>
-          </div>
-
-          <!-- Bearer token fallback (Claude Code / manual) -->
-          <p class="text-xs text-ink-secondary mb-2 font-medium">Advanced: Bearer Token (for Claude Code / manual setup)</p>
-          <div class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg">
-            <div>
-              <div class="flex items-center gap-2">
-                <p class="font-medium text-ink-primary">MCP Connection</p>
-                <span v-if="mcpToken.hasToken" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-status-success">
-                  Connected
-                </span>
-                <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-sunken text-ink-secondary dark:bg-surface-overlay dark:text-ink-tertiary">
-                  Not Connected
-                </span>
-              </div>
-              <p v-if="mcpToken.lastUsedAt" class="text-xs text-ink-secondary mt-1">
-                Last used: {{ new Date(mcpToken.lastUsedAt).toLocaleDateString() }}
-              </p>
-            </div>
-            <div class="flex items-center gap-2">
-              <BaseButton v-if="mcpToken.hasToken" variant="ghost" size="sm" :loading="mcpRevoking" @click="handleRevokeMcpToken">
-                Revoke
-              </BaseButton>
-              <BaseButton variant="secondary" size="sm" :loading="mcpGenerating" @click="handleGenerateMcpToken">
-                {{ mcpToken.hasToken ? 'Regenerate Token' : 'Generate Token' }}
-              </BaseButton>
-            </div>
-          </div>
-
-          <!-- One-time token display -->
-          <div v-if="mcpGenerated.show" class="mt-4 space-y-4">
-            <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-              <p class="text-sm text-amber-800 dark:text-amber-200 font-medium">
-                This token is shown only once. Copy what you need now — you won't be able to see it again.
-              </p>
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <label class="block text-sm font-medium text-ink-secondary">Bearer Token</label>
-                <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('token', mcpGenerated.plainToken)">
-                  <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-                  {{ mcpCopied.token ? 'Copied!' : 'Copy' }}
-                </BaseButton>
-              </div>
-              <div class="font-mono text-sm bg-surface-raised dark:bg-surface-app text-status-success p-3 rounded-lg overflow-x-auto">
-                {{ mcpGenerated.plainToken }}
-              </div>
-            </div>
-
-            <div>
-              <div class="flex flex-wrap gap-1 border-b border-border-subtle mb-3">
-                <button
-                  v-for="client in mcpGenerated.clients"
-                  :key="client.id"
-                  :class="[
-                    'px-3 py-1.5 text-sm font-medium rounded-t-lg transition-colors -mb-px',
-                    mcpActiveClient === client.id
-                      ? 'border border-b-surface-raised border-border-subtle text-ink-primary bg-surface-raised'
-                      : 'text-ink-secondary hover:text-ink-primary',
-                  ]"
-                  @click="mcpActiveClient = client.id"
-                >
-                  {{ client.name }}
-                </button>
-              </div>
-
-              <div v-for="client in mcpGenerated.clients" v-show="mcpActiveClient === client.id" :key="client.id">
-                <p class="text-xs text-ink-secondary mb-2">{{ client.instructions }}</p>
-
-                <template v-if="client.steps">
-                  <ol class="list-decimal list-inside space-y-2 text-sm text-ink-primary mb-3">
-                    <li v-for="(step, i) in client.steps" :key="i" class="leading-relaxed">{{ step }}</li>
-                  </ol>
-                </template>
-
-                <template v-else-if="client.details">
-                  <div class="space-y-2 mb-2">
-                    <div v-for="(value, label) in client.details" :key="label" class="flex items-start gap-2">
-                      <span class="text-xs font-medium text-ink-secondary uppercase min-w-[80px]">{{ label.replace('_', ' ') }}</span>
-                      <code class="text-sm font-mono text-ink-primary break-all">{{ value }}</code>
-                    </div>
-                  </div>
-                  <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, Object.entries(client.details).map(([k, v]) => k + ': ' + v).join('\n'))">
-                    <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-                    {{ mcpCopied[client.id] ? 'Copied!' : 'Copy Details' }}
-                  </BaseButton>
-                </template>
-
-                <template v-else>
-                  <div class="flex items-center justify-end mb-1">
-                    <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, client.command || client.configJson)">
-                      <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
-                      {{ mcpCopied[client.id] ? 'Copied!' : 'Copy' }}
-                    </BaseButton>
-                  </div>
-                  <pre class="font-mono text-sm bg-surface-raised dark:bg-surface-app text-ink-secondary p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
-                </template>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Google Account Linking -->
-        <div class="border-t border-border-subtle pt-4 mb-6">
-          <h3 class="font-semibold text-ink-primary mb-3">Google Account</h3>
-          <p class="text-sm text-ink-secondary mb-4">
-            Link your Google account for quick sign-in. Your Google email must match your account email.
-          </p>
-
-          <div v-if="currentUser?.google_id" class="flex items-center justify-between p-3 bg-status-success/10 rounded-lg">
-            <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-status-success dark:text-status-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-              <span class="text-sm font-medium text-green-800 dark:text-green-300">Google account linked</span>
-            </div>
-            <BaseButton variant="ghost" size="sm" :loading="unlinkingGoogle" @click="handleUnlinkGoogle">Unlink</BaseButton>
-          </div>
-
-          <div v-else class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
-            <div>
-              <p class="text-sm font-medium text-ink-primary">Not linked</p>
-              <p class="text-xs text-ink-secondary mt-0.5">Sign in faster with Google</p>
-            </div>
-            <BaseButton variant="secondary" size="sm" :loading="linkingGoogle" @click="handleLinkGoogle">Link Google</BaseButton>
-          </div>
-
-          <div v-if="googleLinkError" class="mt-2 p-2 bg-status-failed/10 border border-status-failed/30 rounded-lg">
-            <p class="text-xs text-status-failed">{{ googleLinkError }}</p>
-          </div>
-          <div v-if="googleLinked" class="mt-2 p-2 bg-status-success/10 border border-green-200 dark:border-green-800 rounded-lg">
-            <p class="text-xs text-status-success dark:text-green-300">Google account linked successfully!</p>
-          </div>
-        </div>
-
-        <!-- Google Calendar -->
-        <div class="border-t border-border-subtle pt-4 mb-6">
-          <h3 class="font-semibold text-ink-primary mb-3">Google Calendar Sync</h3>
-          <p class="text-sm text-ink-secondary mb-4">
-            Connect your Google Calendar to sync events into the family hub.
-          </p>
-
-          <!-- Google OAuth not configured notice -->
-          <div v-if="authStore.services && !authStore.services.google_calendar" class="p-4 bg-golden-50 dark:bg-golden-900/20 rounded-xl mb-4">
-            <p class="text-sm font-medium text-golden-800 dark:text-golden-300 mb-1">Google Calendar Not Configured</p>
-            <p class="text-xs text-golden-700 dark:text-golden-400">
-              This server doesn't have Google OAuth credentials set up. You can still create manual events from the calendar page.
-              <template v-if="authStore.isParent"> Set <code class="bg-golden-100 dark:bg-golden-900/40 px-1 rounded">GOOGLE_CLIENT_ID</code> and <code class="bg-golden-100 dark:bg-golden-900/40 px-1 rounded">GOOGLE_CLIENT_SECRET</code> in your environment to enable Google Calendar sync.</template>
-            </p>
-          </div>
-
-          <div v-else class="space-y-2">
-            <div
-              v-for="conn in userCalendarConnections"
-              :key="conn.id"
-              class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg"
-            >
-              <div>
-                <p class="font-medium text-ink-primary">{{ conn.calendar_name || 'Google Calendar' }}</p>
-                <p class="text-xs text-ink-secondary mt-0.5">{{ currentUser?.name }}</p>
-              </div>
-              <BaseButton variant="ghost" size="sm" @click="handleDisconnectCalendar(conn.id)">Disconnect</BaseButton>
-            </div>
-
-            <div v-if="userCalendarConnections.length === 0" class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
-              <div>
-                <p class="font-medium text-ink-primary">{{ currentUser?.name }}</p>
-                <p class="text-xs text-ink-secondary mt-0.5">
-                  <span class="badge badge-warning">Not Connected</span>
-                </p>
-              </div>
-              <BaseButton variant="secondary" size="sm" :loading="connectingCalendar" @click="handleConnectCalendar">Connect</BaseButton>
-            </div>
-
-            <div v-if="userCalendarConnections.length > 0" class="flex justify-end">
-              <BaseButton variant="secondary" size="sm" :loading="connectingCalendar" @click="handleConnectCalendar">
-                Reconnect / Add Calendars
-              </BaseButton>
-            </div>
-
-            <div
-              v-for="conn in otherMemberConnections"
-              :key="conn.id"
-              class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg"
-            >
-              <div>
-                <p class="font-medium text-ink-primary">{{ conn.calendar_name || 'Google Calendar' }}</p>
-                <p class="text-xs text-ink-secondary mt-0.5">{{ conn.user?.name || 'Family Member' }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="calendarError" class="mt-3 p-3 bg-status-failed/10 border border-status-failed/30 rounded-lg">
-            <p class="text-sm text-status-failed">{{ calendarError }}</p>
-          </div>
-        </div>
-
-        <!-- ICS URL Subscription -->
-        <div class="border-t border-border-subtle pt-4">
-          <h3 class="font-semibold text-ink-primary mb-3">Subscribe via URL</h3>
-          <p class="text-sm text-ink-secondary mb-4">
-            Add a calendar by pasting its ICS feed URL (works with any .ics calendar link).
-          </p>
-
-          <form class="space-y-3" @submit.prevent="handleSubscribeUrl">
-            <div>
-              <label class="block text-sm font-medium text-ink-secondary mb-1">Calendar URL</label>
-              <KinInput v-model="icsForm.url" type="url" placeholder="https://example.com/calendar.ics" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-ink-secondary mb-1">Calendar Name (optional)</label>
-              <KinInput v-model="icsForm.name" type="text" placeholder="My Calendar" />
-              <p class="text-xs text-ink-secondary mt-1">If left blank, the name will be auto-detected from the calendar data.</p>
-            </div>
-            <div class="flex justify-end">
-              <BaseButton variant="secondary" size="sm" :loading="subscribingUrl">Subscribe</BaseButton>
+      <template v-if="!gdprMode">
+        <!-- Section 1: Family -->
+        <SettingsSection
+          id="family"
+          title="Family"
+          description="Manage your family info, members, and invites"
+          :icon="UsersIcon"
+          :model-value="expandedSections.has('family')"
+          @update:model-value="val => toggleSection('family', val)"
+        >
+          <!-- Family Name -->
+          <form class="space-y-4 mb-6" @submit.prevent="updateFamily">
+            <BaseInput
+              v-model="familyForm.name"
+              label="Family Name"
+              placeholder="The Johnsons"
+              :error="familyErrors.name"
+            />
+            <div class="flex gap-3 justify-end">
+              <BaseButton variant="ghost" @click="cancelEditFamily">Cancel</BaseButton>
+              <BaseButton variant="primary" :loading="savingFamily">Save Changes</BaseButton>
             </div>
           </form>
 
-          <div v-if="icsError" class="mt-3 p-3 bg-status-failed/10 border border-status-failed/30 rounded-lg">
-            <p class="text-sm text-status-failed">{{ icsError }}</p>
-          </div>
-
-          <div v-if="icsConnections.length > 0" class="mt-4 space-y-2">
-            <p class="text-sm font-medium text-ink-secondary">Subscribed Calendars</p>
-            <div
-              v-for="conn in icsConnections"
-              :key="conn.id"
-              class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg"
-            >
-              <div>
-                <p class="font-medium text-ink-primary">{{ conn.calendar_name || 'ICS Calendar' }}</p>
-                <p class="text-xs text-ink-secondary mt-0.5">URL subscription</p>
-              </div>
-              <BaseButton variant="ghost" size="sm" @click="handleDisconnectCalendar(conn.id)">Unsubscribe</BaseButton>
-            </div>
-          </div>
-        </div>
-      </SettingsSection>
-
-      <!-- Section 4: Feature Access -->
-      <SettingsSection
-        id="feature-access"
-        title="Feature Access"
-        description="Control which features each family member can access"
-        :icon="ShieldCheckIcon"
-        badge="Parent"
-        :model-value="expandedSections.has('feature-access')"
-        @update:model-value="val => toggleSection('feature-access', val)"
-      >
-        <div class="space-y-4">
-          <div
-            v-for="module in otherModules"
-            :key="module.id"
-            class="p-4 bg-surface-sunken rounded-lg"
-          >
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-              <div>
-                <p class="font-medium text-ink-primary">{{ module.name }}</p>
-                <p class="text-xs text-ink-secondary">{{ module.description }}</p>
-              </div>
-              <div class="flex gap-1.5 shrink-0">
-                <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                  @click="setModuleMode(module.id, 'all')"
-                >
-                  Everyone
-                </button>
-                <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                  @click="setModuleMode(module.id, 'roles', ['parent'])"
-                >
-                  Parents Only
-                </button>
-                <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-status-failed text-white shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                  @click="setModuleMode(module.id, 'off')"
-                >
-                  Off
-                </button>
-                <button
-                  :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                  @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
-                >
-                  Custom
-                </button>
-              </div>
-            </div>
-
-            <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-border-subtle dark:border-border-subtle">
-              <p class="text-xs font-medium text-ink-secondary mb-2">Select family members:</p>
-              <div class="flex flex-wrap gap-2">
-                <label
-                  v-for="member in familyMembers"
-                  :key="member.id"
-                  class="flex items-center gap-2 px-3 py-2 bg-surface-raised rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
-                >
-                  <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
-                  <UserAvatar :user="member" size="xs" />
-                  <span class="text-sm text-ink-primary">{{ member.name }}</span>
-                  <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-ink-tertiary italic">(always)</span>
-                </label>
-              </div>
-            </div>
-
-            <p class="text-xs text-ink-primary mt-2">
-              <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
-              <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
-              <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
-              <template v-else-if="moduleAccessState[module.id]?.mode === 'users'">{{ getSelectedMemberNames(module.id) || 'No members selected (parents always have access).' }}</template>
+          <!-- Invite Code -->
+          <div class="border-t border-border-subtle pt-4 mb-6">
+            <h3 class="font-semibold text-ink-primary mb-2">Family Invite Code</h3>
+            <p class="text-sm text-ink-secondary mb-4">
+              Share this code with family members so they can join during registration.
             </p>
+
+            <div class="flex items-center gap-3">
+              <div class="flex-1 px-4 py-3 bg-surface-sunken rounded-lg font-mono text-lg tracking-widest text-ink-primary text-center">
+                {{ inviteCode || '...' }}
+              </div>
+              <BaseButton variant="secondary" size="sm" :disabled="!inviteCode" @click="copyInviteCode">
+                <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                {{ copied ? 'Copied!' : 'Copy' }}
+              </BaseButton>
+            </div>
+
+            <!-- Send invite by email -->
+            <div class="mt-4 pt-4 border-t border-border-subtle">
+              <p class="text-sm font-medium text-ink-secondary mb-2">Send Invite by Email</p>
+              <form class="flex items-end gap-3" @submit.prevent="handleSendInviteEmail">
+                <div class="flex-1">
+                  <KinInput
+                    v-model="inviteEmail"
+                    type="email"
+                    placeholder="name@example.com"
+                    required
+                  />
+                </div>
+                <BaseButton variant="secondary" size="sm" :loading="sendingInvite" :disabled="!inviteCode">
+                  <EnvelopeIcon class="w-4 h-4 mr-1" />
+                  Send
+                </BaseButton>
+              </form>
+              <p v-if="inviteEmailSent" class="text-sm text-status-success dark:text-status-success mt-2">
+                Invite sent!
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div class="flex gap-3 justify-end pt-4 border-t border-border-subtle mt-4">
-          <BaseButton variant="primary" :loading="savingModules" @click="saveModuleSettings">
-            Save Preferences
-          </BaseButton>
-        </div>
-      </SettingsSection>
+          <!-- Family Members -->
+          <div class="border-t border-border-subtle pt-4 mb-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-ink-primary">Family Members</h3>
+              <BaseButton variant="secondary" size="sm" @click="openAddMemberModal">
+                <PlusIcon class="w-4 h-4 mr-2" />
+                Add Member
+              </BaseButton>
+            </div>
 
-      <!-- Section 5: Food -->
-      <SettingsSection
-        id="food"
-        title="Food"
-        description="Meal planning preferences"
-        :icon="FireIcon"
-        :model-value="expandedSections.has('food')"
-        @update:model-value="val => toggleSection('food', val)"
-      >
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-ink-secondary mb-2">
-            Week Starts On
-          </label>
-          <KinSelect
-            v-model="weekStartDay"
-            class="w-full max-w-xs"
-            :options="weekStartDayOptions"
-          />
-          <p class="text-xs text-ink-secondary mt-1">
-            Controls the meal planner calendar and weekly shopping list boundaries.
-          </p>
-        </div>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-ink-secondary mb-2">
-            Visible Meal Slots
-          </label>
-          <div class="flex flex-wrap gap-2">
-            <button
-              v-for="slot in allMealSlots"
-              :key="slot.key"
-              class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors"
-              :class="mealSlots.includes(slot.key)
-                ? 'bg-[#C4975A]/10 border-[#C4975A]/40 text-[#C4975A]'
-                : 'bg-surface-sunken border-border-subtle dark:border-border-subtle text-ink-tertiary hover:border-[#C4975A]/30'"
-              @click="toggleMealSlot(slot.key)"
-            >
-              <component :is="slot.icon" class="w-3.5 h-3.5" />
-              {{ slot.label }}
-            </button>
-          </div>
-          <p class="text-xs text-ink-secondary mt-1">
-            Choose which meals to show on your planner. Hidden slots keep their data.
-          </p>
-        </div>
-        <BaseButton variant="primary" size="sm" :loading="savingFood" @click="saveFoodSection">
-          Save
-        </BaseButton>
-      </SettingsSection>
-
-      <!-- Section 6: Appearance -->
-      <SettingsSection
-        id="appearance"
-        title="Appearance"
-        description="Dark mode and color themes"
-        :icon="SwatchIcon"
-        :model-value="expandedSections.has('appearance')"
-        @update:model-value="val => toggleSection('appearance', val)"
-      >
-        <!-- Dark Mode -->
-        <div class="flex items-center justify-between p-4 bg-surface-sunken dark:bg-surface-raised rounded-lg">
-          <div>
-            <p class="font-medium text-ink-primary">Dark Mode</p>
-            <p class="text-xs text-ink-secondary mt-0.5">Switch between light and dark themes</p>
-          </div>
-          <ToggleSwitch :model-value="isDark" @update:model-value="toggleDarkMode">
-            <template #thumb>
-              <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-accent-lavender-bold" />
-              <SunIcon v-else class="w-3.5 h-3.5 text-sand-500" />
-            </template>
-          </ToggleSwitch>
-        </div>
-
-        <!-- Color Theme Picker -->
-        <div class="mt-4 pt-4 border-t border-border-subtle">
-          <p class="font-medium text-ink-primary mb-1">Color Theme</p>
-          <p class="text-xs text-ink-secondary mb-3">Choose a color palette for the app</p>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            <button
-              v-for="theme in availableThemes"
-              :key="theme.id"
-              :class="[
-                'relative flex flex-col p-3 rounded-xl border-2 transition-all duration-200 text-left',
-                currentTheme === theme.id
-                  ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 dark:ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
-                  : 'border-border-subtle hover:border-border-strong dark:hover:border-border-strong bg-surface-raised/50',
-              ]"
-              @click="selectTheme(theme.id)"
-            >
+            <div class="space-y-3">
               <div
-                v-if="currentTheme === theme.id"
-                class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center"
+                v-for="member in familyMembers"
+                :key="member.id"
+                class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg"
               >
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                <div class="flex items-center gap-3">
+                  <button
+                    class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-surface-sunken transition-all"
+                    title="Change avatar"
+                    @click="openAvatarEditor(member)"
+                  >
+                    <UserAvatar :user="member" size="md" />
+                  </button>
+                  <div>
+                    <p class="font-semibold text-ink-primary">{{ member.name }}</p>
+                    <p v-if="member.email" class="text-xs text-ink-secondary">{{ member.email }}</p>
+                    <p v-else class="text-xs text-ink-secondary italic">Managed account</p>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span
+                        :class="[
+                          'text-xs px-2 py-0.5 rounded-full font-medium',
+                          member.family_role === 'parent' || member.role === 'parent'
+                            ? 'bg-accent-lavender-soft/40 text-accent-lavender-bold dark:bg-accent-lavender-soft/40 dark:text-accent-lavender-bold'
+                            : 'bg-surface-sunken text-ink-secondary dark:bg-surface-overlay dark:text-ink-tertiary'
+                        ]"
+                      >
+                        {{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}
+                      </span>
+                      <span v-if="member.is_managed" class="text-xs px-2 py-0.5 rounded-full bg-accent-peach-soft/60 text-accent-peach-bold font-medium">
+                        Managed
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="member.id !== currentUser?.id" class="flex items-center gap-1">
+                  <button
+                    v-if="member.is_managed"
+                    class="p-2 hover:bg-accent-lavender-soft/40 rounded-lg transition-colors"
+                    title="Switch to this profile"
+                    @click="openSwitchToModal(member)"
+                  >
+                    <ArrowsRightLeftIcon class="w-4 h-4 text-accent-lavender-bold" />
+                  </button>
+                  <button
+                    class="p-2 hover:bg-surface-overlay rounded-lg transition-colors"
+                    title="Edit member"
+                    @click="openEditMemberModal(member)"
+                  >
+                    <PencilIcon class="w-4 h-4 text-ink-secondary dark:text-ink-tertiary" />
+                  </button>
+                  <button
+                    class="p-2 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    title="Remove member"
+                    @click="confirmRemoveMember(member)"
+                  >
+                    <TrashIcon class="w-4 h-4 text-status-failed" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Setup Wizard (relocated here from bottom) -->
+          <div class="border-t border-border-subtle pt-4">
+            <h3 class="font-semibold text-ink-primary mb-2">Setup Wizard</h3>
+            <p class="text-sm text-ink-secondary mb-4">
+              Re-run the setup wizard to invite members, connect calendars, or configure features.
+            </p>
+            <BaseButton variant="secondary" @click="$router.push({ name: 'Onboarding' })">
+              Re-run Setup Wizard
+            </BaseButton>
+          </div>
+        </SettingsSection>
+
+        <!-- Section 2: Tasks & Points -->
+        <SettingsSection
+          v-if="moduleToggles.tasks || moduleToggles.points"
+          id="tasks-points"
+          title="Tasks & Points"
+          description="Configure task behavior, points, and rewards"
+          :icon="ClipboardDocumentListIcon"
+          :model-value="expandedSections.has('tasks-points')"
+          @update:model-value="val => toggleSection('tasks-points', val)"
+        >
+          <!-- Tasks module access -->
+          <div class="mb-6">
+            <div
+              v-for="module in tasksPointsModules"
+              :key="module.id"
+              class="p-4 bg-surface-sunken rounded-lg mb-3"
+            >
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <div>
+                  <p class="font-medium text-ink-primary">{{ module.name }}</p>
+                  <p class="text-xs text-ink-secondary">{{ module.description }}</p>
+                </div>
+                <div class="flex gap-1.5 shrink-0">
+                  <button
+                    :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
+                    @click="setModuleMode(module.id, 'all')"
+                  >
+                    Everyone
+                  </button>
+                  <button
+                    :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
+                    @click="setModuleMode(module.id, 'roles', ['parent'])"
+                  >
+                    Parents Only
+                  </button>
+                  <button
+                    :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-status-failed text-white shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
+                    @click="setModuleMode(module.id, 'off')"
+                  >
+                    Off
+                  </button>
+                  <button
+                    :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
+                    @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
+                  >
+                    Custom
+                  </button>
+                </div>
+              </div>
+
+              <!-- Per-member checkboxes -->
+              <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-border-subtle dark:border-border-subtle">
+                <p class="text-xs font-medium text-ink-secondary mb-2">Select family members:</p>
+                <div class="flex flex-wrap gap-2">
+                  <label
+                    v-for="member in familyMembers"
+                    :key="member.id"
+                    class="flex items-center gap-2 px-3 py-2 bg-surface-raised rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
+                  >
+                    <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
+                    <UserAvatar :user="member" size="xs" />
+                    <span class="text-sm text-ink-primary">{{ member.name }}</span>
+                    <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-ink-tertiary italic">(always)</span>
+                  </label>
+                </div>
+              </div>
+
+              <p class="text-xs text-ink-primary mt-2">
+                <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
+                <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
+                <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
+                <template v-else-if="moduleAccessState[module.id]?.mode === 'users'">{{ getSelectedMemberNames(module.id) || 'No members selected (parents always have access).' }}</template>
+              </p>
+            </div>
+          </div>
+
+          <!-- Leaderboard Period -->
+          <div v-if="moduleToggles.points" class="border-t border-border-subtle pt-4 mb-4">
+            <label class="block text-sm font-medium text-ink-secondary mb-2">
+              Leaderboard Reset Period
+            </label>
+            <KinSelect
+              v-model="leaderboardPeriod"
+              class="w-full max-w-xs"
+              :options="leaderboardPeriodOptions"
+            />
+            <p class="text-xs text-ink-secondary mt-1">
+              How often the leaderboard resets. Does not affect point balances.
+            </p>
+
+            <!-- Kudos Cost Toggle -->
+            <div class="mt-4">
+              <div class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg gap-4">
+                <div class="flex-1">
+                  <p class="font-medium text-ink-primary">Kudos cost points</p>
+                  <p class="text-xs text-ink-secondary mt-0.5">Giving kudos deducts 1 point from the giver's bank. Prevents trading kudos back and forth.</p>
+                </div>
+                <KinSwitch
+                  :model-value="kudosCostEnabled"
+                  color="lavender"
+                  @update:model-value="kudosCostEnabled = $event"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Default Task Points -->
+          <div v-if="moduleToggles.tasks && moduleToggles.points" class="border-t border-border-subtle pt-4 mb-4">
+            <h3 class="font-semibold text-ink-primary mb-2">Default Task Points</h3>
+            <p class="text-sm text-ink-secondary mb-4">
+              Set how many points are awarded by default for each task priority level. Tasks with explicitly set points are not affected.
+            </p>
+
+            <div class="space-y-3">
+              <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-ink-secondary">Low Priority</label>
+                </div>
+                <KinInput v-model.number="defaultPoints.low" type="number" min="0" max="1000" class="w-24 text-center" />
+                <span class="text-sm text-ink-secondary">pts</span>
+              </div>
+              <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-ink-secondary">Medium Priority</label>
+                </div>
+                <KinInput v-model.number="defaultPoints.medium" type="number" min="0" max="1000" class="w-24 text-center" />
+                <span class="text-sm text-ink-secondary">pts</span>
+              </div>
+              <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-ink-secondary">High Priority</label>
+                </div>
+                <KinInput v-model.number="defaultPoints.high" type="number" min="0" max="1000" class="w-24 text-center" />
+                <span class="text-sm text-ink-secondary">pts</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Assignment -->
+          <div v-if="moduleToggles.tasks" class="border-t border-border-subtle pt-4 mb-4">
+            <h3 class="font-semibold text-ink-primary mb-2">Task Assignment</h3>
+            <p class="text-sm text-ink-secondary mb-4">
+              Control which family members can assign tasks to others. Parents can always assign tasks to anyone.
+            </p>
+
+            <div class="space-y-3">
+              <label
+                v-for="option in taskAssignmentOptions"
+                :key="option.value"
+                class="flex items-start gap-3 p-4 bg-surface-sunken rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
+              >
+                <input v-model="taskAssignment.mode" type="radio" :value="option.value" name="task_assignment_mode" class="mt-0.5 rounded-full" />
+                <div class="flex-1">
+                  <p class="font-medium text-ink-primary">{{ option.label }}</p>
+                  <p class="text-xs text-ink-secondary">{{ option.description }}</p>
+                </div>
+              </label>
+            </div>
+
+            <div v-if="taskAssignment.mode === 'users'" class="mt-4 pl-4 border-l-2 border-accent-lavender-soft">
+              <p class="text-sm font-medium text-ink-secondary mb-3">Select which children can assign tasks to others:</p>
+              <div class="space-y-2">
+                <label
+                  v-for="child in childMembers"
+                  :key="child.id"
+                  class="flex items-center gap-3 p-3 bg-surface-sunken rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
+                >
+                  <input v-model="taskAssignment.users" type="checkbox" :value="child.id" class="rounded" />
+                  <span class="text-sm font-medium text-ink-primary">{{ child.name }}</span>
+                </label>
+                <p v-if="childMembers.length === 0" class="text-sm text-ink-secondary italic">
+                  No child members in the family yet.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save button -->
+          <div class="flex justify-end pt-4 border-t border-border-subtle">
+            <BaseButton variant="primary" :loading="savingTasksPoints" @click="saveTasksPointsSection">
+              Save Changes
+            </BaseButton>
+          </div>
+        </SettingsSection>
+
+        <!-- Section 3: AI & Integrations -->
+        <SettingsSection
+          id="ai-integrations"
+          title="AI & Integrations"
+          description="API keys, calendar connections, and MCP"
+          :icon="CpuChipIcon"
+          :model-value="expandedSections.has('ai-integrations')"
+          @update:model-value="val => toggleSection('ai-integrations', val)"
+        >
+          <!-- AI Mode Toggle -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-ink-secondary mb-3">
+              AI Access
+            </label>
+
+            <!-- Two-tab selector — hidden on self-hosted (BYOK is the only option) -->
+            <div v-if="billingEnabled" class="grid grid-cols-2 gap-3 mb-5">
+              <!-- Kinhold AI tab -->
+              <button
+                :class="[
+                  'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
+                  aiMode === 'kinhold'
+                    ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
+                    : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
+                ]"
+                @click="aiMode = 'kinhold'"
+              >
+                <div v-if="aiMode === 'kinhold'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
+                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div class="w-8 h-8 rounded-lg bg-accent-lavender-soft/40 flex items-center justify-center mb-2">
+                  <svg class="w-4 h-4 text-accent-lavender-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <p class="text-sm font-semibold text-ink-primary">Use Kinhold AI</p>
+                <p class="text-xs text-ink-secondary mt-0.5">Powered by Claude · Included with your trial</p>
+              </button>
+
+              <!-- BYOK tab -->
+              <button
+                :class="[
+                  'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
+                  aiMode === 'byok'
+                    ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
+                    : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
+                ]"
+                @click="aiMode = 'byok'"
+              >
+                <div v-if="aiMode === 'byok'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
+                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div class="w-8 h-8 rounded-lg bg-golden-100 dark:bg-golden-900/40 flex items-center justify-center mb-2">
+                  <svg class="w-4 h-4 text-golden-600 dark:text-golden-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                  </svg>
+                </div>
+                <p class="text-sm font-semibold text-ink-primary">My Own API Key</p>
+                <p class="text-xs text-ink-secondary mt-0.5">Anthropic Claude (others coming soon)</p>
+              </button>
+            </div>
+
+            <!-- Kinhold AI panel — billing-only -->
+            <div v-if="billingEnabled && aiMode === 'kinhold'" class="p-4 bg-accent-lavender-soft/30 border border-accent-lavender-soft rounded-lg">
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-accent-lavender-bold mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
+                <div>
+                  <p class="text-sm font-medium text-accent-lavender-bold">You're all set</p>
+                  <p class="text-xs text-accent-lavender-bold mt-0.5">
+                    Kinhold AI is powered by Anthropic's Claude. No API key needed — we handle it for you. Included free with your 14-day trial; pick a paid AI tier from the Billing panel to keep using it after.
+                  </p>
+                </div>
               </div>
-              <div class="flex gap-1.5 mb-2">
-                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.primary }"></span>
-                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.accent }"></span>
-                <span class="w-8 h-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600" :style="{ backgroundColor: theme.colors.surface }"></span>
-                <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.highlight }"></span>
+            </div>
+
+            <!-- BYOK panel — always shown on self-hosted -->
+            <div v-if="!billingEnabled || aiMode === 'byok'" class="space-y-4">
+              <!-- Security reassurance — keys are encrypted at rest with AES-256
+                 (Laravel encrypt() / APP_KEY) and only decrypted in-memory at
+                 the moment a chat request is made. We never log or display
+                 raw keys; the UI only ever shows a masked preview. -->
+              <div class="flex items-start gap-2.5 p-3 rounded-lg bg-status-success-soft/40 dark:bg-status-success-soft/20 border border-status-success-soft">
+                <svg class="w-4 h-4 mt-0.5 shrink-0 text-status-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <div class="text-xs text-ink-secondary leading-relaxed">
+                  <span class="font-semibold text-ink-primary">Your key stays private.</span>
+                  Encrypted with AES-256 before it touches the database, decrypted only in memory the instant a chat request runs, and never logged or shown back to you in plaintext — only a masked preview.
+                </div>
               </div>
-              <p class="text-sm font-semibold text-ink-primary">{{ theme.name }}</p>
-              <p class="text-xs text-ink-secondary">{{ theme.description }}</p>
+
+              <!-- Provider selection — single column when only one provider is
+                 available (avoids 1-of-3 dead-space layout per #201) -->
+              <div :class="['grid gap-3', aiProviders.length > 1 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1']">
+                <button
+                  v-for="provider in aiProviders"
+                  :key="provider.slug"
+                  :class="[
+                    'relative flex flex-col items-center p-3 rounded-xl border-2 transition-all duration-200 text-center',
+                    aiConfig.provider === provider.slug
+                      ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
+                      : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
+                  ]"
+                  @click="selectAiProvider(provider.slug)"
+                >
+                  <div class="w-8 h-8 mb-1.5 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
+                    <span class="text-base font-bold">{{ providerIcon(provider.slug) }}</span>
+                  </div>
+                  <p class="text-xs font-semibold text-ink-primary">{{ provider.name }}</p>
+                </button>
+              </div>
+
+              <!-- API Key -->
+              <div>
+                <label class="block text-sm font-medium text-ink-secondary mb-1.5">
+                  {{ selectedProviderName }} API Key
+                </label>
+                <div class="relative">
+                  <KinInput
+                    v-model="aiConfig.apiKey"
+                    :type="showAiKey ? 'text' : 'password'"
+                    :placeholder="selectedProviderPlaceholder"
+                  />
+                  <button
+                    type="button" class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-xs font-medium text-ink-secondary hover:text-ink-primary transition-colors z-10"
+                    @click="showAiKey = !showAiKey"
+                  >
+                    {{ showAiKey ? 'Hide' : 'Show' }}
+                  </button>
+                </div>
+                <div class="flex items-center justify-between mt-1">
+                  <p class="text-xs text-ink-secondary">
+                    <template v-if="aiConfig.hasSavedKey && !aiConfig.apiKey">
+                      Current key: <span class="font-mono">{{ aiConfig.maskedKey }}</span>
+                    </template>
+                    <template v-else>
+                      Find your key at <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" class="text-accent-lavender-bold hover:underline">console.anthropic.com</a>. We encrypt it at rest and never see your key in plaintext.
+                    </template>
+                  </p>
+                  <a
+                    :href="selectedProviderHelpUrl" target="_blank" rel="noopener noreferrer"
+                    class="text-xs text-accent-lavender-bold hover:underline whitespace-nowrap ml-2"
+                  >
+                    Get API key →
+                  </a>
+                </div>
+
+                <!-- Inline test-key status -->
+                <div
+                  v-if="aiTestStatus"
+                  class="mt-2 flex items-start gap-2 text-xs"
+                  :class="aiTestStatus.valid ? 'text-status-success' : 'text-status-danger'"
+                  role="status"
+                >
+                  <svg v-if="aiTestStatus.valid" class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <svg v-else class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span>{{ aiTestStatus.valid ? 'Key is valid.' : aiTestStatus.error }}</span>
+                </div>
+              </div>
+
+              <!-- Model override -->
+              <div>
+                <label class="block text-sm font-medium text-ink-secondary mb-1.5">
+                  Model Override <span class="font-normal text-ink-tertiary">(optional)</span>
+                </label>
+                <KinInput v-model="aiConfig.model" type="text" :placeholder="selectedProviderDefaultModel" />
+                <p class="text-xs text-ink-secondary mt-1">
+                  Leave blank to use {{ selectedProviderDefaultModel }}.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3 justify-end pt-4">
+              <BaseButton
+                v-if="(!billingEnabled || aiMode === 'byok') && aiConfig.hasSavedKey"
+                variant="ghost"
+                :loading="clearingAi"
+                @click="showClearKeyModal = true"
+              >
+                Clear saved key
+              </BaseButton>
+              <BaseButton
+                v-if="!billingEnabled || aiMode === 'byok'"
+                variant="ghost"
+                :disabled="!aiConfig.apiKey"
+                :loading="testingAi"
+                @click="testAiKey"
+              >
+                Test key
+              </BaseButton>
+              <BaseButton variant="ghost" @click="resetAiConfig">Reset</BaseButton>
+              <BaseButton variant="primary" :loading="savingAi" @click="saveAiSettings">Save AI Settings</BaseButton>
+            </div>
+          </div>
+
+          <!-- Connect AI Assistant (MCP Token) -->
+          <div class="border-t border-border-subtle pt-4 mb-6">
+            <h3 class="font-semibold text-ink-primary mb-2">Connect AI Assistant</h3>
+            <p class="text-sm text-ink-secondary mb-4">
+              Connect any MCP-compatible AI assistant to manage your family hub.
+            </p>
+
+            <!-- OAuth quick-connect info -->
+            <div class="p-4 bg-accent-lavender-soft/30 border border-accent-lavender-soft rounded-lg mb-4">
+              <p class="text-sm font-medium text-accent-lavender-bold mb-1">Quick Connect (Claude Desktop / ChatGPT)</p>
+              <p class="text-xs text-accent-lavender-bold mb-2">
+                Add Kinhold as a custom connector using OAuth — no token needed:
+              </p>
+              <div class="space-y-1 text-xs text-accent-lavender-bold dark:text-accent-lavender-bold">
+                <div class="flex items-start gap-2">
+                  <span class="font-medium min-w-[40px]">Name</span>
+                  <code class="font-mono bg-accent-lavender-soft/40 px-1.5 py-0.5 rounded">Kinhold</code>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="font-medium min-w-[40px]">URL</span>
+                  <code class="font-mono bg-accent-lavender-soft/40 px-1.5 py-0.5 rounded break-all">{{ mcpGenerated.mcpUrl || (appOrigin + '/mcp') }}</code>
+                </div>
+              </div>
+              <p class="text-xs text-accent-lavender-bold dark:text-accent-lavender-bold mt-2">
+                Leave OAuth fields blank. You'll be prompted to sign in with Google when you connect.
+              </p>
+            </div>
+
+            <!-- Bearer token fallback (Claude Code / manual) -->
+            <p class="text-xs text-ink-secondary mb-2 font-medium">Advanced: Bearer Token (for Claude Code / manual setup)</p>
+            <div class="flex items-center justify-between p-4 bg-surface-sunken rounded-lg">
+              <div>
+                <div class="flex items-center gap-2">
+                  <p class="font-medium text-ink-primary">MCP Connection</p>
+                  <span v-if="mcpToken.hasToken" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-status-success">
+                    Connected
+                  </span>
+                  <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-sunken text-ink-secondary dark:bg-surface-overlay dark:text-ink-tertiary">
+                    Not Connected
+                  </span>
+                </div>
+                <p v-if="mcpToken.lastUsedAt" class="text-xs text-ink-secondary mt-1">
+                  Last used: {{ new Date(mcpToken.lastUsedAt).toLocaleDateString() }}
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <BaseButton v-if="mcpToken.hasToken" variant="ghost" size="sm" :loading="mcpRevoking" @click="handleRevokeMcpToken">
+                  Revoke
+                </BaseButton>
+                <BaseButton variant="secondary" size="sm" :loading="mcpGenerating" @click="handleGenerateMcpToken">
+                  {{ mcpToken.hasToken ? 'Regenerate Token' : 'Generate Token' }}
+                </BaseButton>
+              </div>
+            </div>
+
+            <!-- One-time token display -->
+            <div v-if="mcpGenerated.show" class="mt-4 space-y-4">
+              <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <p class="text-sm text-amber-800 dark:text-amber-200 font-medium">
+                  This token is shown only once. Copy what you need now — you won't be able to see it again.
+                </p>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-sm font-medium text-ink-secondary">Bearer Token</label>
+                  <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet('token', mcpGenerated.plainToken)">
+                    <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                    {{ mcpCopied.token ? 'Copied!' : 'Copy' }}
+                  </BaseButton>
+                </div>
+                <div class="font-mono text-sm bg-surface-raised dark:bg-surface-app text-status-success p-3 rounded-lg overflow-x-auto">
+                  {{ mcpGenerated.plainToken }}
+                </div>
+              </div>
+
+              <div>
+                <div class="flex flex-wrap gap-1 border-b border-border-subtle mb-3">
+                  <button
+                    v-for="client in mcpGenerated.clients"
+                    :key="client.id"
+                    :class="[
+                      'px-3 py-1.5 text-sm font-medium rounded-t-lg transition-colors -mb-px',
+                      mcpActiveClient === client.id
+                        ? 'border border-b-surface-raised border-border-subtle text-ink-primary bg-surface-raised'
+                        : 'text-ink-secondary hover:text-ink-primary',
+                    ]"
+                    @click="mcpActiveClient = client.id"
+                  >
+                    {{ client.name }}
+                  </button>
+                </div>
+
+                <div v-for="client in mcpGenerated.clients" v-show="mcpActiveClient === client.id" :key="client.id">
+                  <p class="text-xs text-ink-secondary mb-2">{{ client.instructions }}</p>
+
+                  <template v-if="client.steps">
+                    <ol class="list-decimal list-inside space-y-2 text-sm text-ink-primary mb-3">
+                      <li v-for="(step, i) in client.steps" :key="i" class="leading-relaxed">{{ step }}</li>
+                    </ol>
+                  </template>
+
+                  <template v-else-if="client.details">
+                    <div class="space-y-2 mb-2">
+                      <div v-for="(value, label) in client.details" :key="label" class="flex items-start gap-2">
+                        <span class="text-xs font-medium text-ink-secondary uppercase min-w-[80px]">{{ label.replace('_', ' ') }}</span>
+                        <code class="text-sm font-mono text-ink-primary break-all">{{ value }}</code>
+                      </div>
+                    </div>
+                    <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, Object.entries(client.details).map(([k, v]) => k + ': ' + v).join('\n'))">
+                      <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                      {{ mcpCopied[client.id] ? 'Copied!' : 'Copy Details' }}
+                    </BaseButton>
+                  </template>
+
+                  <template v-else>
+                    <div class="flex items-center justify-end mb-1">
+                      <BaseButton variant="ghost" size="sm" @click="copyMcpSnippet(client.id, client.command || client.configJson)">
+                        <ClipboardDocumentIcon class="w-4 h-4 mr-1" />
+                        {{ mcpCopied[client.id] ? 'Copied!' : 'Copy' }}
+                      </BaseButton>
+                    </div>
+                    <pre class="font-mono text-sm bg-surface-raised dark:bg-surface-app text-ink-secondary p-3 rounded-lg overflow-x-auto whitespace-pre">{{ client.command || client.configJson }}</pre>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Google Account Linking -->
+          <div class="border-t border-border-subtle pt-4 mb-6">
+            <h3 class="font-semibold text-ink-primary mb-3">Google Account</h3>
+            <p class="text-sm text-ink-secondary mb-4">
+              Link your Google account for quick sign-in. Your Google email must match your account email.
+            </p>
+
+            <div v-if="currentUser?.google_id" class="flex items-center justify-between p-3 bg-status-success/10 rounded-lg">
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-status-success dark:text-status-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                <span class="text-sm font-medium text-green-800 dark:text-green-300">Google account linked</span>
+              </div>
+              <BaseButton variant="ghost" size="sm" :loading="unlinkingGoogle" @click="handleUnlinkGoogle">Unlink</BaseButton>
+            </div>
+
+            <div v-else class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
+              <div>
+                <p class="text-sm font-medium text-ink-primary">Not linked</p>
+                <p class="text-xs text-ink-secondary mt-0.5">Sign in faster with Google</p>
+              </div>
+              <BaseButton variant="secondary" size="sm" :loading="linkingGoogle" @click="handleLinkGoogle">Link Google</BaseButton>
+            </div>
+
+            <div v-if="googleLinkError" class="mt-2 p-2 bg-status-failed/10 border border-status-failed/30 rounded-lg">
+              <p class="text-xs text-status-failed">{{ googleLinkError }}</p>
+            </div>
+            <div v-if="googleLinked" class="mt-2 p-2 bg-status-success/10 border border-green-200 dark:border-green-800 rounded-lg">
+              <p class="text-xs text-status-success dark:text-green-300">Google account linked successfully!</p>
+            </div>
+          </div>
+
+          <!-- Google Calendar -->
+          <div class="border-t border-border-subtle pt-4 mb-6">
+            <h3 class="font-semibold text-ink-primary mb-3">Google Calendar Sync</h3>
+            <p class="text-sm text-ink-secondary mb-4">
+              Connect your Google Calendar to sync events into the family hub.
+            </p>
+
+            <!-- Google OAuth not configured notice -->
+            <div v-if="authStore.services && !authStore.services.google_calendar" class="p-4 bg-golden-50 dark:bg-golden-900/20 rounded-xl mb-4">
+              <p class="text-sm font-medium text-golden-800 dark:text-golden-300 mb-1">Google Calendar Not Configured</p>
+              <p class="text-xs text-golden-700 dark:text-golden-400">
+                This server doesn't have Google OAuth credentials set up. You can still create manual events from the calendar page.
+                <template v-if="authStore.isParent"> Set <code class="bg-golden-100 dark:bg-golden-900/40 px-1 rounded">GOOGLE_CLIENT_ID</code> and <code class="bg-golden-100 dark:bg-golden-900/40 px-1 rounded">GOOGLE_CLIENT_SECRET</code> in your environment to enable Google Calendar sync.</template>
+              </p>
+            </div>
+
+            <div v-else class="space-y-2">
+              <div
+                v-for="conn in userCalendarConnections"
+                :key="conn.id"
+                class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg"
+              >
+                <div>
+                  <p class="font-medium text-ink-primary">{{ conn.calendar_name || 'Google Calendar' }}</p>
+                  <p class="text-xs text-ink-secondary mt-0.5">{{ currentUser?.name }}</p>
+                </div>
+                <BaseButton variant="ghost" size="sm" @click="handleDisconnectCalendar(conn.id)">Disconnect</BaseButton>
+              </div>
+
+              <div v-if="userCalendarConnections.length === 0" class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
+                <div>
+                  <p class="font-medium text-ink-primary">{{ currentUser?.name }}</p>
+                  <p class="text-xs text-ink-secondary mt-0.5">
+                    <span class="badge badge-warning">Not Connected</span>
+                  </p>
+                </div>
+                <BaseButton variant="secondary" size="sm" :loading="connectingCalendar" @click="handleConnectCalendar">Connect</BaseButton>
+              </div>
+
+              <div v-if="userCalendarConnections.length > 0" class="flex justify-end">
+                <BaseButton variant="secondary" size="sm" :loading="connectingCalendar" @click="handleConnectCalendar">
+                  Reconnect / Add Calendars
+                </BaseButton>
+              </div>
+
+              <div
+                v-for="conn in otherMemberConnections"
+                :key="conn.id"
+                class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg"
+              >
+                <div>
+                  <p class="font-medium text-ink-primary">{{ conn.calendar_name || 'Google Calendar' }}</p>
+                  <p class="text-xs text-ink-secondary mt-0.5">{{ conn.user?.name || 'Family Member' }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="calendarError" class="mt-3 p-3 bg-status-failed/10 border border-status-failed/30 rounded-lg">
+              <p class="text-sm text-status-failed">{{ calendarError }}</p>
+            </div>
+          </div>
+
+          <!-- ICS URL Subscription -->
+          <div class="border-t border-border-subtle pt-4">
+            <h3 class="font-semibold text-ink-primary mb-3">Subscribe via URL</h3>
+            <p class="text-sm text-ink-secondary mb-4">
+              Add a calendar by pasting its ICS feed URL (works with any .ics calendar link).
+            </p>
+
+            <form class="space-y-3" @submit.prevent="handleSubscribeUrl">
+              <div>
+                <label class="block text-sm font-medium text-ink-secondary mb-1">Calendar URL</label>
+                <KinInput v-model="icsForm.url" type="url" placeholder="https://example.com/calendar.ics" required />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-ink-secondary mb-1">Calendar Name (optional)</label>
+                <KinInput v-model="icsForm.name" type="text" placeholder="My Calendar" />
+                <p class="text-xs text-ink-secondary mt-1">If left blank, the name will be auto-detected from the calendar data.</p>
+              </div>
+              <div class="flex justify-end">
+                <BaseButton variant="secondary" size="sm" :loading="subscribingUrl">Subscribe</BaseButton>
+              </div>
+            </form>
+
+            <div v-if="icsError" class="mt-3 p-3 bg-status-failed/10 border border-status-failed/30 rounded-lg">
+              <p class="text-sm text-status-failed">{{ icsError }}</p>
+            </div>
+
+            <div v-if="icsConnections.length > 0" class="mt-4 space-y-2">
+              <p class="text-sm font-medium text-ink-secondary">Subscribed Calendars</p>
+              <div
+                v-for="conn in icsConnections"
+                :key="conn.id"
+                class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg"
+              >
+                <div>
+                  <p class="font-medium text-ink-primary">{{ conn.calendar_name || 'ICS Calendar' }}</p>
+                  <p class="text-xs text-ink-secondary mt-0.5">URL subscription</p>
+                </div>
+                <BaseButton variant="ghost" size="sm" @click="handleDisconnectCalendar(conn.id)">Unsubscribe</BaseButton>
+              </div>
+            </div>
+          </div>
+        </SettingsSection>
+
+        <!-- Section 4: Feature Access -->
+        <SettingsSection
+          id="feature-access"
+          title="Feature Access"
+          description="Control which features each family member can access"
+          :icon="ShieldCheckIcon"
+          badge="Parent"
+          :model-value="expandedSections.has('feature-access')"
+          @update:model-value="val => toggleSection('feature-access', val)"
+        >
+          <div class="space-y-4">
+            <div
+              v-for="module in otherModules"
+              :key="module.id"
+              class="p-4 bg-surface-sunken rounded-lg"
+            >
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <div>
+                  <p class="font-medium text-ink-primary">{{ module.name }}</p>
+                  <p class="text-xs text-ink-secondary">{{ module.description }}</p>
+                </div>
+                <div class="flex gap-1.5 shrink-0">
+                  <button
+                    :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
+                    @click="setModuleMode(module.id, 'all')"
+                  >
+                    Everyone
+                  </button>
+                  <button
+                    :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
+                    @click="setModuleMode(module.id, 'roles', ['parent'])"
+                  >
+                    Parents Only
+                  </button>
+                  <button
+                    :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-status-failed text-white shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
+                    @click="setModuleMode(module.id, 'off')"
+                  >
+                    Off
+                  </button>
+                  <button
+                    :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
+                    @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
+                  >
+                    Custom
+                  </button>
+                </div>
+              </div>
+
+              <div v-if="moduleAccessState[module.id]?.mode === 'users'" class="mt-3 pt-3 border-t border-border-subtle dark:border-border-subtle">
+                <p class="text-xs font-medium text-ink-secondary mb-2">Select family members:</p>
+                <div class="flex flex-wrap gap-2">
+                  <label
+                    v-for="member in familyMembers"
+                    :key="member.id"
+                    class="flex items-center gap-2 px-3 py-2 bg-surface-raised rounded-lg cursor-pointer hover:bg-surface-overlay transition-colors"
+                  >
+                    <input type="checkbox" :checked="isMemberSelected(module.id, member.id)" class="rounded" :disabled="(member.family_role || member.role) === 'parent'" @change="toggleMemberAccess(module.id, member.id)" />
+                    <UserAvatar :user="member" size="xs" />
+                    <span class="text-sm text-ink-primary">{{ member.name }}</span>
+                    <span v-if="(member.family_role || member.role) === 'parent'" class="text-xs text-ink-tertiary italic">(always)</span>
+                  </label>
+                </div>
+              </div>
+
+              <p class="text-xs text-ink-primary mt-2">
+                <template v-if="moduleAccessState[module.id]?.mode === 'all'">All family members can access this feature.</template>
+                <template v-else-if="moduleAccessState[module.id]?.mode === 'off'">This feature is disabled for everyone.</template>
+                <template v-else-if="moduleAccessState[module.id]?.mode === 'roles'">Only parents can access this feature.</template>
+                <template v-else-if="moduleAccessState[module.id]?.mode === 'users'">{{ getSelectedMemberNames(module.id) || 'No members selected (parents always have access).' }}</template>
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3 justify-end pt-4 border-t border-border-subtle mt-4">
+            <BaseButton variant="primary" :loading="savingModules" @click="saveModuleSettings">
+              Save Preferences
+            </BaseButton>
+          </div>
+        </SettingsSection>
+
+        <!-- Section 5: Food -->
+        <SettingsSection
+          id="food"
+          title="Food"
+          description="Meal planning preferences"
+          :icon="FireIcon"
+          :model-value="expandedSections.has('food')"
+          @update:model-value="val => toggleSection('food', val)"
+        >
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-ink-secondary mb-2">
+              Week Starts On
+            </label>
+            <KinSelect
+              v-model="weekStartDay"
+              class="w-full max-w-xs"
+              :options="weekStartDayOptions"
+            />
+            <p class="text-xs text-ink-secondary mt-1">
+              Controls the meal planner calendar and weekly shopping list boundaries.
+            </p>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-ink-secondary mb-2">
+              Visible Meal Slots
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="slot in allMealSlots"
+                :key="slot.key"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors"
+                :class="mealSlots.includes(slot.key)
+                  ? 'bg-[#C4975A]/10 border-[#C4975A]/40 text-[#C4975A]'
+                  : 'bg-surface-sunken border-border-subtle dark:border-border-subtle text-ink-tertiary hover:border-[#C4975A]/30'"
+                @click="toggleMealSlot(slot.key)"
+              >
+                <component :is="slot.icon" class="w-3.5 h-3.5" />
+                {{ slot.label }}
+              </button>
+            </div>
+            <p class="text-xs text-ink-secondary mt-1">
+              Choose which meals to show on your planner. Hidden slots keep their data.
+            </p>
+          </div>
+          <BaseButton variant="primary" size="sm" :loading="savingFood" @click="saveFoodSection">
+            Save
+          </BaseButton>
+        </SettingsSection>
+
+        <!-- Section 6: Appearance -->
+        <SettingsSection
+          id="appearance"
+          title="Appearance"
+          description="Dark mode and color themes"
+          :icon="SwatchIcon"
+          :model-value="expandedSections.has('appearance')"
+          @update:model-value="val => toggleSection('appearance', val)"
+        >
+          <!-- Dark Mode -->
+          <div class="flex items-center justify-between p-4 bg-surface-sunken dark:bg-surface-raised rounded-lg">
+            <div>
+              <p class="font-medium text-ink-primary">Dark Mode</p>
+              <p class="text-xs text-ink-secondary mt-0.5">Switch between light and dark themes</p>
+            </div>
+            <ToggleSwitch :model-value="isDark" @update:model-value="toggleDarkMode">
+              <template #thumb>
+                <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-accent-lavender-bold" />
+                <SunIcon v-else class="w-3.5 h-3.5 text-sand-500" />
+              </template>
+            </ToggleSwitch>
+          </div>
+
+          <!-- Color Theme Picker -->
+          <div class="mt-4 pt-4 border-t border-border-subtle">
+            <p class="font-medium text-ink-primary mb-1">Color Theme</p>
+            <p class="text-xs text-ink-secondary mb-3">Choose a color palette for the app</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <button
+                v-for="theme in availableThemes"
+                :key="theme.id"
+                :class="[
+                  'relative flex flex-col p-3 rounded-xl border-2 transition-all duration-200 text-left',
+                  currentTheme === theme.id
+                    ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 dark:ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
+                    : 'border-border-subtle hover:border-border-strong dark:hover:border-border-strong bg-surface-raised/50',
+                ]"
+                @click="selectTheme(theme.id)"
+              >
+                <div
+                  v-if="currentTheme === theme.id"
+                  class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center"
+                >
+                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div class="flex gap-1.5 mb-2">
+                  <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.primary }"></span>
+                  <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.accent }"></span>
+                  <span class="w-8 h-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600" :style="{ backgroundColor: theme.colors.surface }"></span>
+                  <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.highlight }"></span>
+                </div>
+                <p class="text-sm font-semibold text-ink-primary">{{ theme.name }}</p>
+                <p class="text-xs text-ink-secondary">{{ theme.description }}</p>
+              </button>
+            </div>
+          </div>
+        </SettingsSection>
+
+        <!-- Section 6: Notifications -->
+        <SettingsSection
+          id="notifications"
+          title="Notifications"
+          description="Push, email, quiet hours, and per-type preferences"
+          :icon="BellIcon"
+          :model-value="expandedSections.has('notifications')"
+          @update:model-value="val => toggleSection('notifications', val)"
+        >
+          <NotificationsPanel />
+        </SettingsSection>
+
+        <!-- Section 6b: Billing (only visible to the family billing owner when BILLING_ENABLED) -->
+        <SettingsSection
+          v-if="canSeeBilling"
+          id="billing"
+          title="Billing & subscription"
+          description="Manage your plan, payment method, and invoices"
+          :icon="CreditCardIcon"
+          :model-value="expandedSections.has('billing')"
+          @update:model-value="val => toggleSection('billing', val)"
+        >
+          <BillingPanel />
+        </SettingsSection>
+
+        <!-- Section 7: About -->
+        <SettingsSection
+          id="about"
+          title="About Kinhold"
+          description="Version info and updates"
+          :icon="InformationCircleIcon"
+          :model-value="expandedSections.has('about')"
+          @update:model-value="val => toggleSection('about', val)"
+        >
+          <!-- Update Available Banner -->
+          <div
+            v-if="updateAvailable && !updateDismissed"
+            class="flex items-start gap-3 p-4 mb-4 bg-sand-50 dark:bg-sand-900/30 border border-sand-300 dark:border-sand-700 rounded-lg"
+          >
+            <div class="flex-1">
+              <p class="font-semibold text-sand-800 dark:text-sand-200">
+                Update available: v{{ updateAvailable.latest_version }}
+              </p>
+              <p class="text-sm text-sand-700 dark:text-sand-400 mt-1">
+                You're running v{{ appVersion }}. A newer version is available on GitHub.
+              </p>
+              <a
+                :href="updateAvailable.url"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1 text-sm font-medium text-accent-lavender-bold hover:underline mt-2"
+              >
+                View release notes
+                <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
+              </a>
+            </div>
+            <button
+              class="p-1 text-sand-500 hover:text-sand-700 dark:text-sand-400 dark:hover:text-sand-200 rounded transition-colors"
+              title="Dismiss"
+              @click="dismissUpdate"
+            >
+              <XMarkIcon class="w-5 h-5" />
             </button>
           </div>
-        </div>
-      </SettingsSection>
 
-      <!-- Section 6: Notifications -->
-      <SettingsSection
-        id="notifications"
-        title="Notifications"
-        description="Push, email, quiet hours, and per-type preferences"
-        :icon="BellIcon"
-        :model-value="expandedSections.has('notifications')"
-        @update:model-value="val => toggleSection('notifications', val)"
-      >
-        <NotificationsPanel />
-      </SettingsSection>
-
-      <!-- Section 6b: Billing (only visible to the family billing owner when BILLING_ENABLED) -->
-      <SettingsSection
-        v-if="canSeeBilling"
-        id="billing"
-        title="Billing & subscription"
-        description="Manage your plan, payment method, and invoices"
-        :icon="CreditCardIcon"
-        :model-value="expandedSections.has('billing')"
-        @update:model-value="val => toggleSection('billing', val)"
-      >
-        <BillingPanel />
-      </SettingsSection>
-
-      <!-- Section 7: About -->
-      <SettingsSection
-        id="about"
-        title="About Kinhold"
-        description="Version info and updates"
-        :icon="InformationCircleIcon"
-        :model-value="expandedSections.has('about')"
-        @update:model-value="val => toggleSection('about', val)"
-      >
-        <!-- Update Available Banner -->
-        <div
-          v-if="updateAvailable && !updateDismissed"
-          class="flex items-start gap-3 p-4 mb-4 bg-sand-50 dark:bg-sand-900/30 border border-sand-300 dark:border-sand-700 rounded-lg"
-        >
-          <div class="flex-1">
-            <p class="font-semibold text-sand-800 dark:text-sand-200">
-              Update available: v{{ updateAvailable.latest_version }}
-            </p>
-            <p class="text-sm text-sand-700 dark:text-sand-400 mt-1">
-              You're running v{{ appVersion }}. A newer version is available on GitHub.
-            </p>
-            <a
-              :href="updateAvailable.url"
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-1 text-sm font-medium text-accent-lavender-bold hover:underline mt-2"
-            >
-              View release notes
-              <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
-            </a>
+          <!-- Version Info -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
+              <span class="text-sm font-medium text-ink-primary">Version</span>
+              <span class="text-sm font-mono text-ink-secondary">v{{ appVersion }}</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
+              <span class="text-sm font-medium text-ink-primary">License</span>
+              <span class="text-sm text-ink-secondary">Elastic License 2.0</span>
+            </div>
+            <div class="flex items-center gap-4 pt-2">
+              <a
+                :href="`https://github.com/${githubRepo}`"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1.5 text-sm text-accent-lavender-bold hover:underline"
+              >
+                GitHub
+                <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
+              </a>
+              <a
+                :href="`https://github.com/${githubRepo}/releases`"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1.5 text-sm text-accent-lavender-bold hover:underline"
+              >
+                Release Notes
+                <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
+              </a>
+              <a
+                href="https://kinhold.app"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1.5 text-sm text-accent-lavender-bold hover:underline"
+              >
+                Website
+                <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
-          <button
-            class="p-1 text-sand-500 hover:text-sand-700 dark:text-sand-400 dark:hover:text-sand-200 rounded transition-colors"
-            title="Dismiss"
-            @click="dismissUpdate"
-          >
-            <XMarkIcon class="w-5 h-5" />
-          </button>
-        </div>
-
-        <!-- Version Info -->
-        <div class="space-y-3">
-          <div class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
-            <span class="text-sm font-medium text-ink-primary">Version</span>
-            <span class="text-sm font-mono text-ink-secondary">v{{ appVersion }}</span>
-          </div>
-          <div class="flex items-center justify-between p-3 bg-surface-sunken rounded-lg">
-            <span class="text-sm font-medium text-ink-primary">License</span>
-            <span class="text-sm text-ink-secondary">Elastic License 2.0</span>
-          </div>
-          <div class="flex items-center gap-4 pt-2">
-            <a
-              :href="`https://github.com/${githubRepo}`"
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-1.5 text-sm text-accent-lavender-bold hover:underline"
-            >
-              GitHub
-              <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
-            </a>
-            <a
-              :href="`https://github.com/${githubRepo}/releases`"
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-1.5 text-sm text-accent-lavender-bold hover:underline"
-            >
-              Release Notes
-              <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
-            </a>
-            <a
-              href="https://kinhold.app"
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-1.5 text-sm text-accent-lavender-bold hover:underline"
-            >
-              Website
-              <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
-            </a>
-          </div>
-        </div>
-      </SettingsSection>
+        </SettingsSection>
+      </template>
 
       <!-- Your Data (GDPR export) -->
       <SettingsSection
@@ -1669,6 +1681,11 @@ const canSeeBilling = computed(() => {
 // Self-hosted instances (BILLING_ENABLED=false) only ever offer BYOK — there's
 // no managed-AI tier to opt into when no one is billing for token usage.
 const billingEnabled = computed(() => !!appConfig.value?.billing_enabled)
+
+// GDPR mode: when paywalled users navigate from SubscriptionPaywall via
+// `?gdpr=1`, hide everything except export + delete so they can exercise their
+// data rights without bypassing the paywall via other settings.
+const gdprMode = computed(() => route.query.gdpr === '1')
 
 // ---- Section expand/collapse state ----
 const expandedSections = ref(new Set())
@@ -2656,6 +2673,11 @@ onMounted(async () => {
     expandedSections.value.add(hash)
     await nextTick()
     document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  if (gdprMode.value) {
+    expandedSections.value.add('your-data')
+    expandedSections.value.add('danger')
   }
 })
 </script>

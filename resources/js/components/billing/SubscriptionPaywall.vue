@@ -50,8 +50,8 @@
         </div>
       </template>
 
-      <!-- Logout escape hatch — the only way out of this overlay -->
-      <div class="mt-6 pt-5 border-t border-lavender-200 dark:border-prussian-700 text-center">
+      <!-- Escape hatches — sign out, or exercise GDPR rights without reactivating -->
+      <div class="mt-6 pt-5 border-t border-lavender-200 dark:border-prussian-700 text-center space-y-2">
         <button
           ref="logoutRef"
           type="button"
@@ -61,6 +61,23 @@
         >
           {{ loggingOut ? 'Signing out…' : 'Sign out' }}
         </button>
+        <div class="text-xs text-lavender-500 dark:text-lavender-400 space-x-3">
+          <button
+            type="button"
+            class="hover:text-prussian-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-wisteria-500 rounded transition-colors"
+            @click="onManageAccount('your-data')"
+          >
+            Export my data
+          </button>
+          <span aria-hidden="true">·</span>
+          <button
+            type="button"
+            class="hover:text-prussian-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-wisteria-500 rounded transition-colors"
+            @click="onManageAccount('danger')"
+          >
+            Delete my account
+          </button>
+        </div>
       </div>
     </div>
 
@@ -158,6 +175,10 @@ async function onPrimaryCta() {
   } catch {
     // Error surfaced via store.lastError
   }
+}
+
+function onManageAccount(section) {
+  router.push({ name: 'Settings', query: { gdpr: '1' }, hash: `#${section}` })
 }
 
 async function onLogout() {
