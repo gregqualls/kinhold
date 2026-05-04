@@ -77,6 +77,14 @@ export default defineConfig({
         // at the top of the generated file. Update sw-push.js directly — it is
         // committed and loaded as-is at runtime, not bundled.
         importScripts: ['/sw-push.js'],
+        // After every deploy the SPA shell points at new hashed asset URLs.
+        // Without skipWaiting + clientsClaim the old SW keeps serving the
+        // stale shell until every tab closes, so returning users see blank
+        // pages with module-load errors (#278). Take over immediately and
+        // sweep precaches from prior builds on activation.
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         // App shell fallback — the SPA owns every non-API route. workbox
         // resolves this URL against the precache, so '/' MUST be in the
         // precache (see additionalManifestEntries below) or offline
