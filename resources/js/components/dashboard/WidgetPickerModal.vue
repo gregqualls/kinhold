@@ -169,7 +169,7 @@ const categoryLabels = {
   calendar: 'Calendar',
   points: 'Points & Gamification',
   rewards: 'Rewards',
-  badges: 'Badges',
+  badges: 'Achievement Badges',
 }
 
 function categoryLabel(key) {

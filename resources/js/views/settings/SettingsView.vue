@@ -1803,7 +1803,7 @@ const availableModules = [
   { id: 'vault', name: 'Family Vault', description: 'Secure information storage' },
   { id: 'chat', name: 'Kinhold AI', description: 'AI-powered assistant' },
   { id: 'points', name: 'Points & Rewards', description: 'Earn points, give kudos, purchase rewards' },
-  { id: 'badges', name: 'Badges', description: 'Achievement badges and milestones' },
+  { id: 'badges', name: 'Achievement Badges', description: 'Earned by completing tasks, hitting streaks, and discovering hidden milestones' },
   { id: 'avatars', name: 'Avatar Changes', description: 'Who can change profile avatars' },
 ]
 const tasksPointsModules = computed(() =>

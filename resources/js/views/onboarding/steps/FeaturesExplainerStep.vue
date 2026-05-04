@@ -101,7 +101,7 @@ const allFeatures = [
   },
   {
     key: 'badges',
-    name: 'Badges',
+    name: 'Achievement Badges',
     icon: StarIcon,
     explainer: 'Unlock badges by hitting milestones — complete tasks, build streaks, earn points. Some badges are hidden until you discover them.',
   },
