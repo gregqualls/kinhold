@@ -61,7 +61,7 @@ class AuthController extends Controller
             ]);
 
             if ($isNewFamily) {
-                $family->billing_owner_id = $user->id;
+                $family->billing_owner_id = (string) $user->id;
                 $family->save();
 
                 BadgeService::createDefaultBadges($family->id, $user->id);
