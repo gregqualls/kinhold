@@ -42,7 +42,7 @@
         <div class="flex-1"></div>
 
         <KinButton
-          v-if="!isLastStep"
+          v-if="!isLastStep && !isBillingStep"
           variant="ghost"
           @click="handleSkip"
         >
@@ -117,6 +117,7 @@ const activeSteps = computed(() => {
 })
 
 const isLastStep = computed(() => store.currentStep === activeSteps.value.length - 1)
+const isBillingStep = computed(() => activeSteps.value[store.currentStep] === BillingStep)
 
 // Allow step components to set loading state and register continue handlers
 const stepContinueHandler = ref(null)
