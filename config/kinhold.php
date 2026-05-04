@@ -131,7 +131,7 @@ return [
         // family-wide daily cap has remaining capacity, a single visitor can
         // only send this many messages per browser session before being asked
         // to sign up.
-        'demo_session_limit' => (int) env('CHATBOT_DEMO_SESSION_LIMIT', 3),
+        'demo_session_limit' => (int) env('CHATBOT_DEMO_SESSION_LIMIT', 5),
 
         // Monthly USD circuit-breaker for the shared demo family (#266). When
         // estimated month-to-date Anthropic spend exceeds this, demo AI is
