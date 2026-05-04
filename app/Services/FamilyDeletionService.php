@@ -17,6 +17,12 @@ class FamilyDeletionService
      */
     public function deleteFamily(Family $family): void
     {
+        // Cancel any active Stripe subscription BEFORE the transaction (#269).
+        // Stripe is an external API call — keeping it outside the DB
+        // transaction means a Stripe hiccup can't dirty local state, and the
+        // cancellation is best-effort anyway (logged on failure).
+        $this->accountDeletionService->cancelStripeSubscription($family);
+
         DB::transaction(function () use ($family) {
             // Delete all members (handles file cleanup, token revocation, etc.)
             foreach ($family->members as $member) {
