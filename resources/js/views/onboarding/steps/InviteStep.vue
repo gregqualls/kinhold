@@ -16,9 +16,12 @@
       </p>
     </KinFlatCard>
 
-    <!-- Existing family members (#260) -->
+    <!-- Family members — single source of truth from authStore.family.members
+         (#260). Includes both members already on the family at step entry and
+         any added during this session, since addMember() calls fetchUser()
+         which refreshes the auth store. Excludes the current user. -->
     <div v-if="existingMembers.length > 0" class="mb-4 space-y-2">
-      <p class="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">Already in your family</p>
+      <p class="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">Family members</p>
       <KinFlatCard
         v-for="member in existingMembers"
         :key="member.id"
@@ -32,27 +35,6 @@
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-ink-primary">{{ member.name }}</p>
             <p class="text-xs text-ink-secondary">{{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}{{ member.is_managed ? ' (managed)' : '' }}</p>
-          </div>
-          <CheckCircleIcon class="w-5 h-5 text-status-success flex-shrink-0" />
-        </div>
-      </KinFlatCard>
-    </div>
-
-    <!-- Added members list -->
-    <div v-if="addedMembers.length > 0" class="mb-4 space-y-2">
-      <KinFlatCard
-        v-for="member in addedMembers"
-        :key="member.name"
-        padding="sm"
-        class="bg-surface-sunken"
-      >
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0" :style="{ backgroundColor: '#C4975A' }">
-            {{ member.name.charAt(0).toUpperCase() }}
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-ink-primary">{{ member.name }}</p>
-            <p class="text-xs text-ink-secondary">{{ member.role === 'parent' ? 'Parent' : 'Child' }}{{ member.managed ? ' (managed)' : '' }}</p>
           </div>
           <CheckCircleIcon class="w-5 h-5 text-status-success flex-shrink-0" />
         </div>
@@ -148,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, inject } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useOnboardingStore } from '@/stores/onboarding'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
@@ -179,7 +161,6 @@ const memberEmail = ref('')
 const memberRole = ref('child')
 const addingMember = ref(false)
 const addError = ref('')
-const addedMembers = reactive([])
 
 async function addMember() {
   if (!memberName.value) return
@@ -192,15 +173,10 @@ async function addMember() {
       email: memberEmail.value || undefined,
       role: memberRole.value,
     })
-    addedMembers.push({
-      name: memberName.value,
-      role: memberRole.value,
-      managed: !memberEmail.value,
-    })
     memberName.value = ''
     memberEmail.value = ''
     memberRole.value = 'child'
-    // Refresh auth store to get updated family members
+    // Refresh auth store so the new member appears in `existingMembers`.
     await authStore.fetchUser()
   } catch (err) {
     addError.value = err.response?.data?.message || 'Failed to add member.'
