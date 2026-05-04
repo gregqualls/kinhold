@@ -122,8 +122,8 @@ const features = [
   },
   {
     key: 'badges',
-    name: 'Badges',
-    description: 'Achievements that unlock automatically — task streaks, point milestones, and more. Parents can also create and award custom badges.',
+    name: 'Achievement Badges',
+    description: 'Unlock automatically — task streaks, point milestones, and more. Parents can also create and award custom badges.',
     icon: StarIcon,
   },
   {

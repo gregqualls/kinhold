@@ -19,7 +19,13 @@
 
     <!-- Step Content -->
     <div class="flex-1 flex flex-col px-4 pb-4 max-w-lg mx-auto w-full">
-      <Transition name="step-fade" mode="out-in">
+      <!-- Hold off on rendering steps until status is fetched + Stripe-return
+           routing is resolved (#258). Otherwise step 0 flashes for ~200ms after
+           a Stripe Checkout success before we jump to CompleteStep. -->
+      <div v-if="!isReady" class="flex-1 flex items-center justify-center">
+        <div class="w-6 h-6 rounded-full border-2 border-accent-lavender-bold/30 border-t-accent-lavender-bold animate-spin"></div>
+      </div>
+      <Transition v-else name="step-fade" mode="out-in">
         <component :is="activeSteps[store.currentStep]" :key="store.currentStep" />
       </Transition>
 
@@ -88,6 +94,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const store = useOnboardingStore()
 const stepLoading = ref(false)
+const isReady = ref(false)
 
 // Parents get the full wizard; joining members get a simplified flow.
 // BillingStep is appended for the billing owner (who is always a parent
@@ -166,6 +173,9 @@ onMounted(async () => {
     const billingIdx = activeSteps.value.indexOf(BillingStep)
     if (billingIdx >= 0) store.goToStep(billingIdx)
   }
+
+  // Step routing is now correct — render.
+  isReady.value = true
 })
 </script>
 

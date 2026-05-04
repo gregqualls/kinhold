@@ -54,7 +54,7 @@ const { enabledModules } = storeToRefs(authStore)
 const ALL_ITEMS = [
   { key: 'points',   label: 'Points',   to: '/points',         icon: TrophyIcon,               module: 'points' },
   { key: 'rewards',  label: 'Rewards',  to: '/points/rewards', icon: GiftIcon,                 module: 'points' },
-  { key: 'badges',   label: 'Badges',   to: '/badges',         icon: ShieldCheckIcon,          module: 'badges' },
+  { key: 'badges',   label: 'Achievements', to: '/badges',     icon: ShieldCheckIcon,          module: 'badges' },
   { key: 'vault',    label: 'Vault',    to: '/vault',          icon: LockClosedIcon,           module: 'vault' },
   { key: 'settings', label: 'Settings', to: '/settings',       icon: Cog6ToothIcon,            module: null },
 ]

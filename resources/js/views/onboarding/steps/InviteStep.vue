@@ -9,6 +9,35 @@
       </p>
     </div>
 
+    <!-- Reassurance: optional step (#254) -->
+    <KinFlatCard padding="sm" class="mb-4 bg-surface-sunken">
+      <p class="text-xs text-ink-secondary leading-relaxed">
+        You can do this anytime — many families fill in their calendar, tasks, and recipes first so the rest of the household joins a hub that already feels like home. Skip this step if you'd rather come back to it.
+      </p>
+    </KinFlatCard>
+
+    <!-- Existing family members (#260) -->
+    <div v-if="existingMembers.length > 0" class="mb-4 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">Already in your family</p>
+      <KinFlatCard
+        v-for="member in existingMembers"
+        :key="member.id"
+        padding="sm"
+        class="bg-surface-sunken"
+      >
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0" :style="{ backgroundColor: '#7B6B9C' }">
+            {{ member.name.charAt(0).toUpperCase() }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-ink-primary">{{ member.name }}</p>
+            <p class="text-xs text-ink-secondary">{{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}{{ member.is_managed ? ' (managed)' : '' }}</p>
+          </div>
+          <CheckCircleIcon class="w-5 h-5 text-status-success flex-shrink-0" />
+        </div>
+      </KinFlatCard>
+    </div>
+
     <!-- Added members list -->
     <div v-if="addedMembers.length > 0" class="mb-4 space-y-2">
       <KinFlatCard
@@ -137,6 +166,13 @@ const isParent = authStore.isParent
 const inviteCode = computed(() => store.status?.invite_code || authStore.family?.invite_code)
 const copied = ref(false)
 const showingInviteCode = ref(false)
+
+// Members already on the family — shown when restarting onboarding so the user
+// sees state, not a blank slate (#260). Excludes the current user.
+const existingMembers = computed(() => {
+  const members = authStore.family?.members || []
+  return members.filter(m => m.id !== authStore.user?.id)
+})
 
 const memberName = ref('')
 const memberEmail = ref('')

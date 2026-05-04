@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between mb-3 flex-shrink-0">
       <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
         <ShieldCheckIcon class="w-4 h-4 text-accent-lavender-bold" />
-        {{ config.title || 'Badges' }}
+        {{ config.title || 'Achievement Badges' }}
       </h3>
       <RouterLink
         to="/badges"
