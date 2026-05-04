@@ -62,15 +62,18 @@ class BillingService
 
     /**
      * Why the SPA should hard-gate this family behind the paywall splash, or
-     * null if it shouldn't. Drives 70-I (#223). Three reasons surface:
+     * null if it shouldn't. Drives 70-I (#223). Four reasons surface:
+     *   - 'needs_onboarding'   — existing family with no Stripe customer; SPA
+     *                            redirects the billing owner to /onboarding
+     *                            instead of showing the paywall overlay (#245)
      *   - 'trial_expired'      — trial ended without ever activating a paid sub
      *   - 'past_due'           — Stripe says past_due / unpaid / incomplete_expired
      *   - 'cancelled_expired'  — was cancelled and ends_at has now passed
      *
-     * Returns null when self-hosted, billing-disabled, pre-checkout (no Stripe
-     * customer yet — onboarding handles them), inside the 7-day dunning grace
-     * window, or holding a currently-valid subscription (active, trialing, or
-     * cancelled-but-still-in-period).
+     * Returns null when self-hosted, billing-disabled, mid-registration (no
+     * billing_owner_id set yet), inside the 7-day dunning grace window, or
+     * holding a currently-valid subscription (active, trialing, or cancelled-
+     * but-still-in-period).
      */
     public function paywallReason(Family $family): ?string
     {
@@ -95,10 +98,23 @@ class BillingService
             return ['reason' => null, 'subscription' => null];
         }
 
-        // Brand-new families that never went through checkout fall through to
-        // the onboarding plan picker (70-G), not the paywall splash.
-        if (! $family->hasStripeId()) {
+        // Demo family always bypasses billing — see isDemoFamily() docs.
+        if ($this->isDemoFamily($family)) {
             return ['reason' => null, 'subscription' => null];
+        }
+
+        // No Stripe customer yet — three sub-cases:
+        //   1. Mid-registration: billing_owner_id not set yet. Let them through
+        //      so the rest of the registration request can complete.
+        //   2. Existing family / completed registration without subscription:
+        //      block with 'needs_onboarding' so the SPA pushes the billing
+        //      owner into the wizard at BillingStep (#245).
+        if (! $family->hasStripeId()) {
+            if (! $family->billing_owner_id) {
+                return ['reason' => null, 'subscription' => null];
+            }
+
+            return ['reason' => 'needs_onboarding', 'subscription' => null];
         }
 
         // 7-day dunning window — the grace-period scheduler is still cycling

@@ -45,6 +45,18 @@ api.interceptors.response.use(
       }
     }
 
+    // 402 = paywalled. Server-side gate (#264). Re-fetch the user payload so
+    // the SPA's billing state matches what the server believes; useBillingGate
+    // then mounts SubscriptionPaywall on the next tick.
+    if (error.response?.status === 402) {
+      const skip = error.config?.url?.includes('/user') || error.config?.url?.includes('/billing')
+      if (!skip) {
+        import('@/stores/auth')
+          .then(({ useAuthStore }) => useAuthStore().fetchUser())
+          .catch(() => {})
+      }
+    }
+
     // Return the error so it can be handled in the store/component
     return Promise.reject(error)
   }

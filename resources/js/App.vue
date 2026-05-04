@@ -111,12 +111,29 @@
          of <main> so the underlying route stays in the tree (avoids unmount
          thrash on resolve) but is unreachable behind the overlay. -->
     <SubscriptionPaywall v-if="showPaywall" />
+
+    <!-- Awaiting-owner overlay (#245): family hasn't subscribed yet and the
+         viewer isn't the billing owner. Billing owner is redirected to the
+         wizard; everyone else sees this. -->
+    <div
+      v-if="showAwaitingOwner"
+      class="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-surface-base/95 dark:bg-prussian-900/95"
+      data-testid="awaiting-owner-overlay"
+    >
+      <div class="max-w-sm text-center space-y-3">
+        <h2 class="text-xl font-heading font-bold text-ink-primary">Subscription pending</h2>
+        <p class="text-base text-ink-secondary">
+          {{ billingGate.billingOwnerName.value || 'The billing owner' }} needs to finish setting up your family's subscription before you can use Kinhold.
+        </p>
+        <p class="text-sm text-ink-tertiary">Check back once they've completed signup.</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, provide } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, ref, provide, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import Sidebar from '@/components/layout/Sidebar.vue'
@@ -136,6 +153,7 @@ import { useDarkMode } from '@/composables/useDarkMode'
 import { useTheme } from '@/composables/useTheme'
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 const { notifications } = useNotification()
 const { isLoading, currentUser, family } = storeToRefs(authStore)
@@ -162,7 +180,39 @@ const isAuthPage = computed(() => {
   return ['Login', 'Register', 'Demo', 'Privacy', 'Terms', 'Onboarding', 'DesignSystem'].includes(route.name)
 })
 
-const showPaywall = computed(() => !isAuthPage.value && billingGate.requiresPayment.value)
+// `needs_onboarding` is handled by redirect (for the billing owner) or a
+// dedicated overlay (for other family members) — not the lapsed-subscription
+// paywall splash. See useBillingGate + watch below.
+const showPaywall = computed(() => {
+  if (isAuthPage.value) return false
+  if (!billingGate.requiresPayment.value) return false
+  return !billingGate.needsOnboarding.value
+})
+
+const showAwaitingOwner = computed(() => {
+  if (isAuthPage.value) return false
+  return billingGate.needsOnboarding.value && !billingGate.isBillingOwner.value
+})
+
+// Push the billing owner into the onboarding wizard whenever the backend says
+// the family hasn't subscribed yet. The wizard's BillingStep takes over from
+// there. Skip when already on /onboarding (avoids redirect loop) and when the
+// route hasn't resolved yet.
+watch(
+  [
+    () => billingGate.needsOnboarding.value,
+    () => billingGate.isBillingOwner.value,
+    () => route.name,
+  ],
+  ([needs, isOwner, routeName]) => {
+    if (!needs || !isOwner) return
+    if (!routeName) return
+    if (routeName === 'Onboarding') return
+    if (isAuthPage.value) return
+    router.push({ name: 'Onboarding' })
+  },
+  { immediate: true },
+)
 
 // Email verification banner
 const verificationDismissed = ref(false)
