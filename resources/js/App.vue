@@ -186,7 +186,13 @@ const isAuthPage = computed(() => {
 const showPaywall = computed(() => {
   if (isAuthPage.value) return false
   if (!billingGate.requiresPayment.value) return false
-  return !billingGate.needsOnboarding.value
+  if (billingGate.needsOnboarding.value) return false
+  // GDPR escape hatch: when the paywalled user clicks "Export my data" or
+  // "Delete my account" in SubscriptionPaywall, they land on /settings?gdpr=1
+  // where SettingsView only renders those two sections. Suppress the overlay
+  // there so they can exercise their data rights.
+  if (route.name === 'Settings' && route.query.gdpr === '1') return false
+  return true
 })
 
 const showAwaitingOwner = computed(() => {
