@@ -118,13 +118,17 @@ export default defineConfig({
         ],
         runtimeCaching: [
           {
+            // Authenticated API: never serve from cache. Caching `/api/v1/user`
+            // and other session-bound responses meant a returning visitor could
+            // see another user's session payload after sign-out (#278 follow-up:
+            // auto-login as a previously-cached user, plus CSRF mismatches when
+            // the cached index.html's CSRF meta no longer matched the live
+            // session). Background-sync is overkill for our current use; offline
+            // reads can come back later when we actually need them.
             urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
-            handler: 'NetworkFirst',
+            handler: 'NetworkOnly',
             options: {
               cacheName: 'kinhold-api',
-              networkTimeoutSeconds: 4,
-              expiration: { maxEntries: 64, maxAgeSeconds: 60 * 60 * 24 },
-              cacheableResponse: { statuses: [0, 200] },
             },
           },
           {
