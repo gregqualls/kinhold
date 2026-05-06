@@ -7,7 +7,7 @@
           <img src="/images/logo-100.png" alt="Kinhold" class="w-16 h-16 rounded-2xl" />
           <h1 class="text-4xl font-heading font-bold text-kin-gold">Kinhold</h1>
         </router-link>
-        <p class="kin-muted mt-2">Try the live demo</p>
+        <p class="kin-muted mt-2">Try the demo</p>
       </div>
 
       <KinFlatCard padding="lg">
