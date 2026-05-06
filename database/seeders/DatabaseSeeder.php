@@ -23,13 +23,13 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database with a rich 3-month demo.
      *
-     * Family: The Johnsons — Mike & Sarah (parents), Emma (16), Jake (13), Lily (9)
+     * Family: The Ellis family — Adaeze & Marcus (caregivers), Zara (16), Kenji (13), Naia (9)
      *
      * Login credentials:
-     *   parent@demo.local / password  (Mike - parent)
-     *   sarah@demo.local  / password  (Sarah - parent)
-     *   emma@demo.local   / password  (Emma - child, 16)
-     *   Jake & Lily are managed accounts (switch from parent Settings)
+     *   parent@demo.local  (Adaeze - caregiver, billing owner)
+     *   marcus@demo.local  (Marcus - caregiver)
+     *   zara@demo.local    (Zara - child, 16)
+     *   Kenji & Naia are managed accounts (switch from caregiver Settings)
      */
     public function run(): void
     {
@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
         $existing = Family::where('slug', 'q32-demo-family')
             ->orWhere('slug', 'johnsons')
             ->orWhere('invite_code', 'JOHNSON2026')
+            ->orWhere('invite_code', 'ELLIS2026')
             ->first();
         if ($existing) {
             // Delete all related data (cascades handle most, but be thorough)
@@ -65,9 +66,9 @@ class DatabaseSeeder extends Seeder
         // ─────────────────────────────────────────────
 
         $family = Family::create([
-            'name' => 'The Johnsons',
+            'name' => 'The Ellis Family',
             'slug' => 'q32-demo-family',
-            'invite_code' => 'JOHNSON2026',
+            'invite_code' => 'ELLIS2026',
             'settings' => [
                 'theme' => 'light',
                 'notifications_enabled' => true,
@@ -92,28 +93,32 @@ class DatabaseSeeder extends Seeder
         //  USERS
         // ─────────────────────────────────────────────
 
-        $mike = User::create([
-            'name' => 'Mike',
+        $adaeze = User::create([
+            'name' => 'Adaeze',
             'email' => 'parent@demo.local',
             'password' => $demoPassword,
             'family_id' => $family->id,
             'family_role' => FamilyRole::Parent,
-            'date_of_birth' => '1984-06-15',
+            'date_of_birth' => '1982-09-12',
+            'avatar' => 'https://ui-avatars.com/api/?name=Adaeze+Ellis&background=6856B2&color=fff&size=200&rounded=true',
+            'avatar_color' => 'lavender',
             'timezone' => 'America/Chicago',
             'email_preferences' => User::defaultEmailPreferences(),
             'email_verified_at' => $now,
             'onboarding_completed_at' => $now,
         ]);
 
-        $family->update(['billing_owner_id' => $mike->id]);
+        $family->update(['billing_owner_id' => $adaeze->id]);
 
-        $sarah = User::create([
-            'name' => 'Sarah',
-            'email' => 'sarah@demo.local',
+        $marcus = User::create([
+            'name' => 'Marcus',
+            'email' => 'marcus@demo.local',
             'password' => $demoPassword,
             'family_id' => $family->id,
             'family_role' => FamilyRole::Parent,
-            'date_of_birth' => '1986-03-22',
+            'date_of_birth' => '1980-04-07',
+            'avatar' => 'phosphor:mountains',
+            'avatar_color' => 'mint',
             'timezone' => 'America/Chicago',
             'email_preferences' => User::defaultEmailPreferences(),
             'email_verified_at' => $now,
@@ -121,12 +126,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Emma',
-            'email' => 'emma@demo.local',
+            'name' => 'Zara',
+            'email' => 'zara@demo.local',
             'password' => $demoPassword,
             'family_id' => $family->id,
             'family_role' => FamilyRole::Child,
             'date_of_birth' => $now->copy()->subYears(16)->subMonths(3)->toDateString(),
+            'avatar' => 'https://ui-avatars.com/api/?name=Zara+Ellis&background=C4713A&color=fff&size=200&rounded=true',
+            'avatar_color' => 'peach',
             'timezone' => 'America/Chicago',
             'email_preferences' => User::defaultEmailPreferences(),
             'email_verified_at' => $now,
@@ -134,23 +141,27 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Jake',
+            'name' => 'Kenji',
             'family_id' => $family->id,
             'family_role' => FamilyRole::Child,
             'is_managed' => true,
-            'managed_by' => $mike->id,
+            'managed_by' => $marcus->id,
             'date_of_birth' => $now->copy()->subYears(13)->subMonths(7)->toDateString(),
+            'avatar' => 'phosphor:rocket',
+            'avatar_color' => 'sun',
             'timezone' => 'America/Chicago',
             'onboarding_completed_at' => $now,
         ]);
 
         User::create([
-            'name' => 'Lily',
+            'name' => 'Naia',
             'family_id' => $family->id,
             'family_role' => FamilyRole::Child,
             'is_managed' => true,
-            'managed_by' => $sarah->id,
+            'managed_by' => $adaeze->id,
             'date_of_birth' => $now->copy()->subYears(9)->subMonths(1)->toDateString(),
+            'avatar' => 'https://ui-avatars.com/api/?name=Naia+Ellis&background=2E7D55&color=fff&size=200&rounded=true',
+            'avatar_color' => 'mint',
             'timezone' => 'America/Chicago',
             'onboarding_completed_at' => $now,
         ]);

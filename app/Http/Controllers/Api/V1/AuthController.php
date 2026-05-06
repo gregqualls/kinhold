@@ -123,7 +123,7 @@ class AuthController extends Controller
     public function demoLogin(Request $request): JsonResponse
     {
         $request->validate([
-            'member' => 'required|string|in:mike,sarah,emma,jake,lily',
+            'member' => 'required|string|in:adaeze,marcus,zara,kenji,naia',
         ]);
 
         $family = Family::where('slug', 'q32-demo-family')->first();

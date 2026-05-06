@@ -14,12 +14,12 @@
         <!-- Intro -->
         <div class="text-center mb-6">
           <h2 class="text-2xl font-heading font-bold text-ink-primary mb-2">
-            Meet the Johnson family
+            Meet the Ellis family
           </h2>
           <p class="kin-muted max-w-xl mx-auto">
             The demo is a fully working Kinhold instance pre-loaded with a family of five —
             calendar events, tasks, vault entries, points, badges, recipes, the works.
-            Pick any family member below to log in as them and explore the app from their
+            Pick any family member below to log in as them and explore from their
             perspective. Switch between accounts anytime by signing out and coming back here.
           </p>
         </div>
@@ -128,11 +128,11 @@ const loadingMember = ref(null)
 const errorMsg = ref('')
 
 const members = [
-  { key: 'mike', name: 'Mike', role: 'Parent', description: 'Dad', color: '#5B8C9C' },
-  { key: 'sarah', name: 'Sarah', role: 'Parent', description: 'Mom', color: '#8B5B9C' },
-  { key: 'emma', name: 'Emma', role: 'Teen', description: 'Age 16', color: '#9C5B7B' },
-  { key: 'jake', name: 'Jake', role: 'Kid', description: 'Age 13', color: '#5B6B9C' },
-  { key: 'lily', name: 'Lily', role: 'Kid', description: 'Age 9', color: '#5B9C7B' },
+  { key: 'adaeze', name: 'Adaeze', role: 'Parent', description: 'Mom', color: '#7B5EA7' },
+  { key: 'marcus', name: 'Marcus', role: 'Parent', description: 'Dad', color: '#4A7B8C' },
+  { key: 'zara',   name: 'Zara',   role: 'Teen',   description: 'Age 16', color: '#C25B8A' },
+  { key: 'kenji',  name: 'Kenji',  role: 'Kid',    description: 'Age 13', color: '#5B7BC2' },
+  { key: 'naia',   name: 'Naia',   role: 'Kid',    description: 'Age 9',  color: '#4A9C78' },
 ]
 
 const highlights = [

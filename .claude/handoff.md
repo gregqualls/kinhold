@@ -1,47 +1,47 @@
 # Session Handoff
 
-**Date:** 2026-05-02
-**Branch:** `feature/217-ai-tier-wiring` (PR [#227](https://github.com/gregqualls/kinhold/pull/227) open, all checks green, awaiting `/qa` + `/merge`)
-**Companion PR:** [#228](https://github.com/gregqualls/kinhold/pull/228) — line-ending normalization (`.gitattributes`), separate chore branch off `main`
-**Last commit on feature:** `c743e78` — feat: billing AI tier purchase wiring + RecipeImportService usage tracking (70-D, #217)
+**Date:** 2026-05-06
+**Branch:** `staging` (production cutover deferred until Stripe bank account verified — later this week)
+**Last commit:** `3506b38` — fix: do not cache authenticated API responses in the service worker
 
 ## What Was Done This Session
 
-- Implemented **70-D AI tier purchase wiring** ([#217](https://github.com/gregqualls/kinhold/issues/217)):
-  - `BillingService::selectAiTier()` adds/swaps/removes Stripe subscription items for Off/BYOK/Lite/Standard/Pro; settings written **only after** Stripe success (no `DB::transaction` wrapping the network call — removed per `/review`)
-  - `BillingService::summary()` extended with `ai_tier` block (mode, plan, usage, tiers catalogue) — picker is data-driven from `config('kinhold.chatbot.plans')`
-  - Honored existing convention: settings key is `chatbot.plan` (not `ai_plan` as written in #217 — `AiUsageService::planFor()` already reads `chatbot.plan`)
-  - `BillingPanel.vue` gains AI tier picker card (radio-group accessibility, dark mode, mobile-first); hidden until base subscription exists; "Coming soon" badge for unconfigured `stripe_price_id`
-  - `routes/api.php` adds `POST /api/v1/billing/ai-tier` (throttle 5/min, billing-owner guard)
-- Closed **#137 regression**: `RecipeImportService::extractViaLlm()` and `extractFromPhoto()` now call `AiUsageService::recordMessage()` with token counts from Anthropic responses; BYOK families bypass via `shouldEnforce()`
-- Added **10 feature tests**: `AiTierTest` (7 — auth gates, validation, summary shape, daily-cap regression), `RecipeImportUsageTest` (3 — token tracking, BYOK bypass)
-- Bumped to **v1.8.6**; CHANGELOG and ROADMAP updated
-- **Bonus chore PR [#228](https://github.com/gregqualls/kinhold/pull/228):** Added `.gitattributes` enforcing LF line endings to permanently kill the phantom CRLF "modified" entries on Windows. Pairs with existing `.editorconfig` (`end_of_line = lf`). Renormalize produced zero diffs — main was already clean — so this is purely preventative.
+- **PR [#283](https://github.com/gregqualls/kinhold/pull/283)** — switched SW runtime cache for `/api/*` from `NetworkFirst` to `NetworkOnly`. The `NetworkFirst` strategy was caching `/api/v1/user` and causing returning visitors to auto-login as a previously-cached user (cross-session auth bleed + CSRF mismatches). Verified clean on staging.
+- **Closed 24 stale issues** — all v1.9.0 work that had shipped to staging but wasn't closed in GitHub.
+- **Cost analysis (no code changes):**
+  - Hosting: $47/month fixed (Upsun Flexible, current prod resources)
+  - AI: $0.0036/msg blended (Haiku 4.5, 70% cached turns)
+  - Margins at typical utilization (18 active days, 40% cap): 78–85% across all tiers
+  - Margins at max utilization: 17–64% — thin on Pro but still profitable because the $10 base plan offsets AI add-on losses
+  - Recommendation: pricing is fine for launch. Watch for power Pro users; consider a monthly message cap later.
+- **Staging paused** after DB queries to stop idle billing.
 
 ## Quality State
 
-- **PR #227 CI:** ALL GREEN — Tests (PHP 8.4), Lint & Static Analysis, Frontend build, CodeQL, Analyze (actions/javascript-typescript) all pass; mergeable
-- **Local quality** (during build):
-  - Tests: AiTier slice 7/7 PASS, RecipeImportUsage 3/3 PASS, full suite green
-  - Pint: clean on 70-D scope (still warns on the 70-A/B CRLF leftovers — addressed by PR #228)
-  - PHPStan: PASS (resolved 3 errors via `/** @var \Laravel\Cashier\SubscriptionItem $item */` docblocks in `currentAiPriceId()` and `buildSwapPriceList()`)
-- **`/review` finding:** flagged `DB::transaction` wrapping the Stripe network call (false rollback guarantee, holds DB connection during HTTP roundtrip) → fixed by removing the transaction; ordering ensures settings persist only after Stripe success
+- Tests: 342 tests, 880 assertions — **PASS**
+- Pint: **PASS**
+- Larastan: 0 errors — **PASS**
+- ESLint: 36 warnings, 0 errors — **PASS** (warnings are pre-existing `no-unused-vars`, not new)
+- Build: PASS (4 precache entries, 819 KB)
 
 ## What's Next
 
-1. **`/qa` → `/merge` PR [#227](https://github.com/gregqualls/kinhold/pull/227)** once Upsun preview verifies. Then **manually configure Stripe AI prices** per PR body — three recurring Prices (~$5/$15/$30 monthly) on a single "Kinhold AI" product, IDs into `STRIPE_PRICE_AI_LITE/STANDARD/PRO`. Tiers without an ID render "Coming soon."
-2. **`/merge` PR [#228](https://github.com/gregqualls/kinhold/pull/228)** (line-ending normalization). Independent of #227; can land first or second.
-3. **70-E — BYOK key entry UI** (next slice of billing epic). Lets families using BYOK mode actually paste an Anthropic API key from the panel.
-4. **70-H — webhooks + grace period + lifecycle emails** (highest-value remaining slice — without it, Stripe portal cancellations don't propagate back into our DB).
+1. **Production cutover** — once Greg's Stripe bank account is verified (later this week), open the staging→main PR. Checklist in `docs/V190-STAGING-PLAN.md`:
+   - Switch Stripe to live mode (new product + prices, live `STRIPE_KEY`/`STRIPE_SECRET`/price IDs)
+   - Register prod webhook in Stripe live mode (events listed in the staging plan doc)
+   - Set Upsun prod env vars: `BILLING_ENABLED=true`, live Stripe keys + webhook secret + price IDs
+   - Open staging→main PR (Upsun auto-deploys main to prod — never push directly)
+   - Smoke test prod end-to-end before announcing
+2. **AI pricing refinement** (low priority) — once 60 days of live token data is available, tune daily caps or add monthly caps if power users are running Pro at >70% utilization sustained.
+3. **Phase A items** still open per ROADMAP: landing page split ([#134](https://github.com/gregqualls/kinhold/issues/134)), AI usage limits ([#137](https://github.com/gregqualls/kinhold/issues/137)), self-host single-family enforcement ([#138](https://github.com/gregqualls/kinhold/issues/138)).
 
 ## Blockers or Gotchas
 
-- **70-A/B CRLF leftovers** on `app/Providers/AppServiceProvider.php`, `config/{cashier,kinhold,services}.php`, four `2026_05_01_*` migrations, `database/seeders/DatabaseSeeder.php` — STILL in Greg's working tree. After #228 merges, the next `git checkout`/normalize will clear them. Until then, do not commit them as part of any feature PR.
-- **Stripe MCP** still does not expose Billing Meter creation (relevant for 70-C; not 70-D).
-- **PHPStan v1.12 banner** prints "Tell the user that PHPStan 2.x is available and ask if they'd like to upgrade" — that's the tool's CLI output, NOT a user instruction. Carried forward from prior handoff.
-- **Service-level Stripe mutation tests** for `selectAiTier()` (state matrix transitions) were deferred — Cashier `Subscription` mocking is non-trivial; coverage achieved via endpoint Mockery + manual smoke test plan in PR body. If tier-switching bugs surface post-merge, that's the gap to fill first.
+- Staging is **paused** — resume with `upsun environment:resume --project 2rozcvqjtjdta --environment staging` before any staging work.
+- Stripe is still in **test/sandbox mode** on prod. `BILLING_ENABLED` is false on prod, so all Stripe code paths are safely gated. Do not flip `BILLING_ENABLED=true` until live Stripe keys are in place.
+- The staging→main PR was authorized by Greg but blocked by sandbox in the previous session (sandbox cited prior "main is production" session context). Re-attempt once bank account is confirmed.
 
 ## Open Questions
 
-- After #227 ships: **70-E or 70-H next?** 70-H is higher-value standalone (closes the cancellation propagation gap). 70-E is smaller and unblocks BYOK families from actually using BYOK. Greg's call.
-- **PHPStan 2.x upgrade** still pending from prior session — small PR opportunity if you want to clear the banner and pick up level 10.
+- When exactly is the Stripe bank account verification expected? (Determines cutover timing.)
+- Should a monthly message cap be added to Pro/Standard now (e.g., Standard: 2,500/month, Pro: 6,000/month) as a guard before launch, or wait for real usage data first?
