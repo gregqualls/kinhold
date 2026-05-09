@@ -2,6 +2,32 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-09 — v1.9.0 production cutover ([#286](https://github.com/gregqualls/kinhold/pull/286)–[#289](https://github.com/gregqualls/kinhold/pull/289))
+
+Stripe live mode wired, staging merged to main, `BILLING_ENABLED=true` flipped on production. Kinhold is open for real subscriptions at app.kinhold.app.
+
+**Stripe live setup:**
+
+- Created live Stripe products (Kinhold base plan, AI Add-on, Storage Add-on) and prices via CLI. Live price IDs set as Upsun project-level `env:` vars so Laravel's `env()` picks them up (project-level vars without the `env:` prefix go into `$PLATFORM_VARIABLES` JSON — inaccessible to the app).
+- Registered live webhook endpoint at `https://app.kinhold.app/stripe/webhook` (corrected from `kinhold.app` which routes to the Astro marketing site, not the SPA). Manually resent queued events after the URL fix.
+- Stripe storage overage price skipped — metered prices require the new Stripe Meter API (deprecated in API version 2025-03-31.basil), which Cashier 16 doesn't support. Storage gracefully no-ops.
+- Set `BILLING_TRIAL_DAYS=15` (project-level) to compensate for Stripe's whole-UTC-day rounding (14 configured → 13 displayed at checkout). Set `BILLING_ENABLED=true` on the `main` environment after the PR deployed.
+
+**Bug fixes shipped to production:**
+
+- **[#287](https://github.com/gregqualls/kinhold/pull/287) — register() missing fetchUser() call.** `auth.js` `register()` set `isAuthenticated = true` but never called `fetchUser()`, so `family` only had the minimal `{id, name, invite_code}` registration response. `billing_owner_id` was `undefined`, causing `activeSteps` to exclude `BillingStep` from the onboarding wizard for all new signups. Fix: added `await fetchUser()` after registration success, matching the pattern already used in `login()`.
+- **[#288](https://github.com/gregqualls/kinhold/pull/288) — Allow promotion codes in Stripe Checkout.** Added `allow_promotion_codes: true` to the `BillingService::startCheckout()` session builder so discount codes can be entered at checkout.
+- **[#289](https://github.com/gregqualls/kinhold/pull/289) — Cancel-anytime copy in BillingStep.** Added "Cancel anytime in Settings → Billing. No long-term commitment." below the trial banner in `BillingStep.vue` for clearer expectations before checkout.
+
+**Infrastructure:**
+
+- All Stripe env vars migrated to Upsun project-level with `env:` prefix (previously environment-level without prefix — not visible to PHP).
+- Staging Upsun environment deleted post-merge.
+
+**Issues filed for follow-up:** [#290](https://github.com/gregqualls/kinhold/issues/290) (webhook_events idempotency table not populating), [#291](https://github.com/gregqualls/kinhold/issues/291) (Stripe Meter API for storage overage), [#292](https://github.com/gregqualls/kinhold/issues/292) (post-checkout redirect race — polling vs webhook), [#293](https://github.com/gregqualls/kinhold/issues/293) (mobile task-completion bug — blocker), [#294](https://github.com/gregqualls/kinhold/issues/294) (dashboard featured event countdown widget), [#295](https://github.com/gregqualls/kinhold/issues/295) (Stripe Checkout card entry accessibility).
+
+---
+
 ## 2026-05-06 — v1.9.0 staging smoke-test fixes ([#279](https://github.com/gregqualls/kinhold/pull/279)–[#283](https://github.com/gregqualls/kinhold/pull/283))
 
 Five follow-up fixes filed and resolved during the v1.9.0 smoke test on staging. All on `staging` branch, pending the staging→main PR once Stripe live mode is confirmed.
