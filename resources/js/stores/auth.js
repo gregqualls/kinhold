@@ -174,6 +174,11 @@ export const useAuthStore = defineStore('auth', () => {
       family.value = response.data.family
       isAuthenticated.value = true
 
+      // Fetch the complete user + family payload so downstream views see
+      // billing_owner_id, is_demo, billing state, module_access, members —
+      // none of which are returned by /register's minimal family payload.
+      await fetchUser()
+
       return { success: true }
     } catch (err) {
       error.value = err.response?.data?.message || 'Registration failed'
