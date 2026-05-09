@@ -85,6 +85,9 @@
           </span>
           <span class="text-sm text-ink-secondary">— no card charged until the trial ends.</span>
         </div>
+        <p class="text-xs text-ink-secondary">
+          Cancel anytime in Settings → Billing. No long-term commitment.
+        </p>
         <p v-if="billing.lastError" class="text-xs text-rose-700 dark:text-rose-300">
           {{ billing.lastError }}
         </p>
