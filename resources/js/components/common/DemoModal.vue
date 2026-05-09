@@ -1,7 +1,7 @@
 <template>
   <BaseModal :show="show" title="Try the Demo" size="lg" @close="$emit('close')">
     <p class="text-sm kin-muted mb-5">
-      Meet the Johnsons! Pick a family member to explore Kinhold from their perspective.
+      Meet the Ellis family! Pick a family member to explore Kinhold from their perspective.
     </p>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -63,11 +63,11 @@ const loadingMember = ref(null)
 const errorMsg = ref('')
 
 const members = [
-  { key: 'mike', name: 'Mike', role: 'Parent', description: 'Dad', color: '#5B8C9C' },
-  { key: 'sarah', name: 'Sarah', role: 'Parent', description: 'Mom', color: '#8B5B9C' },
-  { key: 'emma', name: 'Emma', role: 'Teen', description: 'Age 16', color: '#9C5B7B' },
-  { key: 'jake', name: 'Jake', role: 'Kid', description: 'Age 13', color: '#5B6B9C' },
-  { key: 'lily', name: 'Lily', role: 'Kid', description: 'Age 9', color: '#5B9C7B' },
+  { key: 'adaeze', name: 'Adaeze', role: 'Parent', description: 'Mom', color: '#7B5EA7' },
+  { key: 'marcus', name: 'Marcus', role: 'Parent', description: 'Dad', color: '#4A7B8C' },
+  { key: 'zara',   name: 'Zara',   role: 'Teen',   description: 'Age 16', color: '#C25B8A' },
+  { key: 'kenji',  name: 'Kenji',  role: 'Kid',    description: 'Age 13', color: '#5B7BC2' },
+  { key: 'naia',   name: 'Naia',   role: 'Kid',    description: 'Age 9',  color: '#4A9C78' },
 ]
 
 const handleSelect = async (key) => {

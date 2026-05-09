@@ -105,7 +105,7 @@ export const widgetTypes = {
   },
   'badge-collection': {
     component: () => import('./widgets/BadgesWidget.vue'),
-    name: 'Badges',
+    name: 'Achievement Badges',
     description: 'Badge collection with earned status',
     icon: 'ShieldCheckIcon',
     category: 'badges',

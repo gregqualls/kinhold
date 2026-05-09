@@ -32,11 +32,11 @@ trait DemoFamilyContext
         $this->demoFamily = Family::where('slug', 'q32-demo-family')->firstOrFail();
 
         $users = User::where('family_id', $this->demoFamily->id)->get()->keyBy('name');
-        $this->mike = $users['Mike'];
-        $this->sarah = $users['Sarah'];
-        $this->emma = $users['Emma'];
-        $this->jake = $users['Jake'];
-        $this->lily = $users['Lily'];
+        $this->mike = $users['Adaeze'];
+        $this->sarah = $users['Marcus'];
+        $this->emma = $users['Zara'];
+        $this->jake = $users['Kenji'];
+        $this->lily = $users['Naia'];
 
         $this->tags = Tag::where('family_id', $this->demoFamily->id)
             ->get()

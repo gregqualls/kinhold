@@ -56,35 +56,17 @@
             :error="errors.password_confirmation"
           />
 
-          <!-- Family Option Tabs -->
+          <!-- Family Setup tabs (#247) — pill tabs read as a binary selector
+               instead of two competing primary buttons. -->
           <div class="space-y-3 py-2">
             <p class="text-sm font-medium text-ink-primary">Family Setup</p>
-            <div class="flex gap-2">
-              <button
-                type="button"
-                :class="[
-                  'flex-1 py-2 px-3 rounded-[10px] font-medium transition-colors text-sm',
-                  familyMode === 'new'
-                    ? 'bg-kin-gold text-white'
-                    : 'bg-surface-sunken text-ink-primary hover:bg-surface-raised',
-                ]"
-                @click="familyMode = 'new'"
-              >
-                Create New
-              </button>
-              <button
-                type="button"
-                :class="[
-                  'flex-1 py-2 px-3 rounded-[10px] font-medium transition-colors text-sm',
-                  familyMode === 'join'
-                    ? 'bg-kin-gold text-white'
-                    : 'bg-surface-sunken text-ink-primary hover:bg-surface-raised',
-                ]"
-                @click="familyMode = 'join'"
-              >
-                Join Existing
-              </button>
-            </div>
+            <KinTabPillGroup
+              :tabs="familyModeTabs"
+              :active-key="familyMode"
+              variant="tinted"
+              size="md"
+              @update:active-key="familyMode = $event"
+            />
           </div>
 
           <!-- Create New Family -->
@@ -183,6 +165,7 @@ import { useNotification } from '@/composables/useNotification'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinButton from '@/components/design-system/KinButton.vue'
 import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
+import KinTabPillGroup from '@/components/design-system/KinTabPillGroup.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -191,6 +174,11 @@ const { error: notificationError } = useNotification()
 
 const familyMode = ref('new')
 const googleLoading = ref(false)
+
+const familyModeTabs = [
+  { key: 'new', label: 'Create new' },
+  { key: 'join', label: 'Join existing' },
+]
 
 const form = reactive({
   name: '',

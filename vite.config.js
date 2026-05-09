@@ -77,6 +77,14 @@ export default defineConfig({
         // at the top of the generated file. Update sw-push.js directly — it is
         // committed and loaded as-is at runtime, not bundled.
         importScripts: ['/sw-push.js'],
+        // After every deploy the SPA shell points at new hashed asset URLs.
+        // Without skipWaiting + clientsClaim the old SW keeps serving the
+        // stale shell until every tab closes, so returning users see blank
+        // pages with module-load errors (#278). Take over immediately and
+        // sweep precaches from prior builds on activation.
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         // App shell fallback — the SPA owns every non-API route. workbox
         // resolves this URL against the precache, so '/' MUST be in the
         // precache (see additionalManifestEntries below) or offline
@@ -110,13 +118,17 @@ export default defineConfig({
         ],
         runtimeCaching: [
           {
+            // Authenticated API: never serve from cache. Caching `/api/v1/user`
+            // and other session-bound responses meant a returning visitor could
+            // see another user's session payload after sign-out (#278 follow-up:
+            // auto-login as a previously-cached user, plus CSRF mismatches when
+            // the cached index.html's CSRF meta no longer matched the live
+            // session). Background-sync is overkill for our current use; offline
+            // reads can come back later when we actually need them.
             urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
-            handler: 'NetworkFirst',
+            handler: 'NetworkOnly',
             options: {
               cacheName: 'kinhold-api',
-              networkTimeoutSeconds: 4,
-              expiration: { maxEntries: 64, maxAgeSeconds: 60 * 60 * 24 },
-              cacheableResponse: { statuses: [0, 200] },
             },
           },
           {

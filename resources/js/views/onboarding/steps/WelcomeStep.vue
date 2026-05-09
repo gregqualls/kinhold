@@ -14,7 +14,7 @@
         v-model="familyName"
         type="text"
         label="Family Name"
-        placeholder="The Qualls Family"
+        placeholder="e.g. The Smith Family"
         :disabled="!isParent"
       />
 
@@ -40,8 +40,12 @@ const authStore = useAuthStore()
 const { setStepLoading, registerContinue } = inject('onboarding')
 
 const isParent = authStore.isParent
-const familyName = ref('')
-const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
+// Pre-fill from auth store immediately (it's already loaded from /api/v1/user
+// before the wizard mounts). store.status hydrates a moment later via the
+// onMounted hook and refreshes this value if the server has a more recent
+// name.
+const familyName = ref(authStore.family?.name || '')
+const timezone = ref(authStore.user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)
 
 const commonTimezones = [
   'America/New_York',

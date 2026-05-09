@@ -97,7 +97,7 @@ const navItems = [
   { key: 'shopping',  label: 'Shopping',  to: '/shopping',  icon: ClipboardDocumentListIcon, module: 'food' },
   { key: 'points',    label: 'Points',    to: '/points',    icon: TrophyIcon, module: 'points' },
   { key: 'rewards',   label: 'Rewards',   to: '/points/rewards', icon: GiftIcon, module: 'points' },
-  { key: 'badges',    label: 'Badges',    to: '/badges',    icon: ShieldCheckIcon, module: 'badges' },
+  { key: 'badges',    label: 'Achievements', to: '/badges', icon: ShieldCheckIcon, module: 'badges' },
   { key: 'vault',     label: 'Vault',     to: '/vault',     icon: LockClosedIcon, module: 'vault' },
 ]
 

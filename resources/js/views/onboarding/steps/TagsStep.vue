@@ -2,7 +2,7 @@
   <div class="flex-1 flex flex-col">
     <div class="text-center mb-6">
       <h1 class="text-2xl font-heading font-bold text-ink-primary mb-2">
-        Organize With Tags
+        Organize Tasks With Tags
       </h1>
       <p class="text-base text-ink-secondary">
         Tags help you filter and group tasks. Pick some to get started.
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, onMounted } from 'vue'
 import { useOnboardingStore } from '@/stores/onboarding'
 import api from '@/services/api'
 import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
@@ -60,11 +60,20 @@ const presets = [
   { name: 'Errands', color: '#7B6B9C', description: 'Things to do outside' },
 ]
 
+// Track tags that already exist on the family so we (a) don't try to create
+// duplicates on Continue and (b) show them as selected in the UI when the user
+// re-runs onboarding from settings (#260).
+const existingTagNames = ref(new Set())
+
 function isSelected(name) {
-  return store.selectedPresets.has(name)
+  return store.selectedPresets.has(name) || existingTagNames.value.has(name)
 }
 
 function togglePreset(name) {
+  // Tags that already exist on the family are read-only — toggling them off
+  // would imply deletion, which onboarding shouldn't do.
+  if (existingTagNames.value.has(name)) return
+
   const updated = new Set(store.selectedPresets)
   if (updated.has(name)) {
     updated.delete(name)
@@ -81,6 +90,8 @@ registerContinue(async () => {
   error.value = ''
   try {
     for (const presetName of store.selectedPresets) {
+      // Skip presets that already exist on the family (re-running onboarding).
+      if (existingTagNames.value.has(presetName)) continue
       const preset = presets.find(p => p.name === presetName)
       if (preset) {
         await api.post('/tags', {
@@ -96,6 +107,16 @@ registerContinue(async () => {
     return false
   } finally {
     setStepLoading(false)
+  }
+})
+
+onMounted(async () => {
+  try {
+    const res = await api.get('/tags', { params: { scope: 'task' } })
+    const tags = res.data?.data || res.data || []
+    existingTagNames.value = new Set(tags.map(t => t.name))
+  } catch {
+    // Non-fatal — leave the existing-tag set empty and let the user start fresh.
   }
 })
 </script>

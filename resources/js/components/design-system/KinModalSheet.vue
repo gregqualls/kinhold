@@ -67,7 +67,7 @@ onBeforeUnmount(() => {
 
 const widthStyle = computed(() => {
   if (props.size === 'sm') return { maxWidth: '380px' }
-  if (props.size === 'lg') return { maxWidth: '640px' }
+  if (props.size === 'lg') return { maxWidth: '720px' }
   return { maxWidth: props.desktopWidth }
 })
 </script>
@@ -93,7 +93,7 @@ const widthStyle = computed(() => {
         <Transition name="kin-ms-surface" appear>
           <div
             v-if="modelValue"
-            class="kin-ms-surface relative w-full md:w-auto"
+            class="kin-ms-surface relative w-full md:w-auto flex flex-col max-h-[90vh] md:max-h-[85vh]"
             :class="[
               'rounded-t-sheet md:rounded-card',
               'bg-surface-overlay',
@@ -101,7 +101,7 @@ const widthStyle = computed(() => {
             :style="widthStyle"
           >
             <!-- Mobile grab handle -->
-            <div class="md:hidden flex justify-center pt-3 pb-1" aria-hidden="true">
+            <div class="md:hidden flex justify-center pt-3 pb-1 flex-shrink-0" aria-hidden="true">
               <div class="w-9 h-1 rounded-full bg-border-strong"></div>
             </div>
 
@@ -109,7 +109,7 @@ const widthStyle = computed(() => {
             <slot name="header">
               <div
                 v-if="title"
-                class="flex items-center justify-between px-5 pt-4 md:pt-5 pb-3 border-b border-border-subtle"
+                class="flex items-center justify-between px-5 pt-4 md:pt-5 pb-3 border-b border-border-subtle flex-shrink-0"
               >
                 <p class="text-[14px] font-semibold text-ink-primary">{{ title }}</p>
                 <button
@@ -126,15 +126,16 @@ const widthStyle = computed(() => {
               </div>
             </slot>
 
-            <!-- Body -->
-            <div class="px-5 py-4 text-ink-secondary text-[13px]">
+            <!-- Body — scrolls when content overflows the surface (#246) -->
+            <div class="px-5 py-4 text-ink-secondary text-[13px] overflow-y-auto flex-1 min-h-0">
               <slot></slot>
             </div>
 
-            <!-- Footer (actions) -->
+            <!-- Footer (actions) — pinned to surface bottom so submit/cancel
+                 buttons stay reachable even when the body scrolls. -->
             <div
               v-if="$slots.actions"
-              class="px-5 pb-5 pt-1"
+              class="px-5 pb-5 pt-3 flex-shrink-0 border-t border-border-subtle"
             >
               <slot name="actions"></slot>
             </div>

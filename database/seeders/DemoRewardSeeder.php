@@ -101,6 +101,29 @@ class DemoRewardSeeder extends Seeder
             'visible_to' => [$this->emma->id, $this->jake->id],
         ]);
 
+        Reward::create([
+            'family_id' => $this->familyId(),
+            'created_by' => $this->sarah->id,
+            'title' => 'Pick a New Book',
+            'description' => 'Choose any book you want — we\'ll order it',
+            'point_cost' => 60,
+            'icon' => 'book',
+            'sort_order' => 7,
+            'visibility' => 'child_only',
+        ]);
+
+        Reward::create([
+            'family_id' => $this->familyId(),
+            'created_by' => $this->mike->id,
+            'title' => 'Art Supply Budget ($15)',
+            'description' => 'Pick $15 worth of art or craft supplies',
+            'point_cost' => 80,
+            'icon' => 'palette',
+            'sort_order' => 8,
+            'visibility' => 'specific',
+            'visible_to' => [$this->lily->id],
+        ]);
+
         // Auction rewards
         Reward::create([
             'family_id' => $this->familyId(),
@@ -109,7 +132,7 @@ class DemoRewardSeeder extends Seeder
             'description' => 'Choose where the family goes this weekend! Highest bid wins.',
             'point_cost' => 0,
             'icon' => 'car',
-            'sort_order' => 7,
+            'sort_order' => 9,
             'reward_type' => 'auction',
             'quantity' => 1,
             'min_bid' => 20,
@@ -123,7 +146,7 @@ class DemoRewardSeeder extends Seeder
             'description' => 'Bid for a $5 bonus allowance. Parent calls the winner!',
             'point_cost' => 0,
             'icon' => 'dollar-sign',
-            'sort_order' => 8,
+            'sort_order' => 10,
             'reward_type' => 'auction',
             'quantity' => 1,
             'min_bid' => 10,

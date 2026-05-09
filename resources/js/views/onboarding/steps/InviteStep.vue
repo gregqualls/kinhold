@@ -9,21 +9,32 @@
       </p>
     </div>
 
-    <!-- Added members list -->
-    <div v-if="addedMembers.length > 0" class="mb-4 space-y-2">
+    <!-- Reassurance: optional step (#254) -->
+    <KinFlatCard padding="sm" class="mb-4 bg-surface-sunken">
+      <p class="text-xs text-ink-secondary leading-relaxed">
+        You can do this anytime — many families fill in their calendar, tasks, and recipes first so the rest of the household joins a hub that already feels like home. Skip this step if you'd rather come back to it.
+      </p>
+    </KinFlatCard>
+
+    <!-- Family members — single source of truth from authStore.family.members
+         (#260). Includes both members already on the family at step entry and
+         any added during this session, since addMember() calls fetchUser()
+         which refreshes the auth store. Excludes the current user. -->
+    <div v-if="existingMembers.length > 0" class="mb-4 space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">Family members</p>
       <KinFlatCard
-        v-for="member in addedMembers"
-        :key="member.name"
+        v-for="member in existingMembers"
+        :key="member.id"
         padding="sm"
         class="bg-surface-sunken"
       >
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0" :style="{ backgroundColor: '#C4975A' }">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0" :style="{ backgroundColor: '#7B6B9C' }">
             {{ member.name.charAt(0).toUpperCase() }}
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-ink-primary">{{ member.name }}</p>
-            <p class="text-xs text-ink-secondary">{{ member.role === 'parent' ? 'Parent' : 'Child' }}{{ member.managed ? ' (managed)' : '' }}</p>
+            <p class="text-xs text-ink-secondary">{{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}{{ member.is_managed ? ' (managed)' : '' }}</p>
           </div>
           <CheckCircleIcon class="w-5 h-5 text-status-success flex-shrink-0" />
         </div>
@@ -119,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, inject } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useOnboardingStore } from '@/stores/onboarding'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
@@ -138,12 +149,18 @@ const inviteCode = computed(() => store.status?.invite_code || authStore.family?
 const copied = ref(false)
 const showingInviteCode = ref(false)
 
+// Members already on the family — shown when restarting onboarding so the user
+// sees state, not a blank slate (#260). Excludes the current user.
+const existingMembers = computed(() => {
+  const members = authStore.family?.members || []
+  return members.filter(m => m.id !== authStore.user?.id)
+})
+
 const memberName = ref('')
 const memberEmail = ref('')
 const memberRole = ref('child')
 const addingMember = ref(false)
 const addError = ref('')
-const addedMembers = reactive([])
 
 async function addMember() {
   if (!memberName.value) return
@@ -156,15 +173,10 @@ async function addMember() {
       email: memberEmail.value || undefined,
       role: memberRole.value,
     })
-    addedMembers.push({
-      name: memberName.value,
-      role: memberRole.value,
-      managed: !memberEmail.value,
-    })
     memberName.value = ''
     memberEmail.value = ''
     memberRole.value = 'child'
-    // Refresh auth store to get updated family members
+    // Refresh auth store so the new member appears in `existingMembers`.
     await authStore.fetchUser()
   } catch (err) {
     addError.value = err.response?.data?.message || 'Failed to add member.'

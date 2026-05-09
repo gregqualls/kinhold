@@ -2,6 +2,18 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-06 — v1.9.0 staging smoke-test fixes ([#279](https://github.com/gregqualls/kinhold/pull/279)–[#283](https://github.com/gregqualls/kinhold/pull/283))
+
+Five follow-up fixes filed and resolved during the v1.9.0 smoke test on staging. All on `staging` branch, pending the staging→main PR once Stripe live mode is confirmed.
+
+- **[#279](https://github.com/gregqualls/kinhold/pull/279) — Hide "Skip for now" on BillingStep.** `OnboardingView` computed `isBillingStep` gates the skip button so paywalled users can't bypass the billing wizard requirement.
+- **[#280](https://github.com/gregqualls/kinhold/pull/280) — Demo session cap 3 → 5.** `config/kinhold.php` `demo_session_limit` raised from 3 (too tight in smoke test) to 5. Configurable via `CHATBOT_DEMO_SESSION_LIMIT`.
+- **[#281](https://github.com/gregqualls/kinhold/pull/281) — GDPR escape hatch from SubscriptionPaywall.** Two small text links ("Export my data", "Delete my account") added below "Sign out" in `SubscriptionPaywall.vue`. Routing to `/settings?gdpr=1#your-data` or `#danger`. `App.vue` suppresses the paywall overlay on that scoped route; `SettingsView` hides every non-account section in `gdprMode` so the rest of the app stays gated.
+- **[#282](https://github.com/gregqualls/kinhold/pull/282) — Stale-build recovery after deploy ([#278](https://github.com/gregqualls/kinhold/issues/278)).** Workbox config gains `skipWaiting: true`, `clientsClaim: true`, `cleanupOutdatedCaches: true` so a new service worker takes over immediately on the next load. `app.js` listens for `vite:preloadError` and reloads once on chunk-load failure, with a `sessionStorage` guard against infinite reload loops. Verified end-to-end across two consecutive staging deploys.
+- **[#283](https://github.com/gregqualls/kinhold/pull/283) — No API caching in service worker.** Runtime cache strategy for `/api/*` changed from `NetworkFirst` (4-second timeout with caching) to `NetworkOnly`. The previous strategy cached `/api/v1/user` responses, causing returning visitors to be auto-logged-in as a previously-cached user and hit CSRF mismatches. Fixed by clearing the `kinhold-api` cache name and switching to `NetworkOnly` — authenticated responses must never be cached.
+
+---
+
 ## 2026-05-03 — Demo family billing lockdown + v1.9.0 (v1.9.0, [#238](https://github.com/gregqualls/kinhold/issues/238) / [#70](https://github.com/gregqualls/kinhold/issues/70))
 
 This release closes the #70 Stripe billing umbrella. With #237 (subscription paywall splash) already on main and this PR landing the demo lockdown, every functional gate is in place. The v1.9.0 flip itself is an Upsun env var change (`BILLING_ENABLED=true`), not a code change — tagging the version here makes the release boundary match the milestone.

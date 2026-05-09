@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AiUsageDaily;
 use App\Models\Family;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class AiUsageService
@@ -152,6 +153,94 @@ class AiUsageService
     public function resetAt(): CarbonImmutable
     {
         return CarbonImmutable::now('UTC')->addDay()->startOfDay();
+    }
+
+    /* ===== Demo-family caps (#266) ===========================================
+     * The kinhold.app marketing demo runs on a shared family. Without these,
+     * one motivated visitor can burn the whole daily cap, and a busy week can
+     * easily run real Anthropic spend into 2-3 figures. Three layered caps:
+     *
+     *   1. Per-session — caps a single visitor's browser session at N messages
+     *      so the experience is "try it, then sign up to chat more."
+     *   2. Family-wide daily — already enforced via planFor() returning the
+     *      `demo` plan tier. Just scoped lower than Lite.
+     *   3. Monthly cost — circuit breaker on month-to-date estimated spend.
+     *      When tripped, demo AI goes silent until the next month.
+     * ====================================================================== */
+
+    /**
+     * Demo session quota. Returns true when a visitor's browser session has
+     * hit the per-session cap and should be told to sign up. Counter ticks via
+     * `incrementDemoSession()` — call that after a successful chat send.
+     */
+    public function isDemoSessionExhausted(string $sessionKey): bool
+    {
+        $limit = (int) config('kinhold.chatbot.demo_session_limit', 3);
+        if ($limit <= 0) {
+            return false;
+        }
+
+        return $this->demoSessionCount($sessionKey) >= $limit;
+    }
+
+    public function demoSessionCount(string $sessionKey): int
+    {
+        return (int) Cache::get($this->demoSessionCacheKey($sessionKey), 0);
+    }
+
+    public function incrementDemoSession(string $sessionKey): void
+    {
+        $key = $this->demoSessionCacheKey($sessionKey);
+        // 24h TTL — long enough to outlast a single demo session, short
+        // enough that the slot recycles within a day for new visitors.
+        Cache::put($key, $this->demoSessionCount($sessionKey) + 1, now()->addDay());
+    }
+
+    public function demoSessionLimit(): int
+    {
+        return (int) config('kinhold.chatbot.demo_session_limit', 3);
+    }
+
+    private function demoSessionCacheKey(string $sessionKey): string
+    {
+        return 'demo-ai-session:'.sha1($sessionKey);
+    }
+
+    /**
+     * Estimated month-to-date Anthropic spend for the demo family in cents.
+     * Sums input/output tokens across this calendar month and applies the
+     * configured per-million-token rates.
+     */
+    public function monthlyDemoCostCents(Family $family): int
+    {
+        $rates = (array) config('kinhold.chatbot.demo_cost', []);
+        $inRate = (int) ($rates['input_per_million_cents'] ?? 80);
+        $outRate = (int) ($rates['output_per_million_cents'] ?? 400);
+
+        $start = CarbonImmutable::now('UTC')->startOfMonth();
+
+        $row = DB::table('ai_usage_daily')
+            ->where('family_id', $family->id)
+            ->where('date', '>=', $start)
+            ->selectRaw('COALESCE(SUM(input_tokens),0) AS input_tokens, COALESCE(SUM(output_tokens),0) AS output_tokens')
+            ->first();
+
+        $in = (int) ($row->input_tokens ?? 0);
+        $out = (int) ($row->output_tokens ?? 0);
+
+        // (tokens / 1_000_000) * rate_per_million → cents. Use intdiv-style
+        // math to avoid float drift when the totals are small.
+        return (int) (($in * $inRate + $out * $outRate) / 1_000_000);
+    }
+
+    public function isDemoMonthExhausted(Family $family): bool
+    {
+        $ceiling = (int) config('kinhold.chatbot.demo_monthly_cost_ceiling_cents', 0);
+        if ($ceiling <= 0) {
+            return false;
+        }
+
+        return $this->monthlyDemoCostCents($family) >= $ceiling;
     }
 
     /**

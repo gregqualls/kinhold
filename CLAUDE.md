@@ -45,7 +45,7 @@ Personal context, identity, and instance specifics live in `CLAUDE.local.md` (gi
 
 ## Current Phase
 
-MVP shipped to production. Currently in **Phase F: Food & Meal Planning** — Steps 1–7 done, Step 8 (MCP tools for food/meals) remaining. Other open Phase A items: landing page split (#134), AI usage limits (#137), self-host single-family enforcement (#138). See `docs/ROADMAP.md`.
+MVP shipped to production. **Phase F: Food & Meal Planning is complete** — all 8 steps done (MCP tools delivered via `kinhold-food`, April 2026). Currently wrapping **v1.9.0 hosted billing** (`#70` umbrella) on the `staging` branch; production cutover pending Stripe live-mode setup. Other open Phase A items: landing page split (#134), AI usage limits (#137), self-host single-family enforcement (#138). See `docs/ROADMAP.md`.
 
 ## Session Rules
 

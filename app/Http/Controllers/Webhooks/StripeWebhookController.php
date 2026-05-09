@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierWebhookController;
+use Stripe\Customer;
+use Stripe\Exception\ApiErrorException;
+use Stripe\Subscription;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -86,21 +89,54 @@ class StripeWebhookController extends CashierWebhookController
 
     /**
      * `checkout.session.completed` fires when the customer finishes Checkout.
-     * Cashier doesn't ship a default handler — we use it to persist any
-     * onboarding metadata the SPA passed through (the AI tier choice was
-     * already written before the redirect, so this is mostly a nudge to make
-     * sure the family.stripe_id is set, which Cashier handles via subscription
-     * events anyway). Returning success keeps Stripe happy.
+     * Cashier doesn't ship a default handler — we use it to:
+     *   1. Promote the just-attached payment method to the customer's default
+     *      so future invoices have a PM to charge (#262). Stripe Checkout
+     *      attaches the PM but does NOT set `invoice_settings.default_payment_method`
+     *      automatically for subscription-mode sessions; without this, the
+     *      first invoice after the trial fails with "no payment method".
+     *   2. Log unknown customers (data integrity sanity check).
      */
     protected function handleCheckoutSessionCompleted(array $payload): Response
     {
         $session = $payload['data']['object'] ?? [];
         $customerId = $session['customer'] ?? null;
 
-        if ($customerId && ! Cashier::findBillable($customerId)) {
+        if (! $customerId) {
+            return $this->successMethod();
+        }
+
+        if (! Cashier::findBillable($customerId)) {
             Log::warning('Stripe checkout.session.completed for unknown customer', [
                 'customer' => $customerId,
                 'session' => $session['id'] ?? null,
+            ]);
+
+            return $this->successMethod();
+        }
+
+        // Resolve the payment method — present on the session for some flows,
+        // otherwise read it off the new subscription. Wrap the Stripe call so
+        // an API blip doesn't 500 the webhook (which would trigger Stripe
+        // retries and could double-fire other handlers).
+        try {
+            $paymentMethodId = $session['payment_method'] ?? null;
+
+            if (! $paymentMethodId && ! empty($session['subscription'])) {
+                $sub = Subscription::retrieve((string) $session['subscription']);
+                $paymentMethodId = $sub->default_payment_method ?? null;
+            }
+
+            if ($paymentMethodId) {
+                Customer::update($customerId, [
+                    'invoice_settings' => ['default_payment_method' => $paymentMethodId],
+                ]);
+            }
+        } catch (ApiErrorException $e) {
+            Log::warning('Stripe checkout.session.completed: failed to promote PM to default', [
+                'customer' => $customerId,
+                'session' => $session['id'] ?? null,
+                'error' => $e->getMessage(),
             ]);
         }
 

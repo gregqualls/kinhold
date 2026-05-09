@@ -22,7 +22,7 @@ class DemoLoginTest extends TestCase
         ]);
 
         $mike = User::factory()->create([
-            'name' => 'Mike',
+            'name' => 'Adaeze',
             'family_id' => $family->id,
         ]);
 
@@ -41,7 +41,7 @@ class DemoLoginTest extends TestCase
 
         $this->assertDatabaseCount('chat_messages', 2);
 
-        $response = $this->postJson('/api/v1/demo-login', ['member' => 'mike']);
+        $response = $this->postJson('/api/v1/demo-login', ['member' => 'adaeze']);
 
         $response->assertOk();
         $this->assertDatabaseCount('chat_messages', 0);
@@ -56,13 +56,13 @@ class DemoLoginTest extends TestCase
             'settings' => [],
         ]);
 
-        $mike = User::factory()->create(['name' => 'Mike', 'family_id' => $family->id]);
-        $sarah = User::factory()->create(['name' => 'Sarah', 'family_id' => $family->id]);
+        $mike = User::factory()->create(['name' => 'Adaeze', 'family_id' => $family->id]);
+        $sarah = User::factory()->create(['name' => 'Marcus', 'family_id' => $family->id]);
 
         $mike->updatePushSubscription(endpoint: 'https://example.test/leftover-mike', key: 'pk', token: 'auth');
         $sarah->updatePushSubscription(endpoint: 'https://example.test/sarah', key: 'pk', token: 'auth');
 
-        $this->postJson('/api/v1/demo-login', ['member' => 'mike'])->assertOk();
+        $this->postJson('/api/v1/demo-login', ['member' => 'adaeze'])->assertOk();
 
         $this->assertSame(0, $mike->pushSubscriptions()->count());
         $this->assertSame(1, $sarah->pushSubscriptions()->count());
@@ -77,17 +77,17 @@ class DemoLoginTest extends TestCase
             'settings' => [],
         ]);
 
-        $mike = User::factory()->create(['name' => 'Mike', 'family_id' => $family->id]);
-        $sarah = User::factory()->create(['name' => 'Sarah', 'family_id' => $family->id]);
+        $mike = User::factory()->create(['name' => 'Adaeze', 'family_id' => $family->id]);
+        $sarah = User::factory()->create(['name' => 'Marcus', 'family_id' => $family->id]);
 
         ChatMessage::create([
             'family_id' => $family->id,
             'user_id' => $sarah->id,
             'role' => 'user',
-            'message' => "Sarah's chat",
+            'message' => "Marcus's chat",
         ]);
 
-        $this->postJson('/api/v1/demo-login', ['member' => 'mike'])->assertOk();
+        $this->postJson('/api/v1/demo-login', ['member' => 'adaeze'])->assertOk();
 
         $this->assertDatabaseHas('chat_messages', ['user_id' => $sarah->id]);
     }
