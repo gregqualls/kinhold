@@ -331,6 +331,7 @@ class BillingService
         $checkout = $builder->checkout([
             'success_url' => $successUrl,
             'cancel_url' => $cancelUrl,
+            'allow_promotion_codes' => true,
         ]);
 
         if ($aiTier !== null) {
