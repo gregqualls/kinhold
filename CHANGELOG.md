@@ -2,6 +2,17 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-10 — Stripe webhook idempotency fix ([#290](https://github.com/gregqualls/kinhold/issues/290))
+
+After the v1.9.0 cutover, the `webhook_events` idempotency table stayed empty despite live Stripe deliveries — leaving us exposed to duplicate notifications and grace-period double-clocking on retries. Root cause: Cashier auto-registers `POST /stripe/webhook` named `cashier.webhook` in its service provider, while we registered the same URI inside the `api/v1` group at `/api/v1/stripe/webhook` — also named `cashier.webhook`. Stripe is configured to call `/stripe/webhook`, so all production traffic landed on Cashier's controller, which doesn't write the idempotency row or fire our lifecycle notifications.
+
+- `Cashier::ignoreRoutes()` in [AppServiceProvider::register](app/Providers/AppServiceProvider.php) so the package stops auto-registering the duplicate.
+- `POST /stripe/webhook` re-registered directly in `boot` with `VerifyWebhookSignature` middleware, so the bare path Stripe calls now lands on `StripeWebhookController`.
+- Dropped the redundant `api/v1` route registration and its now-unused import.
+- New regression test `test_first_delivery_records_webhook_event_with_processed_at` asserts the row is created with `processed_at` populated on first delivery. Updated existing webhook tests to use the new bare-path URL.
+
+---
+
 ## 2026-05-09 — v1.9.0 production cutover ([#286](https://github.com/gregqualls/kinhold/pull/286)–[#289](https://github.com/gregqualls/kinhold/pull/289))
 
 Stripe live mode wired, staging merged to main, `BILLING_ENABLED=true` flipped on production. Kinhold is open for real subscriptions at app.kinhold.app.
