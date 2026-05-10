@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import api from '@/services/api'
 
 export const useTasksStore = defineStore('tasks', () => {
@@ -8,6 +8,10 @@ export const useTasksStore = defineStore('tasks', () => {
   const selectedTagIds = ref([])
   const isLoading = ref(false)
   const error = ref(null)
+  // IDs of tasks whose toggle is in flight. The checkbox shows the *pending*
+  // visual state immediately; completed_at (which decides list membership)
+  // only flips when the API responds. (#293)
+  const pendingToggles = reactive(new Set())
 
   // Computed
   const incompleteTasks = computed(() =>
@@ -163,8 +167,14 @@ export const useTasksStore = defineStore('tasks', () => {
     const task = tasks.value.find((t) => t.id === id)
     if (!task) return { success: false }
 
+    const endpoint = task.completed_at ? `/tasks/${id}/uncomplete` : `/tasks/${id}/complete`
+
+    // Mark the toggle as pending so the checkbox flips visually immediately,
+    // but leave completed_at alone so the row stays in its current list until
+    // the API confirms. (#293)
+    pendingToggles.add(id)
+
     try {
-      const endpoint = task.completed_at ? `/tasks/${id}/uncomplete` : `/tasks/${id}/complete`
       const response = await api.patch(endpoint)
       const index = tasks.value.findIndex((t) => t.id === id)
       if (index !== -1) {
@@ -173,6 +183,8 @@ export const useTasksStore = defineStore('tasks', () => {
       return { success: true, data: response.data }
     } catch (err) {
       return { success: false, error: err.response?.data?.message }
+    } finally {
+      pendingToggles.delete(id)
     }
   }
 
@@ -183,6 +195,7 @@ export const useTasksStore = defineStore('tasks', () => {
     selectedTagIds,
     isLoading,
     error,
+    pendingToggles,
 
     // Computed
     incompleteTasks,

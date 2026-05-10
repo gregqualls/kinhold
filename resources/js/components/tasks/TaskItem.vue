@@ -4,11 +4,13 @@
     :class="{
       'opacity-60': task.completed_at,
     }"
-    @click="$emit('click', task)"
+    @click="handleRowClick"
   >
-    <!-- Checkbox: button is its own 40x40 hit target (#293 follow-up). -->
+    <!-- Checkbox: button is its own 40x40 hit target (#293 follow-up).
+         `pending` flips the visible check immediately while the API is in flight. -->
     <TaskCheckbox
       :checked="!!task.completed_at"
+      :pending="isPendingToggle"
       :priority="task.priority"
       @toggle="$emit('toggle', task.id)"
     />
@@ -99,8 +101,8 @@
       <FlagIcon class="w-3.5 h-3.5" />
     </button>
 
-    <!-- Context menu -->
-    <div class="opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
+    <!-- Context menu: always visible on touch (no hover), reveal-on-hover on mouse devices (#293). -->
+    <div class="opacity-100 pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 transition-opacity" @click.stop>
       <ContextMenu :items="menuItems" />
     </div>
   </div>
@@ -109,6 +111,7 @@
 <script setup>
 import { computed, ref, nextTick } from 'vue'
 import { CalendarIcon, DocumentTextIcon, FlagIcon, PencilIcon, TrashIcon, UserGroupIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
+import { useTasksStore } from '@/stores/tasks'
 import TaskCheckbox from './TaskCheckbox.vue'
 import ContextMenu from '@/components/common/ContextMenu.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
@@ -117,7 +120,19 @@ const props = defineProps({
   task: { type: Object, required: true },
 })
 
+const tasksStore = useTasksStore()
+const isPendingToggle = computed(() => tasksStore.pendingToggles.has(props.task.id))
+
 const emit = defineEmits(['click', 'toggle', 'edit', 'delete', 'update-inline'])
+
+// Row tap on touch devices does nothing — only the checkbox (toggle) and the
+// three-dot menu (edit) are interactive. Desktop with mouse keeps row-click
+// to open the detail panel. (#293)
+const handleRowClick = () => {
+  if (window.matchMedia('(hover: hover)').matches) {
+    emit('click', props.task)
+  }
+}
 
 const colorMap = {
   wisteria: '#7d57a8',

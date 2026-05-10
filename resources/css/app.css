@@ -339,8 +339,11 @@
     transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
   }
 
-  .checkbox-custom:hover .checkbox-ring {
-    background-color: rgb(var(--wisteria-400) / 0.15);
+  /* Hover preview only on real pointer devices — iOS treats first tap as hover (#293). */
+  @media (hover: hover) {
+    .checkbox-custom:hover .checkbox-ring {
+      background-color: rgb(var(--wisteria-400) / 0.15);
+    }
   }
 
   .checkbox-ring.checked {
