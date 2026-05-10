@@ -324,28 +324,36 @@
     transform: scale(0.9);
   }
 
-  /* Animated checkbox */
+  /* Animated checkbox.
+     .checkbox-custom is the 40x40 hit target — same element owns touch-action,
+     cursor, and button semantics so iOS PWA standalone gesture recognition
+     fires synthesized clicks reliably (#293 follow-up). */
   .checkbox-custom {
-    @apply relative w-6 h-6 rounded-full border-2 flex-shrink-0 cursor-pointer;
-    transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+    @apply relative w-10 h-10 -m-2 flex items-center justify-center flex-shrink-0 cursor-pointer bg-transparent border-0 p-0;
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .checkbox-custom:hover {
+  .checkbox-ring {
+    @apply relative w-6 h-6 rounded-full border-2 flex items-center justify-center;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+  }
+
+  .checkbox-custom:hover .checkbox-ring {
     background-color: rgb(var(--wisteria-400) / 0.15);
   }
 
-  .checkbox-custom.checked {
+  .checkbox-ring.checked {
     animation: checkBounce 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .checkbox-custom .check-icon {
+  .checkbox-ring .check-icon {
     @apply absolute inset-0 flex items-center justify-center text-white;
     opacity: 0;
     transition: opacity 0.15s;
   }
 
-  .checkbox-custom.checked .check-icon {
+  .checkbox-ring.checked .check-icon {
     opacity: 1;
   }
 
