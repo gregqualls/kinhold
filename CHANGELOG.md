@@ -2,6 +2,22 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-10 — Mobile task-complete UX, take three ([#293](https://github.com/gregqualls/kinhold/issues/293))
+
+PR #300 made the toggle fire on a single tap, but the *feel* on the installed PWA was still wrong: tapping a task row felt like "select first, then close" — three taps to mark a task done. Two reasons:
+
+1. **iOS treats first tap as `:hover`.** The row had Tailwind's `hover:bg-surface-sunken` and the checkbox had a custom `:hover` background. On iOS, the first tap fires the hover state instead of the click, so users had to tap again to actually trigger the action.
+2. **Row tap opened the detail panel.** `@click="$emit('click', task)"` on the row meant any thumb-tap that wasn't precisely on the 40×40 circle slid up the detail panel — that was the "selecting the task" feeling. The right mobile interaction model is: circle = toggle, three-dots menu = edit. The row body should not be tappable at all.
+
+Fix:
+
+- `tailwind.config.js` — enabled `future.hoverOnlyWhenSupported: true` so all `hover:*` utilities scope to `(hover: hover)` and never fire on iOS first-tap.
+- `app.css` — wrapped `.checkbox-custom:hover` rule in `@media (hover: hover)`.
+- `TaskItem.vue` — row click now gates on `matchMedia('(hover: hover)')`. On touch devices the row body does nothing; users tap the circle to toggle or the three-dots to edit.
+- `TaskItem.vue` — three-dots context menu was `opacity-0 group-hover:opacity-100`, so it was permanently invisible on mobile. Changed to `opacity-100 pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100` — always visible on touch, reveal-on-hover on mouse.
+
+Version: 1.9.1 → 1.9.2.
+
 ## 2026-05-10 — Mobile task-complete fix, take two ([#293](https://github.com/gregqualls/kinhold/issues/293) follow-up)
 
 PR #298 (this morning) put `touch-action: manipulation` on the inner 24x24 `<button class="checkbox-custom">` and wrapped it in a presentational `<div class="-m-2 p-2">` to expand the hit area to 40x40. That left the 8px padding ring as a plain `<div>` with no `touch-action`, no `cursor: pointer`, and no button semantics, which is exactly where thumbs land. Result: Chrome mobile required a double-tap (300ms zoom-delay holding the first tap), and the installed iOS PWA didn't toggle at all (standalone-mode gesture recognition won't synthesize clicks reliably on a bare `<div>`).

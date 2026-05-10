@@ -4,7 +4,7 @@
     :class="{
       'opacity-60': task.completed_at,
     }"
-    @click="$emit('click', task)"
+    @click="handleRowClick"
   >
     <!-- Checkbox: button is its own 40x40 hit target (#293 follow-up). -->
     <TaskCheckbox
@@ -99,8 +99,8 @@
       <FlagIcon class="w-3.5 h-3.5" />
     </button>
 
-    <!-- Context menu -->
-    <div class="opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
+    <!-- Context menu: always visible on touch (no hover), reveal-on-hover on mouse devices (#293). -->
+    <div class="opacity-100 pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 transition-opacity" @click.stop>
       <ContextMenu :items="menuItems" />
     </div>
   </div>
@@ -118,6 +118,15 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['click', 'toggle', 'edit', 'delete', 'update-inline'])
+
+// Row tap on touch devices does nothing — only the checkbox (toggle) and the
+// three-dot menu (edit) are interactive. Desktop with mouse keeps row-click
+// to open the detail panel. (#293)
+const handleRowClick = () => {
+  if (window.matchMedia('(hover: hover)').matches) {
+    emit('click', props.task)
+  }
+}
 
 const colorMap = {
   wisteria: '#7d57a8',

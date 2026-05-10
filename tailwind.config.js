@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',
+  // Scope hover: utilities to (hover: hover) so iOS doesn't fire them on first tap (#293).
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   content: [
     './resources/js/**/*.{js,vue}',
     './resources/views/**/*.php',
