@@ -73,6 +73,11 @@
           <!-- Remember me -->
           <KinCheckbox v-model="form.remember" label="Remember me" />
 
+          <!-- Success message (e.g. ?verified=1 after email verification) -->
+          <div v-if="successMessage" class="p-3 bg-status-success/10 border border-status-success/30 rounded-[10px]">
+            <p class="text-sm text-status-success">{{ successMessage }}</p>
+          </div>
+
           <!-- Error message -->
           <div v-if="errors.general" class="p-3 bg-status-failed/10 border border-status-failed/30 rounded-[10px]">
             <p class="text-sm text-status-failed">{{ errors.general }}</p>
@@ -182,7 +187,12 @@ const errors = reactive({
   general: '',
 })
 
+const successMessage = ref('')
+
 onMounted(() => {
+  if (route.query.verified === '1') {
+    successMessage.value = 'Email verified. Sign in to continue.'
+  }
   if (route.query.verify_error === 'invalid') {
     errors.general = 'Email verification link is invalid or has expired. Please sign in and request a new verification email.'
   }
