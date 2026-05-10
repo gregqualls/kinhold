@@ -2,20 +2,20 @@
   <button
     class="checkbox-custom"
     role="checkbox"
-    :aria-checked="checked"
-    :aria-label="checked ? 'Mark as incomplete' : 'Mark as complete'"
+    :aria-checked="visualChecked"
+    :aria-label="visualChecked ? 'Mark as incomplete' : 'Mark as complete'"
     @click.stop="$emit('toggle')"
   >
     <span
       class="checkbox-ring"
       :class="{
-        'checked': checked,
-        'border-red-400 bg-red-500': checked && priority === 'high',
-        'border-orange-400 bg-orange-500': checked && priority === 'medium',
-        'border-lavender-400 bg-lavender-400': checked && priority === 'low',
-        'border-red-300': !checked && priority === 'high',
-        'border-orange-300': !checked && priority === 'medium',
-        'border-border-subtle': !checked && (priority === 'low' || !priority),
+        'checked': visualChecked,
+        'border-red-400 bg-red-500': visualChecked && priority === 'high',
+        'border-orange-400 bg-orange-500': visualChecked && priority === 'medium',
+        'border-lavender-400 bg-lavender-400': visualChecked && priority === 'low',
+        'border-red-300': !visualChecked && priority === 'high',
+        'border-orange-300': !visualChecked && priority === 'medium',
+        'border-border-subtle': !visualChecked && (priority === 'low' || !priority),
       }"
     >
       <span class="check-icon">
@@ -28,10 +28,18 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   checked: Boolean,
+  // While the toggle API is in flight, render the *opposite* of `checked`
+  // so the user sees instant feedback. The row stays in its current list
+  // until the response arrives. (#293)
+  pending: Boolean,
   priority: { type: String, default: 'low' },
 })
 
 defineEmits(['toggle'])
+
+const visualChecked = computed(() => (props.pending ? !props.checked : props.checked))
 </script>

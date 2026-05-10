@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import api from '@/services/api'
 
 export const useTasksStore = defineStore('tasks', () => {
@@ -8,6 +8,10 @@ export const useTasksStore = defineStore('tasks', () => {
   const selectedTagIds = ref([])
   const isLoading = ref(false)
   const error = ref(null)
+  // IDs of tasks whose toggle is in flight. The checkbox shows the *pending*
+  // visual state immediately; completed_at (which decides list membership)
+  // only flips when the API responds. (#293)
+  const pendingToggles = reactive(new Set())
 
   // Computed
   const incompleteTasks = computed(() =>
@@ -160,38 +164,27 @@ export const useTasksStore = defineStore('tasks', () => {
   }
 
   const toggleComplete = async (id) => {
-    const index = tasks.value.findIndex((t) => t.id === id)
-    if (index === -1) return { success: false }
+    const task = tasks.value.find((t) => t.id === id)
+    if (!task) return { success: false }
 
-    const task = tasks.value[index]
-    const wasCompleted = !!task.completed_at
-    const endpoint = wasCompleted ? `/tasks/${id}/uncomplete` : `/tasks/${id}/complete`
+    const endpoint = task.completed_at ? `/tasks/${id}/uncomplete` : `/tasks/${id}/complete`
 
-    // Optimistic update — flip completed_at locally so the UI feels instant.
-    // The API response (which may add points, roll a recurring instance, etc.)
-    // replaces the task on success; we revert on failure. (#293)
-    const previousCompletedAt = task.completed_at
-    tasks.value[index] = {
-      ...task,
-      completed_at: wasCompleted ? null : new Date().toISOString(),
-    }
+    // Mark the toggle as pending so the checkbox flips visually immediately,
+    // but leave completed_at alone so the row stays in its current list until
+    // the API confirms. (#293)
+    pendingToggles.add(id)
 
     try {
       const response = await api.patch(endpoint)
-      const refreshIndex = tasks.value.findIndex((t) => t.id === id)
-      if (refreshIndex !== -1) {
-        tasks.value[refreshIndex] = response.data.task
+      const index = tasks.value.findIndex((t) => t.id === id)
+      if (index !== -1) {
+        tasks.value[index] = response.data.task
       }
       return { success: true, data: response.data }
     } catch (err) {
-      const revertIndex = tasks.value.findIndex((t) => t.id === id)
-      if (revertIndex !== -1) {
-        tasks.value[revertIndex] = {
-          ...tasks.value[revertIndex],
-          completed_at: previousCompletedAt,
-        }
-      }
       return { success: false, error: err.response?.data?.message }
+    } finally {
+      pendingToggles.delete(id)
     }
   }
 
@@ -202,6 +195,7 @@ export const useTasksStore = defineStore('tasks', () => {
     selectedTagIds,
     isLoading,
     error,
+    pendingToggles,
 
     // Computed
     incompleteTasks,

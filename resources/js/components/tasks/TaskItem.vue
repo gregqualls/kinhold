@@ -6,9 +6,11 @@
     }"
     @click="handleRowClick"
   >
-    <!-- Checkbox: button is its own 40x40 hit target (#293 follow-up). -->
+    <!-- Checkbox: button is its own 40x40 hit target (#293 follow-up).
+         `pending` flips the visible check immediately while the API is in flight. -->
     <TaskCheckbox
       :checked="!!task.completed_at"
+      :pending="isPendingToggle"
       :priority="task.priority"
       @toggle="$emit('toggle', task.id)"
     />
@@ -109,6 +111,7 @@
 <script setup>
 import { computed, ref, nextTick } from 'vue'
 import { CalendarIcon, DocumentTextIcon, FlagIcon, PencilIcon, TrashIcon, UserGroupIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
+import { useTasksStore } from '@/stores/tasks'
 import TaskCheckbox from './TaskCheckbox.vue'
 import ContextMenu from '@/components/common/ContextMenu.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
@@ -116,6 +119,9 @@ import UserAvatar from '@/components/common/UserAvatar.vue'
 const props = defineProps({
   task: { type: Object, required: true },
 })
+
+const tasksStore = useTasksStore()
+const isPendingToggle = computed(() => tasksStore.pendingToggles.has(props.task.id))
 
 const emit = defineEmits(['click', 'toggle', 'edit', 'delete', 'update-inline'])
 

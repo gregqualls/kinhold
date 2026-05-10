@@ -16,7 +16,7 @@ Fix:
 - `TaskItem.vue` — row click now gates on `matchMedia('(hover: hover)')`. On touch devices the row body does nothing; users tap the circle to toggle or the three-dots to edit.
 - `TaskItem.vue` — three-dots context menu was `opacity-0 group-hover:opacity-100`, so it was permanently invisible on mobile. Changed to `opacity-100 pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100` — always visible on touch, reveal-on-hover on mouse.
 
-**Optimistic toggle:** `tasksStore.toggleComplete()` now flips `completed_at` locally before the API call so the check shows up and the row moves to the completed list immediately. Server response replaces the task on success (preserves recurring-task rollover, points, etc.); on failure we revert. Removes the ~1s perceived lag.
+**Optimistic toggle (two-stage):** `tasksStore` now exposes a `pendingToggles` Set. `toggleComplete()` adds the task ID to the set immediately and clears it in `finally`. `TaskCheckbox` accepts a `pending` prop and shows the *opposite* of `checked` while pending, so the visual check flips on tap with zero latency. `completed_at` (which decides list membership) only changes when the API responds, so the row stays visually in place during the request and then animates to the completed list after the server confirms. Removes the ~1s perceived lag without making the row jump prematurely.
 
 Version: 1.9.1 → 1.9.2.
 
