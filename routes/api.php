@@ -23,7 +23,6 @@ use App\Http\Controllers\Api\V1\ShoppingListController;
 use App\Http\Controllers\Api\V1\TagController;
 use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\VaultController;
-use App\Http\Controllers\Webhooks\StripeWebhookController;
 use App\Models\Family;
 use App\Models\User;
 use App\Services\LicenseEnforcementService;
@@ -358,10 +357,8 @@ Route::prefix('v1')->group(function () {
     // Calendar OAuth callback (public, stateless — Google redirects via GET)
     Route::get('/calendar/callback', [CalendarController::class, 'handleCallback'])->name('api.calendar.callback');
 
-    // Stripe webhooks (#221 / 70-H). Public — signature verified by
-    // VerifyWebhookSignature middleware (auto-attached by Cashier when
-    // STRIPE_WEBHOOK_SECRET is set). Idempotency via webhook_events table.
-    Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
-        ->name('cashier.webhook')
-        ->withoutMiddleware('throttle:api');
 });
+
+// Stripe webhook lives at bare /stripe/webhook (registered in AppServiceProvider::boot)
+// to match the URL Stripe is configured to call, with Cashier::ignoreRoutes() preventing
+// the package's auto-registered duplicate (#290).

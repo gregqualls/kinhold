@@ -40,7 +40,7 @@ class WebhookTest extends TestCase
 
         return $this->call(
             'POST',
-            '/api/v1/stripe/webhook',
+            '/stripe/webhook',
             [],
             [],
             [],
@@ -197,6 +197,32 @@ class WebhookTest extends TestCase
         Notification::assertSentTo($owner, TrialEndingNotification::class);
     }
 
+    public function test_first_delivery_records_webhook_event_with_processed_at(): void
+    {
+        // Regression test for #290: live cutover landed Stripe webhooks on
+        // Cashier's auto-registered route (named cashier.webhook, same as
+        // ours) instead of our subclass, so webhook_events stayed empty.
+        // Cashier::ignoreRoutes() + bare-path registration in
+        // AppServiceProvider routes traffic through our handler.
+        Notification::fake();
+        [$family] = $this->familyWithOwnerAndStripeId();
+
+        $eventId = 'evt_test_idem_'.uniqid();
+        $this->postSignedWebhook([
+            'id' => $eventId,
+            'type' => 'invoice.payment_failed',
+            'data' => ['object' => ['customer' => $family->stripe_id]],
+        ])->assertStatus(200);
+
+        $row = WebhookEvent::query()
+            ->where('provider', 'stripe')
+            ->where('event_id', $eventId)
+            ->first();
+
+        $this->assertNotNull($row);
+        $this->assertNotNull($row->processed_at);
+    }
+
     public function test_replaying_same_event_id_is_idempotent(): void
     {
         Notification::fake();
@@ -229,7 +255,7 @@ class WebhookTest extends TestCase
 
         $response = $this->call(
             'POST',
-            '/api/v1/stripe/webhook',
+            '/stripe/webhook',
             [],
             [],
             [],
