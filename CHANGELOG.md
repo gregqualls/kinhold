@@ -16,6 +16,8 @@ Fix:
 - `TaskItem.vue` — row click now gates on `matchMedia('(hover: hover)')`. On touch devices the row body does nothing; users tap the circle to toggle or the three-dots to edit.
 - `TaskItem.vue` — three-dots context menu was `opacity-0 group-hover:opacity-100`, so it was permanently invisible on mobile. Changed to `opacity-100 pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100` — always visible on touch, reveal-on-hover on mouse.
 
+**Optimistic toggle:** `tasksStore.toggleComplete()` now flips `completed_at` locally before the API call so the check shows up and the row moves to the completed list immediately. Server response replaces the task on success (preserves recurring-task rollover, points, etc.); on failure we revert. Removes the ~1s perceived lag.
+
 Version: 1.9.1 → 1.9.2.
 
 ## 2026-05-10 — Mobile task-complete fix, take two ([#293](https://github.com/gregqualls/kinhold/issues/293) follow-up)

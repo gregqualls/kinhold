@@ -160,18 +160,37 @@ export const useTasksStore = defineStore('tasks', () => {
   }
 
   const toggleComplete = async (id) => {
-    const task = tasks.value.find((t) => t.id === id)
-    if (!task) return { success: false }
+    const index = tasks.value.findIndex((t) => t.id === id)
+    if (index === -1) return { success: false }
+
+    const task = tasks.value[index]
+    const wasCompleted = !!task.completed_at
+    const endpoint = wasCompleted ? `/tasks/${id}/uncomplete` : `/tasks/${id}/complete`
+
+    // Optimistic update — flip completed_at locally so the UI feels instant.
+    // The API response (which may add points, roll a recurring instance, etc.)
+    // replaces the task on success; we revert on failure. (#293)
+    const previousCompletedAt = task.completed_at
+    tasks.value[index] = {
+      ...task,
+      completed_at: wasCompleted ? null : new Date().toISOString(),
+    }
 
     try {
-      const endpoint = task.completed_at ? `/tasks/${id}/uncomplete` : `/tasks/${id}/complete`
       const response = await api.patch(endpoint)
-      const index = tasks.value.findIndex((t) => t.id === id)
-      if (index !== -1) {
-        tasks.value[index] = response.data.task
+      const refreshIndex = tasks.value.findIndex((t) => t.id === id)
+      if (refreshIndex !== -1) {
+        tasks.value[refreshIndex] = response.data.task
       }
       return { success: true, data: response.data }
     } catch (err) {
+      const revertIndex = tasks.value.findIndex((t) => t.id === id)
+      if (revertIndex !== -1) {
+        tasks.value[revertIndex] = {
+          ...tasks.value[revertIndex],
+          completed_at: previousCompletedAt,
+        }
+      }
       return { success: false, error: err.response?.data?.message }
     }
   }
