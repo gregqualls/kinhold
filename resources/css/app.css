@@ -328,6 +328,7 @@
   .checkbox-custom {
     @apply relative w-6 h-6 rounded-full border-2 flex-shrink-0 cursor-pointer;
     transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+    touch-action: manipulation;
   }
 
   .checkbox-custom:hover {
