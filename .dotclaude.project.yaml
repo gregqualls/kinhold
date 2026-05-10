@@ -1,0 +1,109 @@
+# Project-specific data for the universal commands and skills in
+# github.com/gregqualls/dotclaude. Read by /kickoff, /pr, /merge, and
+# the issue-planner, ship, qa, review skills.
+
+repo_owner: gregqualls
+repo_name: kinhold
+
+# Force stack detection (kinhold is Laravel + Vue, both detected; this
+# is just defensive in case of future ambiguity).
+stack: laravel
+
+# Upsun deploy target — /merge monitors deploys here after squash.
+upsun_project_id: 2rozcvqjtjdta
+
+# Priority-driven kickoff: surface the issues with this label first.
+priority_label: plan:batch-2
+
+# GitHub milestone numbers per phase (used by /kickoff to render the
+# right "Phase X: N/M done (P%)" line).
+milestones:
+  phase-0: 1
+  phase-a: 2
+  phase-b: 3
+  phase-c: 4
+  phase-d: 5
+  phase-e: 6
+  phase-f: 7
+
+# API surface coverage rule for the ship skill: every new API endpoint
+# in routes/api.php should have a matching MCP tool.
+api_coverage_required: true
+api_coverage_check:
+  routes_file: routes/api.php
+  tools_dir: app/Mcp/Tools/
+
+# Module zones for the issue-planner (parallel-safe batch detection).
+# Two issues conflict if they share any zone.
+module_zones:
+  auth:
+    - app/Http/Controllers/Api/V1/AuthController.php
+    - resources/js/views/auth/**
+    - resources/js/stores/auth.js
+  tasks:
+    - app/Http/Controllers/Api/V1/TaskController.php
+    - app/Models/Task.php
+    - resources/js/views/tasks/**
+    - resources/js/stores/tasks.js
+    - resources/js/components/tasks/**
+  calendar:
+    - app/Http/Controllers/Api/V1/CalendarController.php
+    - resources/js/views/calendar/**
+    - resources/js/stores/calendar.js
+    - resources/js/components/calendar/**
+  vault:
+    - app/Http/Controllers/Api/V1/VaultController.php
+    - resources/js/views/vault/**
+    - resources/js/stores/vault.js
+  chat:
+    - app/Http/Controllers/Api/V1/ChatController.php
+    - resources/js/views/chat/**
+    - resources/js/stores/chat.js
+  points:
+    - app/Http/Controllers/Api/V1/PointsController.php
+    - resources/js/views/points/**
+    - resources/js/stores/points.js
+    - app/Services/PointsService.php
+  badges:
+    - app/Http/Controllers/Api/V1/BadgeController.php
+    - resources/js/views/badges/**
+    - resources/js/stores/badges.js
+    - app/Services/BadgeService.php
+  rewards:
+    - app/Http/Controllers/Api/V1/RewardController.php
+    - resources/js/views/points/**
+  dashboard:
+    - resources/js/views/dashboard/**
+    - resources/js/components/layout/**
+  settings:
+    - app/Http/Controllers/Api/V1/SettingsController.php
+    - resources/js/views/settings/**
+  family:
+    - app/Http/Controllers/Api/V1/FamilyController.php
+    - app/Models/Family.php
+  food:
+    - app/Http/Controllers/Api/V1/MealController.php
+    - app/Http/Controllers/Api/V1/RecipeController.php
+    - resources/js/views/food/**
+    - resources/js/views/meals/**
+  layout:
+    - resources/js/components/layout/**
+  shared-ui:
+    - resources/js/components/common/**
+    - resources/css/**
+    - tailwind.config.js
+  database:
+    - database/migrations/**
+    - database/seeders/**
+  routing:
+    - routes/api.php
+    - resources/js/router/**
+  config:
+    - .upsun/**
+    - config/**
+  email:
+    - app/Mail/**
+    - app/Notifications/**
+    - config/mail.php
+  mcp:
+    - app/Mcp/**

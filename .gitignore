@@ -64,9 +64,9 @@ Thumbs.db
 # Quality tools
 .eslintcache
 
-# Claude Code (ignore all except slash commands)
-.claude/*
-!.claude/commands/
+# Claude Code config lives in github.com/gregqualls/dotclaude (synced to ~/.claude/)
+# Nothing in .claude/ is tracked by this repo.
+.claude/
 
 # Personal/local CLAUDE context (not for the public repo)
 CLAUDE.local.md
