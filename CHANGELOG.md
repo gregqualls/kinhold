@@ -2,6 +2,18 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-10 — Email verification fix + register payload regression test ([#299](https://github.com/gregqualls/kinhold/issues/299), [#294](https://github.com/gregqualls/kinhold/issues/294))
+
+Real users (Greg's wife on iOS Safari PWA) reported that tapping the email verification link did nothing — landed on a 404 inside the app, account never marked verified. Two distinct bugs presenting as one symptom:
+
+1. **PWA service worker swallowed the verification URL.** The Workbox `NavigationRoute` denylist in [vite.config.js](vite.config.js) excluded `/api/`, `/auth/`, `/login`, `/oauth/`, etc., but not `/email/`. So in any installed PWA, navigation to `/email/verify/{id}/{hash}` was intercepted by the SW, served the cached SPA shell, and `vue-router` fell through to `NotFoundView` (the `/:pathMatch(.*)*` catch-all). The Laravel verification handler at [routes/web.php:24-36](routes/web.php) was never reached. Fix: added `/^\/email\//` to `navigateFallbackDenylist` so the entire server-rendered `/email/` namespace bypasses the SW. Existing PWA installs pick up the new denylist on next launch via the existing `skipWaiting`/`clientsClaim` (#278 fallout).
+
+2. **Successful verification looked like silent failure.** Server-side, the verify route correctly redirected to `/login?verified=1`, but [LoginView.vue](resources/js/views/auth/LoginView.vue) only checked for `verify_error` — `verified=1` was dropped on the floor. Users saw a normal login screen with no banner and assumed nothing happened. Added a green `bg-status-success/10` banner that mirrors the existing red error banner pattern, copy "Email verified. Sign in to continue."
+
+Locked the Laravel side with two new tests in [tests/Feature/EmailVerificationTest.php](tests/Feature/EmailVerificationTest.php): a valid signed URL marks the user verified and redirects to `/login?verified=1`; a corrupted hash redirects to `/login?verify_error=invalid` and leaves the user unverified.
+
+Bundled with [#294](https://github.com/gregqualls/kinhold/issues/294): added [tests/Feature/Auth/RegisterHydratesFullUserTest.php](tests/Feature/Auth/RegisterHydratesFullUserTest.php) to lock the `/api/v1/user` payload shape after `POST /api/v1/register`. Asserts `user.role === 'parent'`, `family.billing_owner_id === user.id`, `family.is_demo === false`, presence of `family.module_access` (with `calendar` key), `family.members` (containing the registering user), and that `family.billing` is populated when `BILLING_ENABLED=true` and `null` when disabled. This is the regression test the v1.9.0 cutover lacked when PR #287 fixed the latent `auth.family` hydration bug.
+
 ## 2026-05-10 — Mobile task-complete UX, take three ([#293](https://github.com/gregqualls/kinhold/issues/293))
 
 PR #300 made the toggle fire on a single tap, but the *feel* on the installed PWA was still wrong: tapping a task row felt like "select first, then close" — three taps to mark a task done. Two reasons:

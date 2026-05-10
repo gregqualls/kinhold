@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -87,5 +89,37 @@ class EmailVerificationTest extends TestCase
         $response->assertStatus(200);
         // Should be boolean true, not the actual google ID
         $response->assertJsonPath('user.google_id', true);
+    }
+
+    public function test_valid_signed_verification_link_marks_user_verified_and_redirects(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => null]);
+
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            Carbon::now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1($user->getEmailForVerification())]
+        );
+
+        $response = $this->get($url);
+
+        $response->assertRedirect('/login?verified=1');
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
+    }
+
+    public function test_invalid_hash_redirects_with_verify_error(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => null]);
+
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            Carbon::now()->addMinutes(60),
+            ['id' => $user->id, 'hash' => sha1('not-the-real-email@example.com')]
+        );
+
+        $response = $this->get($url);
+
+        $response->assertRedirect('/login?verify_error=invalid');
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }
 }

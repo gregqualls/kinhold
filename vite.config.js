@@ -93,6 +93,7 @@ export default defineConfig({
         navigateFallbackDenylist: [
           /^\/api\//,
           /^\/auth\//,
+          /^\/email\//,
           /^\/mcp/,
           /^\/login/,
           /^\/oauth/,
