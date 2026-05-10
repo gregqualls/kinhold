@@ -6,16 +6,12 @@
     }"
     @click="$emit('click', task)"
   >
-    <!-- Checkbox -->
-    <!-- Expanded hit area (-m-2 p-2) gives a 40x40 tap target around the 24x24 checkbox.
-         Without this, mobile thumbs miss the button and tap the row's openDetail handler instead (#293). -->
-    <div class="-m-2 p-2" @click.stop="$emit('toggle', task.id)">
-      <TaskCheckbox
-        :checked="!!task.completed_at"
-        :priority="task.priority"
-        @toggle="$emit('toggle', task.id)"
-      />
-    </div>
+    <!-- Checkbox: button is its own 40x40 hit target (#293 follow-up). -->
+    <TaskCheckbox
+      :checked="!!task.completed_at"
+      :priority="task.priority"
+      @toggle="$emit('toggle', task.id)"
+    />
 
     <!-- Content -->
     <div class="flex-1 min-w-0">

@@ -2,6 +2,12 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-10 — Mobile task-complete fix, take two ([#293](https://github.com/gregqualls/kinhold/issues/293) follow-up)
+
+PR #298 (this morning) put `touch-action: manipulation` on the inner 24x24 `<button class="checkbox-custom">` and wrapped it in a presentational `<div class="-m-2 p-2">` to expand the hit area to 40x40. That left the 8px padding ring as a plain `<div>` with no `touch-action`, no `cursor: pointer`, and no button semantics, which is exactly where thumbs land. Result: Chrome mobile required a double-tap (300ms zoom-delay holding the first tap), and the installed iOS PWA didn't toggle at all (standalone-mode gesture recognition won't synthesize clicks reliably on a bare `<div>`).
+
+Fix collapses the shim: the `<button class="checkbox-custom">` itself is now the 40x40 hit area (`w-10 h-10` with `touch-action: manipulation`, `cursor-pointer`, `bg-transparent border-0`, and `-webkit-tap-highlight-color: transparent`). The visible 24x24 affordance moves to a child `<span class="checkbox-ring">`. `-m-2` on the button preserves the 24x24 layout footprint so the row geometry is unchanged. The `-m-2 p-2` wrapper in [TaskItem.vue](resources/js/components/tasks/TaskItem.vue) is gone. Hit area, touch-action, cursor, and button semantics now share one element.
+
 ## 2026-05-10 — Stripe webhook idempotency fix ([#290](https://github.com/gregqualls/kinhold/issues/290))
 
 After the v1.9.0 cutover, the `webhook_events` idempotency table stayed empty despite live Stripe deliveries — leaving us exposed to duplicate notifications and grace-period double-clocking on retries. Root cause: Cashier auto-registers `POST /stripe/webhook` named `cashier.webhook` in its service provider, while we registered the same URI inside the `api/v1` group at `/api/v1/stripe/webhook` — also named `cashier.webhook`. Stripe is configured to call `/stripe/webhook`, so all production traffic landed on Cashier's controller, which doesn't write the idempotency row or fire our lifecycle notifications.
