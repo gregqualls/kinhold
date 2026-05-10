@@ -11,6 +11,15 @@ After the v1.9.0 cutover, the `webhook_events` idempotency table stayed empty de
 - Dropped the redundant `api/v1` route registration and its now-unused import.
 - New regression test `test_first_delivery_records_webhook_event_with_processed_at` asserts the row is created with `processed_at` populated on first delivery. Updated existing webhook tests to use the new bare-path URL.
 
+## 2026-05-10 — Mobile task-complete fix ([#293](https://github.com/gregqualls/kinhold/issues/293))
+
+Production blocker: tapping the complete checkbox on a task did nothing on mobile (worked fine on desktop). Root cause: the 24×24 (`w-6 h-6`) checkbox button in `TaskCheckbox` is well below Apple's 44×44 HIG minimum, so mobile thumb taps frequently missed the button and landed on the row's `openDetail` click handler instead, presenting as "tap does nothing" since the detail panel opening visually replaced the row.
+
+- `touch-action: manipulation` added to `.checkbox-custom` to kill iOS Safari's 300ms double-tap-zoom delay so single taps register immediately.
+- Expanded the checkbox wrapper hit area in [TaskItem.vue](resources/js/components/tasks/TaskItem.vue) to 40×40 via `-m-2 p-2` with the toggle handler attached, so taps in the padding region also fire the toggle. The inner button keeps its own click-stop handler for direct taps.
+
+GitHub housekeeping: closed [#219](https://github.com/gregqualls/kinhold/issues/219), [#223](https://github.com/gregqualls/kinhold/issues/223), [#224](https://github.com/gregqualls/kinhold/issues/224) -- all functionally shipped pre-cutover but never closed. Reorganized post-launch bugs and ops issues into Phase B, moved inclusivity/i18n features ([#241](https://github.com/gregqualls/kinhold/issues/241), [#242](https://github.com/gregqualls/kinhold/issues/242), [#244](https://github.com/gregqualls/kinhold/issues/244)) to Phase D, parked [#229](https://github.com/gregqualls/kinhold/issues/229) (BYOK multi-provider) in Phase E.
+
 ---
 
 ## 2026-05-09 — v1.9.0 production cutover ([#286](https://github.com/gregqualls/kinhold/pull/286)–[#289](https://github.com/gregqualls/kinhold/pull/289))
