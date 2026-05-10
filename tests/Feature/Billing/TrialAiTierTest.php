@@ -103,7 +103,7 @@ class TrialAiTierTest extends TestCase
 
         return $this->call(
             'POST',
-            '/api/v1/stripe/webhook',
+            '/stripe/webhook',
             [],
             [],
             [],
