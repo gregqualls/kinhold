@@ -5,19 +5,20 @@
 #
 # Quick start:
 #   cp .env.docker-simple .env
-#   docker compose -f docker-compose.simple.yml up -d --build
+#   docker compose -f docker-compose.simple.yml up -d
 #   docker compose -f docker-compose.simple.yml exec app php artisan db:seed
 #   Open http://localhost:8000
 #
 # Or use the setup script: ./setup-simple.sh
+#
+# For home servers (Unraid, Portainer, TrueNAS, CasaOS, etc.) without
+# a local copy of the source, use docker-compose.homeserver.yml instead.
 
 name: kinhold
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: gregqualls/kinhold:latest
     ports:
       - "8000:8000"
     env_file:

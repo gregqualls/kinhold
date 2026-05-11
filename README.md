@@ -48,7 +48,7 @@ Turn chores into a game your kids actually want to play.
 - **Points** — Earn points by completing tasks. Parents can give kudos (+1 pt) or deduct points. Ledger-based architecture — every point is traceable, no balance mutations.
 - **Leaderboard** — Family rankings over configurable periods (daily/weekly/monthly). Resets each period without touching point banks.
 - **Rewards Store** — Parents create prizes with point costs (Sweets = 10 pts, Movie Pick = 40 pts). Kids purchase instantly.
-- **Badges** — Steam-style achievements with hexagonal icons. 29 default badges auto-created for every family. Auto-triggered by milestones (first task completed, 7-day streak, 1000 points earned) or manually awarded by parents. Hidden badges show as "???" until earned.
+- **Badges** — Steam-style achievements with hexagonal icons. 27 default badges auto-created for every family. Auto-triggered by milestones (first task completed, 7-day streak, 1000 points earned) or manually awarded by parents. Hidden badges show as "???" until earned.
 - **Activity Feed** — Family-wide feed showing task completions, kudos, purchases, and badge unlocks.
 
 ### Quality of Life
@@ -68,14 +68,14 @@ Turn chores into a game your kids actually want to play.
 |-------|-----------|
 | Backend | Laravel 11, PHP 8.2+ |
 | Frontend | Vue 3 (Composition API, `<script setup>`) |
-| State | Pinia (8 stores) |
+| State | Pinia (16 stores) |
 | Styling | Tailwind CSS |
 | Database | PostgreSQL 16 (production) or SQLite (simple setup), UUIDs |
 | Cache/Queue | Redis 7 |
 | Auth | Laravel Sanctum + Google OAuth via Socialite |
 | AI | Anthropic Claude API (multi-provider ready) |
 | MCP Server | Laravel-native (PHP, 7 grouped tools) |
-| Build | Vite 5 |
+| Build | Vite 6 |
 | Hosting | [Upsun](https://upsun.com) |
 
 ## Quick Start
@@ -92,11 +92,31 @@ That's it. Open [http://localhost:8000](http://localhost:8000) and log in with `
 
 This runs Kinhold with SQLite in a single container — no PostgreSQL or Redis needed. Great for trying it out or running for a small family. To upgrade to the full production stack (PostgreSQL + Redis), see Option 2 below.
 
+### Home Server (Unraid, Portainer, TrueNAS, Synology, CasaOS, etc.)
+
+No `git clone` or local build required. Pull the pre-built image directly from Docker Hub:
+
+```bash
+docker pull gregqualls/kinhold:latest
+```
+
+Then use the self-contained compose file from the repo:
+
+```bash
+# Download the compose file (no other source files needed)
+curl -O https://raw.githubusercontent.com/gregqualls/kinhold/main/docker-compose.homeserver.yml
+docker compose -f docker-compose.homeserver.yml up -d
+```
+
+Or paste the contents of [`docker-compose.homeserver.yml`](docker-compose.homeserver.yml) directly into your home server platform's "custom app" / "stack" / "compose" UI.
+
+Open [http://your-server-ip:8000](http://your-server-ip:8000) and register your family. `APP_KEY` generates automatically on first boot. Data persists in named Docker volumes.
+
 ### Option 1: Native (macOS — Recommended)
 
 ```bash
 # Install dependencies
-brew install php@8.3 composer postgresql@16 redis node
+brew install php@8.4 composer postgresql@16 redis node
 brew services start postgresql@16
 brew services start redis
 
@@ -151,6 +171,7 @@ Copy `.env.example` to `.env` and configure:
 | `REDIS_*` | Redis connection |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth + Calendar |
 | `ANTHROPIC_API_KEY` | AI chat (optional). Self-hosters bring their own Anthropic key; Kinhold supports BYOK out of the box. |
+| `SELF_HOSTED` | Set to `true` on self-hosted instances. Disables Stripe billing and hides the hosted-service pricing UI. |
 
 ### Google Calendar + OAuth
 
@@ -224,18 +245,18 @@ kinhold/
 ├── app/
 │   ├── Console/Commands/       # Artisan commands (recurring tasks, badge seeding)
 │   ├── Enums/                  # FamilyRole, TaskPriority, PointTransactionType, BadgeTriggerType
-│   ├── Http/Controllers/Api/   # 16 REST controllers
+│   ├── Http/Controllers/Api/   # 23 REST controllers
 │   ├── Mcp/                    # Laravel-native MCP server
 │   │   ├── Servers/            # MCP server registration
-│   │   └── Tools/              # 20 MCP tool classes
-│   ├── Models/                 # 17 Eloquent models
+│   │   └── Tools/              # 7 MCP tool classes
+│   ├── Models/                 # 38 Eloquent models
 │   ├── Policies/               # Authorization policies
 │   └── Services/               # Business logic (Points, Badges, Calendar, Vault, Chat)
-├── database/migrations/        # 30 migrations
+├── database/migrations/        # 78 migrations
 ├── resources/js/
 │   ├── components/             # Vue components (layout, common, tasks, vault, points, badges, etc.)
-│   ├── views/                  # 19 page views across 10 modules
-│   ├── stores/                 # 8 Pinia stores
+│   ├── views/                  # Page views across 12 modules (auth, tasks, vault, calendar, chat, food, points, badges, dashboard, settings, onboarding, design-system)
+│   ├── stores/                 # 16 Pinia stores
 │   ├── composables/            # Vue composables (notifications, dark mode, themes, colors)
 │   └── router/                 # Vue Router with auth guards
 ├── .upsun/                     # Production deployment config
@@ -255,7 +276,7 @@ Kinhold is designed to be self-hosted. See **[SELF-HOSTING.md](SELF-HOSTING.md)*
 **Quick version:**
 
 1. Fork this repo on GitHub
-2. Run `./setup-simple.sh` for a single-container SQLite setup, or use `docker compose up` for the full PostgreSQL + Redis stack
+2. Run `./setup-simple.sh` for a single-container SQLite setup, use `docker-compose.homeserver.yml` for a home server install without cloning, or use `docker compose up` for the full PostgreSQL + Redis stack
 3. Set your environment variables (Google OAuth, Anthropic key are optional)
 4. To pull upstream updates: `git remote add upstream https://github.com/gregqualls/kinhold.git && git pull upstream main`
 
