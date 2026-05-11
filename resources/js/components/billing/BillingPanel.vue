@@ -131,7 +131,7 @@
     </div>
 
     <div
-      v-else-if="!billing.lastError && hasFetched && !billing.isSubscribed"
+      v-else-if="!billing.lastError && hasFetched && !billing.isSubscribed && !billing.isSyncing"
       class="p-4 bg-surface-sunken rounded-lg"
     >
       <p class="text-sm font-semibold text-ink-primary">AI Assistant</p>
@@ -143,9 +143,10 @@
     <!-- Action buttons -->
     <div class="flex flex-wrap gap-2">
       <!-- No active subscription: trial-eligible families see a free-trial CTA;
-           returning families re-subscribe at the regular price. -->
+           returning families re-subscribe at the regular price. Hidden while
+           the post-checkout webhook sync is in flight to avoid a false CTA. -->
       <BaseButton
-        v-if="!billing.isSubscribed"
+        v-if="!billing.isSubscribed && !billing.isSyncing"
         variant="primary"
         :loading="billing.loading"
         @click="onCheckout"
@@ -295,6 +296,7 @@ function formatBytes(bytes) {
 onMounted(async () => {
   try {
     await billing.fetch()
+    if (billing.isSyncing) billing.pollUntilSynced()
   } finally {
     hasFetched.value = true
   }
@@ -307,12 +309,14 @@ const formattedPrice = computed(() => {
 })
 
 const planLabel = computed(() => {
+  if (billing.isSyncing) return 'Setting up your subscription...'
   if (billing.isSubscribed) return 'Base plan'
   if (billing.summary.trial_eligible) return 'Start your free trial'
   return 'No active subscription'
 })
 
 const planDescription = computed(() => {
+  if (billing.isSyncing) return 'Your subscription is being confirmed. This usually takes a few seconds.'
   if (billing.isSubscribed) {
     return 'Includes hosting, calendar, tasks, vault, and 5 GB of storage.'
   }

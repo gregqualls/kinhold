@@ -206,7 +206,13 @@ class BillingService
 
         $paywallReason = $this->paywallReason($family);
 
+        // stripe_id set but no subscription row = webhook hasn't landed yet.
+        // Surface this so the SPA can show a "syncing" state instead of the
+        // alarming "Your trial has ended" fallback copy.
+        $syncing = $family->hasStripeId() && $subscription === null;
+
         return [
+            'syncing' => $syncing,
             'plan' => $this->resolveCurrentPlan($family),
             'status' => $subscription?->stripe_status,
             'on_trial' => $subscription?->onTrial() ?? false,
