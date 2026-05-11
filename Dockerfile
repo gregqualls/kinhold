@@ -28,7 +28,6 @@ RUN apk add --no-cache \
     libzip \
     icu-libs \
     sqlite-libs \
-    supervisor \
     curl
 
 # Build-time deps grouped in a virtual package so they can be removed cleanly
