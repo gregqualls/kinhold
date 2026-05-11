@@ -76,13 +76,16 @@ COPY --from=node /app/public/build ./public/build
 # The real key is generated at runtime by the entrypoint and persisted to the data volume.
 ENV APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
 
+# Create directories before composer install so bootstrap/cache exists when
+# php artisan package:discover runs as a post-autoload-dump script.
+RUN mkdir -p storage/app storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
 # Install composer dependencies
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
-# Create necessary directories
-RUN mkdir -p storage/app storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
-    && chmod -R 775 storage bootstrap/cache \
-    && chown -R www-data:www-data /app
+# Fix ownership after all files are in place
+RUN chown -R www-data:www-data /app
 
 # Expose PHP-FPM port
 EXPOSE 9000
