@@ -19,6 +19,7 @@ const DEFAULT_AI_TIER = () => ({
 })
 
 const DEFAULT_SUMMARY = () => ({
+  syncing: false,
   plan: 'none',
   status: null,
   on_trial: false,
@@ -39,6 +40,7 @@ export const useBillingStore = defineStore('billing', () => {
   const loading = ref(false)
   const lastError = ref('')
 
+  const isSyncing = computed(() => !!summary.value.syncing)
   const isSubscribed = computed(() => summary.value.plan === 'base' && !!summary.value.status)
   const isOnTrial = computed(() => !!summary.value.on_trial)
   const isOnGracePeriod = computed(() => !!summary.value.on_grace_period)
@@ -65,6 +67,14 @@ export const useBillingStore = defineStore('billing', () => {
       throw e
     } finally {
       loading.value = false
+    }
+  }
+
+  async function pollUntilSynced(maxAttempts = 10, intervalMs = 3000) {
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise(resolve => setTimeout(resolve, intervalMs))
+      await fetch()
+      if (!summary.value.syncing) break
     }
   }
 
@@ -147,11 +157,13 @@ export const useBillingStore = defineStore('billing', () => {
     summary,
     loading,
     lastError,
+    isSyncing,
     isSubscribed,
     isOnTrial,
     isOnGracePeriod,
     isCancelled,
     fetch,
+    pollUntilSynced,
     startCheckout,
     openPortal,
     cancel,
