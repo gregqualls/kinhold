@@ -1,0 +1,101 @@
+# Kinhold — Home Server Install
+#
+# Designed for Unraid, Portainer, TrueNAS, Synology, CasaOS, and any
+# Docker host where you don't have a local copy of the source code.
+#
+# No git clone or local build required. The pre-built image is pulled
+# directly from Docker Hub.
+#
+# Quick install:
+#   docker compose -f docker-compose.homeserver.yml up -d
+#   Open http://your-server-ip:8000
+#
+# For platforms with a "paste compose" or "custom app" UI, copy everything
+# below the dashed line and paste it in.
+#
+# APP_KEY is generated automatically on first boot and persisted to the
+# kinhold-data volume. Do not set it manually.
+#
+# To load demo accounts on first run:
+#   docker compose -f docker-compose.homeserver.yml exec app php artisan db:seed
+#
+# -----------------------------------------------------------------------
+
+name: kinhold
+
+services:
+  app:
+    image: gregqualls/kinhold:latest
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: Kinhold
+      APP_ENV: production
+      APP_DEBUG: "false"
+      # Change this to your server's hostname or IP for remote access.
+      # Example: http://192.168.1.100:8000 or https://kinhold.yourdomain.com
+      APP_URL: http://localhost:8000
+
+      LOG_CHANNEL: single
+      LOG_LEVEL: warning
+
+      # Database — SQLite, stored in the kinhold-data volume
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /data/kinhold.sqlite
+
+      # Cache and queue — file-based, no Redis needed
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: database
+      SESSION_LIFETIME: 120
+
+      # Self-hosted mode — disables Stripe billing and marketing UI
+      SELF_HOSTED: "true"
+
+      # -----------------------------------------------------------------------
+      # Optional integrations — uncomment and fill in values to enable.
+      # -----------------------------------------------------------------------
+
+      # Google OAuth + Calendar sync (same credentials for both)
+      # GOOGLE_CLIENT_ID: your-client-id
+      # GOOGLE_CLIENT_SECRET: your-client-secret
+      # GOOGLE_REDIRECT_URI: http://your-server-ip:8000/auth/google/callback
+      # GOOGLE_CALENDAR_REDIRECT_URI: http://your-server-ip:8000/api/v1/calendar/callback
+
+      # AI chat assistant (get a key at console.anthropic.com)
+      # ANTHROPIC_API_KEY: sk-ant-...
+
+      # Email notifications (SMTP — any provider works)
+      # MAIL_MAILER: smtp
+      # MAIL_HOST: smtp.example.com
+      # MAIL_PORT: 587
+      # MAIL_USERNAME: your-username
+      # MAIL_PASSWORD: your-password
+      # MAIL_ENCRYPTION: tls
+      # MAIL_FROM_ADDRESS: kinhold@yourdomain.com
+      # MAIL_FROM_NAME: Kinhold
+
+      # Web push notifications (generate with: docker compose exec app php artisan webpush:vapid)
+      # VAPID_PUBLIC_KEY:
+      # VAPID_PRIVATE_KEY:
+      # VAPID_SUBJECT: mailto:admin@yourdomain.com
+
+    volumes:
+      # Persists the SQLite database and auto-generated APP_KEY across restarts
+      - kinhold-data:/data
+      # Persists vault document uploads
+      - kinhold-storage:/app/storage/app
+    command: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  kinhold-data:
+    driver: local
+  kinhold-storage:
+    driver: local
