@@ -72,6 +72,10 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Copy built frontend assets from node stage
 COPY --from=node /app/public/build ./public/build
 
+# Set a dummy APP_KEY so php artisan package:discover can run during composer install.
+# The real key is generated at runtime by the entrypoint and persisted to the data volume.
+ENV APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+
 # Install composer dependencies
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
