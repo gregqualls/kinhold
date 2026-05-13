@@ -9,7 +9,7 @@ return [
     | Default Log Channel
     |--------------------------------------------------------------------------
     */
-    'default' => env('LOG_CHANNEL', 'stack'),
+    'default' => in_array(env('LOG_CHANNEL'), [null, '', 'null'], true) ? 'stack' : env('LOG_CHANNEL'),
 
     /*
     |--------------------------------------------------------------------------
