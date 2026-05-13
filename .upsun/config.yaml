@@ -3,10 +3,14 @@ applications:
     source:
       root: "/"
     type: "php:8.4"
+    container_profile: BALANCED
     runtime:
       extensions:
         - redis
         - pdo_pgsql
+      sizing_hints:
+        request_memory: 35
+        reserved_memory: 70
     relationships:
       database: "db:postgresql"
       redis: "cache:redis"

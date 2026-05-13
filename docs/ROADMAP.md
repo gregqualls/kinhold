@@ -160,6 +160,7 @@ These features are live and working:
 > Ideas captured from competitive analysis and brainstorming. Not planned yet.
 
 - Google OAuth + invite codes — `GoogleAuthController::findOrCreateUser` creates a new family for every first-time OAuth user, so on a self-hosted instance a spouse signing in via Google ends up in their own family rather than joining the existing one. Should accept an invite-code query param. Follow-up from #138.
+- Notification PII audit (follow-up from #305): `WeeklyDigestNotification::__construct(public array $digest)` and possibly others take raw arrays instead of model keys. With `failed_jobs` restored, that data lands in `failed_jobs.payload` on dispatch (bounded to 72h by the new prune schedule, but the structural fix is to refactor to model-only constructor args so SerializesModels handles the payload).
 - Plugin/module system for community extensions (under investigation)
 - Staging environment strategy (discussion pending)
 - Vault overhaul (explore Obsidian-like or Standard Notes integration)

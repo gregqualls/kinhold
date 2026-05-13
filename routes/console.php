@@ -24,3 +24,9 @@ Schedule::command('kinhold:tally-storage')->dailyAt('02:00');
 
 // Grace period sweep — day-3 reminders + day-7 downgrades (#221 / 70-H)
 Schedule::command('kinhold:enforce-grace-period')->dailyAt('03:00');
+
+// Bound failed_jobs retention. The payload column can contain serialised job
+// args (e.g. WeeklyDigestNotification's aggregated $digest array), so cap the
+// exposure window for any PII that lands there via an exception or a job that
+// constructs without SerializesModels.
+Schedule::command('queue:prune-failed --hours=72')->dailyAt('04:00');
