@@ -106,7 +106,7 @@ winget install --id OpenJS.NodeJS.LTS
 
 #### Line endings
 
-Until [#173](https://github.com/gregqualls/kinhold/issues/173) lands, the default Windows Git config (`core.autocrlf=true`) converts files to CRLF on checkout, and Pint flags every PHP file in the repo as needing a `line_ending` fix. Workaround: set `git config core.autocrlf input` **before** cloning (or run `git rm --cached -r . && git reset --hard` after switching the setting on an existing checkout). CI runs on Linux and is unaffected.
+The repo ships a `.gitattributes` that pins all text files to LF, so a fresh clone gets the right endings regardless of platform. If you already have a checkout from before that file landed (PR #228), run `git config core.autocrlf input` then `git rm --cached -r . && git reset --hard` once to renormalize. After that Pint runs clean on Windows.
 
 #### Pre-commit hook
 
