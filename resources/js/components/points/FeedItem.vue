@@ -16,7 +16,38 @@
         {{ formatTime(item.created_at) }}
       </p>
     </div>
-    <div class="flex flex-col items-end gap-1 flex-shrink-0">
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <button
+        v-if="canStack"
+        type="button"
+        class="inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full bg-accent-lavender-soft text-accent-lavender-bold hover:bg-accent-lavender-bold hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        :disabled="isSubmitting"
+        :aria-label="stackAriaLabel"
+        @click="handleStack"
+      >
+        <HandThumbUpIcon class="w-4 h-4" />
+        <span v-if="item.stacks_count" class="text-xs font-semibold">
+          {{ item.stacks_count }}
+        </span>
+      </button>
+      <span
+        v-else-if="showStackedBadge"
+        class="inline-flex items-center gap-1 min-h-[32px] px-2 rounded-full bg-surface-sunken text-ink-tertiary"
+        :aria-label="`You +1'd this kudo${item.stacks_count > 1 ? `, ${item.stacks_count} total` : ''}`"
+      >
+        <HandThumbUpSolidIcon class="w-4 h-4" />
+        <span v-if="item.stacks_count" class="text-xs font-semibold">
+          {{ item.stacks_count }}
+        </span>
+      </span>
+      <span
+        v-else-if="showStackCountOnly"
+        class="inline-flex items-center gap-1 min-h-[32px] px-2 rounded-full bg-surface-sunken text-ink-tertiary"
+        :aria-label="`${item.stacks_count} other ${item.stacks_count === 1 ? 'member' : 'members'} +1'd this`"
+      >
+        <HandThumbUpIcon class="w-4 h-4" />
+        <span class="text-xs font-semibold">{{ item.stacks_count }}</span>
+      </span>
       <span
         class="text-sm font-bold font-mono px-2 py-0.5 rounded-full"
         :class="
@@ -27,35 +58,14 @@
       >
         {{ item.points > 0 ? "+" : "" }}{{ item.points }}
       </span>
-      <button
-        v-if="canStack"
-        type="button"
-        class="text-xs font-semibold px-2 py-1 rounded-full bg-accent-peach-soft text-accent-peach-bold hover:bg-accent-peach-bold hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        :disabled="isSubmitting"
-        @click="handleStack"
-      >
-        +1
-        <span v-if="item.stacks_count" class="ml-1 opacity-75">({{ item.stacks_count }})</span>
-      </button>
-      <span
-        v-else-if="showStackedBadge"
-        class="text-xs font-semibold px-2 py-1 rounded-full bg-surface-sunken text-ink-tertiary"
-      >
-        +1'd
-        <span v-if="item.stacks_count" class="ml-1 opacity-75">({{ item.stacks_count }})</span>
-      </span>
-      <span
-        v-else-if="showStackCountOnly"
-        class="text-xs font-semibold px-2 py-1 rounded-full bg-surface-sunken text-ink-tertiary"
-      >
-        +{{ item.stacks_count }}
-      </span>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
+import { HandThumbUpIcon } from "@heroicons/vue/24/outline";
+import { HandThumbUpIcon as HandThumbUpSolidIcon } from "@heroicons/vue/24/solid";
 import UserAvatar from "@/components/common/UserAvatar.vue";
 import { useAuthStore } from "@/stores/auth";
 import { usePointsStore } from "@/stores/points";
@@ -103,6 +113,17 @@ const showStackCountOnly = computed(
     !showStackedBadge.value &&
     props.item.stacks_count > 0,
 );
+
+const stackAriaLabel = computed(() => {
+  const awardedBy =
+    props.item.awarded_by_user?.name ||
+    props.item.awarded_by?.name ||
+    "this kudo";
+  const base = `+1 ${awardedBy}'s kudos`;
+  return props.item.stacks_count
+    ? `${base} (${props.item.stacks_count} so far)`
+    : base;
+});
 
 const handleStack = async () => {
   if (isSubmitting.value) return;
