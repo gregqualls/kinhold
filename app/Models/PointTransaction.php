@@ -8,8 +8,13 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property string|null $stacked_from_transaction_id
+ * @property bool $stacked_by_me
+ */
 class PointTransaction extends Model
 {
     use HasFactory, HasUuids;
@@ -23,6 +28,7 @@ class PointTransaction extends Model
         'source_type',
         'source_id',
         'awarded_by',
+        'stacked_from_transaction_id',
     ];
 
     protected function casts(): array
@@ -51,6 +57,16 @@ class PointTransaction extends Model
     public function source(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function stackedFrom(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'stacked_from_transaction_id');
+    }
+
+    public function stacks(): HasMany
+    {
+        return $this->hasMany(self::class, 'stacked_from_transaction_id');
     }
 
     public function scopeEarnings(Builder $query): Builder

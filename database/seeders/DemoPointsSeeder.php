@@ -56,10 +56,11 @@ class DemoPointsSeeder extends Seeder
             ['from' => $this->sarah, 'to' => $this->mike, 'reason' => 'Thanks for handling carpool today',        'days_ago' => $thisWeek0],
         ];
 
-        foreach ($kudosDefs as $k) {
+        $createdKudos = [];
+        foreach ($kudosDefs as $i => $k) {
             $createdAt = $now->copy()->subDays($k['days_ago'])->setHour(rand(17, 21));
 
-            PointTransaction::create([
+            $createdKudos[$i] = PointTransaction::create([
                 'family_id' => $this->familyId(),
                 'user_id' => $k['to']->id,
                 'type' => PointTransactionType::Kudos->value,
@@ -68,6 +69,46 @@ class DemoPointsSeeder extends Seeder
                 'awarded_by' => $k['from']->id,
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
+            ]);
+        }
+
+        // ─────────────────────────────────────────────
+        //  STACKED KUDOS — family members "+1"ing each other's kudos so
+        //  the demo dashboard shows the new stack badges in action.
+        // ─────────────────────────────────────────────
+
+        $stackDefs = [
+            // Sarah piggybacks on Mike's "SAT prep" kudo to Emma (index 0)
+            ['source' => 0, 'stacker' => $this->sarah, 'hours_after' => 2],
+            // Mike piggybacks on Sarah's "cleaned without being asked" kudo to Jake (index 1)
+            ['source' => 1, 'stacker' => $this->mike, 'hours_after' => 3],
+            // Emma also piggybacks on Sarah's kudo to Jake
+            ['source' => 1, 'stacker' => $this->emma, 'hours_after' => 5],
+            // Mike piggybacks on this-week kudo to Lily (index = count - 4) so the feed shows a current stack
+            ['source' => count($kudosDefs) - 4, 'stacker' => $this->mike, 'hours_after' => 1],
+        ];
+
+        foreach ($stackDefs as $s) {
+            $source = $createdKudos[$s['source']] ?? null;
+            if (! $source) {
+                continue;
+            }
+            // Don't let a stacker accidentally +1 their own kudo or one they received
+            if ($source->awarded_by === $s['stacker']->id || $source->user_id === $s['stacker']->id) {
+                continue;
+            }
+            $stackedAt = $source->created_at->copy()->addHours($s['hours_after']);
+
+            PointTransaction::create([
+                'family_id' => $this->familyId(),
+                'user_id' => $source->user_id,
+                'type' => PointTransactionType::Kudos->value,
+                'points' => 1,
+                'description' => $source->description,
+                'awarded_by' => $s['stacker']->id,
+                'stacked_from_transaction_id' => $source->id,
+                'created_at' => $stackedAt,
+                'updated_at' => $stackedAt,
             ]);
         }
 
