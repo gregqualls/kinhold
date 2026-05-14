@@ -34,6 +34,7 @@ Points view:
 
 Points give/deduct:
   points_kudos (user_id*, reason*) — Any member can give +1.
+  points_stack_kudos (transaction_id*) — "+1" onto another member's kudo. Copies recipient + reason from the source kudo. Cannot stack on your own kudos or kudos given to you.
   points_deduct (user_id*, points*, reason*) — Parent only.
 
 Point requests (children → parents):
@@ -65,7 +66,7 @@ class KinholdPoints extends Tool
         return [
             'action' => $schema->string()->required()->enum([
                 'points_bank', 'points_leaderboard', 'points_feed',
-                'points_kudos', 'points_deduct',
+                'points_kudos', 'points_stack_kudos', 'points_deduct',
                 'request_list', 'request_approve', 'request_deny',
                 'reward_list', 'reward_create', 'reward_update', 'reward_delete',
                 'reward_purchase', 'reward_bid', 'reward_close_auction', 'reward_cancel_auction',
@@ -77,6 +78,7 @@ class KinholdPoints extends Tool
             'points' => $schema->integer()->description('Points amount (required for points_deduct)'),
             'reason' => $schema->string()->description('Reason for kudos or deduction (required for points_kudos and points_deduct)'),
             'request_id' => $schema->string()->description('PointRequest UUID (required for request_approve/request_deny)'),
+            'transaction_id' => $schema->string()->description('PointTransaction UUID of the kudos to +1 (required for points_stack_kudos)'),
             'status' => $schema->string()->enum(['pending', 'approved', 'denied'])->description('Filter for request_list'),
             'reward_id' => $schema->string()->description('Reward UUID (required for reward_*/purchase actions on a specific reward)'),
             'bid_amount' => $schema->integer()->description('Bid amount in points (required for reward_bid)'),
@@ -105,6 +107,7 @@ class KinholdPoints extends Tool
             'points_leaderboard' => $this->pointsLeaderboard($request),
             'points_feed' => $this->pointsFeed($request),
             'points_kudos' => $this->pointsKudos($request),
+            'points_stack_kudos' => $this->pointsStackKudos($request),
             'points_deduct' => $this->pointsDeduct($request),
             'request_list' => $this->requestList($request),
             'request_approve' => $this->requestApprove($request),
@@ -193,6 +196,65 @@ class KinholdPoints extends Tool
         return Response::json([
             'message' => "Kudos given to {$target->name}! +1 point.",
             'transaction_id' => $transaction->id,
+        ]);
+    }
+
+    private function pointsStackKudos(Request $request): Response
+    {
+        $transactionId = $request->get('transaction_id');
+        if (! $transactionId) {
+            return Response::error('transaction_id is required for points_stack_kudos.');
+        }
+
+        $user = $this->user();
+        $family = $this->family();
+
+        $source = PointTransaction::where('family_id', $family->id)->find($transactionId);
+        if (! $source) {
+            return Response::error('Kudos transaction not found in this family.');
+        }
+
+        // @phpstan-ignore-next-line ternary.alwaysTrue — Larastan reads $type as string, but cast may return enum at runtime
+        $typeValue = is_string($source->type) ? $source->type : $source->type->value;
+        if ($typeValue !== PointTransactionType::Kudos->value) {
+            return Response::error('You can only stack onto a kudos.');
+        }
+
+        if ($source->stacked_from_transaction_id !== null) {
+            return Response::error('Stack onto the original kudo, not another stack.');
+        }
+
+        $userId = (string) $user->id;
+
+        if ((string) $source->user_id === $userId) {
+            return Response::error("You can't stack onto kudos given to you.");
+        }
+
+        if ((string) $source->awarded_by === $userId) {
+            return Response::error('You already gave this kudo.');
+        }
+
+        $alreadyStacked = PointTransaction::where('stacked_from_transaction_id', $source->id)
+            ->where('awarded_by', $user->id)
+            ->exists();
+
+        if ($alreadyStacked) {
+            return Response::error("You've already +1'd this kudo.");
+        }
+
+        $target = $family->members()->findOrFail($source->user_id);
+        $pointsService = app(PointsService::class);
+
+        try {
+            $stack = $pointsService->giveKudos($user, $target, $family, $source->description, $source);
+        } catch (\Exception $e) {
+            return Response::error($e->getMessage());
+        }
+
+        return Response::json([
+            'message' => "+1 kudos to {$target->name}.",
+            'transaction_id' => $stack->id,
+            'stacked_from_transaction_id' => $source->id,
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\PointTransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\PointTransaction;
 use App\Services\BadgeService;
@@ -46,15 +47,34 @@ class PointsController extends Controller
      */
     public function feed(Request $request): JsonResponse
     {
-        $family = $request->user()->currentFamily()->firstOrFail();
+        $user = $request->user();
+        $family = $user->currentFamily()->firstOrFail();
 
         $transactions = PointTransaction::where('family_id', $family->id)
             ->with(['user:id,name,avatar', 'awardedBy:id,name,avatar'])
+            ->withCount('stacks')
             ->orderByDesc('created_at')
             ->paginate(30);
 
+        // Mark which kudos the current user has already stacked (one query per page).
+        $kudosIds = collect($transactions->items())
+            ->where('type', PointTransactionType::Kudos)
+            ->whereNull('stacked_from_transaction_id')
+            ->pluck('id');
+
+        $stackedByMe = PointTransaction::whereIn('stacked_from_transaction_id', $kudosIds)
+            ->where('awarded_by', $user->id)
+            ->pluck('stacked_from_transaction_id')
+            ->flip();
+
+        $items = collect($transactions->items())->map(function ($t) use ($stackedByMe) {
+            $t->stacked_by_me = isset($stackedByMe[$t->id]);
+
+            return $t;
+        });
+
         return response()->json([
-            'feed' => $transactions->items(),
+            'feed' => $items,
             'pagination' => [
                 'current_page' => $transactions->currentPage(),
                 'last_page' => $transactions->lastPage(),
@@ -95,6 +115,76 @@ class PointsController extends Controller
         $response = [
             'transaction' => $transaction,
             'message' => "Gave kudos to {$to->name}",
+        ];
+
+        if (! empty($newBadges)) {
+            $response['badges_earned'] = collect($newBadges)->map(fn ($b) => [
+                'id' => $b->id,
+                'name' => $b->name,
+                'description' => $b->description,
+                'icon' => $b->icon,
+                'color' => $b->color,
+                'user_id' => $to->id,
+            ]);
+        }
+
+        return response()->json($response, 201);
+    }
+
+    /**
+     * Stack a "+1" onto an existing kudos transaction.
+     * Re-gives the same kudo (same recipient, same reason) on behalf of the caller.
+     */
+    public function stackKudos(Request $request, PointTransaction $transaction): JsonResponse
+    {
+        $from = $request->user();
+        $family = $from->currentFamily()->firstOrFail();
+
+        if ($transaction->family_id !== $family->id) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
+        // @phpstan-ignore-next-line ternary.alwaysTrue — Larastan reads $type as string, but cast may return enum at runtime
+        $typeValue = is_string($transaction->type) ? $transaction->type : $transaction->type->value;
+        if ($typeValue !== PointTransactionType::Kudos->value) {
+            return response()->json(['message' => 'You can only stack onto a kudos.'], 422);
+        }
+
+        if ($transaction->stacked_from_transaction_id !== null) {
+            return response()->json(['message' => 'Stack onto the original kudo, not another stack.'], 422);
+        }
+
+        $fromId = (string) $from->id;
+
+        if ((string) $transaction->user_id === $fromId) {
+            return response()->json(['message' => "You can't stack onto kudos given to you."], 422);
+        }
+
+        if ((string) $transaction->awarded_by === $fromId) {
+            return response()->json(['message' => 'You already gave this kudo.'], 422);
+        }
+
+        $alreadyStacked = PointTransaction::where('stacked_from_transaction_id', $transaction->id)
+            ->where('awarded_by', $from->id)
+            ->exists();
+
+        if ($alreadyStacked) {
+            return response()->json(['message' => "You've already +1'd this kudo."], 422);
+        }
+
+        $to = $family->members()->findOrFail($transaction->user_id);
+
+        try {
+            $stack = $this->pointsService->giveKudos($from, $to, $family, $transaction->description, $transaction);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        $newBadges = $this->badgeService->checkAndAwardBadges($to);
+
+        $response = [
+            'transaction' => $stack,
+            'message' => "+1 kudos to {$to->name}",
         ];
 
         if (! empty($newBadges)) {

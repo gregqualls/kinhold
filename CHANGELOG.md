@@ -2,6 +2,25 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-05-14 — Stack onto someone else's kudo ([#125](https://github.com/gregqualls/kinhold/issues/125))
+
+Members can now "+1" onto an existing kudo from the points feed instead of having to type their own. Each "+1" is a real Kudos transaction (still +1 point to the recipient), but it's linked to the source kudo via a new `stacked_from_transaction_id` column. The feed surfaces the stack count next to the original and a "+1'd" badge once you've stacked it yourself.
+
+Backend:
+- New migration adds `stacked_from_transaction_id` (nullable FK, indexed) to `point_transactions`.
+- `PointsService::giveKudos` accepts an optional `$stackOnto` source transaction and links the new row.
+- `POST /api/v1/points/kudos/{transaction}/stack` enforces: source must be a kudos in your family, must be an original (not a stack), can't stack onto a kudo you gave or received, can't stack twice on the same kudo. Cross-family hits 404.
+- `GET /api/v1/points/feed` now returns `stacks_count` (via `withCount`) and a per-page `stacked_by_me` flag (one extra query for the current user's stacks against the visible kudos).
+- New `points_stack_kudos (transaction_id*)` action on the `kinhold-points` MCP tool with matching validation.
+
+Frontend:
+- `FeedItem.vue` renders a `+1` button on someone else's original kudos when the current user hasn't already stacked it, a `+1'd` badge when they have, and a quiet `+N` count otherwise. Stacked rows describe themselves as "+1'd a kudo from X".
+- `pointsStore.stackKudos(id)` action wraps the new endpoint and re-fetches feed/bank/leaderboard.
+
+Tests: `KudosStackingTest` covers stacking, the four blocks (self-received, self-given, double-stack, stack-of-stack), the non-kudos guard, cross-family 404, and the feed's `stacks_count` + `stacked_by_me` shape. 8 tests, 22 assertions.
+
+Demo seeder seeds a handful of stacked kudos on top of the existing seeded kudos so self-hosters see the badges immediately.
+
 ## 2026-05-10 — Email verification fix + register payload regression test ([#299](https://github.com/gregqualls/kinhold/issues/299), [#294](https://github.com/gregqualls/kinhold/issues/294))
 
 Real users (Greg's wife on iOS Safari PWA) reported that tapping the email verification link did nothing — landed on a 404 inside the app, account never marked verified. Two distinct bugs presenting as one symptom:

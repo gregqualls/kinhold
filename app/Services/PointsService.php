@@ -55,8 +55,9 @@ class PointsService
     /**
      * Give kudos from one user to another (+1 point).
      * If kudos_cost_enabled is on, deduct 1 point from the giver.
+     * If $stackOnto is provided, the new transaction is linked to that source kudo.
      */
-    public function giveKudos(User $from, User $to, Family $family, string $reason): PointTransaction
+    public function giveKudos(User $from, User $to, Family $family, string $reason, ?PointTransaction $stackOnto = null): PointTransaction
     {
         $kudosCostEnabled = $family->settings['kudos_cost_enabled'] ?? false;
 
@@ -83,6 +84,7 @@ class PointsService
             'points' => 1,
             'description' => $reason,
             'awarded_by' => $from->id,
+            'stacked_from_transaction_id' => $stackOnto?->id,
         ]);
 
         // Notify the recipient (skip if giving to self).

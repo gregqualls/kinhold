@@ -171,6 +171,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/leaderboard', [PointsController::class, 'leaderboard']);
                 Route::get('/feed', [PointsController::class, 'feed']);
                 Route::post('/kudos', [PointsController::class, 'kudos']);
+                Route::post('/kudos/{transaction}/stack', [PointsController::class, 'stackKudos']);
                 Route::post('/deduct', [PointsController::class, 'deduct']);
                 Route::get('/requests', [PointRequestController::class, 'index']);
                 Route::post('/request', [PointRequestController::class, 'store']);
