@@ -31,7 +31,6 @@ class DemoCalendarSeeder extends Seeder
             'color' => '#EC4899',
             'recurrence' => 'yearly',
             'featured_scope' => 'family',
-            'is_countdown' => true,
         ]);
 
         FamilyEvent::create([
