@@ -4,7 +4,17 @@
 
 ## 2026-10-23: v1.10.2, Demo family no longer trips the single-family banner ([#331](https://github.com/gregqualls/kinhold/issues/331))
 
-Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count. v1.10.2 also ships the CSRF follow-ups below.
+Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count. v1.10.2 also ships the dependency sweep and CSRF follow-ups below.
+
+## 2026-10-23: Dependency security sweep
+
+Triage of 92 open Dependabot alerts (1 critical, 39 high). Everything with a non-major fix is bumped: Guzzle 7.16, psr7 2.13, league/commonmark 2.10, jmespath 2.9.2, phpseclib 3.0.57, web-token 4.2, flysystem 3.36, symfony/http-foundation 7.4.21 on the PHP side; axios 1.20, DOMPurify 3.4.17, PostCSS 8.5.31, Vite 6.4.5 and the dev-only transitive tooling on the npm side. No app code changes from the bumps.
+
+Most alerts were noise for Kinhold (axios Node-adapter bugs in a browser SPA, build-only tooling, JWT verification we never do). Two were real. Guzzle's noncanonical-host bug could slip past the SSRF guards in recipe import, restaurant import and ICS feeds, which check the host with `parse_url` before Guzzle fetches it; the Guzzle bump closes it. Laravel's `email` rule accepted addresses with embedded CR/LF (GHSA-5vg9-5847-vvmq), reachable from unauthenticated `/register`. Laravel 11 has no fix, so `app/Validation/CrlfSafeValidator.php` backports the 12.60 check through `Validator::resolver()` in `AppServiceProvider`. New `tests/Feature/Auth/EmailCrlfInjectionTest.php` covers the rule and the registration path.
+
+Still open, needing major upgrades: three Laravel advisories (only the CRLF one affects Kinhold, and it is mitigated), dev-only `postcss-selector-parser` (Tailwind 4), and a low KaTeX advisory via Milkdown. Laravel 12 and an SSRF DNS-rebinding fix are captured in the ROADMAP parking lot.
+
+Tests: 448/448 green; `npm run build` green.
 
 ## 2026-10-23: CSRF fix follow-ups
 
