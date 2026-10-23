@@ -2,6 +2,12 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-23: Self-hosted email auto-verify under cached config
+
+`AuthController` decided whether to auto-verify new users (and skip verification resends) with `env('SELF_HOSTED')`. The Docker image runs `config:cache` in `docker/entrypoint.sh`, and with cached config `env()` returns null outside `config/`, so Docker self-hosters were asked to verify an email their instance likely can't send. Both checks now read `config('kinhold.self_hosted')`, which already mirrors the env var. A second bug sat behind the first: the auto-verify used `$user->update(['email_verified_at' => now()])`, but `email_verified_at` isn't in `User::$fillable`, so the write was silently dropped even when the flag was read correctly. It now calls `markEmailAsVerified()`, which keeps the column out of mass assignment. Two new tests in `EmailVerificationTest` cover registration and resend in self-hosted mode, and the Larastan baseline entry that hid the bug is gone.
+
+Tests: 456/456 green; PHPStan clean.
+
 ## 2026-10-23: Laravel 13 upgrade
 
 Laravel 11 lost security support in March 2026 and Laravel 12's ends around February 2027, so Kinhold goes straight from 11.51 to 13.38, following both official upgrade guides. `composer audit` is now clean. The CRLF email-rule backport (`app/Validation/CrlfSafeValidator.php` and its `Validator::resolver()` hook) is gone because stock Laravel ships the fix; `EmailCrlfInjectionTest` still passes against the framework's own rule.
