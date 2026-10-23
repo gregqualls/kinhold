@@ -47,6 +47,20 @@ class PushSubscriptionTest extends TestCase
         $this->assertSame(1, $user->pushSubscriptions()->count());
     }
 
+    public function test_unknown_content_encoding_is_rejected(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+
+        $response = $this->postJson('/api/v1/push/subscriptions', [
+            'endpoint' => 'https://fcm.googleapis.com/fcm/send/endpoint-1',
+            'keys' => ['p256dh' => 'pk', 'auth' => 'auth'],
+            'content_encoding' => 'gzip',
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('content_encoding');
+        $this->assertDatabaseCount('push_subscriptions', 0);
+    }
+
     public function test_re_registering_same_endpoint_updates_keys_in_place(): void
     {
         $user = User::factory()->create();

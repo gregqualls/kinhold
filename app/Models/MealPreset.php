@@ -39,6 +39,8 @@ class MealPreset extends Model
 
     /**
      * MealPreset belongs to a Family.
+     *
+     * @return BelongsTo<Family, $this>
      */
     public function family(): BelongsTo
     {

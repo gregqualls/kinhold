@@ -59,31 +59,49 @@ class Recipe extends Model
         return $this->isShared() ? url('/r/'.$this->share_token) : null;
     }
 
+    /**
+     * @return BelongsTo<Family, $this>
+     */
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * @return HasMany<RecipeIngredient, $this>
+     */
     public function ingredients(): HasMany
     {
         return $this->hasMany(RecipeIngredient::class)->orderBy('sort_order');
     }
 
+    /**
+     * @return HasMany<RecipeCookLog, $this>
+     */
     public function cookLogs(): HasMany
     {
         return $this->hasMany(RecipeCookLog::class)->orderByDesc('cooked_at');
     }
 
+    /**
+     * @return MorphMany<Rating, $this>
+     */
     public function ratings(): MorphMany
     {
         return $this->morphMany(Rating::class, 'rateable');
     }
 
+    /**
+     * @return BelongsToMany<Tag, $this, RecipeTag>
+     */
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'recipe_tag')
@@ -91,6 +109,9 @@ class Recipe extends Model
             ->withTimestamps();
     }
 
+    /**
+     * @return BelongsToMany<Allergen, $this, RecipeAllergen>
+     */
     public function allergens(): BelongsToMany
     {
         return $this->belongsToMany(Allergen::class, 'recipe_allergens')
@@ -99,6 +120,9 @@ class Recipe extends Model
             ->withTimestamps();
     }
 
+    /**
+     * @return HasMany<RecipeImage, $this>
+     */
     public function images(): HasMany
     {
         return $this->hasMany(RecipeImage::class)->orderBy('sort_order')->orderBy('created_at');

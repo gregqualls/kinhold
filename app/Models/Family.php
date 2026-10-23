@@ -52,6 +52,8 @@ class Family extends Model
     /**
      * The user designated as billing owner for this family. Webhook handlers
      * notify this user (not the family at large) about payment lifecycle events.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function billingOwner(): BelongsTo
     {
@@ -116,6 +118,8 @@ class Family extends Model
 
     /**
      * Family has many Users (members).
+     *
+     * @return HasMany<User, $this>
      */
     public function members(): HasMany
     {
@@ -124,6 +128,8 @@ class Family extends Model
 
     /**
      * Family has many Tasks.
+     *
+     * @return HasMany<Task, $this>
      */
     public function tasks(): HasMany
     {
@@ -132,6 +138,8 @@ class Family extends Model
 
     /**
      * Family has many Vault Entries.
+     *
+     * @return HasMany<VaultEntry, $this>
      */
     public function vaultEntries(): HasMany
     {
@@ -140,6 +148,8 @@ class Family extends Model
 
     /**
      * Family has many Vault Categories.
+     *
+     * @return HasMany<VaultCategory, $this>
      */
     public function vaultCategories(): HasMany
     {
@@ -148,6 +158,8 @@ class Family extends Model
 
     /**
      * Family has many point transactions.
+     *
+     * @return HasMany<PointTransaction, $this>
      */
     public function pointTransactions(): HasMany
     {
@@ -156,6 +168,8 @@ class Family extends Model
 
     /**
      * Family has many rewards.
+     *
+     * @return HasMany<Reward, $this>
      */
     public function rewards(): HasMany
     {
@@ -164,6 +178,8 @@ class Family extends Model
 
     /**
      * Family has many badges.
+     *
+     * @return HasMany<Badge, $this>
      */
     public function badges(): HasMany
     {
@@ -172,6 +188,8 @@ class Family extends Model
 
     /**
      * Family has many MealPlans.
+     *
+     * @return HasMany<MealPlan, $this>
      */
     public function mealPlans(): HasMany
     {
@@ -180,6 +198,8 @@ class Family extends Model
 
     /**
      * Family has many MealPresets.
+     *
+     * @return HasMany<MealPreset, $this>
      */
     public function mealPresets(): HasMany
     {
@@ -188,6 +208,8 @@ class Family extends Model
 
     /**
      * Family belongs to many Restaurants (via family_restaurants pivot).
+     *
+     * @return BelongsToMany<Restaurant, $this>
      */
     public function restaurants(): BelongsToMany
     {
@@ -198,6 +220,8 @@ class Family extends Model
 
     /**
      * Denormalized current storage total — see StorageMeteringService (#216).
+     *
+     * @return HasOne<FamilyStorageUsage, $this>
      */
     public function storageUsage(): HasOne
     {

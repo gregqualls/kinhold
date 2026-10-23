@@ -4,7 +4,25 @@
 
 ## 2026-10-23: v1.10.2, Demo family no longer trips the single-family banner ([#331](https://github.com/gregqualls/kinhold/issues/331))
 
-Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count. v1.10.2 also ships the dependency sweep and CSRF follow-ups below.
+Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count. v1.10.2 also ships the Laravel 13 upgrade, dependency sweep and CSRF follow-ups below.
+
+## 2026-10-23: Laravel 13 upgrade
+
+Laravel 11 lost security support in March 2026 and Laravel 12's ends around February 2027, so Kinhold goes straight from 11.51 to 13.38, following both official upgrade guides. `composer audit` is now clean. The CRLF email-rule backport (`app/Validation/CrlfSafeValidator.php` and its `Validator::resolver()` hook) is gone because stock Laravel ships the fix; `EmailCrlfInjectionTest` still passes against the framework's own rule.
+
+Package majors that came with it: `laravel/mcp` 0.6 to 1.1, `laravel-notification-channels/webpush` 10 to 13 (pulls `minishlink/web-push` 11), Larastan 2 to 3 (PHPStan 2). Cashier, Passport, Sanctum, Socialite, Resend, Google API client and sabre/vobject already supported Laravel 13 and stay where they were, which keeps `stripe/stripe-php` (and so the Stripe API version Cashier talks to) unchanged. PHPUnit stays on 11.5.50+. `composer.json` now requires PHP `^8.3` (Laravel 13's floor); the lock still needs 8.4 because of Symfony 8.
+
+App changes the upgrade forced or the guides recommended:
+- The SPA's CSRF middleware now extends `PreventRequestForgery` (Laravel 13's rename). It also accepts writes that carry `Sec-Fetch-Site: same-origin` before checking tokens, so a same-origin tab with a stale token no longer gets a 419. Cross-site writes still need a valid token. Both cases are pinned in `SpaCsrfTokenTest`.
+- `config/cache.php` sets `serializable_classes => false`, so cached values can never unserialize into objects. Kinhold only caches scalars and arrays.
+- Webpush 11 casts `content_encoding` to an enum, so an unknown value would have thrown a 500. `PushSubscriptionController` now validates it against the enum and returns 422.
+- Larastan 3 no longer infers related models from relation bodies, so every relation method in `app/Models` gained `@return Relation<Related, $this>` generics. That keeps the type coverage Larastan 2 had instead of baselining ~250 new errors. The remaining new-rule findings are baselined; one is a real pre-existing bug (`env('SELF_HOSTED')` in `AuthController`), now in the ROADMAP parking lot.
+
+No changes needed for the session cookie name (the framework default resolves to the same `kinhold_session`), cache and Redis prefixes (set explicitly), UUIDv7 primary keys, or the rest of the guide items.
+
+New `tests/Feature/McpServerTest.php` drives the real `/mcp` endpoint (auth rejection, tool listing, family-scoped tool calls); MCP had no coverage before.
+
+Tests: 454/454 green; PHPStan clean; `npm run build` green.
 
 ## 2026-10-23: Dependency security sweep
 

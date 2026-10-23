@@ -41,6 +41,8 @@ class MealPlan extends Model
 
     /**
      * MealPlan belongs to a Family.
+     *
+     * @return BelongsTo<Family, $this>
      */
     public function family(): BelongsTo
     {
@@ -49,6 +51,8 @@ class MealPlan extends Model
 
     /**
      * MealPlan belongs to a User (creator).
+     *
+     * @return BelongsTo<User, $this>
      */
     public function createdBy(): BelongsTo
     {
@@ -57,6 +61,8 @@ class MealPlan extends Model
 
     /**
      * MealPlan has many MealPlanEntries.
+     *
+     * @return HasMany<MealPlanEntry, $this>
      */
     public function entries(): HasMany
     {
@@ -65,6 +71,8 @@ class MealPlan extends Model
 
     /**
      * MealPlan belongs to a ShoppingList.
+     *
+     * @return BelongsTo<ShoppingList, $this>
      */
     public function shoppingList(): BelongsTo
     {

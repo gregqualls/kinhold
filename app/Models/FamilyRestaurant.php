@@ -37,6 +37,8 @@ class FamilyRestaurant extends Model
 
     /**
      * FamilyRestaurant belongs to a Family.
+     *
+     * @return BelongsTo<Family, $this>
      */
     public function family(): BelongsTo
     {
@@ -45,6 +47,8 @@ class FamilyRestaurant extends Model
 
     /**
      * FamilyRestaurant belongs to a Restaurant.
+     *
+     * @return BelongsTo<Restaurant, $this>
      */
     public function restaurant(): BelongsTo
     {

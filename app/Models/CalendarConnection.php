@@ -55,6 +55,8 @@ class CalendarConnection extends Model
 
     /**
      * CalendarConnection belongs to a User.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {

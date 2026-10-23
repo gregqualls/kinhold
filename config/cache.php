@@ -71,4 +71,15 @@ return [
     |--------------------------------------------------------------------------
     */
     'prefix' => env('CACHE_PREFIX', 'laravel_cache_'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | Cached values are only scalars and arrays, so unserializing any object
+    | is refused. This blocks gadget-chain attacks via a poisoned cache entry.
+    |
+    */
+    'serializable_classes' => false,
 ];

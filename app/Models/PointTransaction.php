@@ -39,31 +39,49 @@ class PointTransaction extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Family, $this>
+     */
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function awardedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'awarded_by');
     }
 
+    /**
+     * @return MorphTo<Model, $this>
+     */
     public function source(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /**
+     * @return BelongsTo<self, $this>
+     */
     public function stackedFrom(): BelongsTo
     {
         return $this->belongsTo(self::class, 'stacked_from_transaction_id');
     }
 
+    /**
+     * @return HasMany<self, $this>
+     */
     public function stacks(): HasMany
     {
         return $this->hasMany(self::class, 'stacked_from_transaction_id');

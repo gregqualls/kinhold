@@ -33,11 +33,17 @@ class Allergen extends Model
         });
     }
 
+    /**
+     * @return BelongsTo<Family, $this>
+     */
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
     }
 
+    /**
+     * @return BelongsToMany<User, $this, MemberAllergen>
+     */
     public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'member_allergens')->using(MemberAllergen::class)->withTimestamps();

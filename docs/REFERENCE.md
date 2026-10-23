@@ -57,7 +57,7 @@
 - **Future:** RAG for vault data, proactive reminders, multi-step workflows, Stripe-driven plan switcher (#70), token-budget enforcement, 80% warning toast (skipped in v1 — chip color carries the signal)
 
 ### 6. MCP Server (IMPLEMENTED — Laravel-Native)
-- Laravel-native via `laravel/mcp` package — runs at `/mcp` endpoint, no separate process
+- Laravel-native via the `laravel/mcp` 1.x package — runs at `/mcp` endpoint, no separate process
 - **7 domain-router tools** (consolidated from 20, April 2026): `kinhold-family`, `kinhold-calendar`, `kinhold-tasks`, `kinhold-food`, `kinhold-points`, `kinhold-vault`, `kinhold-achievements`. Each takes an `action` enum that dispatches to per-action handlers (e.g. `kinhold-tasks` accepts `task_list`, `task_create`, `tag_list`, etc.). Action sets and required params are documented in each tool's `#[Description]`.
 - **Module-gated registration** — every tool except `kinhold-family` implements `Concerns\RequiresModule`, which uses `Family::userHasModuleAccess()` in `shouldRegister()` to skip registration when the family has the matching module disabled. Unused-module tool schemas never hit the wire.
 - Authenticates with Passport OAuth or Sanctum bearer (`auth:api,sanctum` middleware).
@@ -213,7 +213,7 @@ kinhold/
 
 **Preferred: Native (Homebrew on Mac)**
 ```bash
-brew install php@8.3 composer postgresql@16 redis
+brew install php@8.4 composer postgresql@16 redis
 brew services start postgresql@16
 brew services start redis
 createdb kinhold

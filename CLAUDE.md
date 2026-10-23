@@ -16,7 +16,7 @@ Personal context, identity, and instance specifics live in `CLAUDE.local.md` (gi
 
 | Layer | Tech |
 |---|---|
-| Backend | Laravel 11 (PHP 8.2+), REST API only |
+| Backend | Laravel 13 (PHP 8.4), REST API only |
 | Frontend | Vue 3 SPA (Composition API, `<script setup>`), Pinia, Tailwind |
 | DB / Cache | PostgreSQL 16 (UUIDs), Redis 7 |
 | Auth | Sanctum + Socialite (Google OAuth) |

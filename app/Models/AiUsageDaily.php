@@ -39,6 +39,9 @@ class AiUsageDaily extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Family, $this>
+     */
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);

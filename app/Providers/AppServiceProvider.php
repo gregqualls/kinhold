@@ -9,13 +9,11 @@ use App\Models\MealPlanEntry;
 use App\Models\ShoppingItem;
 use App\Policies\MealPlanPolicy;
 use App\Policies\ShoppingListPolicy;
-use App\Validation\CrlfSafeValidator;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Http\Middleware\VerifyWebhookSignature;
@@ -78,10 +76,6 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('allergen-backfill', function (BackfillRecipeAllergens $job) {
             return Limit::perMinute(30)->by('family:'.$job->familyId);
         });
-
-        // Laravel 11 backport of the 12.60 CRLF email fix (GHSA-5vg9-5847-vvmq).
-        // Remove after upgrading to Laravel 12.60+.
-        Validator::resolver(fn ($translator, $data, $rules, $messages, $attributes) => new CrlfSafeValidator($translator, $data, $rules, $messages, $attributes));
 
         // ShoppingItem uses ShoppingListPolicy (non-standard naming)
         Gate::policy(ShoppingItem::class, ShoppingListPolicy::class);
