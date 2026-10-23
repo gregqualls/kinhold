@@ -193,7 +193,7 @@ What this means in practice:
 
 Soft enforcement, by design — Kinhold doesn't phone home, doesn't check signed tokens, and doesn't block you from creating extra families. Two things happen instead:
 
-1. **A sticky warning banner** appears at the top of the SPA whenever your instance has more than one family.
+1. **A sticky warning banner** appears at the top of the SPA whenever your instance has more than one family. The demo family created by `php artisan db:seed` is sample data and never counts toward the limit.
 2. **A `warning`-level log line** is written to `storage/logs/laravel.log` every time a new family is created beyond the first, with the family ID and total family count.
 
 If you need to run more than one family on a single instance, you'll need a commercial license from Q Thirty Two. Open a [Commercial license inquiry](https://github.com/gregqualls/kinhold/issues/new?title=Commercial%20license%20inquiry&labels=commercial-license) on GitHub to get in touch — once a license is issued we'll send the steps for clearing the banner.

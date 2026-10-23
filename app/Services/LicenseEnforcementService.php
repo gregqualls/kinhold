@@ -43,7 +43,7 @@ class LicenseEnforcementService
      */
     public function familyCount(): int
     {
-        return $this->cachedFamilyCount ??= Family::count();
+        return $this->cachedFamilyCount ??= Family::excludingDemo()->count();
     }
 
     public function acknowledged(): bool

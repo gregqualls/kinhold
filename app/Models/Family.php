@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -82,6 +83,15 @@ class Family extends Model
     }
 
     /**
+     * The seeded demo family is sample data, not a household, so it never
+     * counts toward the self-hosted single-family limit.
+     */
+    public function scopeExcludingDemo(Builder $query): Builder
+    {
+        return $query->where('slug', '!=', 'q32-demo-family');
+    }
+
+    /**
      * Forensic log line whenever a self-hosted instance creates an Nth (N>=2)
      * family — supplements the SPA banner so violations are also visible in
      * server logs. Hosted Kinhold (self_hosted=false) is unaffected.
@@ -93,7 +103,7 @@ class Family extends Model
                 return;
             }
 
-            $count = static::count();
+            $count = static::excludingDemo()->count();
             if ($count <= 1) {
                 return;
             }

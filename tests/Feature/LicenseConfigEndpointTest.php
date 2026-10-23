@@ -84,4 +84,27 @@ class LicenseConfigEndpointTest extends TestCase
         $response->assertJsonPath('license.warn', true);
         $response->assertJsonPath('license.family_count', 3);
     }
+
+    public function test_demo_family_does_not_count_toward_single_family_limit(): void
+    {
+        config()->set('kinhold.self_hosted', true);
+        Family::factory()->create(['slug' => 'q32-demo-family']);
+        Family::factory()->create();
+
+        $response = $this->getJson('/api/v1/config');
+
+        $response->assertJsonPath('license.warn', false);
+    }
+
+    public function test_family_count_excludes_demo_family_when_warning(): void
+    {
+        config()->set('kinhold.self_hosted', true);
+        Family::factory()->create(['slug' => 'q32-demo-family']);
+        Family::factory()->count(2)->create();
+
+        $response = $this->getJson('/api/v1/config');
+
+        $response->assertJsonPath('license.warn', true);
+        $response->assertJsonPath('license.family_count', 2);
+    }
 }
