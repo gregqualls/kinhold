@@ -2,9 +2,9 @@
 
 > Updated at the end of every working session. Newest entries first.
 
-## 2026-10-23: Demo family no longer trips the single-family banner ([#331](https://github.com/gregqualls/kinhold/issues/331))
+## 2026-10-23: v1.10.2, Demo family no longer trips the single-family banner ([#331](https://github.com/gregqualls/kinhold/issues/331))
 
-Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count.
+Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count. v1.10.2 also ships the CSRF follow-ups below.
 
 ## 2026-10-23: CSRF fix follow-ups
 
