@@ -202,6 +202,8 @@ If you need to run more than one family on a single instance, you'll need a comm
 
 ## Upgrading
 
+> **v1.11.0 and later run on Laravel 13 and need PHP 8.4.** The Docker images already ship it. For a Git install, check `php -v` before pulling.
+
 ### From Git
 
 ```bash

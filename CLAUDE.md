@@ -45,7 +45,7 @@ Personal context, identity, and instance specifics live in `CLAUDE.local.md` (gi
 
 ## Current Phase
 
-v1.9.0 shipped 2026-05-09 (Stripe billing live). Active milestone: **Phase B** (34/42 done). See `docs/ROADMAP.md` for phase detail and `CHANGELOG.md` for recent work.
+v1.11.0 shipped 2026-10-23 (Laravel 13 upgrade). Active milestone: **Phase B** (34/42 done). See `docs/ROADMAP.md` for phase detail and `CHANGELOG.md` for recent work.
 
 ## Session Rules
 
