@@ -37,6 +37,8 @@ class VaultPermission extends Model
 
     /**
      * VaultPermission belongs to a VaultEntry.
+     *
+     * @return BelongsTo<VaultEntry, $this>
      */
     public function vaultEntry(): BelongsTo
     {
@@ -45,6 +47,8 @@ class VaultPermission extends Model
 
     /**
      * VaultPermission belongs to a User.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {

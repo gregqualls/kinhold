@@ -2,6 +2,24 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-23: Laravel 13 upgrade
+
+Laravel 11 lost security support in March 2026 and Laravel 12's ends around February 2027, so Kinhold goes straight from 11.51 to 13.38, following both official upgrade guides. `composer audit` is now clean. The CRLF email-rule backport (`app/Validation/CrlfSafeValidator.php` and its `Validator::resolver()` hook) is gone because stock Laravel ships the fix; `EmailCrlfInjectionTest` still passes against the framework's own rule.
+
+Package majors that came with it: `laravel/mcp` 0.6 to 1.1, `laravel-notification-channels/webpush` 10 to 13 (pulls `minishlink/web-push` 11), Larastan 2 to 3 (PHPStan 2). Cashier, Passport, Sanctum, Socialite, Resend, Google API client and sabre/vobject already supported Laravel 13 and stay where they were, which keeps `stripe/stripe-php` (and so the Stripe API version Cashier talks to) unchanged. PHPUnit stays on 11.5.50+. `composer.json` now requires PHP `^8.3` (Laravel 13's floor); the lock still needs 8.4 because of Symfony 8.
+
+App changes the upgrade forced or the guides recommended:
+- The SPA's CSRF middleware now extends `PreventRequestForgery` (Laravel 13's rename). It also accepts writes that carry `Sec-Fetch-Site: same-origin` before checking tokens, so a same-origin tab with a stale token no longer gets a 419. Cross-site writes still need a valid token. Both cases are pinned in `SpaCsrfTokenTest`.
+- `config/cache.php` sets `serializable_classes => false`, so cached values can never unserialize into objects. Kinhold only caches scalars and arrays.
+- Webpush 11 casts `content_encoding` to an enum, so an unknown value would have thrown a 500. `PushSubscriptionController` now validates it against the enum and returns 422.
+- Larastan 3 no longer infers related models from relation bodies, so every relation method in `app/Models` gained `@return Relation<Related, $this>` generics. That keeps the type coverage Larastan 2 had instead of baselining ~250 new errors. The remaining new-rule findings are baselined; one is a real pre-existing bug (`env('SELF_HOSTED')` in `AuthController`), now in the ROADMAP parking lot.
+
+No changes needed for the session cookie name (the framework default resolves to the same `kinhold_session`), cache and Redis prefixes (set explicitly), UUIDv7 primary keys, or the rest of the guide items.
+
+New `tests/Feature/McpServerTest.php` drives the real `/mcp` endpoint (auth rejection, tool listing, family-scoped tool calls); MCP had no coverage before.
+
+Tests: 454/454 green; PHPStan clean; `npm run build` green.
+
 ## 2026-10-23: Dependency security sweep
 
 Triage of 92 open Dependabot alerts (1 critical, 39 high). Everything with a non-major fix is bumped: Guzzle 7.16, psr7 2.13, league/commonmark 2.10, jmespath 2.9.2, phpseclib 3.0.57, web-token 4.2, flysystem 3.36, symfony/http-foundation 7.4.21 on the PHP side; axios 1.20, DOMPurify 3.4.17, PostCSS 8.5.31, Vite 6.4.5 and the dev-only transitive tooling on the npm side. No app code changes from the bumps.

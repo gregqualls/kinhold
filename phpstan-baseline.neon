@@ -1,1521 +1,1915 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Cannot call method lt\\(\\) on string\\.$#"
+			message: '#^Cannot call method lt\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Console/Commands/GenerateRecurringTasks.php
 
 		-
-			message: "#^Parameter \\#1 \\$familyId of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string, int given\\.$#"
+			message: '#^Parameter \#1 \$array \(list\<Carbon\\Carbon\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
 			count: 1
-			path: app/Console/Commands/SeedDefaultBadges.php
+			path: app/Console/Commands/GenerateRecurringTasks.php
 
 		-
-			message: "#^Parameter \\#2 \\$createdBy of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string\\|null, int\\|null given\\.$#"
-			count: 1
-			path: app/Console/Commands/SeedDefaultBadges.php
-
-		-
-			message: "#^Cannot access property \\$hour on string\\.$#"
+			message: '#^Cannot access property \$hour on string\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: app/Console/Commands/SendCalendarEventReminders.php
 
 		-
-			message: "#^Cannot access property \\$minute on string\\.$#"
+			message: '#^Cannot access property \$minute on string\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: app/Console/Commands/SendCalendarEventReminders.php
 
 		-
-			message: "#^Cannot access property \\$second on string\\.$#"
+			message: '#^Cannot access property \$second on string\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: app/Console/Commands/SendCalendarEventReminders.php
 
 		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			message: '#^Using nullsafe property access "\?\-\>members" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Console/Commands/SendCalendarEventReminders.php
+
+		-
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Console/Commands/SendWeeklyDigest.php
 
 		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Task\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
+			path: app/Console/Commands/SendWeeklyDigest.php
 
 		-
-			message: "#^Parameter \\#1 \\$familyId of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string, int given\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: "#^Parameter \\#2 \\$createdBy of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string\\|null, int given\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/AuthController.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Badge\\:\\:\\$pivot\\.$#"
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
 			count: 2
-			path: app/Http/Controllers/Api/V1/BadgesController.php
+			path: app/Http/Controllers/Api/V1/AuthController.php
 
 		-
-			message: "#^Argument of an invalid type string supplied for foreach, only iterables are supported\\.$#"
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\User\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Badge\:\:\$pivot\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Api/V1/BadgesController.php
 
 		-
-			message: "#^Parameter \\#2 \\$createdBy of method App\\\\Http\\\\Controllers\\\\Api\\\\V1\\\\BadgesController\\:\\:ensureEasterEggBadgesExist\\(\\) expects string, int given\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$earned_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Api/V1/BadgesController.php
 
 		-
-			message: "#^Parameter \\#2 \\$createdBy of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string\\|null, int given\\.$#"
+			message: '#^Argument of an invalid type string supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
 			count: 1
 			path: app/Http/Controllers/Api/V1/BadgesController.php
 
 		-
-			message: "#^Parameter \\#2 \\$triggerType of method App\\\\Services\\\\BadgeService\\:\\:getCurrentValueForTrigger\\(\\) expects App\\\\Enums\\\\BadgeTriggerType, string given\\.$#"
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\BadgesController\:\:awardMissingEasterEggBadges\(\) returns void but does not have any side effects\.$#'
+			identifier: void.pure
 			count: 1
 			path: app/Http/Controllers/Api/V1/BadgesController.php
 
 		-
-			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			message: '#^Parameter \#2 \$triggerType of method App\\Services\\BadgeService\:\:getCurrentValueForTrigger\(\) expects App\\Enums\\BadgeTriggerType, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/BadgesController.php
+
+		-
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: app/Http/Controllers/Api/V1/CalendarController.php
 
 		-
-			message: "#^Parameter \\#2 \\$userId of static method App\\\\Services\\\\IcsCalendarService\\:\\:subscribe\\(\\) expects string, int given\\.$#"
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/Api/V1/CalendarController.php
 
 		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			message: '#^Call to function is_object\(\) with Laravel\\Sanctum\\PersonalAccessToken will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
-			path: app/Http/Controllers/Api/V1/CalendarController.php
+			path: app/Http/Controllers/Api/V1/ChatController.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\FamilyEvent\\:\\:\\$computed_next_date\\.$#"
+			message: '#^Access to an undefined property App\\Models\\FamilyEvent\:\:\$computed_next_date\.$#'
+			identifier: property.notFound
 			count: 4
 			path: app/Http/Controllers/Api/V1/FeaturedEventController.php
 
 		-
-			message: "#^Cannot call method startOfDay\\(\\) on string\\.$#"
+			message: '#^Cannot call method startOfDay\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/Api/V1/FeaturedEventController.php
 
 		-
-			message: "#^Call to an undefined method Laravel\\\\Socialite\\\\Contracts\\\\Provider\\:\\:redirectUrl\\(\\)\\.$#"
+			message: '#^Call to an undefined method Laravel\\Socialite\\Contracts\\Provider\:\:redirectUrl\(\)\.$#'
+			identifier: method.notFound
 			count: 2
 			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
 
 		-
-			message: "#^Call to an undefined method Laravel\\\\Socialite\\\\Contracts\\\\Provider\\:\\:stateless\\(\\)\\.$#"
+			message: '#^Call to an undefined method Laravel\\Socialite\\Contracts\\Provider\:\:stateless\(\)\.$#'
+			identifier: method.notFound
 			count: 4
 			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
 
 		-
-			message: "#^Parameter \\#1 \\$familyId of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string, int given\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
-
-		-
-			message: "#^Parameter \\#2 \\$createdBy of static method App\\\\Services\\\\BadgeService\\:\\:createDefaultBadges\\(\\) expects string\\|null, int given\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/GoogleAuthController.php
-
-		-
-			message: "#^Cannot access property \\$value on string\\.$#"
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: app/Http/Controllers/Api/V1/MealPlanController.php
 
 		-
-			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Http/Controllers/Api/V1/MealPlanController.php
 
 		-
-			message: "#^Using nullsafe property access on non\\-nullable type string\\. Use \\-\\> instead\\.$#"
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\MealPlanEntry\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Api/V1/MealPlanController.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$family_average_rating\\.$#"
-			count: 3
-			path: app/Http/Controllers/Api/V1/RestaurantController.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$is_favorite\\.$#"
-			count: 3
-			path: app/Http/Controllers/Api/V1/RestaurantController.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$pivot\\.$#"
-			count: 3
-			path: app/Http/Controllers/Api/V1/RestaurantController.php
-
-		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$pivot_notes\\.$#"
-			count: 3
-			path: app/Http/Controllers/Api/V1/RestaurantController.php
-
-		-
-			message: "#^Parameter \\#1 \\$familyId of method App\\\\Models\\\\Restaurant\\:\\:familyAverageRating\\(\\) expects string, int given\\.$#"
-			count: 3
-			path: app/Http/Controllers/Api/V1/RestaurantController.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
+			message: '#^Using nullsafe property access on non\-nullable type string\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
+			path: app/Http/Controllers/Api/V1/MealPlanController.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			message: '#^Property App\\Models\\MealPlanEntry\:\:\$assigned_cooks \(string\|null\) does not accept array\.$#'
+			identifier: assign.propertyType
 			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
+			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
 
 		-
-			message: "#^Ternary operator condition is always false\\.$#"
+			message: '#^Access to an undefined property App\\Models\\Restaurant&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$family_average_rating\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Restaurant&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$is_favorite\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Restaurant&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$pivot_notes\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Restaurant\:\:\$family_average_rating\.$#'
+			identifier: property.notFound
 			count: 1
-			path: app/Http/Controllers/Api/V1/TaskController.php
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\VaultEntry\\:\\:\\$decrypted_data\\.$#"
+			message: '#^Access to an undefined property App\\Models\\Restaurant\:\:\$is_favorite\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Restaurant\:\:\$pivot\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Restaurant\:\:\$pivot_notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/RestaurantController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\VaultEntry\:\:\$decrypted_data\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Api/V1/VaultController.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\VaultEntry\\:\\:\\$vaultCategory\\.$#"
+			message: '#^Access to an undefined property App\\Models\\VaultEntry\:\:\$vaultCategory\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Api/V1/VaultController.php
 
 		-
-			message: "#^Result of && is always false\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/VaultController.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/VaultController.php
-
-		-
-			message: "#^Class Illuminate\\\\Foundation\\\\Http\\\\Middleware\\\\HandlePreconditionFailures not found\\.$#"
+			message: '#^Class Illuminate\\Foundation\\Http\\Middleware\\HandlePreconditionFailures not found\.$#'
+			identifier: class.notFound
 			count: 1
 			path: app/Http/Kernel.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\DocumentResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/DocumentResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\DocumentResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 2
 			path: app/Http/Resources/DocumentResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$mime_type\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\DocumentResource\:\:\$mime_type\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/DocumentResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$original_filename\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\DocumentResource\:\:\$original_filename\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/DocumentResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\DocumentResource\\:\\:\\$size\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\DocumentResource\:\:\$size\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/DocumentResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyRestaurantResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FamilyRestaurantResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FamilyRestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FamilyRestaurantResource\\:\\:\\$pivot\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FamilyRestaurantResource\:\:\$pivot\.$#'
+			identifier: property.notFound
 			count: 2
 			path: app/Http/Resources/FamilyRestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$color\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$color\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$description\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$description\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$featured_scope\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$featured_scope\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$icon\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$icon\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$is_active\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$is_active\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$is_countdown\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$is_countdown\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$next_occurrence\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$next_occurrence\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$recurrence\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$recurrence\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$recurrence_label\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$recurrence_label\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$start_time\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$start_time\.$#'
+			identifier: property.notFound
 			count: 3
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$title\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$title\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\FeaturedEventResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\FeaturedEventResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/FeaturedEventResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$assigned_cooks\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$assigned_cooks\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$custom_title\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$custom_title\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$date\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$date\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$display_title\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$display_title\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$effective_servings\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$effective_servings\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$meal_plan_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$meal_plan_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$meal_slot\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$meal_slot\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$notes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$notes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$servings\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$servings\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$sort_order\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$sort_order\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanEntryResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanEntryResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$created_by\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanResource\:\:\$created_by\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$family_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanResource\:\:\$family_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$notes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanResource\:\:\$notes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$shopping_list_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanResource\:\:\$shopping_list_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPlanResource\\:\\:\\$week_start\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPlanResource\:\:\$week_start\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPlanResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$icon\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPresetResource\:\:\$icon\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPresetResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPresetResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPresetResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$is_system\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPresetResource\:\:\$is_system\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPresetResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$label\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPresetResource\:\:\$label\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPresetResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\MealPresetResource\\:\\:\\$sort_order\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\MealPresetResource\:\:\$sort_order\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/MealPresetResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RatingResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RatingResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RatingResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RatingResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$score\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RatingResource\:\:\$score\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RatingResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RatingResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RatingResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RatingResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$cooked_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeCookLogResource\:\:\$cooked_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeCookLogResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeCookLogResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeCookLogResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeCookLogResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeCookLogResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$notes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeCookLogResource\:\:\$notes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeCookLogResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeCookLogResource\\:\\:\\$servings_made\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeCookLogResource\:\:\$servings_made\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeCookLogResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$group_name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeIngredientResource\:\:\$group_name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeIngredientResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeIngredientResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeIngredientResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$is_optional\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeIngredientResource\:\:\$is_optional\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeIngredientResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeIngredientResource\:\:\$name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeIngredientResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$preparation\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeIngredientResource\:\:\$preparation\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeIngredientResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$quantity\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeIngredientResource\:\:\$quantity\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeIngredientResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$sort_order\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeIngredientResource\:\:\$sort_order\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeIngredientResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeIngredientResource\\:\\:\\$unit\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeIngredientResource\:\:\$unit\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeIngredientResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$cook_time_minutes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$cook_time_minutes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$deleted_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$deleted_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$description\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$description\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$image_path\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$image_path\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$instructions\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$instructions\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$is_favorite\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$is_favorite\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$notes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$notes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$prep_time_minutes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$prep_time_minutes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$servings\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$servings\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$source_type\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$source_type\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$source_url\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$source_url\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$title\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$title\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$total_time_minutes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$total_time_minutes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RecipeResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RecipeResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RecipeResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$address\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RestaurantResource\:\:\$address\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$google_maps_url\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RestaurantResource\:\:\$google_maps_url\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RestaurantResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$image_url\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RestaurantResource\:\:\$image_url\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$menu_url\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RestaurantResource\:\:\$menu_url\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RestaurantResource\:\:\$name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$notes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RestaurantResource\:\:\$notes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\RestaurantResource\\:\\:\\$phone\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\RestaurantResource\:\:\$phone\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/RestaurantResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$category\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$category\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$checked_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$checked_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$checked_by\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$checked_by\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$has_on_hand\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$has_on_hand\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$is_checked\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$is_checked\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$meal_plan_entry_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$meal_plan_entry_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$needed_date\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$needed_date\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$notes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$notes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$quantity\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$quantity\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$shopping_list_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$shopping_list_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$sort_order\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$sort_order\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$source\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$source\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$source_ingredient_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$source_ingredient_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$source_recipe_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$source_recipe_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$source_recipe_name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$source_recipe_name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingItemResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingItemResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingItemResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$completed_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingListResource\:\:\$completed_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingListResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingListResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingListResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingListResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingListResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$is_active\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingListResource\:\:\$is_active\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingListResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingListResource\:\:\$name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingListResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$store_name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingListResource\:\:\$store_name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingListResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\ShoppingListResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\ShoppingListResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/ShoppingListResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$category\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\StapleResource\:\:\$category\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/StapleResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\StapleResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/StapleResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$default_quantity\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\StapleResource\:\:\$default_quantity\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/StapleResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\StapleResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/StapleResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$is_active\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\StapleResource\:\:\$is_active\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/StapleResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\StapleResource\:\:\$name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/StapleResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$sort_order\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\StapleResource\:\:\$sort_order\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/StapleResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\StapleResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\StapleResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/StapleResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$color\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$color\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$incomplete_tasks_count\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$incomplete_tasks_count\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$recipes_count\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$recipes_count\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$restaurants_count\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$restaurants_count\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$sort_order\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$sort_order\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TagResource\\:\\:\\$tasks_count\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TagResource\:\:\$tasks_count\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TagResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$assigned_to\\.$#"
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/TagResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$assigned_to\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$completed_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$completed_at\.$#'
+			identifier: property.notFound
 			count: 2
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$description\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$description\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$due_date\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$due_date\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$is_family_task\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$is_family_task\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$parent_task_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$parent_task_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$points\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$points\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$priority\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$priority\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$recurrence_end\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$recurrence_end\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$recurrence_label\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$recurrence_label\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$recurrence_rule\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$recurrence_rule\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$sort_order\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$sort_order\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$title\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$title\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\TaskResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\TaskResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Call to an undefined method App\\\\Http\\\\Resources\\\\TaskResource\\:\\:getEffectivePoints\\(\\)\\.$#"
+			message: '#^Call to an undefined method App\\Http\\Resources\\TaskResource\:\:getEffectivePoints\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: app/Http/Resources/TaskResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$avatar\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$avatar\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$avatar_color\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$avatar_color\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$date_of_birth\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$date_of_birth\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$email\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$email\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$email_verified_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$email_verified_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$family_role\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$family_role\.$#'
+			identifier: property.notFound
 			count: 2
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$google_avatar\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$google_avatar\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$google_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$google_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$is_managed\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$is_managed\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$managed_by\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$managed_by\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$onboarding_completed_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$onboarding_completed_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\UserResource\\:\\:\\$timezone\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\UserResource\:\:\$timezone\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/UserResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$description\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultCategoryResource\:\:\$description\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultCategoryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$icon\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultCategoryResource\:\:\$icon\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultCategoryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultCategoryResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultCategoryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$name\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultCategoryResource\:\:\$name\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultCategoryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultCategoryResource\\:\\:\\$slug\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultCategoryResource\:\:\$slug\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultCategoryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$created_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultEntryResource\:\:\$created_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultEntryResource\:\:\$id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$is_personal\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultEntryResource\:\:\$is_personal\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$metadata\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultEntryResource\:\:\$metadata\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$notes\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultEntryResource\:\:\$notes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$permissions\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultEntryResource\:\:\$permissions\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$title\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultEntryResource\:\:\$title\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$updated_at\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultEntryResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Http\\\\Resources\\\\VaultEntryResource\\:\\:\\$vault_category_id\\.$#"
+			message: '#^Access to an undefined property App\\Http\\Resources\\VaultEntryResource\:\:\$vault_category_id\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Http/Resources/VaultEntryResource.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Badge\\:\\:\\$pivot\\.$#"
+			message: '#^Access to an undefined property App\\Models\\Badge\:\:\$pivot\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdAchievements.php
 
 		-
-			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$family\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdAchievements.php
 
 		-
-			message: "#^Cannot access property \\$value on string\\.$#"
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: app/Mcp/Tools/KinholdAchievements.php
 
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Badge\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Mcp/Tools/KinholdAchievements.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\FamilyEvent\\:\\:\\$computed_next_date\\.$#"
+			message: '#^Using nullsafe method call on non\-nullable type Laravel\\Mcp\\Request\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mcp/Tools/KinholdAchievements.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\FamilyEvent\:\:\$computed_next_date\.$#'
+			identifier: property.notFound
 			count: 4
 			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
-			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$family\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 5
 			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
-			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 3
 			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
-			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
+			message: '#^Parameter \#1 \$array of function usort contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Mcp/Tools/KinholdCalendar.php
 
 		-
-			message: "#^Cannot access property \\$value on string\\.$#"
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\CalendarConnection\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Mcp/Tools/KinholdCalendar.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\FamilyEvent\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Mcp/Tools/KinholdCalendar.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function usort contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Mcp/Tools/KinholdCalendar.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Laravel\\Mcp\\Request\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mcp/Tools/KinholdCalendar.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mcp/Tools/KinholdCalendar.php
+
+		-
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
 			count: 4
 			path: app/Mcp/Tools/KinholdFamily.php
 
 		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 3
 			path: app/Mcp/Tools/KinholdFamily.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\:\\:\\$pivot\\.$#"
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Task\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Mcp/Tools/KinholdFamily.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\User\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 3
+			path: app/Mcp/Tools/KinholdFamily.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Restaurant\:\:\$pivot\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\Restaurant\\|Illuminate\\\\Database\\\\Eloquent\\\\Collection\\<int, App\\\\Models\\\\Restaurant\\>\\:\\:\\$pivot\\.$#"
+			message: '#^Access to an undefined property App\\Models\\ShoppingItem\:\:\$on_hand_at\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\ShoppingItem\\:\\:\\$on_hand_at\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$family\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$notes\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Cannot access property \\$value on string\\.$#"
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Instanceof between string and App\\\\Enums\\\\MealSlot will always evaluate to false\\.$#"
+			message: '#^Instanceof between string and App\\Enums\\MealSlot will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Instanceof between string and DateTimeInterface will always evaluate to false\\.$#"
+			message: '#^Instanceof between string and DateTimeInterface will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
 			count: 2
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Parameter \\#1 \\$familyId of method App\\\\Models\\\\Restaurant\\:\\:familyAverageRating\\(\\) expects string, int given\\.$#"
-			count: 2
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\MealPlanEntry\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type Carbon\\\\Carbon\\. Use \\-\\> instead\\.$#"
+			message: '#^Using nullsafe method call on non\-nullable type Carbon\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 3
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
+			message: '#^Using nullsafe method call on non\-nullable type Laravel\\Mcp\\Request\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Using nullsafe property access on non\\-nullable type string\\. Use \\-\\> instead\\.$#"
+			message: '#^Using nullsafe property access on non\-nullable type string\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Variable \\$selections in empty\\(\\) always exists and is not falsy\\.$#"
+			message: '#^Variable \$selections in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
 			count: 1
 			path: app/Mcp/Tools/KinholdFood.php
 
 		-
-			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$family\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdPoints.php
 
 		-
-			message: "#^Cannot access property \\$value on string\\.$#"
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
 			count: 2
 			path: app/Mcp/Tools/KinholdPoints.php
 
 		-
-			message: "#^Cannot call method toIso8601String\\(\\) on string\\.$#"
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: app/Mcp/Tools/KinholdPoints.php
 
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PointRequest\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Mcp/Tools/KinholdPoints.php
 
 		-
-			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PointTransaction\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Mcp/Tools/KinholdPoints.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\RewardPurchase\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Mcp/Tools/KinholdPoints.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Laravel\\Mcp\\Request\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mcp/Tools/KinholdPoints.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$family\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdTasks.php
 
 		-
-			message: "#^Cannot access property \\$value on string\\.$#"
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
 			count: 3
 			path: app/Mcp/Tools/KinholdTasks.php
 
 		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 3
 			path: app/Mcp/Tools/KinholdTasks.php
 
 		-
-			message: "#^Result of && is always false\\.$#"
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Task\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Mcp/Tools/KinholdTasks.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			message: '#^Using nullsafe method call on non\-nullable type Laravel\\Mcp\\Request\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Mcp/Tools/KinholdTasks.php
 
 		-
-			message: "#^Ternary operator condition is always false\\.$#"
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Mcp/Tools/KinholdTasks.php
 
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
-			count: 1
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 3
 			path: app/Mcp/Tools/KinholdTasks.php
 
 		-
-			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Auth\\\\Authenticatable\\:\\:\\$family\\.$#"
+			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$family\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Mcp/Tools/KinholdVault.php
 
 		-
-			message: "#^Result of && is always false\\.$#"
+			message: '#^Using nullsafe method call on non\-nullable type Laravel\\Mcp\\Request\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Mcp/Tools/KinholdVault.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
-			count: 1
-			path: app/Mcp/Tools/KinholdVault.php
-
-		-
-			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Mcp\\\\Request\\. Use \\-\\> instead\\.$#"
-			count: 1
-			path: app/Mcp/Tools/KinholdVault.php
-
-		-
-			message: "#^Cannot call method isPast\\(\\) on string\\.$#"
+			message: '#^Cannot call method isPast\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Models/CalendarConnection.php
 
 		-
-			message: "#^Call to function in_array\\(\\) with arguments int, array\\<string\\> and true will always evaluate to false\\.$#"
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\CalendarConnection\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/CalendarConnection.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\CalendarConnection\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/CalendarConnection.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\ChatMessage\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/ChatMessage.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Document\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Document.php
+
+		-
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: app/Models/Family.php
 
 		-
-			message: "#^Cannot access property \\$value on string\\.$#"
+			message: '#^Offset ''mode'' on array\{mode\: string, roles\?\: array\<string\>, users\?\: array\<string\>\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
 			count: 1
 			path: app/Models/Family.php
 
 		-
-			message: "#^Offset 'mode' on array\\{mode\\: string, roles\\?\\: array\\<string\\>, users\\?\\: array\\<string\\>\\} on left side of \\?\\? always exists and is not nullable\\.$#"
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Family\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
 			count: 1
 			path: app/Models/Family.php
 
 		-
-			message: "#^Cannot call method copy\\(\\) on string\\.$#"
+			message: '#^Cannot call method copy\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 3
 			path: app/Models/FamilyEvent.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\FamilyRestaurant\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
 			count: 1
-			path: app/Models/FamilyEvent.php
+			path: app/Models/FamilyRestaurant.php
 
 		-
-			message: "#^Cannot call method copy\\(\\) on string\\.$#"
+			message: '#^Cannot call method copy\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Models/FeaturedEvent.php
 
 		-
-			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Models/MealPlan.php
 
 		-
-			message: "#^Instanceof between string and App\\\\Enums\\\\MealSlot will always evaluate to false\\.$#"
+			message: '#^Instanceof between string and App\\Enums\\MealSlot will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
 			count: 1
 			path: app/Models/MealPlan.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and App\\\\Enums\\\\PointRequestStatus\\:\\:Pending will always evaluate to false\\.$#"
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\MealPlan\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/MealPlan.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\MealPlanEntry\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/MealPlanEntry.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\MealPreset\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/MealPreset.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\PointRequestStatus\:\:Pending will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
 			count: 1
 			path: app/Models/PointRequest.php
 
 		-
-			message: "#^Access to an undefined property Illuminate\\\\Support\\\\Carbon\\:\\:\\$date\\.$#"
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Restaurant\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Restaurant.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\Carbon\:\:\$date\.$#'
+			identifier: property.notFound
 			count: 2
 			path: app/Models/Task.php
 
 		-
-			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\:\\:incomplete\\(\\)\\.$#"
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:incomplete\(\)\.$#'
+			identifier: method.notFound
 			count: 2
 			path: app/Models/Task.php
 
 		-
-			message: "#^Cannot access property \\$value on string\\.$#"
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: app/Models/Task.php
 
 		-
-			message: "#^Cannot call method isPast\\(\\) on string\\.$#"
+			message: '#^Cannot call method isPast\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Models/Task.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and App\\\\Enums\\\\FamilyRole\\:\\:Child will always evaluate to false\\.$#"
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\Task\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/Task.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Models/Task.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
 			count: 1
 			path: app/Models/User.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and App\\\\Enums\\\\FamilyRole\\:\\:Parent will always evaluate to false\\.$#"
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
 			count: 1
 			path: app/Models/User.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
-			count: 2
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\FamilyRole\:\:Child will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
 			path: app/Models/User.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
-			count: 2
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\FamilyRole\:\:Parent will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\VaultCategory\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/VaultCategory.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\VaultEntry\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
+			count: 1
 			path: app/Models/VaultEntry.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and App\\\\Enums\\\\PermissionLevel\\:\\:Edit will always evaluate to false\\.$#"
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\VaultEntry\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/VaultEntry.php
+
+		-
+			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\VaultPermission\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
+			identifier: property.phpDocType
 			count: 1
 			path: app/Models/VaultPermission.php
 
 		-
-			message: "#^Call to function in_array\\(\\) with arguments mixed, array\\{\\} and true will always evaluate to false\\.$#"
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\PermissionLevel\:\:Edit will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Models/VaultPermission.php
+
+		-
+			message: '#^Call to function in_array\(\) with arguments mixed, array\{\} and true will always evaluate to false\.$#'
+			identifier: function.impossibleType
 			count: 1
 			path: app/Notifications/DinnerReminderNotification.php
 
 		-
-			message: "#^Call to function is_array\\(\\) with string\\|null will always evaluate to false\\.$#"
+			message: '#^Call to function is_array\(\) with string\|null will always evaluate to false\.$#'
+			identifier: function.impossibleType
 			count: 1
 			path: app/Notifications/DinnerReminderNotification.php
 
 		-
-			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: app/Notifications/DinnerReminderNotification.php
 
 		-
-			message: "#^Ternary operator condition is always false\\.$#"
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
 			count: 1
 			path: app/Notifications/DinnerReminderNotification.php
 
 		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/KudosReceivedNotification.php
+
+		-
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Notifications/TaskAssignedNotification.php
 
 		-
-			message: "#^Cannot call method format\\(\\) on string\\.$#"
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: app/Notifications/TaskDueSoonNotification.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between int and string will always evaluate to false\\.$#"
+			message: '#^Using nullsafe property access "\?\-\>family_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 2
-			path: app/Policies/FamilyEventPolicy.php
+			path: app/Providers/AppServiceProvider.php
 
 		-
-			message: "#^Result of \\|\\| is always false\\.$#"
-			count: 1
-			path: app/Policies/TaskPolicy.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between int and string will always evaluate to false\\.$#"
-			count: 2
-			path: app/Policies/TaskPolicy.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between int and string\\|null will always evaluate to false\\.$#"
-			count: 2
-			path: app/Policies/TaskPolicy.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 3
-			path: app/Policies/VaultEntryPolicy.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between string and int will always evaluate to false\\.$#"
-			count: 3
-			path: app/Policies/VaultEntryPolicy.php
-
-		-
-			message: "#^Call to an undefined method Laravel\\\\Mcp\\\\Server\\\\Tool\\:\\:handle\\(\\)\\.$#"
+			message: '#^Call to an undefined method Laravel\\Mcp\\Server\\Tool\:\:handle\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: app/Services/Agent/ToolRegistry.php
 
 		-
-			message: "#^Cannot access property \\$value on string\\.$#"
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
 			count: 1
 			path: app/Services/AgentService.php
 
 		-
-			message: "#^Parameter \\#2 \\$triggerType of method App\\\\Services\\\\BadgeService\\:\\:getCurrentValueForTrigger\\(\\) expects App\\\\Enums\\\\BadgeTriggerType, string given\\.$#"
+			message: '#^Parameter \#2 \$triggerType of method App\\Services\\BadgeService\:\:getCurrentValueForTrigger\(\) expects App\\Enums\\BadgeTriggerType, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Services/BadgeService.php
 
 		-
-			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
 			count: 2
 			path: app/Services/GoogleCalendarService.php
 
 		-
-			message: "#^Negated boolean expression is always false\\.$#"
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
 			count: 2
 			path: app/Services/IcsCalendarService.php
 
 		-
-			message: "#^Argument of an invalid type string supplied for foreach, only iterables are supported\\.$#"
+			message: '#^Argument of an invalid type string supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
 			count: 1
 			path: app/Services/MealPlanService.php
 
 		-
-			message: "#^Cannot call method toDateString\\(\\) on string\\.$#"
+			message: '#^Cannot call method toDateString\(\) on string\.$#'
+			identifier: method.nonObject
 			count: 5
 			path: app/Services/MealPlanService.php
 
 		-
-			message: "#^Parameter \\#2 \\$mealPlanEntryId of method App\\\\Services\\\\ShoppingListService\\:\\:removeRecipeItems\\(\\) expects string, int given\\.$#"
-			count: 4
+			message: '#^Method App\\Services\\MealPlanService\:\:createCookTasks\(\) returns void but does not have any side effects\.$#'
+			identifier: void.pure
+			count: 1
 			path: app/Services/MealPlanService.php
 
 		-
-			message: "#^Parameter \\#4 \\$mealPlanEntryId of method App\\\\Services\\\\ShoppingListService\\:\\:addRecipeIngredients\\(\\) expects string\\|null, int given\\.$#"
-			count: 5
+			message: '#^Using nullsafe property access "\?\-\>label" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
 			path: app/Services/MealPlanService.php
 
 		-
-			message: "#^Access to an undefined property App\\\\Models\\\\PointTransaction\\:\\:\\$total_points\\.$#"
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/MealPlanService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>title" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/MealPlanService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PointTransaction\:\:\$total_points\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Services/PointsService.php
 
 		-
-			message: "#^Property App\\\\Models\\\\FamilyEvent\\:\\:\\$id \\(int\\) does not accept string\\.$#"
+			message: '#^Using nullsafe property access "\?\-\>total_bytes" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
-			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
-
-		-
-			message: "#^Property App\\\\Models\\\\MealPlanEntry\\:\\:\\$assigned_cooks \\(string\\|null\\) does not accept array\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
-
-		-
-			message: "#^Property App\\\\Models\\\\MealPlanEntry\\:\\:\\$id \\(int\\) does not accept string\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
-
-		-
-			message: "#^Property App\\\\Models\\\\ShoppingItem\\:\\:\\$id \\(int\\) does not accept string\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
-
-		-
-			message: "#^Property App\\\\Models\\\\ShoppingItem\\:\\:\\$shopping_list_id \\(string\\) does not accept int\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
-
-		-
-			message: "#^Property App\\\\Models\\\\ShoppingList\\:\\:\\$id \\(int\\) does not accept string\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
-
-		-
-			message: "#^Property App\\\\Models\\\\Task\\:\\:\\$id \\(int\\) does not accept string\\.$#"
-			count: 1
-			path: app/Http/Controllers/Api/V1/PushSubscriptionController.php
+			path: app/Services/StorageMeteringService.php

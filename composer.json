@@ -4,13 +4,13 @@
     "type": "project",
     "license": "Elastic-2.0",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "google/apiclient": "^2.0",
         "guzzlehttp/guzzle": "^7.0",
-        "laravel-notification-channels/webpush": "^10.5",
+        "laravel-notification-channels/webpush": "^13.0",
         "laravel/cashier": "^16.5",
-        "laravel/framework": "^11.0",
-        "laravel/mcp": "^0.6.4",
+        "laravel/framework": "^13.38",
+        "laravel/mcp": "^1.1",
         "laravel/passport": "^13.7.1",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.25",
@@ -20,10 +20,10 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.0",
-        "larastan/larastan": "^2.0",
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.0",
         "mockery/mockery": "^1.6",
-        "phpunit/phpunit": "^11.0"
+        "phpunit/phpunit": "^11.5.50"
     },
     "autoload": {
         "psr-4": {
@@ -53,7 +53,8 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin-laravel": true
+            "pestphp/pest-plugin-laravel": true,
+            "php-http/discovery": false
         }
     },
     "minimum-stability": "stable",

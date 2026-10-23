@@ -24,16 +24,25 @@ class Rating extends Model
         'score' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<Family, $this>
+     */
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
     }
 
+    /**
+     * @return MorphTo<Model, $this>
+     */
     public function rateable(): MorphTo
     {
         return $this->morphTo();

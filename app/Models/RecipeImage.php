@@ -23,6 +23,9 @@ class RecipeImage extends Model
         'sort_order' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Recipe, $this>
+     */
     public function recipe(): BelongsTo
     {
         return $this->belongsTo(Recipe::class);

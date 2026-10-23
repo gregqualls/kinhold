@@ -24,11 +24,17 @@ class RecipeCookLog extends Model
         'servings_made' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Recipe, $this>
+     */
     public function recipe(): BelongsTo
     {
         return $this->belongsTo(Recipe::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

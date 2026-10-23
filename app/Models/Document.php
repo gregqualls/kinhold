@@ -61,6 +61,8 @@ class Document extends Model
 
     /**
      * Get the parent documentable model.
+     *
+     * @return MorphTo<Model, $this>
      */
     public function documentable(): MorphTo
     {
@@ -69,6 +71,8 @@ class Document extends Model
 
     /**
      * Document belongs to a User (uploader).
+     *
+     * @return BelongsTo<User, $this>
      */
     public function uploader(): BelongsTo
     {

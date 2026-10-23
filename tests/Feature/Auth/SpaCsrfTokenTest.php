@@ -50,6 +50,16 @@ class SpaCsrfTokenTest extends TestCase
         ])->assertStatus(419);
     }
 
+    public function test_same_origin_browser_write_succeeds_without_a_token(): void
+    {
+        $this->spaWrite(['Sec-Fetch-Site' => 'same-origin'])->assertOk();
+    }
+
+    public function test_cross_site_browser_write_without_a_token_is_rejected(): void
+    {
+        $this->spaWrite(['Sec-Fetch-Site' => 'cross-site'])->assertStatus(419);
+    }
+
     private function spaWrite(array $headers)
     {
         return $this->withSession(['_token' => self::SESSION_TOKEN])

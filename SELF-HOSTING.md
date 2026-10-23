@@ -396,7 +396,7 @@ php artisan migrate --force  # Force run in production
                     └──────┬──────┘
                            │ /api/v1/*
                     ┌──────▼──────┐
-                    │  Laravel 11 │  ← REST API + MCP Server
+                    │  Laravel 13 │  ← REST API + MCP Server
                     └──┬───┬───┬──┘
                        │   │   │
               ┌────────┘   │   └────────┐

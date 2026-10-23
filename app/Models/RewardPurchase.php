@@ -27,16 +27,25 @@ class RewardPurchase extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Family, $this>
+     */
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
     }
 
+    /**
+     * @return BelongsTo<Reward, $this>
+     */
     public function reward(): BelongsTo
     {
         return $this->belongsTo(Reward::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

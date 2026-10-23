@@ -25,11 +25,17 @@ class Staple extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @return BelongsTo<Family, $this>
+     */
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

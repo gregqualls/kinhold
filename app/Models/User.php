@@ -99,6 +99,9 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    /**
+     * @return BelongsToMany<Allergen, $this, MemberAllergen>
+     */
     public function allergens(): BelongsToMany
     {
         return $this->belongsToMany(Allergen::class, 'member_allergens')->using(MemberAllergen::class)->withTimestamps();
@@ -106,6 +109,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * User belongs to a Family.
+     *
+     * @return BelongsTo<Family, $this>
      */
     public function family(): BelongsTo
     {
@@ -114,6 +119,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * The parent user who manages this account (for managed child accounts).
+     *
+     * @return BelongsTo<User, $this>
      */
     public function managedBy(): BelongsTo
     {
@@ -122,6 +129,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Child accounts managed by this parent.
+     *
+     * @return HasMany<User, $this>
      */
     public function managedChildren(): HasMany
     {
@@ -147,6 +156,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * User has many Tasks (created).
+     *
+     * @return HasMany<Task, $this>
      */
     public function tasks(): HasMany
     {
@@ -155,6 +166,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * User has many assigned Tasks.
+     *
+     * @return HasMany<Task, $this>
      */
     public function assignedTasks(): HasMany
     {
@@ -163,6 +176,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * User has many Vault Entries (created).
+     *
+     * @return HasMany<VaultEntry, $this>
      */
     public function vaultEntries(): HasMany
     {
@@ -171,6 +186,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * User has many Vault Permissions.
+     *
+     * @return HasMany<VaultPermission, $this>
      */
     public function vaultPermissions(): HasMany
     {
@@ -179,6 +196,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * User has many Calendar Connections.
+     *
+     * @return HasMany<CalendarConnection, $this>
      */
     public function calendarConnections(): HasMany
     {
@@ -187,6 +206,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * User has many Documents (uploaded).
+     *
+     * @return HasMany<Document, $this>
      */
     public function documents(): HasMany
     {
@@ -244,6 +265,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * User has many point transactions.
+     *
+     * @return HasMany<PointTransaction, $this>
      */
     public function pointTransactions(): HasMany
     {
@@ -252,6 +275,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * User has many badges via pivot.
+     *
+     * @return BelongsToMany<Badge, $this>
      */
     public function badges(): BelongsToMany
     {

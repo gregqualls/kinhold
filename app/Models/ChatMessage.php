@@ -36,6 +36,8 @@ class ChatMessage extends Model
 
     /**
      * Get the user who sent/received this message.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -44,6 +46,8 @@ class ChatMessage extends Model
 
     /**
      * Get the family this message belongs to.
+     *
+     * @return BelongsTo<Family, $this>
      */
     public function family(): BelongsTo
     {

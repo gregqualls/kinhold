@@ -26,26 +26,41 @@ class ShoppingList extends Model
         'completed_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Family, $this>
+     */
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * @return HasMany<ShoppingItem, $this>
+     */
     public function items(): HasMany
     {
         return $this->hasMany(ShoppingItem::class);
     }
 
+    /**
+     * @return HasMany<ShoppingItem, $this>
+     */
     public function uncheckedItems(): HasMany
     {
         return $this->hasMany(ShoppingItem::class)->where('is_checked', false);
     }
 
+    /**
+     * @return HasMany<ShoppingItem, $this>
+     */
     public function checkedItems(): HasMany
     {
         return $this->hasMany(ShoppingItem::class)->where('is_checked', true);

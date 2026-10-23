@@ -16,6 +16,8 @@ use App\Notifications\TestPushNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
+use Minishlink\WebPush\ContentEncoding;
 use NotificationChannels\WebPush\WebPushMessage;
 
 class PushSubscriptionController extends Controller
@@ -35,7 +37,7 @@ class PushSubscriptionController extends Controller
             'keys' => 'required|array',
             'keys.p256dh' => 'required|string|max:255',
             'keys.auth' => 'required|string|max:255',
-            'content_encoding' => 'nullable|string|max:32',
+            'content_encoding' => ['nullable', Rule::enum(ContentEncoding::class)],
         ]);
 
         $user = $request->user();

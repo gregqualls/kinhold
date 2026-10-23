@@ -24,6 +24,9 @@ class EventReminderSend extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<FamilyEvent, $this>
+     */
     public function familyEvent(): BelongsTo
     {
         return $this->belongsTo(FamilyEvent::class);
