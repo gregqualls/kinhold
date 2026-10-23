@@ -164,6 +164,9 @@ These features are live and working:
 
 - Google OAuth + invite codes — `GoogleAuthController::findOrCreateUser` creates a new family for every first-time OAuth user, so on a self-hosted instance a spouse signing in via Google ends up in their own family rather than joining the existing one. Should accept an invite-code query param. Follow-up from #138.
 - Notification PII audit (follow-up from #305): `WeeklyDigestNotification::__construct(public array $digest)` and possibly others take raw arrays instead of model keys. With `failed_jobs` restored, that data lands in `failed_jobs.payload` on dispatch (bounded to 72h by the new prune schedule, but the structural fix is to refactor to model-only constructor args so SerializesModels handles the payload).
+- Upgrade to Laravel 12 (follow-up from the 2026-10-23 dependency sweep). Laravel 11 no longer gets security fixes; three open advisories (CRLF email rule, signed-URL path confusion, debug-page XSS) are only patched in 12.x. The CRLF fix is backported in `app/Validation/CrlfSafeValidator.php`; delete it and its resolver in `AppServiceProvider` after the upgrade.
+- SSRF guard DNS rebinding: `RecipeImportService`, `RestaurantImportService` and `IcsCalendarService` resolve the host with `gethostbyname`, check the IP, then let Guzzle resolve it again. A rebinding DNS server can answer public first and private second. Pin the checked IP with `CURLOPT_RESOLVE` and re-check on every redirect hop.
+- Tailwind 4 migration would clear the remaining dev-only `postcss-selector-parser` advisory (Tailwind 3's `postcss-nested` pins the vulnerable 6.x).
 - Plugin/module system for community extensions (under investigation)
 - Staging environment strategy (discussion pending)
 - Vault overhaul (explore Obsidian-like or Standard Notes integration)
