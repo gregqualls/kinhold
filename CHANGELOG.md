@@ -2,7 +2,11 @@
 
 > Updated at the end of every working session. Newest entries first.
 
-## 2026-05-29 — v1.10.1: Fix stale CSRF token on long-lived mobile tabs
+## 2026-10-23: CSRF fix follow-ups
+
+Review follow-ups to v1.10.1. The real cause of the mobile 419s was the stale `X-CSRF-TOKEN` header from the page-load meta tag: Laravel checks it before `X-XSRF-TOKEN`, so it beat the fresh cookie token axios already sends on same-origin requests. `resources/js/services/api.js` now relies on axios's built-in XSRF cookie handling instead of a hand-rolled cookie reader, and concurrent 419s share a single `/sanctum/csrf-cookie` refresh instead of each starting a new session. The unused `csrf-token` meta tag is gone from `app.blade.php`. New `tests/Feature/Auth/SpaCsrfTokenTest.php` runs real CSRF verification on a stateful SPA write and pins the header precedence so the stale-header bug can't quietly return.
+
+## 2026-05-29: v1.10.1, Fix stale CSRF token on long-lived mobile tabs
 
 Mobile users hit a CSRF error (419) on every write (POST/PUT/DELETE) once a backgrounded SPA tab outlived the 120-minute session. Reads kept working because GET skips CSRF verification, so the app looked fine until you tried to change something.
 
