@@ -2,6 +2,10 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-23: v1.11.0, Laravel 13 and security updates
+
+Release covering the three entries below plus the CSRF follow-ups (#333): the dependency security sweep, the Laravel 13 upgrade, and the self-hosted email auto-verify fix. Self-hosters should update. Laravel 11 no longer gets security fixes, and Docker installs with `SELF_HOSTED=true` now skip email verification as intended. Git installs need PHP 8.4 (see `SELF-HOSTING.md`). No new migrations.
+
 ## 2026-10-23: Self-hosted email auto-verify under cached config
 
 `AuthController` decided whether to auto-verify new users (and skip verification resends) with `env('SELF_HOSTED')`. The Docker image runs `config:cache` in `docker/entrypoint.sh`, and with cached config `env()` returns null outside `config/`, so Docker self-hosters were asked to verify an email their instance likely can't send. Both checks now read `config('kinhold.self_hosted')`, which already mirrors the env var. A second bug sat behind the first: the auto-verify used `$user->update(['email_verified_at' => now()])`, but `email_verified_at` isn't in `User::$fillable`, so the write was silently dropped even when the flag was read correctly. It now calls `markEmailAsVerified()`, which keeps the column out of mass assignment. Two new tests in `EmailVerificationTest` cover registration and resend in self-hosted mode, and the Larastan baseline entry that hid the bug is gone.
