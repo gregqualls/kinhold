@@ -72,6 +72,8 @@ class Task extends Model
 
     /**
      * Task belongs to a Family.
+     *
+     * @return BelongsTo<Family, $this>
      */
     public function family(): BelongsTo
     {
@@ -80,6 +82,8 @@ class Task extends Model
 
     /**
      * Task belongs to a User (creator).
+     *
+     * @return BelongsTo<User, $this>
      */
     public function creator(): BelongsTo
     {
@@ -88,6 +92,8 @@ class Task extends Model
 
     /**
      * Task belongs to a User (assignee).
+     *
+     * @return BelongsTo<User, $this>
      */
     public function assignee(): BelongsTo
     {
@@ -96,6 +102,8 @@ class Task extends Model
 
     /**
      * Task has many Tags.
+     *
+     * @return BelongsToMany<Tag, $this, TaskTag>
      */
     public function tags(): BelongsToMany
     {
@@ -182,6 +190,8 @@ class Task extends Model
 
     /**
      * Parent task (for recurring task instances).
+     *
+     * @return BelongsTo<Task, $this>
      */
     public function parentTask(): BelongsTo
     {
@@ -190,6 +200,8 @@ class Task extends Model
 
     /**
      * Generated occurrences of a recurring task.
+     *
+     * @return HasMany<Task, $this>
      */
     public function occurrences(): HasMany
     {
@@ -198,6 +210,8 @@ class Task extends Model
 
     /**
      * Polymorphic source that generated this task (e.g. a MealPlanEntry).
+     *
+     * @return MorphTo<Model, $this>
      */
     public function sourceable(): MorphTo
     {

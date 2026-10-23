@@ -29,6 +29,8 @@ class Restaurant extends Model
 
     /**
      * Restaurant belongs to many Families (via family_restaurants pivot).
+     *
+     * @return BelongsToMany<Family, $this>
      */
     public function families(): BelongsToMany
     {
@@ -39,6 +41,8 @@ class Restaurant extends Model
 
     /**
      * Restaurant has many Ratings (polymorphic).
+     *
+     * @return MorphMany<Rating, $this>
      */
     public function ratings(): MorphMany
     {
@@ -47,6 +51,8 @@ class Restaurant extends Model
 
     /**
      * Tags applied to this restaurant (shared pool with recipes/tasks).
+     *
+     * @return BelongsToMany<Tag, $this, RestaurantTag>
      */
     public function tags(): BelongsToMany
     {

@@ -28,6 +28,8 @@ class VaultCategory extends Model
 
     /**
      * VaultCategory belongs to a Family.
+     *
+     * @return BelongsTo<Family, $this>
      */
     public function family(): BelongsTo
     {
@@ -36,6 +38,8 @@ class VaultCategory extends Model
 
     /**
      * VaultCategory has many VaultEntries.
+     *
+     * @return HasMany<VaultEntry, $this>
      */
     public function entries(): HasMany
     {

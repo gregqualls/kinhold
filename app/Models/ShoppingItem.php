@@ -44,26 +44,41 @@ class ShoppingItem extends Model
         'source' => ShoppingItemSource::class,
     ];
 
+    /**
+     * @return BelongsTo<ShoppingList, $this>
+     */
     public function shoppingList(): BelongsTo
     {
         return $this->belongsTo(ShoppingList::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function addedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'added_by');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function checkedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'checked_by');
     }
 
+    /**
+     * @return BelongsTo<Recipe, $this>
+     */
     public function sourceRecipe(): BelongsTo
     {
         return $this->belongsTo(Recipe::class, 'source_recipe_id');
     }
 
+    /**
+     * @return BelongsTo<RecipeIngredient, $this>
+     */
     public function sourceIngredient(): BelongsTo
     {
         return $this->belongsTo(RecipeIngredient::class, 'source_ingredient_id');

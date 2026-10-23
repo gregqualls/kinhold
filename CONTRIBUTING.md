@@ -12,7 +12,7 @@ Thanks for your interest in contributing! Kinhold is an open-source family hub a
 
 ### Prerequisites
 
-- PHP 8.2+
+- PHP 8.4+
 - Composer
 - Node.js 18+
 - PostgreSQL 16
@@ -56,7 +56,7 @@ The recommended Windows path is the **Docker self-host flow** in [SELF-HOSTING.m
 
 #### PHP
 
-`composer.lock` resolves Symfony 8 dependencies that require **PHP 8.4+** even though `composer.json` advertises `^8.2`. Install PHP 8.4 first; older versions fail at the `composer install` resolution step with cryptic platform errors.
+`composer.lock` resolves Symfony 8 dependencies that require **PHP 8.4+** even though `composer.json` advertises `^8.3`. Install PHP 8.4 first; older versions fail at the `composer install` resolution step with cryptic platform errors.
 
 ```powershell
 # winget matches multiple PHP packages — pin the exact id, otherwise it silently no-ops

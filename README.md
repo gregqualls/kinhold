@@ -66,7 +66,7 @@ Turn chores into a game your kids actually want to play.
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | Laravel 11, PHP 8.2+ |
+| Backend | Laravel 13, PHP 8.4 |
 | Frontend | Vue 3 (Composition API, `<script setup>`) |
 | State | Pinia (16 stores) |
 | Styling | Tailwind CSS |

@@ -74,26 +74,41 @@ class Reward extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Family, $this>
+     */
     public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * @return HasMany<RewardPurchase, $this>
+     */
     public function purchases(): HasMany
     {
         return $this->hasMany(RewardPurchase::class);
     }
 
+    /**
+     * @return HasMany<RewardBid, $this>
+     */
     public function bids(): HasMany
     {
         return $this->hasMany(RewardBid::class);
     }
 
+    /**
+     * @return HasMany<RewardBid, $this>
+     */
     public function activeBids(): HasMany
     {
         return $this->bids()->whereNull('resolved_at');

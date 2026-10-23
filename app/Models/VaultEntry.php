@@ -53,6 +53,8 @@ class VaultEntry extends Model
 
     /**
      * VaultEntry belongs to a Family.
+     *
+     * @return BelongsTo<Family, $this>
      */
     public function family(): BelongsTo
     {
@@ -61,6 +63,8 @@ class VaultEntry extends Model
 
     /**
      * VaultEntry belongs to a VaultCategory.
+     *
+     * @return BelongsTo<VaultCategory, $this>
      */
     public function category(): BelongsTo
     {
@@ -69,6 +73,8 @@ class VaultEntry extends Model
 
     /**
      * VaultEntry belongs to a User (creator).
+     *
+     * @return BelongsTo<User, $this>
      */
     public function creator(): BelongsTo
     {
@@ -77,6 +83,8 @@ class VaultEntry extends Model
 
     /**
      * VaultEntry has many VaultPermissions.
+     *
+     * @return HasMany<VaultPermission, $this>
      */
     public function permissions(): HasMany
     {
@@ -85,6 +93,8 @@ class VaultEntry extends Model
 
     /**
      * VaultEntry has many Documents (polymorphic).
+     *
+     * @return MorphMany<Document, $this>
      */
     public function documents(): MorphMany
     {

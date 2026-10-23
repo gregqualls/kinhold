@@ -73,6 +73,8 @@ class MealPlanEntry extends Model
 
     /**
      * MealPlanEntry belongs to a MealPlan.
+     *
+     * @return BelongsTo<MealPlan, $this>
      */
     public function mealPlan(): BelongsTo
     {
@@ -81,6 +83,8 @@ class MealPlanEntry extends Model
 
     /**
      * MealPlanEntry belongs to a Recipe.
+     *
+     * @return BelongsTo<Recipe, $this>
      */
     public function recipe(): BelongsTo
     {
@@ -89,6 +93,8 @@ class MealPlanEntry extends Model
 
     /**
      * MealPlanEntry belongs to a Restaurant.
+     *
+     * @return BelongsTo<Restaurant, $this>
      */
     public function restaurant(): BelongsTo
     {
@@ -97,6 +103,8 @@ class MealPlanEntry extends Model
 
     /**
      * MealPlanEntry belongs to a MealPreset.
+     *
+     * @return BelongsTo<MealPreset, $this>
      */
     public function preset(): BelongsTo
     {
