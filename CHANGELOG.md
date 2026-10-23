@@ -2,6 +2,16 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-23: Dependency security sweep
+
+Triage of 92 open Dependabot alerts (1 critical, 39 high). Everything with a non-major fix is bumped: Guzzle 7.16, psr7 2.13, league/commonmark 2.10, jmespath 2.9.2, phpseclib 3.0.57, web-token 4.2, flysystem 3.36, symfony/http-foundation 7.4.21 on the PHP side; axios 1.20, DOMPurify 3.4.17, PostCSS 8.5.31, Vite 6.4.5 and the dev-only transitive tooling on the npm side. No app code changes from the bumps.
+
+Most alerts were noise for Kinhold (axios Node-adapter bugs in a browser SPA, build-only tooling, JWT verification we never do). Two were real. Guzzle's noncanonical-host bug could slip past the SSRF guards in recipe import, restaurant import and ICS feeds, which check the host with `parse_url` before Guzzle fetches it; the Guzzle bump closes it. Laravel's `email` rule accepted addresses with embedded CR/LF (GHSA-5vg9-5847-vvmq), reachable from unauthenticated `/register`. Laravel 11 has no fix, so `app/Validation/CrlfSafeValidator.php` backports the 12.60 check through `Validator::resolver()` in `AppServiceProvider`. New `tests/Feature/Auth/EmailCrlfInjectionTest.php` covers the rule and the registration path.
+
+Still open, needing major upgrades: three Laravel advisories (only the CRLF one affects Kinhold, and it is mitigated), dev-only `postcss-selector-parser` (Tailwind 4), and a low KaTeX advisory via Milkdown. Laravel 12 and an SSRF DNS-rebinding fix are captured in the ROADMAP parking lot.
+
+Tests: 448/448 green; `npm run build` green.
+
 ## 2026-10-23: CSRF fix follow-ups
 
 Review follow-ups to v1.10.1. The real cause of the mobile 419s was the stale `X-CSRF-TOKEN` header from the page-load meta tag: Laravel checks it before `X-XSRF-TOKEN`, so it beat the fresh cookie token axios already sends on same-origin requests. `resources/js/services/api.js` now relies on axios's built-in XSRF cookie handling instead of a hand-rolled cookie reader, and concurrent 419s share a single `/sanctum/csrf-cookie` refresh instead of each starting a new session. The unused `csrf-token` meta tag is gone from `app.blade.php`. New `tests/Feature/Auth/SpaCsrfTokenTest.php` runs real CSRF verification on a stateful SPA write and pins the header precedence so the stale-header bug can't quietly return.
