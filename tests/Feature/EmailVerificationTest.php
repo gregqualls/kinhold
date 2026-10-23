@@ -37,6 +37,38 @@ class EmailVerificationTest extends TestCase
         Notification::assertSentTo($user, VerifyEmail::class);
     }
 
+    public function test_self_hosted_registration_is_auto_verified(): void
+    {
+        Notification::fake();
+        config(['kinhold.self_hosted' => true]);
+
+        $this->postJson('/api/v1/register', [
+            'name' => 'Test User',
+            'email' => 'selfhosted@example.com',
+            'password' => 'Password1',
+            'password_confirmation' => 'Password1',
+            'family_name' => 'Test Family',
+        ])->assertStatus(201);
+
+        $user = User::where('email', 'selfhosted@example.com')->first();
+        $this->assertNotNull($user->email_verified_at);
+        Notification::assertNotSentTo($user, VerifyEmail::class);
+    }
+
+    public function test_self_hosted_resend_verification_is_a_no_op(): void
+    {
+        Notification::fake();
+        config(['kinhold.self_hosted' => true]);
+
+        $user = User::factory()->create(['email_verified_at' => null]);
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/email/resend')
+            ->assertStatus(200)
+            ->assertJson(['message' => 'Email verification is not required for self-hosted instances']);
+        Notification::assertNotSentTo($user, VerifyEmail::class);
+    }
+
     public function test_resend_verification_works(): void
     {
         Notification::fake();

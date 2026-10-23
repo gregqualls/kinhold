@@ -74,8 +74,8 @@ class AuthController extends Controller
         $user->notify(new WelcomeNotification($family, $isNewFamily));
 
         // Self-hosted: auto-verify since there's likely no mail server
-        if (env('SELF_HOSTED', false)) {
-            $user->update(['email_verified_at' => now()]);
+        if (config('kinhold.self_hosted')) {
+            $user->markEmailAsVerified();
         } elseif ($user->email) {
             // Send email verification (new users with email only, not managed accounts)
             $user->sendEmailVerificationNotification();
@@ -168,7 +168,7 @@ class AuthController extends Controller
      */
     public function resendVerification(Request $request): JsonResponse
     {
-        if (env('SELF_HOSTED', false)) {
+        if (config('kinhold.self_hosted')) {
             return response()->json(['message' => 'Email verification is not required for self-hosted instances'], 200);
         }
 

@@ -4,7 +4,13 @@
 
 ## 2026-10-23: v1.10.2, Demo family no longer trips the single-family banner ([#331](https://github.com/gregqualls/kinhold/issues/331))
 
-Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count. v1.10.2 also ships the Laravel 13 upgrade, dependency sweep and CSRF follow-ups below.
+Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count. v1.10.2 also ships the self-hosted email auto-verify fix, Laravel 13 upgrade, dependency sweep and CSRF follow-ups below.
+
+## 2026-10-23: Self-hosted email auto-verify under cached config
+
+`AuthController` decided whether to auto-verify new users (and skip verification resends) with `env('SELF_HOSTED')`. The Docker image runs `config:cache` in `docker/entrypoint.sh`, and with cached config `env()` returns null outside `config/`, so Docker self-hosters were asked to verify an email their instance likely can't send. Both checks now read `config('kinhold.self_hosted')`, which already mirrors the env var. A second bug sat behind the first: the auto-verify used `$user->update(['email_verified_at' => now()])`, but `email_verified_at` isn't in `User::$fillable`, so the write was silently dropped even when the flag was read correctly. It now calls `markEmailAsVerified()`, which keeps the column out of mass assignment. Two new tests in `EmailVerificationTest` cover registration and resend in self-hosted mode, and the Larastan baseline entry that hid the bug is gone.
+
+Tests: 456/456 green; PHPStan clean.
 
 ## 2026-10-23: Laravel 13 upgrade
 
