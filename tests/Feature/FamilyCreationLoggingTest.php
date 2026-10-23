@@ -65,4 +65,15 @@ class FamilyCreationLoggingTest extends TestCase
                 return $context['commercial_license_acknowledged'] === true;
             });
     }
+
+    public function test_log_warning_does_not_fire_when_demo_family_is_seeded_alongside_one_family(): void
+    {
+        config()->set('kinhold.self_hosted', true);
+        Family::factory()->create();
+
+        Log::spy();
+        Family::factory()->create(['slug' => 'q32-demo-family']);
+
+        Log::shouldNotHaveReceived('warning');
+    }
 }

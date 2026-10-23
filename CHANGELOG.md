@@ -2,6 +2,10 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-23: Demo family no longer trips the single-family banner ([#331](https://github.com/gregqualls/kinhold/issues/331))
+
+Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count.
+
 ## 2026-10-23: CSRF fix follow-ups
 
 Review follow-ups to v1.10.1. The real cause of the mobile 419s was the stale `X-CSRF-TOKEN` header from the page-load meta tag: Laravel checks it before `X-XSRF-TOKEN`, so it beat the fresh cookie token axios already sends on same-origin requests. `resources/js/services/api.js` now relies on axios's built-in XSRF cookie handling instead of a hand-rolled cookie reader, and concurrent 419s share a single `/sanctum/csrf-cookie` refresh instead of each starting a new session. The unused `csrf-token` meta tag is gone from `app.blade.php`. New `tests/Feature/Auth/SpaCsrfTokenTest.php` runs real CSRF verification on a stateful SPA write and pins the header precedence so the stale-header bug can't quietly return.
