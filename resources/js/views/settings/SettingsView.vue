@@ -385,17 +385,7 @@
             <!-- Two-tab selector — hidden on self-hosted (BYOK is the only option) -->
             <div v-if="billingEnabled" class="grid grid-cols-2 gap-3 mb-5">
               <!-- Kinhold AI tab -->
-              <button
-                type="button"
-                class="kin-pressable kin-tile relative flex flex-col items-start p-4 rounded-xl text-left transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
-                :data-selected="aiMode === 'kinhold' ? 'true' : null"
-                @click="aiMode = 'kinhold'"
-              >
-                <div v-if="aiMode === 'kinhold'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
+              <KinSelectCard :selected="aiMode === 'kinhold'" @click="aiMode = 'kinhold'">
                 <div class="w-8 h-8 rounded-lg bg-accent-lavender-soft/40 flex items-center justify-center mb-2">
                   <svg class="w-4 h-4 text-accent-lavender-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -403,20 +393,10 @@
                 </div>
                 <p class="text-sm font-semibold text-ink-primary">Use Kinhold AI</p>
                 <p class="text-xs text-ink-secondary mt-0.5">Powered by Claude · Included with your trial</p>
-              </button>
+              </KinSelectCard>
 
               <!-- BYOK tab -->
-              <button
-                type="button"
-                class="kin-pressable kin-tile relative flex flex-col items-start p-4 rounded-xl text-left transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
-                :data-selected="aiMode === 'byok' ? 'true' : null"
-                @click="aiMode = 'byok'"
-              >
-                <div v-if="aiMode === 'byok'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
+              <KinSelectCard :selected="aiMode === 'byok'" @click="aiMode = 'byok'">
                 <div class="w-8 h-8 rounded-lg bg-golden-100 dark:bg-golden-900/40 flex items-center justify-center mb-2">
                   <svg class="w-4 h-4 text-golden-600 dark:text-golden-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
@@ -424,7 +404,7 @@
                 </div>
                 <p class="text-sm font-semibold text-ink-primary">My Own API Key</p>
                 <p class="text-xs text-ink-secondary mt-0.5">Anthropic Claude (others coming soon)</p>
-              </button>
+              </KinSelectCard>
             </div>
 
             <!-- Kinhold AI panel — billing-only -->
@@ -461,19 +441,20 @@
               <!-- Provider selection — single column when only one provider is
                  available (avoids 1-of-3 dead-space layout per #201) -->
               <div :class="['grid gap-3', aiProviders.length > 1 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1']">
-                <button
+                <KinSelectCard
                   v-for="provider in aiProviders"
                   :key="provider.slug"
-                  type="button"
-                  class="kin-pressable kin-tile relative flex flex-col items-center p-3 rounded-xl text-center transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
-                  :data-selected="aiConfig.provider === provider.slug ? 'true' : null"
+                  :selected="aiConfig.provider === provider.slug"
+                  :show-check="false"
+                  padding="sm"
+                  align="center"
                   @click="selectAiProvider(provider.slug)"
                 >
                   <div class="w-8 h-8 mb-1.5 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
                     <span class="text-base font-bold">{{ providerIcon(provider.slug) }}</span>
                   </div>
                   <p class="text-xs font-semibold text-ink-primary">{{ provider.name }}</p>
-                </button>
+                </KinSelectCard>
               </div>
 
               <!-- API Key -->
@@ -1009,22 +990,13 @@
             <p class="text-xs text-ink-secondary mb-3">Choose a color palette for the app</p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <button
+              <KinSelectCard
                 v-for="theme in availableThemes"
                 :key="theme.id"
-                type="button"
-                class="kin-pressable kin-tile relative flex flex-col p-3 rounded-xl text-left transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
-                :data-selected="currentTheme === theme.id ? 'true' : null"
+                :selected="currentTheme === theme.id"
+                padding="sm"
                 @click="selectTheme(theme.id)"
               >
-                <div
-                  v-if="currentTheme === theme.id"
-                  class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center"
-                >
-                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
                 <div class="flex gap-1.5 mb-2">
                   <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.primary }"></span>
                   <span class="w-8 h-8 rounded-lg shadow-sm" :style="{ backgroundColor: theme.colors.accent }"></span>
@@ -1033,7 +1005,7 @@
                 </div>
                 <p class="text-sm font-semibold text-ink-primary">{{ theme.name }}</p>
                 <p class="text-xs text-ink-secondary">{{ theme.description }}</p>
-              </button>
+              </KinSelectCard>
             </div>
           </div>
         </SettingsSection>
@@ -1606,6 +1578,7 @@ import AvatarEditor from '@/components/common/AvatarEditor.vue'
 import KinSwitch from '@/components/design-system/KinSwitch.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
+import KinSelectCard from '@/components/design-system/KinSelectCard.vue'
 import SettingsSection from '@/components/settings/SettingsSection.vue'
 import FamilyAllergenSettings from '@/components/allergens/FamilyAllergenSettings.vue'
 import AllergyProfileEditor from '@/components/allergens/AllergyProfileEditor.vue'
