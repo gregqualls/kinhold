@@ -1,12 +1,8 @@
 <template>
   <div class="p-3 md:p-6 max-w-3xl">
-    <!-- Header -->
-    <div class="flex items-center gap-2 md:gap-3 mb-3 md:mb-6">
-      <KinButton variant="ghost" size="sm" icon-only aria-label="Back to Points" to="/points">
-        <ChevronLeftIcon class="w-5 h-5" />
-      </KinButton>
-      <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">My Points History</h1>
-    </div>
+    <KinPageHero show-back @back="$router.push('/points')">
+      My Points History
+    </KinPageHero>
 
     <!-- Hero balance card -->
     <KinHeroMetricCard
@@ -56,8 +52,9 @@
 <script setup>
 import { onMounted } from 'vue'
 import { usePointsStore } from '@/stores/points'
-import { ChevronLeftIcon, ClockIcon } from '@heroicons/vue/24/outline'
+import { ClockIcon } from '@heroicons/vue/24/outline'
 import KinButton from '@/components/design-system/KinButton.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import KinHeroMetricCard from '@/components/design-system/KinHeroMetricCard.vue'
 import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'

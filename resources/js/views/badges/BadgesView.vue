@@ -1,15 +1,16 @@
 <template>
   <div class="p-4 md:p-6 max-w-4xl">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6 gap-3 flex-wrap">
-      <h1 class="text-2xl font-bold font-heading text-ink-primary">Achievements</h1>
-      <KinButton v-if="isParent" variant="primary" size="sm" @click="showCreateForm = !showCreateForm">
-        <template v-if="!showCreateForm" #leading>
-          <PlusIcon class="w-4 h-4" />
-        </template>
-        {{ showCreateForm ? 'Cancel' : 'Create Badge' }}
-      </KinButton>
-    </div>
+    <KinPageHero>
+      Achievements
+      <template v-if="isParent" #actions>
+        <KinButton variant="primary" size="sm" @click="showCreateForm = !showCreateForm">
+          <template v-if="!showCreateForm" #leading>
+            <PlusIcon class="w-4 h-4" />
+          </template>
+          {{ showCreateForm ? 'Cancel' : 'Create Badge' }}
+        </KinButton>
+      </template>
+    </KinPageHero>
 
     <!-- Create Form (parent only) -->
     <KinFlatCard v-if="showCreateForm" padding="md" class="mb-6">
@@ -166,6 +167,7 @@ import { useAuthStore } from '@/stores/auth'
 import BadgeIcon from '@/components/badges/BadgeIcon.vue'
 import { badgeIconNames, badgeIconPaths } from '@/components/badges/badgeIcons'
 import KinButton from '@/components/design-system/KinButton.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinCheckbox from '@/components/design-system/KinCheckbox.vue'

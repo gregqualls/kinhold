@@ -2,22 +2,22 @@
   <div class="h-full flex flex-col">
     <!-- Header -->
     <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Vault</h1>
-          <p class="hidden md:block text-sm text-ink-tertiary mt-0.5">Secure family information</p>
-        </div>
-        <div v-if="isParent" class="hidden md:flex items-center gap-2">
-          <KinButton variant="secondary" size="md" @click="openCategoryModal()">
-            <FolderPlusIcon class="w-4 h-4" />
-            New Category
-          </KinButton>
-          <KinButton variant="primary" size="md" @click="showCreateEntry = true">
-            <PlusIcon class="w-4 h-4" />
-            Add Entry
-          </KinButton>
-        </div>
-      </div>
+      <KinPageHero>
+        Vault
+        <template #subtitle>Secure family information</template>
+        <template v-if="isParent" #actions>
+          <div class="hidden md:flex items-center gap-2">
+            <KinButton variant="secondary" size="md" @click="openCategoryModal()">
+              <FolderPlusIcon class="w-4 h-4" />
+              New Category
+            </KinButton>
+            <KinButton variant="primary" size="md" @click="showCreateEntry = true">
+              <PlusIcon class="w-4 h-4" />
+              Add Entry
+            </KinButton>
+          </div>
+        </template>
+      </KinPageHero>
     </div>
 
     <!-- Search -->
@@ -248,6 +248,7 @@ import ContextMenu from '@/components/common/ContextMenu.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
 import MarkdownEditor from '@/components/vault/MarkdownEditor.vue'
 import KinButton from '@/components/design-system/KinButton.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinSearch from '@/components/design-system/KinSearch.vue'

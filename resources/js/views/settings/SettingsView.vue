@@ -1,7 +1,6 @@
 <template>
   <div class="p-4 md:p-6 max-w-4xl">
-    <!-- Header -->
-    <h1 class="text-2xl font-bold font-heading text-ink-primary mb-6">{{ isParent ? 'Family Settings' : 'My Settings' }}</h1>
+    <KinPageHero>{{ isParent ? 'Family Settings' : 'My Settings' }}</KinPageHero>
 
     <!-- Kid-friendly Profile Section (shown for non-parent users) -->
     <div v-if="!isParent" class="card-lg mb-6">
@@ -1579,6 +1578,7 @@ import KinSwitch from '@/components/design-system/KinSwitch.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinSelectCard from '@/components/design-system/KinSelectCard.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import SettingsSection from '@/components/settings/SettingsSection.vue'
 import FamilyAllergenSettings from '@/components/allergens/FamilyAllergenSettings.vue'
 import AllergyProfileEditor from '@/components/allergens/AllergyProfileEditor.vue'
