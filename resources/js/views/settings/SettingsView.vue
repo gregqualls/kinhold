@@ -386,12 +386,9 @@
             <div v-if="billingEnabled" class="grid grid-cols-2 gap-3 mb-5">
               <!-- Kinhold AI tab -->
               <button
-                :class="[
-                  'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
-                  aiMode === 'kinhold'
-                    ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
-                    : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
-                ]"
+                type="button"
+                class="kin-pressable kin-tile relative flex flex-col items-start p-4 rounded-xl text-left transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
+                :data-selected="aiMode === 'kinhold' ? 'true' : null"
                 @click="aiMode = 'kinhold'"
               >
                 <div v-if="aiMode === 'kinhold'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
@@ -410,12 +407,9 @@
 
               <!-- BYOK tab -->
               <button
-                :class="[
-                  'relative flex flex-col items-start p-4 rounded-xl border-2 transition-all duration-200 text-left',
-                  aiMode === 'byok'
-                    ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
-                    : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
-                ]"
+                type="button"
+                class="kin-pressable kin-tile relative flex flex-col items-start p-4 rounded-xl text-left transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
+                :data-selected="aiMode === 'byok' ? 'true' : null"
                 @click="aiMode = 'byok'"
               >
                 <div v-if="aiMode === 'byok'" class="absolute top-2 right-2 w-5 h-5 rounded-full bg-accent-lavender-bold flex items-center justify-center">
@@ -470,12 +464,9 @@
                 <button
                   v-for="provider in aiProviders"
                   :key="provider.slug"
-                  :class="[
-                    'relative flex flex-col items-center p-3 rounded-xl border-2 transition-all duration-200 text-center',
-                    aiConfig.provider === provider.slug
-                      ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
-                      : 'border-border-subtle hover:border-border-strong bg-surface-raised/50',
-                  ]"
+                  type="button"
+                  class="kin-pressable kin-tile relative flex flex-col items-center p-3 rounded-xl text-center transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
+                  :data-selected="aiConfig.provider === provider.slug ? 'true' : null"
                   @click="selectAiProvider(provider.slug)"
                 >
                   <div class="w-8 h-8 mb-1.5 flex items-center justify-center rounded-lg" :class="providerIconClass(provider.slug)">
@@ -1021,12 +1012,9 @@
               <button
                 v-for="theme in availableThemes"
                 :key="theme.id"
-                :class="[
-                  'relative flex flex-col p-3 rounded-xl border-2 transition-all duration-200 text-left',
-                  currentTheme === theme.id
-                    ? 'border-accent-lavender-bold ring-2 ring-accent-lavender-bold/20 dark:ring-accent-lavender-bold/20 bg-surface-sunken dark:bg-surface-raised'
-                    : 'border-border-subtle hover:border-border-strong dark:hover:border-border-strong bg-surface-raised/50',
-                ]"
+                type="button"
+                class="kin-pressable kin-tile relative flex flex-col p-3 rounded-xl text-left transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
+                :data-selected="currentTheme === theme.id ? 'true' : null"
                 @click="selectTheme(theme.id)"
               >
                 <div

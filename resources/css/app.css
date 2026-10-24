@@ -137,6 +137,30 @@
     border-radius: 0 2px 2px 0;
   }
 
+  /* Selected-tile grammar. Different shape from .kin-pressable[data-selected]:
+     bordered cards (AI mode picker, child-mode tiles, widget picker, feature
+     access tiles) share a border + ring + sunken-bg treatment when selected.
+     Compose with .kin-pressable for the press feel; override the row-style
+     left bar + wash from above because .kin-tile is a bordered card, not a
+     row. */
+  .kin-tile {
+    border: 2px solid rgb(var(--border-subtle));
+    background-color: color-mix(in oklab, rgb(var(--surface-raised)) 50%, transparent);
+  }
+  .kin-tile:hover:not([data-selected="true"]) {
+    border-color: rgb(var(--border-strong));
+  }
+  .kin-tile[data-selected="true"] {
+    border-color: rgb(var(--accent-lavender-bold));
+    box-shadow: 0 0 0 2px color-mix(in oklab, rgb(var(--accent-lavender-bold)) 20%, transparent);
+    background-color: rgb(var(--surface-sunken));
+  }
+  .dark .kin-tile[data-selected="true"] {
+    background-color: rgb(var(--surface-raised));
+  }
+  /* Row-style ::before bar from above does not belong on tiles. */
+  .kin-pressable.kin-tile[data-selected="true"]::before { content: none; }
+
   .meal-drag-chosen {
     box-shadow: 0 0 0 2px rgba(196, 151, 90, 0.5) !important;
   }
