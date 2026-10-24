@@ -1,3 +1,42 @@
+## Polish pass, part 3 — 2026-10-24 (same branch, still unmerged)
+
+Twelve commits (`dae826f` → `ccfa1ff`) picking up the audit's remaining design-call items. The deferral list from part 2 ("Stopped at", "Still deferred") drove the plan. Everything landed on `polish/honour-the-system`; nothing pushed, nothing merged.
+
+**DS primitives + extensions (first, so screens could route through them):**
+
+1. **`KinChip` `interactive` prop.** A passive label renders as `<span>` instead of `<button>`, dropping its tab stop. TaskItem's tag + recurring chips lose the `tabindex="-1"` hack — the first task row went from 5 tab stops to 3.
+2. **`KinChip` `showDot` + status-tint grammar.** Status variant can hide the leading dot and apply a soft-tinted bg + bold text in the status colour, via a static `STATUS_LABEL_CLASSES` map so Tailwind JIT picks up `bg-status-{token}/10 text-status-{token}`. This unblocked the state-badge sites (RewardCard, FeedItem) part 2 stopped at.
+3. **`KinSelectCard` primitive.** New wrapper for the `.kin-pressable .kin-tile` tile pattern. Props `selected`, `showCheck`, `padding` (sm/md), `align` (start/center). Four Settings sites (AI mode × 2, AI provider, color theme) each shrunk from ~15 lines to 7-10.
+4. **`KinPageHero` primitive.** Shared page header with optional back arrow + eyebrow + subtitle + right-aligned action slot. Default type scale matches the WelcomeWidget polish from part 1 (`text-xl sm:text-2xl font-semibold tracking-tight`). Six screens adopted: VaultEntryView, VaultCategoriesView, VaultEntriesView, BadgesView, SettingsView, PointsHistoryView. Food, Shopping, Chat, Points main stay custom (their chrome doesn't model cleanly).
+
+**Chip-storm cleanup acting on the new primitives:**
+
+5. **RewardCard** stock / expiry / visibility pills all route through `KinChip variant="status" show-dot="false" :interactive="false"`. `stockClass`/`expiryClass` renamed to `*Status` returning semantic status keys (failed / warning / info).
+6. **FeedItem points pill** routes the same way. Stack button + stacked / count-only badges stayed hand-rolled with `.kin-pressable` + per-property transition — they want hover colour-swaps `KinChip filter` doesn't model. Noted below for a future `KinKudoStack` primitive.
+
+**Per-screen polish (small items the user picked next):**
+
+7. **Rewards grid density** — `grid-cols-1 sm:2 lg:3` → `… xl:4 2xl:5`. Main content stops leaving ~55% of a 2560px screen empty.
+8. **Food empty-week** — the 28 "+ Add" slot grid is replaced on desktop by a single centred `KinEmptyState` (peach `CalendarDaysIcon`, "No meals planned this week" title, "Plan the week" KinButton CTA). `isWeekEmpty = computed(() => !mealsStore.currentPlan?.entries?.length)`. Mobile keeps infinite scroll from today.
+9. **Points history date groups** — `groupedFeed` computed in `PointsHistoryView.vue:76` buckets by `d.toDateString()`, labels "Today" / "Yesterday" / "Weekday, Mon D"; row subtitle switched from `formatDate` (month+day+time) to `formatTime` (hour:minute only). Section headers use `text-[10px] font-semibold uppercase tracking-wider text-ink-tertiary`.
+10. **TaskItem dblclick inline-edit retired properly.** Part 2's note said this path was dominated by row-click-opens-panel; this piece removed the `@dblclick.stop`, the `<input>` branch, `startEditTitle`/`saveTitle`/`cancelEditTitle`, the `isEditingTitle`/`editTitle`/`titleInput` refs, and the `ref`/`nextTick` imports. 46 deletions, 11 additions. Row title is now a plain `<p>`; editing happens in TaskDetailPanel.
+
+**Gate + review.** `scripts/check.sh` ran green on each piece (86-89s). Code-review low-effort reported zero findings on 11 of 12 (the ToggleSwitch swap in piece 1 of the session had 3 cosmetic findings addressed before commit).
+
+**Stopped at (next session's starting point):**
+
+- **Settings master-detail layout** — the biggest UX change on the deferral list. Single-column accordion → two-pane list/detail on desktop. Needs a design conversation (list grouping, which setting lands in which pane, mobile fallback), not just a refactor.
+- **Dashboard cards sized to their content** — the audit's 50%-empty My Tasks and Today's Schedule call. 11 widgets to audit per-size. Dedicated-session work.
+- **`KinUtilityRail` cross-screen promotion** — Vault, Rewards, Food, Shopping, Settings, Achievements each need a per-screen call on what fills the right rail (recent activity, quick filters, kin cards).
+- **`KinEmptyState` adoption on remaining sites** — Points right rail, Vault entry Documents section, Rewards auctions empty state. Each needs illustration + CTA copy decisions.
+- **TaskItem metadata inline with middots** — the audit's strongest call, deferred since part 1. `Chores · 10pt · Every Tuesday` style replacing the chip-plus-meta row. Medium restructure (changes TaskItem shape, not just styling).
+- **`KinKudoStack` primitive** — extracts FeedItem's stack button + stacked / count-only badges. Deferred because it's not a routing of what exists, it's a new primitive from scratch; the hand-rolls work fine until there's a second consumer.
+- **Broader `rounded-full` sweep** — Dashboard widgets, calendar legends, settings. Carried from part 1.
+
+**Where decisions live:** this handoff is the ledger. `CHANGELOG.md` has the per-session summary. `REDESIGN_BRIEF.md`'s locked tenets 4 (pill shape), 5 (hero numerals), 6 (gradients) stay preserved.
+
+---
+
 ## Polish pass, part 2 — 2026-10-24 (same branch, still unmerged)
 
 Six more commits (`c5b7813` → `6c4be83`) acting on the audit of the remaining 12 routes. The DS additions from part 1 (`.kin-pressable`, `[data-selected]`, chip routing via `KinChip`) hadn't propagated to Vault, Chat, Points, Rewards, Achievements, Food, Shopping, Settings. This pass closes the gap where the fix is DS adoption; stops where it would need design decisions.

@@ -2,6 +2,28 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-24: Polish pass part 3 — design-call items (same branch, still unmerged)
+
+Twelve more commits (`dae826f` → `ccfa1ff`) working through the design-call list the previous passes deferred. Primitives first, then per-screen polish. Branch is still `polish/honour-the-system`, still unmerged. Nothing pushed.
+
+**DS primitives + extensions:**
+
+- **`KinChip interactive` prop** — passive labels drop out of the keyboard tab order. TaskItem's tag + recurring chips lose the `tabindex="-1"` hack. First task row went from 5 tab stops to 3.
+- **`KinChip showDot` prop** — status variant can hide its leading dot and apply a soft-tinted bg + bold text in the status colour. Unblocked the RewardCard chip storm: stock, expiry, visibility pills now route through `KinChip variant="status"` with semantic status keys (failed / warning / info).
+- **`KinSelectCard`** — new primitive extracted from the `.kin-tile` pattern. Props: `selected`, `showCheck`, `padding`, `align`. Four Settings tile sites (AI mode × 2, AI provider, color theme) each shrunk from ~15 lines of inline button + conditional classes + hand-rolled check SVG to 7-10 lines of `<KinSelectCard>` plus their own inner content.
+- **`KinPageHero`** — shared page-header primitive with optional back arrow, eyebrow, subtitle, and right-aligned actions. Default type scale matches the WelcomeWidget polish (text-xl sm:text-2xl semibold tracking-tight). Six screens adopted: VaultEntryView (back + eyebrow + title + context menu), VaultCategoriesView (title + subtitle + 2 action buttons), VaultEntriesView (back + title + subtitle + Add), BadgesView (title + Create Badge), SettingsView (one-line title), PointsHistoryView (back + title). Food, Shopping, Chat and Points main stay custom — their chrome doesn't fit the primitive.
+
+**FeedItem partial cleanup:** points pill routed through `KinChip variant="status" show-dot="false"` (clean semantic win). Stack button kept as a `<button>` with `.kin-pressable` + per-property transition — a stronger hover colour-swap pattern that `KinChip filter` doesn't model. The stacked / count-only badges are also still hand-rolled and should become a `KinKudoStack` primitive in Phase 2.
+
+**Per-screen polish (small wins):**
+
+- **Rewards grid density** — 3 cols → 4 at xl, 5 at 2xl. Main content stops wasting horizontal space on wide monitors.
+- **Food empty-week** — the 28 "+ Add" slot grid is replaced by a single centred `KinEmptyState` ("No meals planned this week" + "Plan the week" CTA) when `currentPlan.entries` is empty. Desktop only; mobile keeps infinite scroll from today.
+- **Points history date groups** — flat list grouped by date, each with a `Today` / `Yesterday` / `Weekday, Mon D` header. Row subtitle switched from month-day-time to time-only (header carries the date).
+- **TaskItem dblclick inline-edit retired** — the row-click-opens-panel from the first polish pass dominated the path; retired properly. Removed the handler, the `<input>` branch, three functions, and the `nextTick` / `ref` imports (46 deletions).
+
+Code review ran per commit at low effort. Zero findings on 11 of 12 (the only exception was piece 1 of this session's run, part 2's ToggleSwitch swap, which had 3 cosmetic findings all addressed). Gate (`scripts/check.sh`) green on each; 86-89s per piece.
+
 ## 2026-10-24: Polish pass on the other nine screens (same branch, still unmerged)
 
 Six more commits acting on the frontend-design + emil-design-eng audits of the remaining 12 routes (Vault / Chat / Points / Rewards / Achievements / Food / Shopping / Settings). Same thesis as the first pass: the Kin* system exists, these screens were bypassing it. All on `polish/honour-the-system`.
