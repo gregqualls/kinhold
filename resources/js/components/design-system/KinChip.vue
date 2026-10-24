@@ -84,6 +84,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+
+  /**
+   * When false, the chip renders as a non-interactive <span> with no
+   * cursor, hover, press, or focus-ring treatment — a passive label.
+   * Default true preserves the existing clickable-button behaviour.
+   * No effect on variant="status" (always a span) or disabled (also span).
+   */
+  interactive: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 // ── Emits ────────────────────────────────────────────────────────────────────
@@ -97,6 +108,7 @@ const emit = defineEmits(['remove'])
 const rootTag = computed(() => {
   if (props.variant === 'status') return 'span'
   if (props.disabled) return 'span'
+  if (!props.interactive) return 'span'
   return 'button'
 })
 
@@ -226,6 +238,7 @@ const removablePaddingClass = computed(() =>
 const interactionClasses = computed(() => {
   if (props.disabled) return 'opacity-40 cursor-not-allowed'
   if (props.variant === 'status') return ''
+  if (!props.interactive) return ''
   return 'kin-pressable cursor-pointer transition-[filter,background-color,border-color,transform] duration-quick ease-out-soft hover:brightness-95 dark:hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-lavender-bold focus-visible:ring-offset-1'
 })
 </script>

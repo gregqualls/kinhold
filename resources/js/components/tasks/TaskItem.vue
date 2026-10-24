@@ -40,18 +40,14 @@
 
       <!-- Meta row -->
       <div class="flex items-center gap-2 mt-1 flex-wrap">
-        <!-- Tags: KinChip category variant with per-tag customColor.
-             tabindex="-1" keeps the chip visually a pill but drops it out
-             of the keyboard tab order (tag is passive label, not an action).
-             KinChip renders as <button>; a non-interactive variant is a
-             follow-up at the DS layer. -->
+        <!-- Tags: passive category labels (:interactive="false" renders a span). -->
         <KinChip
           v-for="tag in task.tags"
           :key="tag.id"
           variant="category"
           size="sm"
           :custom-color="getTagHex(tag.color)"
-          tabindex="-1"
+          :interactive="false"
         >
           {{ tag.name }}
         </KinChip>
@@ -81,14 +77,13 @@
           {{ task.effective_points }}pts
         </span>
 
-        <!-- Recurring indicator with label: KinChip category/lavender.
-             tabindex="-1" for the same reason as the tag chips above. -->
+        <!-- Recurring indicator: passive category label. -->
         <KinChip
           v-if="task.recurrence_label || task.recurrence_rule"
           variant="category"
           color="lavender"
           size="sm"
-          tabindex="-1"
+          :interactive="false"
         >
           <template #leading>
             <ArrowPathIcon class="w-3 h-3" />
