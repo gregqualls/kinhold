@@ -6,7 +6,7 @@
     ]"
   >
     <!-- Full-width widgets (welcome, countdown) — no card wrapper, auto height -->
-    <template v-if="isAutoHeight">
+    <template v-if="isCardless">
       <div :class="editMode ? 'ring-2 ring-dashed ring-accent-lavender-bold/60 rounded-card p-2' : ''">
         <div v-if="editMode" class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
@@ -41,17 +41,13 @@
       </div>
     </template>
 
-    <!-- Regular widgets — KinFlatCard with dynamic height -->
+    <!-- Regular widgets — KinFlatCard sized to its own content. -->
     <template v-else>
       <KinFlatCard
         padding="sm"
-        :class="[
-          'flex flex-col',
-          editMode ? 'ring-2 ring-dashed ring-accent-lavender-bold/60' : '',
-        ]"
-        :style="{ height: widgetHeight }"
+        :class="editMode ? 'ring-2 ring-dashed ring-accent-lavender-bold/60' : ''"
       >
-        <div v-if="editMode" class="flex items-center justify-between mb-2 -mt-1 flex-shrink-0">
+        <div v-if="editMode" class="flex items-center justify-between mb-2 -mt-1">
           <button
             class="drag-handle cursor-grab active:cursor-grabbing p-1 rounded hover:bg-surface-sunken"
             aria-label="Drag to reorder widget"
@@ -72,14 +68,12 @@
           </div>
         </div>
 
-        <div class="flex-1 min-h-0 overflow-hidden">
-          <Suspense>
-            <component :is="widgetComponent" :config="config" :edit-mode="editMode" />
-            <template #fallback>
-              <KinSkeleton shape="rect" height="80px" />
-            </template>
-          </Suspense>
-        </div>
+        <Suspense>
+          <component :is="widgetComponent" :config="config" :edit-mode="editMode" />
+          <template #fallback>
+            <KinSkeleton shape="rect" height="80px" />
+          </template>
+        </Suspense>
       </KinFlatCard>
     </template>
   </div>
@@ -87,7 +81,7 @@
 
 <script setup>
 import { computed, defineAsyncComponent } from 'vue'
-import { getWidgetComponent, getWidgetHeight, getSupportedSizes, widgetTypes } from './widgetRegistry'
+import { getWidgetComponent, isCardlessWidget, getSupportedSizes, widgetTypes } from './widgetRegistry'
 import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
 import KinButton from '@/components/design-system/KinButton.vue'
 import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
@@ -110,14 +104,7 @@ const widgetComponent = computed(() => {
 
 const widgetName = computed(() => widgetTypes[props.config.type]?.name || props.config.type)
 
-const isAutoHeight = computed(() => {
-  const height = getWidgetHeight(props.config.type, props.config.size)
-  return height === null
-})
-
-const widgetHeight = computed(() => {
-  return getWidgetHeight(props.config.type, props.config.size) || '280px'
-})
+const isCardless = computed(() => isCardlessWidget(props.config.type))
 
 const supportedSizes = computed(() => getSupportedSizes(props.config.type))
 

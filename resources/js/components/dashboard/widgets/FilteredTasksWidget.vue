@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div>
     <!-- Header -->
-    <div class="flex items-center justify-between mb-3 flex-shrink-0">
+    <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
         <FunnelIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || 'Tasks' }}
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Tag pills (show which tags are filtering) -->
-    <div v-if="filterTags.length > 0" class="flex flex-wrap gap-1 mb-2 flex-shrink-0">
+    <div v-if="filterTags.length > 0" class="flex flex-wrap gap-1 mb-2">
       <span
         v-for="tag in filterTags"
         :key="tag.id"
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex-1 min-h-0 space-y-2">
+    <div v-if="loading" class="space-y-2">
       <KinSkeleton v-for="n in 4" :key="n" shape="rect" :height="'48px'" />
     </div>
 
@@ -38,11 +38,10 @@
       title="No matching tasks"
       size="sm"
       accent-color="lavender"
-      class="flex-1"
     />
 
     <!-- Task list -->
-    <div v-else class="flex-1 min-h-0 overflow-y-auto" :class="columnsClass">
+    <div v-else :class="columnsClass">
       <div
         v-for="task in tasks"
         :key="task.id"

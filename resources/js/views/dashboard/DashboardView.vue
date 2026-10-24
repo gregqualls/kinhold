@@ -31,8 +31,9 @@
       <KinSkeleton v-for="n in 6" :key="n" shape="card" height="128px" />
     </div>
 
-    <!-- Widget grid -->
-    <div v-else ref="gridRef" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+    <!-- Widget grid: items-start lets each card size to its content without
+         stretching to match the tallest sibling in the row. -->
+    <div v-else ref="gridRef" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 items-start">
       <DashboardWidget
         v-for="(widget, index) in dashboardStore.widgets"
         :key="widget.id"

@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div>
     <!-- Fixed header -->
-    <div class="flex items-center justify-between mb-3 flex-shrink-0">
+    <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
         <ShieldCheckIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || 'Achievement Badges' }}
@@ -15,8 +15,8 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="grid grid-cols-6 gap-1 flex-1">
-      <KinSkeleton v-for="n in 12" :key="n" shape="rect" :height="'100%'" rounded="4px" />
+    <div v-if="loading" class="grid grid-cols-6 gap-1">
+      <KinSkeleton v-for="n in 12" :key="n" shape="rect" :height="'40px'" rounded="4px" />
     </div>
 
     <!-- Empty -->
@@ -26,11 +26,10 @@
       title="No badges available"
       size="sm"
       accent-color="lavender"
-      class="flex-1"
     />
 
-    <!-- Scrollable badge grid -->
-    <div v-else class="flex-1 min-h-0 overflow-y-auto">
+    <!-- Badge grid -->
+    <div v-else>
       <div :class="gridClass">
         <div
           v-for="badge in displayBadges"
@@ -52,7 +51,7 @@
     </div>
 
     <!-- Footer -->
-    <p v-if="!loading && earnedCount > 0" class="text-[10px] text-ink-tertiary mt-2 text-center flex-shrink-0">
+    <p v-if="!loading && earnedCount > 0" class="text-[10px] text-ink-tertiary mt-2 text-center">
       {{ earnedCount }} / {{ allBadges.length }} earned
     </p>
   </div>

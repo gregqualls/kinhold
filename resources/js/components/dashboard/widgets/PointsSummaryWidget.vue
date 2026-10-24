@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div>
     <!-- Hero metric -->
     <div class="pb-3 border-b border-border-subtle">
       <p class="text-[10px] font-semibold uppercase tracking-widest text-ink-tertiary">
@@ -12,7 +12,7 @@
     </div>
 
     <!-- Recent activity -->
-    <div class="flex-1 min-h-0 pt-2">
+    <div class="pt-2">
       <p class="text-[10px] uppercase tracking-wider font-semibold text-ink-tertiary mb-1.5">Recent</p>
       <div v-if="feedLoading" class="space-y-2">
         <KinSkeleton v-for="n in 3" :key="n" shape="rect" :height="'24px'" rounded="4px" />
