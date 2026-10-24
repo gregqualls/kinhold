@@ -177,7 +177,7 @@ onMounted(async () => {
 
 .sortable-fallback {
   opacity: 0.9;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-elevated);
   border-radius: 12px;
 }
 </style>

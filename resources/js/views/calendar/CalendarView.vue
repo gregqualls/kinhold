@@ -144,13 +144,12 @@
             <span
               class="w-6 h-6 rounded-full flex items-center justify-center"
               :class="cell.day === todayInCurrentMonth && cell.month === 'current'
-                ? 'bg-accent-lavender-bold text-ink-inverse font-semibold'
+                ? 'ring-2 ring-accent-lavender-bold text-ink-primary font-semibold'
                 : 'text-ink-primary hover:bg-surface-sunken'"
             >{{ cell.day }}</span>
             <span
               v-if="cell.month === 'current' && filteredMonthEventsMap[cell.day]?.length"
-              class="w-[3px] h-[3px] rounded-full mt-0.5"
-              :class="cell.day === todayInCurrentMonth ? 'bg-ink-inverse' : 'bg-accent-lavender-bold'"
+              class="w-[3px] h-[3px] rounded-full mt-0.5 bg-accent-lavender-bold"
             ></span>
             <span v-else class="h-[3px] mt-0.5"></span>
           </button>

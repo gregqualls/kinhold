@@ -107,7 +107,8 @@
     <button
       class="flex-shrink-0 p-1 rounded transition-colors"
       :class="priorityIndicatorClass"
-      title="Click to change priority"
+      :title="`Priority: ${task.priority || 'none'} — click to change`"
+      :aria-label="`Priority ${task.priority || 'none'}, click to change`"
       @click.stop="cyclePriority"
     >
       <FlagIcon class="w-3.5 h-3.5" />
