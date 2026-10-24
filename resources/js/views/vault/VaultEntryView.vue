@@ -2,20 +2,13 @@
   <div class="h-full flex flex-col">
     <!-- Header -->
     <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
-      <div class="flex items-center gap-3">
-        <button
-          class="p-2 -ml-2 text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken rounded-xl transition-colors"
-          @click="$router.back()"
-        >
-          <ChevronLeftIcon class="w-5 h-5" />
-        </button>
-        <div class="flex-1 min-w-0">
-          <h1 class="text-base md:text-xl font-bold font-heading text-ink-primary truncate">{{ currentEntry?.title || 'Entry' }}</h1>
-          <p v-if="categoryName" class="hidden md:block text-xs text-ink-tertiary mt-0.5">{{ categoryName }}</p>
-        </div>
-
-        <ContextMenu v-if="isParent && currentEntry" :items="entryMenuItems" />
-      </div>
+      <KinPageHero show-back @back="$router.back()">
+        <template v-if="categoryName" #eyebrow>{{ categoryName }}</template>
+        {{ currentEntry?.title || 'Entry' }}
+        <template v-if="isParent && currentEntry" #actions>
+          <ContextMenu :items="entryMenuItems" />
+        </template>
+      </KinPageHero>
     </div>
 
     <!-- Loading -->
@@ -346,8 +339,8 @@ import KinButton from '@/components/design-system/KinButton.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import {
-  ChevronLeftIcon,
   ChevronRightIcon,
   DocumentTextIcon,
   ArrowDownTrayIcon,
