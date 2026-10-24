@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group flex items-start gap-3 px-4 py-3.5 border-b border-border-subtle last:border-b-0 hover:bg-surface-sunken transition-colors cursor-pointer"
+    class="kin-pressable group flex items-start gap-3 px-4 py-3.5 border-b border-border-subtle last:border-b-0 hover:bg-surface-sunken transition-[color,background-color,border-color,fill,stroke,transform] duration-150 cursor-pointer"
     :class="{
       'opacity-60': task.completed_at,
     }"

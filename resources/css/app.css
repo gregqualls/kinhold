@@ -108,6 +108,17 @@
 }
 
 @layer components {
+  /* Subtle press feedback for non-KinButton tappable surfaces (rows, cells,
+     chips, FABs). KinButton owns the stronger lifted/pressed treatment; this
+     is the quieter sibling. Transform is gated on prefers-reduced-motion.
+     Each surface is responsible for including `transform` in its own
+     transition-property list so the press animates smoothly. */
+  @media (prefers-reduced-motion: no-preference) {
+    .kin-pressable:active {
+      transform: translateY(1px);
+    }
+  }
+
   .meal-drag-chosen {
     box-shadow: 0 0 0 2px rgba(196, 151, 90, 0.5) !important;
   }

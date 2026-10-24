@@ -226,7 +226,7 @@ const removablePaddingClass = computed(() =>
 const interactionClasses = computed(() => {
   if (props.disabled) return 'opacity-40 cursor-not-allowed'
   if (props.variant === 'status') return ''
-  return 'cursor-pointer transition-[filter,background-color,border-color] duration-quick ease-out-soft hover:brightness-95 dark:hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-lavender-bold focus-visible:ring-offset-1'
+  return 'kin-pressable cursor-pointer transition-[filter,background-color,border-color,transform] duration-quick ease-out-soft hover:brightness-95 dark:hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-lavender-bold focus-visible:ring-offset-1'
 })
 </script>
 

@@ -74,7 +74,7 @@ function dayLabels(c) {
         v-for="(cell, idx) in cells"
         :key="idx"
         type="button"
-        class="kin-month-grid__cell relative rounded-lg flex flex-col items-center pt-1.5 pb-1.5"
+        class="kin-month-grid__cell kin-pressable relative rounded-lg flex flex-col items-center pt-1.5 pb-1.5"
         :class="[
           density === 'pills' ? 'px-1 min-h-[56px] md:min-h-[72px]' : 'min-h-[42px] md:min-h-[52px]',
           isCurrent(cell) && isSelected(cell) && 'kin-month-grid__cell--selected',
@@ -138,7 +138,7 @@ function dayLabels(c) {
   background: rgb(var(--surface-raised));
   border: 1px solid rgb(var(--border-subtle));
   cursor: pointer;
-  transition: background-color 120ms, border-color 120ms;
+  transition: background-color 120ms, border-color 120ms, transform var(--duration-quick) var(--ease-out-soft);
 }
 .kin-month-grid__cell:hover:not(:disabled):not(.kin-month-grid__cell--selected) {
   background: rgb(var(--surface-sunken));

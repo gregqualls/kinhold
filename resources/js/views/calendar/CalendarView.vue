@@ -194,7 +194,7 @@
     <button
       v-if="!showEventModal"
       type="button"
-      class="lg:hidden fixed bottom-20 right-4 z-30 w-14 h-14 rounded-full flex items-center justify-center shadow-elevated bg-accent-lavender-bold text-ink-inverse hover:brightness-110 transition-all"
+      class="kin-pressable lg:hidden fixed bottom-20 right-4 z-30 w-14 h-14 rounded-full flex items-center justify-center shadow-elevated bg-accent-lavender-bold text-ink-inverse hover:brightness-110 transition-[filter,background-color,transform] duration-quick ease-out-soft"
       aria-label="Add event"
       @click="openCreateModal()"
     >
