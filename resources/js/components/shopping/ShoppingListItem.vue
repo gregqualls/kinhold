@@ -81,7 +81,7 @@
     <!-- Recurring toggle -->
     <button
       v-if="canManage"
-      class="flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all"
+      class="kin-pressable flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-[background-color,color,border-color,transform] duration-quick ease-out-soft"
       :class="item.is_recurring
         ? 'bg-brand-gold/15 text-brand-gold border border-brand-gold/30'
         : 'text-ink-tertiary hover:bg-surface-sunken hover:text-ink-secondary'"
