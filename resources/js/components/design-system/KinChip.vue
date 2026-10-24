@@ -95,6 +95,18 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+
+  /**
+   * Status variant only. When true (default), renders a leading dot
+   * coloured by the status token. When false, hides the dot and
+   * applies a soft-tinted background + bold text in the status colour,
+   * so the chip reads as a label-only state marker (e.g. "3 left",
+   * "Expired", "Children Only" on reward cards).
+   */
+  showDot: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 // ── Emits ────────────────────────────────────────────────────────────────────
@@ -160,9 +172,25 @@ const accentMap = {
   },
 }
 
+// Static map so Tailwind JIT picks up the status utilities (template-literal
+// class names are invisible to the content scanner).
+const STATUS_LABEL_CLASSES = {
+  success: 'bg-status-success/10 text-status-success',
+  pending: 'bg-status-pending/10 text-status-pending',
+  paused:  'bg-status-paused/10  text-status-paused',
+  failed:  'bg-status-failed/10  text-status-failed',
+  info:    'bg-status-info/10    text-status-info',
+  warning: 'bg-status-warning/10 text-status-warning',
+}
+
 // Classes for category/filter variants (non-status)
 const chipColorClasses = computed(() => {
-  if (props.variant === 'status') return ''
+  if (props.variant === 'status') {
+    // Dot variant: no colour on the chip body (the dot carries it).
+    if (props.showDot) return ''
+    // Label-only variant: soft bg + bold text in the status colour.
+    return STATUS_LABEL_CLASSES[props.status] || 'bg-surface-sunken text-ink-tertiary'
+  }
 
   // customColor short-circuits the accent system — base classes only;
   // background/border/text get applied via `chipCustomStyle` below.
@@ -267,9 +295,9 @@ const interactionClasses = computed(() => {
       aria-hidden="true"
     ></span>
 
-    <!-- Status dot — only rendered for status variant -->
+    <!-- Status dot — only rendered for status variant when showDot is true -->
     <span
-      v-if="variant === 'status'"
+      v-if="variant === 'status' && showDot"
       :class="['rounded-full flex-shrink-0', dotSizeClass, statusDotClass]"
       aria-hidden="true"
     ></span>
