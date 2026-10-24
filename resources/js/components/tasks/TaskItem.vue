@@ -4,6 +4,7 @@
     :class="{
       'opacity-60': task.completed_at,
     }"
+    :data-selected="selected || null"
     @click="handleRowClick"
   >
     <!-- Checkbox: button is its own 40x40 hit target (#293 follow-up).
@@ -118,6 +119,7 @@ import UserAvatar from '@/components/common/UserAvatar.vue'
 
 const props = defineProps({
   task: { type: Object, required: true },
+  selected: { type: Boolean, default: false },
 })
 
 const tasksStore = useTasksStore()
@@ -125,13 +127,13 @@ const isPendingToggle = computed(() => tasksStore.pendingToggles.has(props.task.
 
 const emit = defineEmits(['click', 'toggle', 'edit', 'delete', 'update-inline'])
 
-// Row tap on touch devices does nothing — only the checkbox (toggle) and the
-// three-dot menu (edit) are interactive. Desktop with mouse keeps row-click
-// to open the detail panel. (#293)
+// Inner interactive children (checkbox, flag, context menu) carry @click.stop
+// so a tap on them doesn't also open the panel. Row body opens the detail
+// panel on touch and mouse alike. Note: dblclick-to-inline-edit on the title
+// is now dominated by row-click-opens-panel; inline editing in that path is
+// effectively deprecated and should move into the panel for #293 Phase 2.
 const handleRowClick = () => {
-  if (window.matchMedia('(hover: hover)').matches) {
-    emit('click', props.task)
-  }
+  emit('click', props.task)
 }
 
 const colorMap = {

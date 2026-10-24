@@ -119,6 +119,24 @@
     }
   }
 
+  /* Shared "selected" grammar for pressable surfaces: a 2px lavender left
+     bar and a soft ink wash. Uses data-selected (not aria-selected), which
+     has no implicit ARIA requirements and avoids misusing a role-coupled
+     attribute on plain divs. Screens that want assistive-tech semantics
+     can layer role="listbox"/role="option" on top. */
+  .kin-pressable[data-selected="true"] {
+    position: relative;
+    background-color: color-mix(in oklab, rgb(var(--ink-primary)) 4%, transparent);
+  }
+  .kin-pressable[data-selected="true"]::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: rgb(var(--accent-lavender-bold));
+    border-radius: 0 2px 2px 0;
+  }
+
   .meal-drag-chosen {
     box-shadow: 0 0 0 2px rgba(196, 151, 90, 0.5) !important;
   }
