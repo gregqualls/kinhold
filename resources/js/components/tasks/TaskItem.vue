@@ -40,16 +40,21 @@
 
       <!-- Meta row -->
       <div class="flex items-center gap-2 mt-1 flex-wrap">
-        <!-- Tags -->
-        <span
+        <!-- Tags: KinChip category variant with per-tag customColor.
+             tabindex="-1" keeps the chip visually a pill but drops it out
+             of the keyboard tab order (tag is passive label, not an action).
+             KinChip renders as <button>; a non-interactive variant is a
+             follow-up at the DS layer. -->
+        <KinChip
           v-for="tag in task.tags"
           :key="tag.id"
-          class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full"
-          :style="{ backgroundColor: getTagHex(tag.color) + '20', color: getTagHex(tag.color) }"
+          variant="category"
+          size="sm"
+          :custom-color="getTagHex(tag.color)"
+          tabindex="-1"
         >
-          <span class="w-1.5 h-1.5 rounded-full" :style="{ backgroundColor: getTagHex(tag.color) }"></span>
           {{ tag.name }}
-        </span>
+        </KinChip>
 
         <!-- Due date -->
         <span
@@ -76,14 +81,20 @@
           {{ task.effective_points }}pts
         </span>
 
-        <!-- Recurring indicator with label -->
-        <span
+        <!-- Recurring indicator with label: KinChip category/lavender.
+             tabindex="-1" for the same reason as the tag chips above. -->
+        <KinChip
           v-if="task.recurrence_label || task.recurrence_rule"
-          class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-accent-lavender-soft/40 text-accent-lavender-bold"
+          variant="category"
+          color="lavender"
+          size="sm"
+          tabindex="-1"
         >
-          <ArrowPathIcon class="w-3 h-3" />
+          <template #leading>
+            <ArrowPathIcon class="w-3 h-3" />
+          </template>
           {{ task.recurrence_label || 'Recurring' }}
-        </span>
+        </KinChip>
 
         <!-- Description indicator -->
         <span v-if="task.description" class="text-xs text-ink-tertiary">
@@ -116,6 +127,7 @@ import { useTasksStore } from '@/stores/tasks'
 import TaskCheckbox from './TaskCheckbox.vue'
 import ContextMenu from '@/components/common/ContextMenu.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   task: { type: Object, required: true },
