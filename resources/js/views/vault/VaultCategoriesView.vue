@@ -36,7 +36,7 @@
         <div
           v-for="category in filteredCategories"
           :key="category.id"
-          class="group flex items-center gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-all"
+          class="kin-pressable group flex items-center gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
           @click="$router.push(`/vault/${category.slug}`)"
         >
           <!-- Icon -->
@@ -116,7 +116,7 @@
               v-for="icon in availableIcons"
               :key="icon.key"
               type="button"
-              class="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+              class="kin-pressable w-10 h-10 rounded-xl flex items-center justify-center transition-[background-color,box-shadow,transform] duration-quick ease-out-soft"
               :class="categoryForm.icon === icon.key
                 ? 'bg-accent-lavender-soft/40 ring-2 ring-accent-lavender-bold'
                 : 'bg-surface-sunken hover:bg-surface-overlay'"

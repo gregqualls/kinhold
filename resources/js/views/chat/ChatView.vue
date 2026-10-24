@@ -40,7 +40,7 @@
             <button
               v-for="(q, idx) in suggestedQuestions"
               :key="idx"
-              class="w-full text-left px-4 py-3 bg-surface-raised border border-border-subtle hover:border-accent-lavender-bold/50 hover:bg-surface-sunken rounded-xl transition-all text-sm text-ink-primary"
+              class="kin-pressable w-full text-left px-4 py-3 bg-surface-raised border border-border-subtle hover:border-accent-lavender-bold/50 hover:bg-surface-sunken rounded-xl transition-[background-color,border-color,transform] duration-quick ease-out-soft text-sm text-ink-primary"
               @click="quickSend(q)"
             >
               {{ q }}
@@ -169,7 +169,7 @@
             v-model="messageInput"
             rows="1"
             placeholder="Tell Kinhold what to do..."
-            class="flex-1 px-4 py-2.5 bg-surface-sunken border border-border-subtle rounded-xl text-base md:text-sm placeholder-ink-tertiary text-ink-primary focus:bg-surface-raised focus:ring-2 focus:ring-accent-lavender-bold/40 transition-all outline-none resize-none max-h-32 overflow-y-auto"
+            class="flex-1 px-4 py-2.5 bg-surface-sunken border border-border-subtle rounded-xl text-base md:text-sm placeholder-ink-tertiary text-ink-primary focus:bg-surface-raised focus:ring-2 focus:ring-accent-lavender-bold/40 transition-[background-color,border-color,box-shadow] duration-quick ease-out-soft outline-none resize-none max-h-32 overflow-y-auto"
             :disabled="loading"
             @keydown.enter.exact.prevent="handleSend"
             @input="autoResize"

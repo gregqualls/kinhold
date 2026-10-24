@@ -25,7 +25,7 @@
       <div
         v-for="event in upcomingEvents.slice(0, 6)"
         :key="event.id"
-        class="flex items-center gap-3 p-3 rounded-[12px] transition-all duration-300"
+        class="flex items-center gap-3 p-3 rounded-[12px] transition-[background-color,box-shadow] duration-300"
         :class="isToday(event.event_date)
           ? 'bg-gradient-to-r from-sand-100/80 to-wisteria-100/60 dark:from-sand-900/30 dark:to-wisteria-900/30 ring-1 ring-sand-300/50 dark:ring-sand-700/50 animate-pulse-subtle'
           : 'bg-surface-sunken'"

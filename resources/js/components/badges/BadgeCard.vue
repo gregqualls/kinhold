@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-surface-raised border border-border-subtle rounded-card p-4 flex flex-col items-center text-center transition-all"
+    class="bg-surface-raised border border-border-subtle rounded-card p-4 flex flex-col items-center text-center transition-opacity"
     :class="badge.is_earned ? '' : 'opacity-60'"
   >
     <BadgeIcon
@@ -25,7 +25,7 @@
       </div>
       <div class="w-full h-1.5 bg-surface-sunken rounded-full overflow-hidden">
         <div
-          class="h-full rounded-full transition-all"
+          class="h-full rounded-full transition-[width] duration-300 ease-out-soft"
           :style="{
             width: Math.min(100, (badge.progress / badge.trigger_threshold) * 100) + '%',
             backgroundColor: badge.color,

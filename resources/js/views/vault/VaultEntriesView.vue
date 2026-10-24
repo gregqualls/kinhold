@@ -42,7 +42,7 @@
         <div
           v-for="entry in filteredEntries"
           :key="entry.id"
-          class="group flex items-center gap-3 sm:gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-all"
+          class="kin-pressable group flex items-center gap-3 sm:gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
           @click="$router.push(`/vault/entry/${entry.id}`)"
         >
           <!-- Lock icon -->
