@@ -53,7 +53,6 @@
 import { onMounted } from 'vue'
 import { usePointsStore } from '@/stores/points'
 import { ClockIcon } from '@heroicons/vue/24/outline'
-import KinButton from '@/components/design-system/KinButton.vue'
 import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import KinHeroMetricCard from '@/components/design-system/KinHeroMetricCard.vue'
 import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
