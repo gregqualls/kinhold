@@ -18,25 +18,15 @@
 
     <!-- Content -->
     <div class="flex-1 min-w-0">
-      <!-- Title (inline editable on double-click) -->
-      <div v-if="!isEditingTitle" @dblclick.stop="startEditTitle">
-        <p
-          class="text-sm font-medium leading-snug"
-          :class="task.completed_at ? 'line-through text-ink-tertiary' : 'text-ink-primary'"
-        >
-          {{ task.title }}
-        </p>
-      </div>
-      <input
-        v-else
-        ref="titleInput"
-        v-model="editTitle"
-        class="w-full text-sm font-medium text-ink-primary bg-transparent border-b-2 border-accent-lavender-bold outline-none py-0"
-        @keydown.enter="saveTitle"
-        @keydown.escape="cancelEditTitle"
-        @blur="saveTitle"
-        @click.stop
-      />
+      <!-- Title (editing happens in TaskDetailPanel; #293 Phase 2 removed
+           the dblclick-to-inline-edit path that was dominated by the
+           row-click-opens-panel after piece 2 of the polish pass). -->
+      <p
+        class="text-sm font-medium leading-snug"
+        :class="task.completed_at ? 'line-through text-ink-tertiary' : 'text-ink-primary'"
+      >
+        {{ task.title }}
+      </p>
 
       <!-- Meta row -->
       <div class="flex items-center gap-2 mt-1 flex-wrap">
@@ -117,7 +107,7 @@
 </template>
 
 <script setup>
-import { computed, ref, nextTick } from 'vue'
+import { computed } from 'vue'
 import { CalendarIcon, DocumentTextIcon, FlagIcon, PencilIcon, TrashIcon, UserGroupIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
 import { useTasksStore } from '@/stores/tasks'
 import TaskCheckbox from './TaskCheckbox.vue'
@@ -155,32 +145,7 @@ const colorMap = {
 
 const getTagHex = (colorName) => colorMap[colorName] || colorName || colorMap.wisteria
 
-// Inline title editing
-const isEditingTitle = ref(false)
-const editTitle = ref('')
-const titleInput = ref(null)
-
-const startEditTitle = async () => {
-  editTitle.value = props.task.title
-  isEditingTitle.value = true
-  await nextTick()
-  titleInput.value?.focus()
-}
-
-const saveTitle = () => {
-  if (!isEditingTitle.value) return
-  const trimmed = editTitle.value.trim()
-  if (trimmed && trimmed !== props.task.title) {
-    emit('update-inline', { id: props.task.id, title: trimmed })
-  }
-  isEditingTitle.value = false
-}
-
-const cancelEditTitle = () => {
-  isEditingTitle.value = false
-}
-
-// Priority cycling
+// Priority cycling (inline edit path only — title edit lives in TaskDetailPanel)
 const cyclePriority = () => {
   const cycle = { low: 'medium', medium: 'high', high: 'low' }
   const newPriority = cycle[props.task.priority] || 'medium'
