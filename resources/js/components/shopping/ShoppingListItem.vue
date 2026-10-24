@@ -10,7 +10,7 @@
       class="flex-shrink-0 mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors"
       :class="item.is_checked
         ? 'bg-surface-overlay border-border-subtle'
-        : 'border-border-subtle hover:border-[#C4975A]'"
+        : 'border-border-subtle hover:border-brand-gold'"
       :aria-label="item.is_checked ? 'Uncheck item' : 'Check item'"
       @click="item.is_checked ? $emit('uncheck', item.id) : $emit('check', item.id)"
     >
@@ -83,7 +83,7 @@
       v-if="canManage"
       class="flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all"
       :class="item.is_recurring
-        ? 'bg-[#C4975A]/15 text-[#C4975A] border border-[#C4975A]/30'
+        ? 'bg-brand-gold/15 text-brand-gold border border-brand-gold/30'
         : 'text-ink-tertiary hover:bg-surface-sunken hover:text-ink-secondary'"
       :title="item.is_recurring
         ? 'This item reappears automatically after you clear bought items. Click to turn off.'

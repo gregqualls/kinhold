@@ -31,7 +31,7 @@
           {{ selectedIds.length }}/{{ ingredients.length }}
         </span>
         <button
-          class="text-xs text-[#C4975A] hover:underline"
+          class="text-xs text-brand-gold hover:underline"
           @click="toggleAll"
         >
           {{ allSelected ? 'None' : 'All' }}
@@ -53,7 +53,7 @@
         <input
           type="checkbox"
           :checked="isSelected(ingredient.id)"
-          class="w-4 h-4 rounded border-border-subtle text-[#C4975A] focus:ring-[#C4975A]"
+          class="w-4 h-4 rounded border-border-subtle text-brand-gold focus:ring-brand-gold"
           @change="toggle(ingredient.id)"
         />
         <div class="flex-1 min-w-0 flex items-center gap-2">
@@ -116,7 +116,7 @@ const rowClass = (ingredient) => {
     return 'opacity-70 hover:opacity-100'
   }
   return isSelected(ingredient.id)
-    ? 'bg-[#C4975A]/5 dark:bg-[#C4975A]/10'
+    ? 'bg-brand-gold/5 dark:bg-brand-gold/10'
     : 'hover:bg-surface-sunken'
 }
 

@@ -5,7 +5,7 @@
       <span class="text-sm font-medium text-ink-primary">Servings:</span>
       <div class="flex items-center gap-2">
         <button
-          class="w-7 h-7 rounded-full border border-border-subtle flex items-center justify-center text-ink-tertiary hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+          class="w-7 h-7 rounded-full border border-border-subtle flex items-center justify-center text-ink-tertiary hover:border-brand-gold hover:text-brand-gold transition-colors"
           aria-label="Decrease servings"
           :disabled="localServings <= 1"
           @click="localServings = Math.max(1, localServings - 1)"
@@ -14,7 +14,7 @@
         </button>
         <span class="text-sm font-semibold text-ink-primary w-6 text-center">{{ localServings }}</span>
         <button
-          class="w-7 h-7 rounded-full border border-border-subtle flex items-center justify-center text-ink-tertiary hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+          class="w-7 h-7 rounded-full border border-border-subtle flex items-center justify-center text-ink-tertiary hover:border-brand-gold hover:text-brand-gold transition-colors"
           aria-label="Increase servings"
           @click="localServings++"
         >
@@ -46,8 +46,8 @@
         <button
           class="mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
           :class="checkedIngredients.has(ingredient.id)
-            ? 'bg-[#C4975A] border-[#C4975A] text-white'
-            : 'border-border-subtle hover:border-[#C4975A]'"
+            ? 'bg-brand-gold border-brand-gold text-white'
+            : 'border-border-subtle hover:border-brand-gold'"
           :aria-label="`Toggle ${ingredient.name}`"
           @click="toggleChecked(ingredient.id)"
         >

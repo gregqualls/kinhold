@@ -32,7 +32,7 @@
                   :key="opt.value"
                   class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
                   :class="days === opt.value
-                    ? 'bg-[#C4975A] text-white'
+                    ? 'bg-brand-gold text-white'
                     : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
                   @click="days = opt.value"
                 >
@@ -52,7 +52,7 @@
               <div class="flex items-center gap-2">
                 <select
                   v-model="targetListId"
-                  class="flex-1 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+                  class="flex-1 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary focus:outline-none focus:ring-1 focus:ring-brand-gold/30 focus:border-brand-gold transition-colors"
                 >
                   <option v-if="lists.length === 0" :value="null">Auto-create from meal plan</option>
                   <option
@@ -65,7 +65,7 @@
                 </select>
                 <button
                   v-if="!isCreatingList"
-                  class="text-xs text-[#C4975A] hover:underline whitespace-nowrap"
+                  class="text-xs text-brand-gold hover:underline whitespace-nowrap"
                   @click="isCreatingList = true"
                 >
                   + New list
@@ -82,12 +82,12 @@
                   v-model="newListName"
                   type="text"
                   placeholder="e.g. Trader Joe's"
-                  class="flex-1 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A]"
+                  class="flex-1 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary focus:outline-none focus:ring-1 focus:ring-brand-gold/30 focus:border-brand-gold"
                   @keydown.enter.prevent="createList"
                   @keydown.escape="cancelCreateList"
                 />
                 <button
-                  class="text-xs px-3 py-2 rounded-[10px] bg-[#C4975A] text-white hover:bg-[#D4A96A] disabled:opacity-50"
+                  class="text-xs px-3 py-2 rounded-[10px] bg-brand-gold text-white hover:bg-[#D4A96A] disabled:opacity-50"
                   :disabled="!newListName.trim() || isSavingList"
                   @click="createList"
                 >
@@ -137,7 +137,7 @@
               <span>{{ totalSelected }} item{{ totalSelected === 1 ? '' : 's' }} from {{ entriesWithSelection }} recipe{{ entriesWithSelection === 1 ? '' : 's' }}</span>
               <button
                 v-if="entries.length"
-                class="text-xs text-[#C4975A] hover:underline"
+                class="text-xs text-brand-gold hover:underline"
                 @click="toggleSelectAll"
               >
                 {{ allSelected ? 'Deselect all' : 'Select all' }}

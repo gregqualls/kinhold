@@ -7,7 +7,7 @@
     <div v-if="!isParent" class="card-lg mb-6">
       <h2 class="text-lg font-semibold font-heading text-ink-primary mb-4">My Profile</h2>
       <div class="flex items-center gap-4 p-4 bg-surface-sunken rounded-lg">
-        <button class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-surface-sunken transition-all" title="Change avatar" @click="openAvatarEditor(currentUser)">
+        <button class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-brand-gold hover:ring-offset-2 dark:hover:ring-offset-surface-sunken transition-all" title="Change avatar" @click="openAvatarEditor(currentUser)">
           <UserAvatar :user="currentUser" size="lg" />
         </button>
         <div>
@@ -114,7 +114,7 @@
               >
                 <div class="flex items-center gap-3">
                   <button
-                    class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-[#C4975A] hover:ring-offset-2 dark:hover:ring-offset-surface-sunken transition-all"
+                    class="flex-shrink-0 rounded-full hover:ring-2 hover:ring-brand-gold hover:ring-offset-2 dark:hover:ring-offset-surface-sunken transition-all"
                     title="Change avatar"
                     @click="openAvatarEditor(member)"
                   >
@@ -950,8 +950,8 @@
                 :key="slot.key"
                 class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors"
                 :class="mealSlots.includes(slot.key)
-                  ? 'bg-[#C4975A]/10 border-[#C4975A]/40 text-[#C4975A]'
-                  : 'bg-surface-sunken border-border-subtle dark:border-border-subtle text-ink-tertiary hover:border-[#C4975A]/30'"
+                  ? 'bg-brand-gold/10 border-brand-gold/40 text-brand-gold'
+                  : 'bg-surface-sunken border-border-subtle dark:border-border-subtle text-ink-tertiary hover:border-brand-gold/30'"
                 @click="toggleMealSlot(slot.key)"
               >
                 <component :is="slot.icon" class="w-3.5 h-3.5" />

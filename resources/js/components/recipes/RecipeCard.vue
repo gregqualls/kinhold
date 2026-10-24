@@ -54,7 +54,7 @@ const metaItems = computed(() => {
   const items = []
   if (totalTime.value) items.push({ icon: ClockIcon, text: formatTime(totalTime.value) })
   if (props.recipe.servings) items.push({ icon: UsersIcon, text: String(props.recipe.servings) })
-  if (props.recipe.family_average_rating > 0) items.push({ icon: StarIcon, text: String(props.recipe.family_average_rating), iconClass: 'text-[#C4975A]' })
+  if (props.recipe.family_average_rating > 0) items.push({ icon: StarIcon, text: String(props.recipe.family_average_rating), iconClass: 'text-brand-gold' })
   return items
 })
 

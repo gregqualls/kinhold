@@ -11,12 +11,12 @@
         :key="tab.key"
         class="px-3 py-2.5 text-xs font-medium transition-colors relative whitespace-nowrap"
         :class="activeSource === tab.key
-          ? 'text-[#C4975A]'
+          ? 'text-brand-gold'
           : 'text-ink-tertiary hover:text-ink-primary'"
         @click="activeSource = tab.key; selectedSource = null"
       >
         {{ tab.label }}
-        <span v-if="activeSource === tab.key" class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4975A] rounded-full"></span>
+        <span v-if="activeSource === tab.key" class="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-gold rounded-full"></span>
       </button>
     </div>
 
@@ -30,7 +30,7 @@
             v-model="recipeSearch"
             type="text"
             placeholder="Search recipes..."
-            class="w-full pl-9 pr-4 py-2 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+            class="w-full pl-9 pr-4 py-2 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:ring-1 focus:ring-brand-gold/30 focus:border-brand-gold transition-colors"
           />
         </div>
         <div v-if="recipesStore.isLoading" class="flex justify-center py-4">
@@ -42,7 +42,7 @@
             :key="recipe.id"
             class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors"
             :class="selectedSource?.id === recipe.id
-              ? 'bg-[#C4975A]/10 border border-[#C4975A]/30'
+              ? 'bg-brand-gold/10 border border-brand-gold/30'
               : 'hover:bg-surface-sunken'"
             @click="selectedSource = recipe"
           >
@@ -60,7 +60,7 @@
                 <span v-if="recipe.servings">{{ recipe.servings }} servings</span>
               </p>
             </div>
-            <CheckCircleIcon v-if="selectedSource?.id === recipe.id" class="w-4 h-4 text-[#C4975A] flex-shrink-0 ml-auto" />
+            <CheckCircleIcon v-if="selectedSource?.id === recipe.id" class="w-4 h-4 text-brand-gold flex-shrink-0 ml-auto" />
           </button>
           <p v-if="filteredRecipes.length === 0" class="text-sm text-ink-tertiary text-center py-4">
             No recipes found
@@ -76,7 +76,7 @@
             v-model="restaurantSearch"
             type="text"
             placeholder="Search restaurants..."
-            class="w-full pl-9 pr-4 py-2 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+            class="w-full pl-9 pr-4 py-2 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:ring-1 focus:ring-brand-gold/30 focus:border-brand-gold transition-colors"
           />
         </div>
         <div class="space-y-1 max-h-48 overflow-y-auto">
@@ -85,7 +85,7 @@
             :key="restaurant.id"
             class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors"
             :class="selectedSource?.id === restaurant.id
-              ? 'bg-[#C4975A]/10 border border-[#C4975A]/30'
+              ? 'bg-brand-gold/10 border border-brand-gold/30'
               : 'hover:bg-surface-sunken'"
             @click="selectedSource = restaurant"
           >
@@ -94,7 +94,7 @@
               <p class="text-sm font-medium text-ink-primary truncate">{{ restaurant.name }}</p>
               <p v-if="restaurant.tags?.length" class="text-xs text-ink-tertiary truncate">{{ restaurant.tags.map(t => t.name).join(', ') }}</p>
             </div>
-            <CheckCircleIcon v-if="selectedSource?.id === restaurant.id" class="w-4 h-4 text-[#C4975A] flex-shrink-0 ml-auto" />
+            <CheckCircleIcon v-if="selectedSource?.id === restaurant.id" class="w-4 h-4 text-brand-gold flex-shrink-0 ml-auto" />
           </button>
           <p v-if="filteredRestaurants.length === 0" class="text-sm text-ink-tertiary text-center py-4">
             No restaurants yet — add some in the Restaurants tab
@@ -110,8 +110,8 @@
             :key="preset.id"
             class="flex items-center gap-2 px-3 py-2.5 rounded-lg text-left transition-colors border"
             :class="selectedSource?.id === preset.id
-              ? 'bg-[#C4975A]/10 border-[#C4975A]/40 text-[#C4975A]'
-              : 'bg-surface-sunken border-border-subtle text-ink-primary hover:border-[#C4975A]/30'"
+              ? 'bg-brand-gold/10 border-brand-gold/40 text-brand-gold'
+              : 'bg-surface-sunken border-border-subtle text-ink-primary hover:border-brand-gold/30'"
             @click="selectedSource = preset"
           >
             <IconRenderer v-if="preset.icon" :icon="preset.icon" :size="18" class="text-[#7B6B9C] flex-shrink-0" />
@@ -148,7 +148,7 @@
           type="number"
           min="1"
           max="20"
-          class="w-24 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors"
+          class="w-24 text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary focus:outline-none focus:ring-1 focus:ring-brand-gold/30 focus:border-brand-gold transition-colors"
           placeholder="4"
         />
       </div>
@@ -162,8 +162,8 @@
             :key="member.id"
             class="flex items-center gap-1.5 px-2 py-1.5 rounded-full border text-xs font-medium transition-colors"
             :class="selectedCooks.includes(member.id)
-              ? 'bg-[#C4975A]/10 border-[#C4975A]/40 text-[#C4975A]'
-              : 'bg-surface-sunken border-border-subtle text-ink-tertiary hover:border-[#C4975A]/30'"
+              ? 'bg-brand-gold/10 border-brand-gold/40 text-brand-gold'
+              : 'bg-surface-sunken border-border-subtle text-ink-tertiary hover:border-brand-gold/30'"
             @click="toggleCook(member.id)"
           >
             <UserAvatar :user="member" size="xs" />
@@ -178,7 +178,7 @@
         <textarea
           v-model="notes"
           rows="2"
-          class="w-full text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:ring-1 focus:ring-[#C4975A]/30 focus:border-[#C4975A] transition-colors resize-none"
+          class="w-full text-sm bg-surface-sunken border border-border-subtle rounded-[10px] px-3 py-2 text-ink-primary placeholder:text-ink-tertiary focus:outline-none focus:ring-1 focus:ring-brand-gold/30 focus:border-brand-gold transition-colors resize-none"
           placeholder="Any notes..."
         ></textarea>
       </div>
