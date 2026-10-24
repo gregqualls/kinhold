@@ -20,7 +20,7 @@
       <button
         v-if="canStack"
         type="button"
-        class="inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full bg-accent-lavender-soft text-accent-lavender-bold hover:bg-accent-lavender-bold hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="kin-pressable inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full bg-accent-lavender-soft text-accent-lavender-bold hover:bg-accent-lavender-bold hover:text-white transition-[background-color,color,transform] duration-quick ease-out-soft disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="isSubmitting"
         :aria-label="stackAriaLabel"
         @click="handleStack"
@@ -48,16 +48,17 @@
         <HandThumbUpIcon class="w-4 h-4" />
         <span class="text-xs font-semibold">{{ item.stacks_count }}</span>
       </span>
-      <span
-        class="text-sm font-bold font-mono px-2 py-0.5 rounded-full"
-        :class="
-          item.points > 0
-            ? 'text-status-success bg-status-success/10'
-            : 'text-status-failed bg-status-failed/10'
-        "
+      <KinChip
+        variant="status"
+        size="sm"
+        :status="item.points > 0 ? 'success' : 'failed'"
+        :show-dot="false"
+        :interactive="false"
       >
-        {{ item.points > 0 ? "+" : "" }}{{ item.points }}
-      </span>
+        <span class="font-mono font-bold">
+          {{ item.points > 0 ? "+" : "" }}{{ item.points }}
+        </span>
+      </KinChip>
     </div>
   </div>
 </template>
@@ -67,6 +68,7 @@ import { computed, ref } from "vue";
 import { HandThumbUpIcon } from "@heroicons/vue/24/outline";
 import { HandThumbUpIcon as HandThumbUpSolidIcon } from "@heroicons/vue/24/solid";
 import UserAvatar from "@/components/common/UserAvatar.vue";
+import KinChip from "@/components/design-system/KinChip.vue";
 import { useAuthStore } from "@/stores/auth";
 import { usePointsStore } from "@/stores/points";
 
