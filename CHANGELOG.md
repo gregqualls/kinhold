@@ -2,6 +2,21 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-24: Polish pass on Dashboard, Calendar, Tasks (branch `polish/honour-the-system`, unmerged)
+
+Six-commit polish pass acting on the independent frontend-design + emil-design-eng audits of the live app. Core thesis: the Kin* design system already exists, the views were bypassing it. Nothing merged, nothing pushed, no PR; the branch is `polish/honour-the-system` locally for review before shipping.
+
+- **`.kin-pressable` utility** adds a shared press feel (translateY(1px) on `:active`, gated on `prefers-reduced-motion: no-preference`). Applied to KinChip, TaskItem row, KinMonthGrid cells, and the mobile Calendar FAB. KinButton keeps its stronger lifted/pressed treatment; this is the quieter sibling for rows/cells/chips.
+- **Shared selected grammar** at the DS layer: `[data-selected="true"]` on `.kin-pressable` draws a 2px lavender left bar + a 4% ink wash. Task rows now visibly point at the detail panel that opened. The row-click's `(hover: hover)` gate is lifted so touch users can reach the panel too (inner `@click.stop` handlers prevent double-fire).
+- **TaskItem chips through `KinChip`**: deleted the four hand-rolled chip visuals in `TaskItem.vue:43-85` (inline hex alpha, bare spans, lavender-soft/40 pills). Tags render as `KinChip variant="category" :custom-color` (neutral pill + colored dot); recurring as `KinChip variant="category" color="lavender"` with ArrowPath in the leading slot. `tabindex="-1"` keeps them visually chip-shaped but out of the keyboard tab order.
+- **Quieter sidebar active state**: swapped the saturated `bg-accent-lavender-bold text-ink-inverse` for `bg-accent-lavender-soft text-ink-primary` + font-weight 600. Pill shape preserved per tenet 4; purple accent still present without shouting across every screen.
+- **Density pass**: WelcomeWidget greeting `text-2xl sm:text-3xl font-bold` → `text-xl sm:text-2xl font-semibold tracking-tight`; task row vertical padding `py-3.5` → `py-2.5` (~5 extra rows above the fold); calendar month grid density `pills` → `dots` with `max-dots=3`. The "Family Game Night" column no longer repeats five times; full event names live in the detail panel after a day is selected.
+- **Housekeeping**: drag-ghost shadow uses `var(--shadow-elevated)` instead of a hardcoded `rgba`; priority flag button gets `:aria-label` and a title that quote the current priority; mini-month today indicator switches from a filled lavender circle to a 2px ring so the two "today" markers on the same screen no longer compete.
+
+Deferred (noted in `docs/design/HANDOFF.md`): dashboard cards sized to their content; the full task-row metadata collapse to inline-text with middots; broader `grep -rn "rounded-full"` sweep for other chip hand-rolls across dashboard widgets, calendar legend, settings; a non-interactive variant on `KinChip` so tabindex-hacks aren't needed; dblclick-inline-edit on task titles is deprecated by the row-click-opens-panel path.
+
+Gate (`scripts/check.sh`) green on each piece. 227s on main (full scope); 82-84s per piece on the branch (changed-files scope). Pre-existing ESLint warnings on `monthEventsMap` / `monthEventLabels` unused vars in `CalendarView.vue` remain; not from this pass.
+
 ## 2026-10-23: v1.11.1, Demo family no longer trips the single-family banner ([#331](https://github.com/gregqualls/kinhold/issues/331))
 
 Self-hosters who loaded demo data with `php artisan db:seed` saw the commercial-license banner claim they had two families, because the license check counted every row in `families`, including the seeded `q32-demo-family`. The demo family can't be deleted from the UI, so there was no way to clear it. Second report of the same bug after [#329](https://github.com/gregqualls/kinhold/issues/329). A new `Family::excludingDemo()` scope now backs both the banner count in `LicenseEnforcementService` and the Nth-family log line in `Family::booted()`. New cases in `LicenseConfigEndpointTest` and `FamilyCreationLoggingTest` cover demo plus one family (no banner, no log) and demo plus two (banner, count of 2). `SELF-HOSTING.md` now says the demo family doesn't count.

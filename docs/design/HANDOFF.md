@@ -1,3 +1,34 @@
+## Polish pass — 2026-10-24 (branch `polish/honour-the-system`, unmerged)
+
+Six-commit pass acting on the two real-app audits (frontend-design, emil-design-eng). The thesis both lenses converged on: Kin* exists, feature views bypass it. Each piece honours the system rather than redesigning it. Gate green on each. Nothing pushed; branch waits for review.
+
+**Landed:**
+
+1. `.kin-pressable` utility (`resources/css/app.css`, `KinChip.vue`, `TaskItem.vue`, `KinMonthGrid.vue`, `CalendarView.vue`). Quieter sibling of KinButton's lifted/pressed treatment. `translateY(1px)` on `:active`, gated on `prefers-reduced-motion`. Also folded in the FAB `transition: all` → per-property list (originally earmarked for piece 6).
+2. Shared selected grammar at the DS layer (`app.css`, `TaskItem.vue`, `TasksView.vue`). `[data-selected="true"]` on `.kin-pressable` → 2px lavender bar + 4% ink wash. Task-row click now works on touch too (gate lifted; `@click.stop` on inner children prevents double-fire).
+3. Task-row chips routed through `KinChip` (`TaskItem.vue`). Four hand-rolls deleted. Tags use `customColor`; recurring uses `color="lavender"`. `tabindex="-1"` on both.
+4. Sidebar active state quieted (`KinSidebar.vue`). `bg-accent-lavender-bold text-ink-inverse` → `bg-accent-lavender-soft text-ink-primary` + font-weight 600. Pill kept per tenet 4.
+5. Density pass (`WelcomeWidget.vue`, `TaskItem.vue`, `CalendarView.vue`). Hero `text-3xl` → `text-2xl` semibold tracking-tight; task row `py-3.5` → `py-2.5`; calendar `density="pills"` → `"dots"` with max-dots=3.
+6. Housekeeping (`DashboardView.vue`, `TaskItem.vue`, `CalendarView.vue`). Drag ghost on token shadow; priority flag has `:aria-label`; mini-month today indicator → 2px ring so main-grid filled circle stays the one "today" marker on the screen.
+
+**Deferred (not blocking, each a clean follow-up):**
+
+- **Dashboard cards sized to their content** — the audit noted My Tasks and Today's Schedule cards sit 50% empty. Fixing this means per-widget height audits across the 11 widgets. The sprawling piece was called out in the handshake as the most likely to stop partway; left for a focused dedicated session.
+- **Task-row metadata collapse to inline-text with middots** — the audit's "chip storm" fix had two halves. Piece 3 routed chips through `KinChip` (visual quieting); the full collapse of status/points/cadence/assignee into `Chores · 10pt · Every Tuesday` style inline text is Phase 2.
+- **Broader `grep -rn "rounded-full"` sweep** for other chip hand-rolls in dashboard widgets, calendar legends, settings. Piece 3 scoped to TaskItem only. The DS still has consumers routing around it.
+- **Non-interactive variant on `KinChip`** — current status variant is a span but renders no colors. A clean `interactive: false` prop on category variant would let TaskItem drop the `tabindex="-1"` hack.
+- **Dblclick-inline-edit on task titles** is now effectively dominated by the row-click-opens-panel. In-code note at `TaskItem.vue:131-137` for #293 Phase 2 to route edits through the panel's title field.
+
+**Known limitations after this pass:**
+
+- `data-selected` is used instead of `aria-selected` because the task row is a plain `<div>` with no listbox role. If the Tasks screen gains proper listbox semantics later, swap back to `aria-selected` and the DS selected-grammar CSS updates with it.
+- `monthEventLabels` prop on KinMonthGrid is dead when `density="dots"`. The existing ESLint warnings on `monthEventsMap` / `monthEventLabels` as unused vars in `CalendarView.vue:485/502` are pre-existing (both passed to KinMonthGrid). Not introduced by this pass; can be cleaned up when the computed stops being used.
+- Mini-month dots on the utility rail are 3×3px, borderline visible. If this surfaces as a complaint, bump to 4px and lavender-bold outlines on event-heavy days.
+
+**Where decisions live:** this section is the ledger. `CHANGELOG.md` has the per-session summary. `REDESIGN_BRIEF.md`'s locked tenets 4 (pill shape) and 6 (gradients over flat white) were deliberately preserved against audit moves that would have broken them.
+
+---
+
 # Redesign Handoff — 2026-04-21
 
 > Snapshot of the `redesign/visual-overhaul` branch as of commit `cc40f90`.
