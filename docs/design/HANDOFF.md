@@ -1,3 +1,43 @@
+## Polish pass, part 2 — 2026-10-24 (same branch, still unmerged)
+
+Six more commits (`c5b7813` → `6c4be83`) acting on the audit of the remaining 12 routes. The DS additions from part 1 (`.kin-pressable`, `[data-selected]`, chip routing via `KinChip`) hadn't propagated to Vault, Chat, Points, Rewards, Achievements, Food, Shopping, Settings. This pass closes the gap where the fix is DS adoption; stops where it would need design decisions.
+
+**Landed (6 commits):**
+
+1. **Delete `ToggleSwitch`, route to `KinSwitch`.** All four call sites (SettingsView dark-mode × 2, EventModal all_day + is_featured) use `KinSwitch color="lavender"`. Dark-mode toggle loses the sun/moon-in-thumb icon — `KinSwitch` has no thumb slot by design.
+2. **Tokenise brand gold.** 71 `[#C4975A]` sites → `brand-gold` across 19 files. Pure refactor.
+3. **`.kin-pressable` + per-property transitions.** Vault categories/entries, Chat suggestions + textarea, BadgeCard card + progress bar, FeaturedEventsSection row. Each site chosen because it was a clickable surface or a transition-all site the audit flagged.
+4. **`.kin-tile` DS rule** collapses four Settings selected-tile duplicates (AI mode × 2, AI provider, color theme) into one shared `[data-selected="true"]` grammar. Row-grammar `::before` bar is overridden to `content: none` on tiles so the row style doesn't bleed onto bordered cards.
+5. **Vault entry typography.** `SensitiveField` now opts into mono only for data (URLs, domains, phone/zip patterns via regex); prose values use the body font.
+6. **Partial chip-storm cleanup.** Only ShoppingListItem + AddItemInput recurring toggles. Honest stop — see below.
+
+**Stopped at (next session's starting point):**
+
+- **FeedItem (Points feed) +1 badges, stack button, points pill.** Four hand-rolled chip visuals per row, but they're functional micro-widgets (stack toggle, count badges, status pill), not category chips. `KinChip variant="status"` always renders a leading dot which these use-cases don't want. Needs either a dot-less `KinChip status` variant or a new `KinStatusBadge` primitive. Design call.
+- **RewardCard stock/expiry/visibility pills.** Same issue: three state badges per card with dynamic colour per state (red/amber/lavender/prussian). The audit's recommendation to route through `KinChip variant="status"` would add dots and change padding. Needs the same primitive decision.
+- **Chat suggestion buttons → `KinButton`.** They already got `.kin-pressable` in part 1 piece 3; converting to `KinButton` is a question of API fit (do the four large text-left buttons want `KinButton variant="secondary"` or stay as hand-rolls with the DS classes). Low priority given the press-feel is in place.
+
+**Still deferred from audit4 (not touched this session):**
+
+- `KinPageHero` primitive (nine screens, eight hero shapes)
+- Promote `KinUtilityRail` cross-screen (five more screens could earn their right column)
+- `KinEmptyState` adoption (Food empty week, Points right rail, Vault entry Documents, Rewards auctions)
+- Settings master-detail layout (currently single-column wasting ~55% of 1440)
+- Food empty-week replacement (28 "+ Add" slots → one empty state)
+- Points history date-group headers
+- Rewards grid 3 → 4-5 columns at 1440 + per-tile button sizing
+- Broader `grep -rn "rounded-full"` sweep (Dashboard widgets, calendar legends, settings) — the TaskItem chip pass taught this but it never shipped to the rest
+
+**Known limitations after both passes:**
+
+- `monthEventLabels` prop on `KinMonthGrid` is dead code when `density="dots"` (set in part 1 piece 5). Pre-existing ESLint warnings on it and `monthEventsMap` in `CalendarView.vue` remain unresolved; both will go when either the prop is removed or the dots mode is confirmed permanent.
+- `MagnifyingGlassIcon` unused-vars warning in `VaultCategoriesView.vue` is pre-existing — not introduced by this pass.
+- `ToggleSwitch` is deleted, but if anyone has an outdated Vite build cached in their browser they'll see a one-time "Failed to reload ToggleSwitch.vue" console error. Hard-refresh clears it.
+
+**Where decisions live:** `CHANGELOG.md` has the per-session summary. `REDESIGN_BRIEF.md`'s locked tenets 4 (pill shape), 5 (hero numerals), 6 (gradients) were preserved against audit moves that would have broken them.
+
+---
+
 ## Polish pass — 2026-10-24 (branch `polish/honour-the-system`, unmerged)
 
 Six-commit pass acting on the two real-app audits (frontend-design, emil-design-eng). The thesis both lenses converged on: Kin* exists, feature views bypass it. Each piece honours the system rather than redesigning it. Gate green on each. Nothing pushed; branch waits for review.
