@@ -18,7 +18,7 @@
       <!-- All-day toggle (calendar mode only) -->
       <div v-if="mode === 'calendar'" class="flex items-center justify-between">
         <label class="text-sm font-medium text-ink-primary">All-day event</label>
-        <ToggleSwitch v-model="form.all_day" />
+        <KinSwitch v-model="form.all_day" color="lavender" />
       </div>
 
       <!-- Date & Time row -->
@@ -126,7 +126,7 @@
           <label class="text-sm font-medium text-ink-primary">Feature this event</label>
           <p class="text-xs text-ink-tertiary">Show on dashboard with countdown</p>
         </div>
-        <ToggleSwitch v-model="form.is_featured" />
+        <KinSwitch v-model="form.is_featured" color="lavender" />
       </div>
 
       <!-- Featured scope (when featured is enabled, or in featured mode) -->
@@ -207,7 +207,7 @@ import { ref, computed, watch } from 'vue'
 import { DateTime } from 'luxon'
 import BaseModal from '@/components/common/BaseModal.vue'
 import IconPicker from '@/components/common/IconPicker.vue'
-import ToggleSwitch from '@/components/common/ToggleSwitch.vue'
+import KinSwitch from '@/components/design-system/KinSwitch.vue'
 
 const props = defineProps({
   show: Boolean,

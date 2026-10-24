@@ -1009,12 +1009,7 @@
               <p class="font-medium text-ink-primary">Dark Mode</p>
               <p class="text-xs text-ink-secondary mt-0.5">Switch between light and dark themes</p>
             </div>
-            <ToggleSwitch :model-value="isDark" @update:model-value="toggleDarkMode">
-              <template #thumb>
-                <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-accent-lavender-bold" />
-                <SunIcon v-else class="w-3.5 h-3.5 text-sand-500" />
-              </template>
-            </ToggleSwitch>
+            <KinSwitch :model-value="isDark" color="lavender" @update:model-value="toggleDarkMode" />
           </div>
 
           <!-- Color Theme Picker -->
@@ -1250,12 +1245,7 @@
             <p class="font-medium text-ink-primary">Dark Mode</p>
             <p class="text-xs text-ink-secondary mt-0.5">Switch between light and dark themes</p>
           </div>
-          <ToggleSwitch :model-value="isDark" @update:model-value="toggleDarkMode">
-            <template #thumb>
-              <MoonIcon v-if="isDark" class="w-3.5 h-3.5 text-accent-lavender-bold" />
-              <SunIcon v-else class="w-3.5 h-3.5 text-sand-500" />
-            </template>
-          </ToggleSwitch>
+          <KinSwitch :model-value="isDark" color="lavender" @update:model-value="toggleDarkMode" />
         </div>
       </div>
 
@@ -1625,10 +1615,9 @@ import UserAvatar from '@/components/common/UserAvatar.vue'
 import NotificationsPanel from '@/components/notifications/NotificationsPanel.vue'
 import BillingPanel from '@/components/billing/BillingPanel.vue'
 import AvatarEditor from '@/components/common/AvatarEditor.vue'
-import ToggleSwitch from '@/components/common/ToggleSwitch.vue'
+import KinSwitch from '@/components/design-system/KinSwitch.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
-import KinSwitch from '@/components/design-system/KinSwitch.vue'
 import SettingsSection from '@/components/settings/SettingsSection.vue'
 import FamilyAllergenSettings from '@/components/allergens/FamilyAllergenSettings.vue'
 import AllergyProfileEditor from '@/components/allergens/AllergyProfileEditor.vue'
