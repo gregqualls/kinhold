@@ -1,7 +1,8 @@
 <template>
   <div :id="id" class="bg-surface-raised border border-border-subtle rounded-xl shadow-sm mb-6">
-    <!-- Header (always visible) -->
+    <!-- Collapsible header (standalone accordion mode). -->
     <button
+      v-if="collapsible"
       type="button"
       class="w-full flex items-center justify-between px-5 py-4 md:px-6 text-left cursor-pointer select-none rounded-xl hover:bg-surface-sunken dark:hover:bg-surface-raised/80 transition-colors"
       @click="toggleOpen"
@@ -37,8 +38,38 @@
       </div>
     </button>
 
-    <!-- Body (collapsible) -->
-    <div v-show="isOpen" class="px-5 pb-5 md:px-6 md:pb-6">
+    <!-- Static header (master-detail mode: no chevron, no toggle). -->
+    <div
+      v-else
+      class="flex items-center justify-between px-5 py-4 md:px-6 border-b border-border-subtle"
+    >
+      <div class="flex items-center gap-3 min-w-0">
+        <component
+          :is="icon"
+          v-if="icon"
+          class="w-5 h-5 text-accent-lavender-bold flex-shrink-0"
+        />
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-semibold font-heading text-ink-primary truncate">{{ title }}</h2>
+            <span
+              v-if="badge"
+              class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent-lavender-soft/40 text-accent-lavender-bold dark:bg-accent-lavender-soft/40 dark:text-accent-lavender-bold whitespace-nowrap"
+            >
+              {{ badge }}
+            </span>
+          </div>
+          <p v-if="description" class="text-sm text-ink-secondary mt-0.5">{{ description }}</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 flex-shrink-0 ml-4">
+        <slot name="header-actions"></slot>
+      </div>
+    </div>
+
+    <!-- Body: v-show when collapsible, always visible otherwise. -->
+    <div v-show="collapsible ? isOpen : true" class="px-5 py-5 md:px-6 md:py-6">
       <slot></slot>
     </div>
   </div>
@@ -77,6 +108,12 @@ const props = defineProps({
     type: Boolean,
     default: undefined,
   },
+  // Set false in master-detail mode: hides the chevron, removes click-to-toggle,
+  // and the body is always visible (modelValue is ignored).
+  collapsible: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -97,8 +134,9 @@ const toggleOpen = () => {
   }
 }
 
-// Hash deep-linking
+// Hash deep-linking (accordion mode only; master-detail parents own hash routing).
 onMounted(async () => {
+  if (!props.collapsible) return
   const hash = window.location.hash.slice(1)
   if (hash === props.id) {
     if (isControlled.value) {
