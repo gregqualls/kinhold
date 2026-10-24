@@ -65,8 +65,8 @@
           :event-labels="filteredMonthEventLabels"
           :today="todayInCurrentMonth"
           :selected="null"
-          density="pills"
-          :max-pills="3"
+          density="dots"
+          :max-dots="3"
           @select="(day) => onMonthDaySelect(day)"
         />
       </div>
