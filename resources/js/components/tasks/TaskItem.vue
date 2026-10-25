@@ -28,64 +28,18 @@
         {{ task.title }}
       </p>
 
-      <!-- Meta row -->
-      <div class="flex items-center gap-2 mt-1 flex-wrap">
-        <!-- Tags: passive category labels (:interactive="false" renders a span). -->
-        <KinChip
-          v-for="tag in task.tags"
-          :key="tag.id"
-          variant="category"
-          size="sm"
-          :custom-color="getTagHex(tag.color)"
-          :interactive="false"
-        >
-          {{ tag.name }}
-        </KinChip>
-
-        <!-- Due date -->
-        <span
-          v-if="task.due_date"
-          class="flex items-center gap-1 text-xs"
-          :class="dueDateClass"
-        >
-          <CalendarIcon class="w-3 h-3" />
-          {{ formattedDueDate }}
-        </span>
-
-        <!-- Assignee or Family task -->
-        <span v-if="task.is_family_task" class="flex items-center gap-1 text-xs text-accent-lavender-bold">
-          <UserGroupIcon class="w-3 h-3" />
-          Open
-        </span>
-        <span v-else-if="task.assignee" class="flex items-center gap-1 text-xs text-ink-tertiary">
-          <UserAvatar :user="task.assignee" size="xs" />
-          {{ task.assignee.name?.split(' ')[0] }}
-        </span>
-
-        <!-- Points -->
-        <span v-if="task.effective_points" class="text-[10px] font-medium font-mono text-sand-600 dark:text-sand-400">
-          {{ task.effective_points }}pts
-        </span>
-
-        <!-- Recurring indicator: passive category label. -->
-        <KinChip
-          v-if="task.recurrence_label || task.recurrence_rule"
-          variant="category"
-          color="lavender"
-          size="sm"
-          :interactive="false"
-        >
-          <template #leading>
-            <ArrowPathIcon class="w-3 h-3" />
-          </template>
-          {{ task.recurrence_label || 'Recurring' }}
-        </KinChip>
-
-        <!-- Description indicator -->
-        <span v-if="task.description" class="text-xs text-ink-tertiary">
-          <DocumentTextIcon class="w-3 h-3" />
-        </span>
-      </div>
+      <!-- Meta row: inline text with middot separators. Replaces the
+           earlier chip storm (tags + due + assignee + points + recurrence
+           + description-indicator) with a single scannable line. Tags
+           keep their color as text; everything else is small text in
+           semantic shades. Description indicator dropped (row-click opens
+           the panel anyway). -->
+      <p v-if="metaParts.length" class="text-xs leading-snug mt-0.5">
+        <template v-for="(part, i) in metaParts" :key="i">
+          <span v-if="i > 0" class="text-ink-tertiary mx-1.5">·</span>
+          <span :class="part.class" :style="part.style">{{ part.text }}</span>
+        </template>
+      </p>
     </div>
 
     <!-- Priority indicator (click to cycle) -->
@@ -108,12 +62,10 @@
 
 <script setup>
 import { computed } from 'vue'
-import { CalendarIcon, DocumentTextIcon, FlagIcon, PencilIcon, TrashIcon, UserGroupIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
+import { FlagIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { useTasksStore } from '@/stores/tasks'
 import TaskCheckbox from './TaskCheckbox.vue'
 import ContextMenu from '@/components/common/ContextMenu.vue'
-import UserAvatar from '@/components/common/UserAvatar.vue'
-import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   task: { type: Object, required: true },
@@ -144,6 +96,47 @@ const colorMap = {
 }
 
 const getTagHex = (colorName) => colorMap[colorName] || colorName || colorMap.wisteria
+
+// Ordered inline meta parts, joined by middots in the template. Each part
+// carries its own color/weight via class or style.
+const metaParts = computed(() => {
+  const parts = []
+  const t = props.task
+
+  for (const tag of t.tags || []) {
+    parts.push({
+      text: tag.name,
+      class: 'font-medium',
+      style: { color: getTagHex(tag.color) },
+    })
+  }
+
+  if (t.due_date) {
+    parts.push({ text: formattedDueDate.value, class: dueDateClass.value })
+  }
+
+  if (t.is_family_task) {
+    parts.push({ text: 'Open', class: 'text-accent-lavender-bold font-medium' })
+  } else if (t.assignee?.name) {
+    parts.push({ text: t.assignee.name.split(' ')[0], class: 'text-ink-tertiary' })
+  }
+
+  if (t.effective_points) {
+    parts.push({
+      text: `${t.effective_points}pt`,
+      class: 'font-mono font-medium text-sand-600 dark:text-sand-400',
+    })
+  }
+
+  if (t.recurrence_label || t.recurrence_rule) {
+    parts.push({
+      text: t.recurrence_label || 'Recurring',
+      class: 'text-accent-lavender-bold',
+    })
+  }
+
+  return parts
+})
 
 // Priority cycling (inline edit path only — title edit lives in TaskDetailPanel)
 const cyclePriority = () => {
