@@ -104,23 +104,17 @@
       <div v-if="form.visibility === 'specific'" class="sm:col-span-2">
         <label class="block text-xs font-medium text-prussian-500 dark:text-lavender-300 mb-1.5">Who can see this?</label>
         <div class="flex flex-wrap gap-2">
-          <label
+          <KinChip
             v-for="member in familyMembers"
             :key="member.id"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-colors"
-            :class="isSelected(member.id)
-              ? 'bg-wisteria-100 text-wisteria-700 dark:bg-wisteria-900/40 dark:text-wisteria-300 ring-1 ring-wisteria-300 dark:ring-wisteria-600'
-              : 'bg-lavender-100 text-lavender-600 dark:bg-prussian-700 dark:text-lavender-400 hover:bg-lavender-200 dark:hover:bg-prussian-600'"
+            variant="filter"
+            size="sm"
+            color="lavender"
+            :active="isSelected(member.id)"
+            @click="toggleMember(member.id)"
           >
-            <input
-              type="checkbox"
-              :value="member.id"
-              :checked="isSelected(member.id)"
-              class="sr-only"
-              @change="toggleMember(member.id)"
-            />
             {{ member.name }}
-          </label>
+          </KinChip>
         </div>
       </div>
     </div>
@@ -139,6 +133,7 @@ import { ref, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import IconPicker from '@/components/common/IconPicker.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   reward: {

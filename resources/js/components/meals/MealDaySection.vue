@@ -32,9 +32,9 @@
           Today
         </span>
       </div>
-      <span v-if="totalEntries > 0" class="text-xs bg-[#F5F2EE] dark:bg-[#252528] text-[#6B6966] dark:text-[#9C9895] px-2 py-0.5 rounded-full">
+      <KinChip v-if="totalEntries > 0" variant="category" color="neutral" size="sm" :interactive="false">
         {{ totalEntries }} meal{{ totalEntries !== 1 ? 's' : '' }}
-      </span>
+      </KinChip>
     </div>
 
     <!-- Meal slots (always expanded) -->
@@ -91,6 +91,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 import { PlusIcon, SunIcon, CloudIcon, MoonIcon, CakeIcon } from '@heroicons/vue/24/outline'
 import MealEntryCard from './MealEntryCard.vue'
 import { useMealsStore } from '@/stores/meals'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   date: { type: String, required: true },
