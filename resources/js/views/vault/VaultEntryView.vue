@@ -120,9 +120,15 @@
             </button>
           </div>
         </div>
-        <div v-else class="px-4 py-3">
-          <p class="text-xs text-ink-tertiary">No documents attached yet.</p>
-        </div>
+        <KinEmptyState
+          v-else
+          :icon="PaperClipIcon"
+          title="No documents attached"
+          :description="isParent && !isDemoFamily ? 'Attach PDFs, images, or any file that belongs with this entry.' : ''"
+          accent-color="lavender"
+          size="sm"
+          class="py-6"
+        />
         <div v-if="uploading" class="px-4 py-2 border-t border-border-subtle">
           <p class="text-xs text-accent-lavender-bold">Uploading...</p>
         </div>
@@ -340,12 +346,14 @@ import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
 import KinPageHero from '@/components/design-system/KinPageHero.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import {
   ChevronRightIcon,
   DocumentTextIcon,
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   LockClosedIcon,
+  PaperClipIcon,
   PencilIcon,
   PlusIcon,
   ShareIcon,
