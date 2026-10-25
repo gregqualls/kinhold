@@ -63,18 +63,17 @@
           </div>
           <p v-else-if="tagsError" class="text-xs text-status-failed">Failed to load tags. Try again later.</p>
           <div v-else class="flex flex-wrap gap-1.5">
-            <button
+            <KinChip
               v-for="tag in availableTags"
               :key="tag.id"
-              class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border transition-colors"
-              :class="selectedTagIds.has(tag.id)
-                ? 'border-transparent text-white'
-                : 'border-border-subtle text-ink-secondary hover:border-accent-lavender-bold'"
-              :style="selectedTagIds.has(tag.id) ? { backgroundColor: tag.color } : {}"
+              variant="filter"
+              size="sm"
+              :custom-color="tag.color"
+              :active="selectedTagIds.has(tag.id)"
               @click="toggleTag(tag.id)"
             >
               {{ tag.name }}
-            </button>
+            </KinChip>
             <p v-if="availableTags.length === 0" class="text-xs text-ink-tertiary">No tags created yet</p>
           </div>
         </KinFormGroup>
@@ -127,6 +126,7 @@ import KinButton from '@/components/design-system/KinButton.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinFormGroup from '@/components/design-system/KinFormGroup.vue'
 import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 import { widgetTypesByCategory } from './widgetRegistry'
 import {
   HandRaisedIcon,

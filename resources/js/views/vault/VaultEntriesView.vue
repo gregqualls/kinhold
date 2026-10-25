@@ -1,29 +1,17 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header -->
-    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
-      <div class="flex items-center gap-3">
-        <button
-          class="p-2 -ml-2 text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken rounded-xl transition-colors"
-          @click="$router.push('/vault')"
-        >
-          <ChevronLeftIcon class="w-5 h-5" />
-        </button>
-        <div class="flex-1 min-w-0">
-          <h1 class="text-base md:text-xl font-bold font-heading text-ink-primary truncate">{{ currentCategory?.name || 'Entries' }}</h1>
-          <p v-if="currentCategory?.description" class="hidden md:block text-xs text-ink-tertiary mt-0.5 truncate">{{ currentCategory.description }}</p>
-        </div>
-        <KinButton
-          v-if="isParent"
-          variant="primary"
-          size="md"
-          class="hidden md:flex"
-          @click="showCreateEntry = true"
-        >
-          <PlusIcon class="w-4 h-4" />
-          Add
-        </KinButton>
-      </div>
+    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-3 md:pb-0">
+      <KinPageHero show-back @back="$router.push('/vault')">
+        {{ currentCategory?.name || 'Entries' }}
+        <template v-if="currentCategory?.description" #subtitle>{{ currentCategory.description }}</template>
+        <template v-if="isParent" #actions>
+          <KinButton variant="primary" size="md" class="hidden md:flex" @click="showCreateEntry = true">
+            <PlusIcon class="w-4 h-4" />
+            Add
+          </KinButton>
+        </template>
+      </KinPageHero>
     </div>
 
     <!-- Search -->
@@ -42,7 +30,7 @@
         <div
           v-for="entry in filteredEntries"
           :key="entry.id"
-          class="group flex items-center gap-3 sm:gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-all"
+          class="kin-pressable group flex items-center gap-3 sm:gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
           @click="$router.push(`/vault/entry/${entry.id}`)"
         >
           <!-- Lock icon -->
@@ -98,7 +86,7 @@
     <KinModalSheet
       :model-value="showCreateEntry"
       title="New Vault Entry"
-      size="xl"
+      size="lg"
       @close="closeCreateModal"
     >
       <form class="space-y-5" @submit.prevent="handleCreateEntry">
@@ -190,8 +178,8 @@ import KinInput from '@/components/design-system/KinInput.vue'
 import KinSearch from '@/components/design-system/KinSearch.vue'
 import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import {
-  ChevronLeftIcon,
   ChevronRightIcon,
   LockClosedIcon,
   PlusIcon,

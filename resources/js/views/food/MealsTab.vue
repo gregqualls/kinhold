@@ -69,9 +69,29 @@
     />
 
     <template v-else>
+      <!-- Desktop empty week: one invite to plan instead of an empty grid. -->
+      <div
+        v-if="isWeekEmpty"
+        class="hidden md:flex flex-1 items-center justify-center px-4 md:px-6"
+      >
+        <KinEmptyState
+          :icon="CalendarDaysIcon"
+          title="No meals planned this week"
+          description="Build the week ahead so everyone knows what's for dinner."
+          accent-color="peach"
+        >
+          <template #cta>
+            <KinButton variant="primary" size="md" @click="openEntryPicker(mealsStore.weekDates[0], 'dinner')">
+              <template #leading><PlusIcon class="w-4 h-4" /></template>
+              Plan the week
+            </KinButton>
+          </template>
+        </KinEmptyState>
+      </div>
+
       <!-- Desktop: grid view (transposed: slots = rows, days = columns) -->
       <div
-        v-if="viewMode === 'grid'"
+        v-else-if="viewMode === 'grid'"
         class="hidden md:block flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-6 py-3"
       >
         <MealWeekGrid
@@ -261,6 +281,7 @@ import {
   TrashIcon,
   MapPinIcon,
   PhoneIcon,
+  PlusIcon,
   ArrowTopRightOnSquareIcon,
   Squares2X2Icon,
   ListBulletIcon,
@@ -286,6 +307,8 @@ const authStore = useAuthStore()
 const { success: notifySuccess, error: notifyError } = useNotification()
 
 const familyMembers = computed(() => authStore.familyMembers || [])
+
+const isWeekEmpty = computed(() => !mealsStore.currentPlan?.entries?.length)
 
 // ── View mode (desktop only — mobile always uses day-stack scroll) ──
 // Persists across sessions; matches RecipesTab pattern. Default 'list' so the

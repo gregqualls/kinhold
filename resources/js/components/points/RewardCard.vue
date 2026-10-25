@@ -24,9 +24,9 @@
     <p v-if="reward.description" class="text-xs text-lavender-500 dark:text-lavender-400 mb-2 flex-1">{{ reward.description }}</p>
 
     <div class="flex flex-wrap gap-1.5 mb-3">
-      <span v-if="stockLabel" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium" :class="stockClass">{{ stockLabel }}</span>
-      <span v-if="expiryLabel" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium" :class="expiryClass">{{ expiryLabel }}</span>
-      <span v-if="isParent && visibilityLabel" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-prussian-100 text-prussian-600 dark:bg-prussian-700 dark:text-lavender-300">{{ visibilityLabel }}</span>
+      <KinChip v-if="stockLabel" variant="status" size="sm" :status="stockStatus" :show-dot="false" :interactive="false">{{ stockLabel }}</KinChip>
+      <KinChip v-if="expiryLabel" variant="status" size="sm" :status="expiryStatus" :show-dot="false" :interactive="false">{{ expiryLabel }}</KinChip>
+      <KinChip v-if="isParent && visibilityLabel" variant="status" size="sm" status="info" :show-dot="false" :interactive="false">{{ visibilityLabel }}</KinChip>
     </div>
 
     <div class="flex items-center justify-between mt-auto">
@@ -82,11 +82,11 @@
       </div>
     </div>
 
-    <!-- Body: two-column on sm+ -->
+    <!-- Body: stacked at every width; the card is a grid tile, never wide
+         enough for the bid panel to sit beside the title. -->
     <div class="p-4">
-      <div class="flex flex-col sm:flex-row sm:gap-6">
-        <!-- Left: reward info -->
-        <div class="flex-1 min-w-0 mb-3 sm:mb-0">
+      <div class="flex flex-col gap-3">
+        <div class="min-w-0">
           <div class="flex items-center gap-2 mb-1">
             <div class="w-6 h-6 text-wisteria-500 dark:text-wisteria-400 shrink-0">
               <IconRenderer v-if="reward.icon" :icon="reward.icon" :size="24" color="currentColor" />
@@ -96,13 +96,12 @@
           </div>
           <p v-if="reward.description" class="text-xs text-lavender-500 dark:text-lavender-400 mb-2 line-clamp-2">{{ reward.description }}</p>
           <div class="flex flex-wrap gap-1.5">
-            <span v-if="isParent && visibilityLabel" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-prussian-100 text-prussian-600 dark:bg-prussian-700 dark:text-lavender-300">{{ visibilityLabel }}</span>
-            <span v-if="stockLabel" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium" :class="stockClass">{{ stockLabel }}</span>
+            <KinChip v-if="isParent && visibilityLabel" variant="status" size="sm" status="info" :show-dot="false" :interactive="false">{{ visibilityLabel }}</KinChip>
+            <KinChip v-if="stockLabel" variant="status" size="sm" :status="stockStatus" :show-dot="false" :interactive="false">{{ stockLabel }}</KinChip>
           </div>
         </div>
 
-        <!-- Right: bid stats -->
-        <div v-if="!reward.is_resolved" class="sm:w-48 shrink-0 space-y-1.5 bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
+        <div v-if="!reward.is_resolved" class="space-y-1.5 bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
           <div v-if="reward.highest_bid" class="flex justify-between text-xs">
             <span class="text-lavender-500 dark:text-lavender-400">High bid</span>
             <span class="font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ reward.highest_bid }} pts</span>
@@ -136,7 +135,7 @@
         </div>
 
         <!-- Resolved state -->
-        <div v-else class="sm:w-48 shrink-0 flex items-center justify-center bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
+        <div v-else class="flex items-center justify-center bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
           <span class="text-sm font-medium text-lavender-500 dark:text-lavender-400">Auction ended</span>
         </div>
       </div>
@@ -181,6 +180,7 @@ import { computed } from 'vue'
 import { GiftIcon } from '@heroicons/vue/24/outline'
 import { PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import IconRenderer from '@/components/common/IconRenderer.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   reward: {
@@ -210,11 +210,11 @@ const stockLabel = computed(() => {
   return `${remaining} left`
 })
 
-const stockClass = computed(() => {
+const stockStatus = computed(() => {
   const remaining = props.reward.remaining_stock
-  if (remaining === 0) return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-  if (remaining !== null && remaining <= 3) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-  return 'bg-lavender-100 text-lavender-600 dark:bg-prussian-700 dark:text-lavender-300'
+  if (remaining === 0) return 'failed'
+  if (remaining !== null && remaining <= 3) return 'warning'
+  return 'info'
 })
 
 // Expiry label (standard rewards only)
@@ -230,10 +230,7 @@ const expiryLabel = computed(() => {
   return `Expires ${expDate.toLocaleDateString()}`
 })
 
-const expiryClass = computed(() => {
-  if (props.reward.is_expired) return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-  return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-})
+const expiryStatus = computed(() => props.reward.is_expired ? 'failed' : 'warning')
 
 // Countdown label (auction end time)
 const countdownLabel = computed(() => {

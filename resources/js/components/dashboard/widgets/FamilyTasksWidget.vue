@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="flex items-center justify-between mb-3 flex-shrink-0">
+  <div>
+    <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
         <UserGroupIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || 'Family Tasks' }}
@@ -13,7 +13,7 @@
       </RouterLink>
     </div>
 
-    <div v-if="loading" class="flex-1 min-h-0" :class="columnsClass">
+    <div v-if="loading" :class="columnsClass">
       <KinSkeleton v-for="n in 4" :key="n" shape="rect" :height="'48px'" />
     </div>
 
@@ -23,10 +23,9 @@
       title="No open family tasks"
       size="sm"
       accent-color="lavender"
-      class="flex-1"
     />
 
-    <div v-else class="flex-1 min-h-0 overflow-y-auto" :class="columnsClass">
+    <div v-else :class="columnsClass">
       <div
         v-for="task in tasks"
         :key="task.id"

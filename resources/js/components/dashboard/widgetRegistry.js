@@ -8,7 +8,8 @@
  *  - icon: Heroicon name for picker
  *  - category: grouping for picker
  *  - supportedSizes: which sizes this widget renders well at
- *  - heights: CSS height per size (null = auto)
+ *  - cardless: true for widgets rendered without a KinFlatCard wrapper
+ *    (welcome, countdown). Carded widgets size to their content.
  *  - defaultSize: size to use when adding from picker
  */
 
@@ -20,7 +21,7 @@ export const widgetTypes = {
     icon: 'HandRaisedIcon',
     category: 'general',
     supportedSizes: ['lg'],
-    heights: { lg: null },
+    cardless: true,
     defaultSize: 'lg',
   },
   'countdown': {
@@ -30,7 +31,7 @@ export const widgetTypes = {
     icon: 'ClockIcon',
     category: 'general',
     supportedSizes: ['lg'],
-    heights: { lg: null },
+    cardless: true,
     defaultSize: 'lg',
   },
   'my-tasks': {
@@ -40,7 +41,6 @@ export const widgetTypes = {
     icon: 'CheckCircleIcon',
     category: 'tasks',
     supportedSizes: ['sm', 'md', 'lg'],
-    heights: { sm: '280px', md: '280px', lg: '320px' },
     defaultSize: 'sm',
   },
   'family-tasks': {
@@ -50,7 +50,6 @@ export const widgetTypes = {
     icon: 'UserGroupIcon',
     category: 'tasks',
     supportedSizes: ['sm', 'md'],
-    heights: { sm: '280px', md: '280px' },
     defaultSize: 'md',
   },
   'todays-schedule': {
@@ -60,7 +59,6 @@ export const widgetTypes = {
     icon: 'CalendarDaysIcon',
     category: 'calendar',
     supportedSizes: ['sm', 'md'],
-    heights: { sm: '280px', md: '280px' },
     defaultSize: 'md',
   },
   'points-summary': {
@@ -70,7 +68,6 @@ export const widgetTypes = {
     icon: 'TrophyIcon',
     category: 'points',
     supportedSizes: ['sm'],
-    heights: { sm: '280px' },
     defaultSize: 'sm',
   },
   'leaderboard': {
@@ -80,7 +77,6 @@ export const widgetTypes = {
     icon: 'TrophyIcon',
     category: 'points',
     supportedSizes: ['sm', 'md'],
-    heights: { sm: '280px', md: '360px' },
     defaultSize: 'sm',
   },
   'activity-feed': {
@@ -90,7 +86,6 @@ export const widgetTypes = {
     icon: 'BellIcon',
     category: 'points',
     supportedSizes: ['sm', 'md'],
-    heights: { sm: '280px', md: '280px' },
     defaultSize: 'sm',
   },
   'rewards-shop': {
@@ -100,7 +95,6 @@ export const widgetTypes = {
     icon: 'GiftIcon',
     category: 'rewards',
     supportedSizes: ['sm', 'md'],
-    heights: { sm: '280px', md: '320px' },
     defaultSize: 'sm',
   },
   'badge-collection': {
@@ -110,7 +104,6 @@ export const widgetTypes = {
     icon: 'ShieldCheckIcon',
     category: 'badges',
     supportedSizes: ['sm', 'md'],
-    heights: { sm: '280px', md: '320px' },
     defaultSize: 'sm',
   },
   'filtered-tasks': {
@@ -120,7 +113,6 @@ export const widgetTypes = {
     icon: 'FunnelIcon',
     category: 'tasks',
     supportedSizes: ['sm', 'md', 'lg'],
-    heights: { sm: '280px', md: '280px', lg: '320px' },
     defaultSize: 'sm',
     configurable: true,
   },
@@ -131,7 +123,6 @@ export const widgetTypes = {
     icon: 'Squares2X2Icon',
     category: 'general',
     supportedSizes: ['sm'],
-    heights: { sm: '280px' },
     defaultSize: 'sm',
   },
 }
@@ -144,15 +135,11 @@ export function getWidgetComponent(type) {
 }
 
 /**
- * Get the CSS height for a widget at a given size.
- * Returns null for auto-height widgets (welcome, countdown).
+ * Returns true for widgets that render without the KinFlatCard wrapper
+ * (welcome, countdown). All other widgets size to their content.
  */
-export function getWidgetHeight(type, size) {
-  const heights = widgetTypes[type]?.heights
-  if (!heights) return '280px'
-  // Explicit null means auto-height — preserve it
-  if (size in heights) return heights[size]
-  return '280px'
+export function isCardlessWidget(type) {
+  return !!widgetTypes[type]?.cardless
 }
 
 /**

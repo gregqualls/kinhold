@@ -3,11 +3,9 @@
     <!-- Main column -->
     <div class="flex-1 min-w-0 p-3 md:p-6 overflow-y-auto">
       <!-- Header -->
-      <div class="flex items-center justify-between mb-2 md:mb-4 gap-3 flex-wrap">
-        <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Calendar</h1>
-
-        <div class="flex items-center gap-2 flex-wrap">
-          <!-- View Mode Selector -->
+      <KinPageHero>
+        Calendar
+        <template #actions>
           <KinTabPillGroup
             v-model:active-key="viewMode"
             :tabs="viewModeTabs"
@@ -15,8 +13,8 @@
             size="sm"
             @change="setViewMode"
           />
-        </div>
-      </div>
+        </template>
+      </KinPageHero>
 
       <!-- Day-view editorial header (hero day number + week / month) -->
       <div v-if="viewMode === 'day'" class="mb-6 flex items-center gap-3 flex-wrap">
@@ -65,8 +63,8 @@
           :event-labels="filteredMonthEventLabels"
           :today="todayInCurrentMonth"
           :selected="null"
-          density="pills"
-          :max-pills="3"
+          density="dots"
+          :max-dots="3"
           @select="(day) => onMonthDaySelect(day)"
         />
       </div>
@@ -144,13 +142,12 @@
             <span
               class="w-6 h-6 rounded-full flex items-center justify-center"
               :class="cell.day === todayInCurrentMonth && cell.month === 'current'
-                ? 'bg-accent-lavender-bold text-ink-inverse font-semibold'
+                ? 'ring-2 ring-accent-lavender-bold text-ink-primary font-semibold'
                 : 'text-ink-primary hover:bg-surface-sunken'"
             >{{ cell.day }}</span>
             <span
               v-if="cell.month === 'current' && filteredMonthEventsMap[cell.day]?.length"
-              class="w-[3px] h-[3px] rounded-full mt-0.5"
-              :class="cell.day === todayInCurrentMonth ? 'bg-ink-inverse' : 'bg-accent-lavender-bold'"
+              class="w-[3px] h-[3px] rounded-full mt-0.5 bg-accent-lavender-bold"
             ></span>
             <span v-else class="h-[3px] mt-0.5"></span>
           </button>
@@ -194,7 +191,7 @@
     <button
       v-if="!showEventModal"
       type="button"
-      class="lg:hidden fixed bottom-20 right-4 z-30 w-14 h-14 rounded-full flex items-center justify-center shadow-elevated bg-accent-lavender-bold text-ink-inverse hover:brightness-110 transition-all"
+      class="kin-pressable lg:hidden fixed bottom-20 right-4 z-30 w-14 h-14 rounded-full flex items-center justify-center shadow-elevated bg-accent-lavender-bold text-ink-inverse hover:brightness-110 transition-[filter,background-color,transform] duration-quick ease-out-soft"
       aria-label="Add event"
       @click="openCreateModal()"
     >
@@ -238,6 +235,7 @@ import KinMonthGrid from '@/components/design-system/KinMonthGrid.vue'
 import KinChip from '@/components/design-system/KinChip.vue'
 import KinUtilityRail from '@/components/design-system/KinUtilityRail.vue'
 import KinDayHeader from '@/components/design-system/KinDayHeader.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -482,37 +480,6 @@ const monthCells = computed(() =>
   }))
 )
 
-// Map of day-number → array of accent names. Only current-month events.
-const monthEventsMap = computed(() => {
-  const map = {}
-  const monthStart = currentMonth.value.startOf('month')
-  const monthEnd = currentMonth.value.endOf('month')
-  for (const event of events.value) {
-    if (!event.start) continue
-    const d = DateTime.fromISO(event.start)
-    if (d < monthStart || d > monthEnd) continue
-    const day = d.day
-    if (!map[day]) map[day] = []
-    map[day].push(accentForEvent(event))
-  }
-  return map
-})
-
-// Optional event-title labels per day (KinMonthGrid uses these in pills mode).
-// We're using dots mode but pass these along anyway for hover/aria context.
-const monthEventLabels = computed(() => {
-  const map = {}
-  const monthStart = currentMonth.value.startOf('month')
-  const monthEnd = currentMonth.value.endOf('month')
-  for (const event of events.value) {
-    if (!event.start) continue
-    const d = DateTime.fromISO(event.start)
-    if (d < monthStart || d > monthEnd) continue
-    if (!map[d.day]) map[d.day] = []
-    map[d.day].push(event.title || 'Event')
-  }
-  return map
-})
 
 const todayInCurrentMonth = computed(() => {
   const now = DateTime.now()

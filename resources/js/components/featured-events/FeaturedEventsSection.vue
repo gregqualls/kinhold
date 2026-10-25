@@ -25,7 +25,7 @@
       <div
         v-for="event in upcomingEvents.slice(0, 6)"
         :key="event.id"
-        class="flex items-center gap-3 p-3 rounded-[12px] transition-all duration-300"
+        class="flex items-center gap-3 p-3 rounded-[12px] transition-[background-color,box-shadow] duration-300"
         :class="isToday(event.event_date)
           ? 'bg-gradient-to-r from-sand-100/80 to-wisteria-100/60 dark:from-sand-900/30 dark:to-wisteria-900/30 ring-1 ring-sand-300/50 dark:ring-sand-700/50 animate-pulse-subtle'
           : 'bg-surface-sunken'"
@@ -61,13 +61,18 @@
             <span v-if="event.event_time" class="text-ink-tertiary">
               {{ formatTime(event.event_time) }}
             </span>
-            <span
+            <KinChip
               v-if="event.recurrence_label"
-              class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-accent-lavender-soft/40 text-accent-lavender-bold text-[10px] font-medium"
+              variant="category"
+              color="lavender"
+              size="sm"
+              :interactive="false"
             >
-              <ArrowPathIcon class="w-2.5 h-2.5" />
+              <template #leading>
+                <ArrowPathIcon class="w-2.5 h-2.5" />
+              </template>
               {{ event.recurrence_label }}
-            </span>
+            </KinChip>
           </div>
         </div>
 
@@ -157,6 +162,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EventModal from '@/components/common/EventModal.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 import { StarIcon, PlusIcon, EllipsisVerticalIcon, ArrowPathIcon, ClockIcon } from '@heroicons/vue/24/outline'
 import IconRenderer from '@/components/common/IconRenderer.vue'
 

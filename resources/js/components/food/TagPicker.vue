@@ -50,7 +50,7 @@
       <button
         v-else-if="onCreate"
         type="button"
-        class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-full border border-dashed border-border-subtle text-ink-tertiary hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+        class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-full border border-dashed border-border-subtle text-ink-tertiary hover:border-brand-gold hover:text-brand-gold transition-colors"
         @click="startCreate"
       >
         <PlusIcon class="w-3 h-3" />

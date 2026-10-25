@@ -170,8 +170,12 @@ const brandAttrs = computed(() => {
 
 .kin-sidebar__item--active,
 .kin-sidebar__item--active:hover {
-  background: rgb(var(--accent-lavender-bold));
-  color: rgb(var(--ink-inverse));
+  /* Quiet active state: pill shape stays (tenet 4), but swap the saturated
+     purple fill for a soft lavender wash + ink text. The accent is still
+     present without shouting across every screen. */
+  background: rgb(var(--accent-lavender-soft));
+  color: rgb(var(--ink-primary));
+  font-weight: 600;
 }
 
 @media (prefers-reduced-motion: reduce) {

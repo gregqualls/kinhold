@@ -10,22 +10,22 @@
       <button
         class="px-4 py-2.5 text-sm font-medium transition-colors relative"
         :class="activeTab === 'url'
-          ? 'text-[#C4975A]'
+          ? 'text-brand-gold'
           : 'text-ink-tertiary hover:text-ink-primary'"
         @click="activeTab = 'url'"
       >
         From URL
-        <span v-if="activeTab === 'url'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4975A] rounded-full"></span>
+        <span v-if="activeTab === 'url'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-gold rounded-full"></span>
       </button>
       <button
         class="px-4 py-2.5 text-sm font-medium transition-colors relative"
         :class="activeTab === 'photo'
-          ? 'text-[#C4975A]'
+          ? 'text-brand-gold'
           : 'text-ink-tertiary hover:text-ink-primary'"
         @click="activeTab = 'photo'"
       >
         From Photo
-        <span v-if="activeTab === 'photo'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C4975A] rounded-full"></span>
+        <span v-if="activeTab === 'photo'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-gold rounded-full"></span>
       </button>
     </div>
 
@@ -90,7 +90,7 @@
         <div>
           <label class="block text-sm font-medium text-ink-primary mb-1">Recipe Photo</label>
           <div
-            class="border-2 border-dashed border-border-subtle rounded-xl p-8 text-center hover:border-[#C4975A] transition-colors cursor-pointer"
+            class="border-2 border-dashed border-border-subtle rounded-xl p-8 text-center hover:border-brand-gold transition-colors cursor-pointer"
             @click="$refs.photoInput.click()"
           >
             <CameraIcon class="w-8 h-8 mx-auto text-ink-tertiary mb-2" />

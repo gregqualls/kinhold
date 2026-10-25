@@ -11,7 +11,7 @@
         class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-semibold transition-colors"
         :class="completedSteps.has(index)
           ? 'bg-[#5B8C6A] text-white'
-          : 'bg-[#C4975A]/10 text-[#C4975A]'"
+          : 'bg-brand-gold/10 text-brand-gold'"
       >
         <CheckIcon v-if="completedSteps.has(index)" class="w-3.5 h-3.5" />
         <span v-else>{{ index + 1 }}</span>

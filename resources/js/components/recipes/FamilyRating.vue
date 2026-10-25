@@ -7,7 +7,7 @@
         <button
           v-for="star in 5"
           :key="star"
-          class="p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-[#C4975A]/30 rounded"
+          class="p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold/30 rounded"
           :aria-label="`Rate ${star} star${star > 1 ? 's' : ''}`"
           @click="handleRate(star)"
           @keydown.arrow-right.prevent="handleRate(Math.min(5, (userRating || 0) + 1))"
@@ -15,7 +15,7 @@
         >
           <StarIconSolid
             class="w-6 h-6 transition-colors"
-            :class="star <= displayRating ? 'text-[#C4975A]' : 'text-ink-tertiary'"
+            :class="star <= displayRating ? 'text-brand-gold' : 'text-ink-tertiary'"
           />
         </button>
       </div>
@@ -57,7 +57,7 @@
               v-for="s in 5"
               :key="s"
               class="w-3 h-3"
-              :class="s <= rating.score ? 'text-[#C4975A]' : 'text-ink-tertiary'"
+              :class="s <= rating.score ? 'text-brand-gold' : 'text-ink-tertiary'"
             />
           </div>
         </div>

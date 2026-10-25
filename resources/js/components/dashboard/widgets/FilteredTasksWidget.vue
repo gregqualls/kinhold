@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div>
     <!-- Header -->
-    <div class="flex items-center justify-between mb-3 flex-shrink-0">
+    <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
         <FunnelIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || 'Tasks' }}
@@ -14,20 +14,26 @@
       </RouterLink>
     </div>
 
-    <!-- Tag pills (show which tags are filtering) -->
-    <div v-if="filterTags.length > 0" class="flex flex-wrap gap-1 mb-2 flex-shrink-0">
-      <span
+    <!-- Tag pills (show which tags are filtering). Soft-tint active via
+         KinChip filter activeTone=soft + customColor; always-active since
+         they're passive labels showing the currently applied filters. -->
+    <div v-if="filterTags.length > 0" class="flex flex-wrap gap-1 mb-2">
+      <KinChip
         v-for="tag in filterTags"
         :key="tag.id"
-        class="inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded-full"
-        :style="{ backgroundColor: tag.color + '20', color: tag.color }"
+        variant="filter"
+        size="sm"
+        active-tone="soft"
+        :active="true"
+        :custom-color="tag.color"
+        :interactive="false"
       >
         {{ tag.name }}
-      </span>
+      </KinChip>
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="flex-1 min-h-0 space-y-2">
+    <div v-if="loading" class="space-y-2">
       <KinSkeleton v-for="n in 4" :key="n" shape="rect" :height="'48px'" />
     </div>
 
@@ -38,11 +44,10 @@
       title="No matching tasks"
       size="sm"
       accent-color="lavender"
-      class="flex-1"
     />
 
     <!-- Task list -->
-    <div v-else class="flex-1 min-h-0 overflow-y-auto" :class="columnsClass">
+    <div v-else :class="columnsClass">
       <div
         v-for="task in tasks"
         :key="task.id"
@@ -90,6 +95,7 @@ import { FunnelIcon } from '@heroicons/vue/24/outline'
 import { CheckIcon } from '@heroicons/vue/24/solid'
 import api from '@/services/api'
 import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
 const props = defineProps({

@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="flex items-center justify-between mb-3 flex-shrink-0">
+  <div>
+    <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
         <CalendarIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || "Today's Schedule" }}

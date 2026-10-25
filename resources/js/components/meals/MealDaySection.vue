@@ -2,7 +2,7 @@
   <div
     class="bg-white dark:bg-[#1C1C20] border rounded-xl overflow-hidden"
     :class="[
-      isToday ? 'border-[#C4975A]/40' : 'border-[#E8E4DF] dark:border-[#2E2E32]',
+      isToday ? 'border-brand-gold/40' : 'border-[#E8E4DF] dark:border-[#2E2E32]',
       isPast && !isToday ? 'opacity-55 hover:opacity-100 transition-opacity' : '',
     ]"
   >
@@ -10,7 +10,7 @@
     <div
       class="flex items-center justify-between px-4 py-3"
       :class="[
-        isToday ? 'bg-[#C4975A]/5' : '',
+        isToday ? 'bg-brand-gold/5' : '',
         isPast && !isToday ? 'bg-[#F5F2EE]/40 dark:bg-[#252528]/40' : '',
       ]"
     >
@@ -18,7 +18,7 @@
         <p
           class="text-sm font-semibold"
           :class="isToday
-            ? 'text-[#C4975A]'
+            ? 'text-brand-gold'
             : isPast
               ? 'text-[#9C9895]'
               : 'text-[#1C1C1E] dark:text-[#F0EDE9]'"
@@ -27,14 +27,14 @@
         </p>
         <span
           v-if="isToday"
-          class="text-[10px] font-bold uppercase tracking-wider bg-[#C4975A] text-white px-1.5 py-0.5 rounded-full"
+          class="text-[10px] font-bold uppercase tracking-wider bg-brand-gold text-white px-1.5 py-0.5 rounded-full"
         >
           Today
         </span>
       </div>
-      <span v-if="totalEntries > 0" class="text-xs bg-[#F5F2EE] dark:bg-[#252528] text-[#6B6966] dark:text-[#9C9895] px-2 py-0.5 rounded-full">
+      <KinChip v-if="totalEntries > 0" variant="category" color="neutral" size="sm" :interactive="false">
         {{ totalEntries }} meal{{ totalEntries !== 1 ? 's' : '' }}
-      </span>
+      </KinChip>
     </div>
 
     <!-- Meal slots (always expanded) -->
@@ -73,7 +73,7 @@
 
         <!-- Add button — full-width, ≥44px tall for thumb-tap (iOS HIG min) -->
         <button
-          class="flex items-center justify-center gap-1.5 mt-1.5 py-3 px-3 text-sm font-medium text-[#9C9895] hover:text-[#C4975A] bg-transparent hover:bg-[#C4975A]/5 border border-dashed border-[#E8E4DF] dark:border-[#2E2E32] hover:border-[#C4975A]/40 rounded-[10px] transition-colors w-full"
+          class="flex items-center justify-center gap-1.5 mt-1.5 py-3 px-3 text-sm font-medium text-[#9C9895] hover:text-brand-gold bg-transparent hover:bg-brand-gold/5 border border-dashed border-[#E8E4DF] dark:border-[#2E2E32] hover:border-brand-gold/40 rounded-[10px] transition-colors w-full"
           @click="$emit('add-entry', date, slot.key)"
         >
           <PlusIcon class="w-4 h-4" />
@@ -91,6 +91,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 import { PlusIcon, SunIcon, CloudIcon, MoonIcon, CakeIcon } from '@heroicons/vue/24/outline'
 import MealEntryCard from './MealEntryCard.vue'
 import { useMealsStore } from '@/stores/meals'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   date: { type: String, required: true },

@@ -3,8 +3,11 @@
     <div class="flex-1 min-w-0">
       <p class="text-[10px] font-semibold text-ink-tertiary uppercase tracking-wider mb-0.5">{{ label }}</p>
       <p
-        class="text-sm font-mono truncate"
-        :class="revealed ? 'text-ink-primary' : 'text-ink-tertiary select-none'"
+        class="text-sm truncate"
+        :class="[
+          (useMono || !revealed) && 'font-mono',
+          revealed ? 'text-ink-primary' : 'text-ink-tertiary select-none',
+        ]"
       >
         {{ revealed ? value : maskedValue }}
       </p>
@@ -56,6 +59,20 @@ const maskedValue = computed(() => {
   const str = String(props.value || '')
   if (str.length <= 4) return '•'.repeat(str.length)
   return '•'.repeat(str.length - 4) + str.slice(-4)
+})
+
+// Opt-in mono: use the monospace face only when the value looks like data
+// (phone, SSN, zip, URL, email, account number). Names, addresses, notes,
+// and any other prose render in the body font so the detail page reads as
+// a document, not a terminal. Masked values are always mono: choosing the
+// font from the hidden value would tell an onlooker what kind of secret it is.
+const useMono = computed(() => {
+  const str = String(props.value || '').trim()
+  if (!str) return false
+  if (/^https?:\/\//i.test(str)) return true          // URL
+  if (!/\s/.test(str) && /^\S+\.\S+$/.test(str)) return true  // domain / email / portal.ext
+  if (/^[\s\d().\-+#*/]+$/.test(str)) return true     // digits + separators (phone, SSN, zip)
+  return false
 })
 
 const toggleReveal = () => {

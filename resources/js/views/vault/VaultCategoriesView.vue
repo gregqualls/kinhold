@@ -1,23 +1,23 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header -->
-    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Vault</h1>
-          <p class="hidden md:block text-sm text-ink-tertiary mt-0.5">Secure family information</p>
-        </div>
-        <div v-if="isParent" class="hidden md:flex items-center gap-2">
-          <KinButton variant="secondary" size="md" @click="openCategoryModal()">
-            <FolderPlusIcon class="w-4 h-4" />
-            New Category
-          </KinButton>
-          <KinButton variant="primary" size="md" @click="showCreateEntry = true">
-            <PlusIcon class="w-4 h-4" />
-            Add Entry
-          </KinButton>
-        </div>
-      </div>
+    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-3 md:pb-0">
+      <KinPageHero>
+        Vault
+        <template #subtitle>Secure family information</template>
+        <template v-if="isParent" #actions>
+          <div class="hidden md:flex items-center gap-2">
+            <KinButton variant="secondary" size="md" @click="openCategoryModal()">
+              <FolderPlusIcon class="w-4 h-4" />
+              New Category
+            </KinButton>
+            <KinButton variant="primary" size="md" @click="showCreateEntry = true">
+              <PlusIcon class="w-4 h-4" />
+              Add Entry
+            </KinButton>
+          </div>
+        </template>
+      </KinPageHero>
     </div>
 
     <!-- Search -->
@@ -36,7 +36,7 @@
         <div
           v-for="category in filteredCategories"
           :key="category.id"
-          class="group flex items-center gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-all"
+          class="kin-pressable group flex items-center gap-4 p-4 bg-surface-raised rounded-xl shadow-card hover:shadow-card-lg border border-border-subtle hover:border-accent-lavender-bold cursor-pointer transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
           @click="$router.push(`/vault/${category.slug}`)"
         >
           <!-- Icon -->
@@ -58,12 +58,15 @@
           </div>
 
           <!-- Entry count -->
-          <span
+          <KinChip
             v-if="getEntryCount(category.id) > 0"
-            class="text-xs font-medium text-ink-tertiary bg-surface-sunken px-2 py-0.5 rounded-full"
+            variant="category"
+            color="neutral"
+            size="sm"
+            :interactive="false"
           >
             {{ getEntryCount(category.id) }}
-          </span>
+          </KinChip>
 
           <!-- Context menu (parent only) -->
           <div v-if="isParent" class="opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
@@ -116,7 +119,7 @@
               v-for="icon in availableIcons"
               :key="icon.key"
               type="button"
-              class="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+              class="kin-pressable w-10 h-10 rounded-xl flex items-center justify-center transition-[background-color,box-shadow,transform] duration-quick ease-out-soft"
               :class="categoryForm.icon === icon.key
                 ? 'bg-accent-lavender-soft/40 ring-2 ring-accent-lavender-bold'
                 : 'bg-surface-sunken hover:bg-surface-overlay'"
@@ -152,7 +155,7 @@
     <KinModalSheet
       :model-value="showCreateEntry"
       title="New Vault Entry"
-      size="xl"
+      size="lg"
       @close="closeCreateModal"
     >
       <form class="space-y-5" @submit.prevent="handleCreateEntry">
@@ -166,7 +169,7 @@
           <KinSelect
             v-model="entryForm.category_id"
             label="Category"
-            class="w-40"
+            class="w-40 flex-shrink-0"
             :options="[{ value: null, label: 'Select...' }, ...categories.map((c) => ({ value: c.id, label: c.name }))]"
           />
         </div>
@@ -248,14 +251,15 @@ import ContextMenu from '@/components/common/ContextMenu.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
 import MarkdownEditor from '@/components/vault/MarkdownEditor.vue'
 import KinButton from '@/components/design-system/KinButton.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinSearch from '@/components/design-system/KinSearch.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import {
   PlusIcon,
-  MagnifyingGlassIcon,
   ChevronRightIcon,
   XMarkIcon,
   HeartIcon,

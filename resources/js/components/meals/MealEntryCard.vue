@@ -16,7 +16,7 @@
   -->
   <div
     v-if="compact"
-    class="group relative cursor-pointer transition-colors rounded-[12px] border border-border-subtle bg-surface-raised hover:border-[#C4975A]/40 flex items-center gap-3 px-2.5 py-2 min-h-[56px] focus:outline-none focus:ring-2 focus:ring-[#C4975A]/40"
+    class="group relative cursor-pointer transition-colors rounded-[12px] border border-border-subtle bg-surface-raised hover:border-brand-gold/40 flex items-center gap-3 px-2.5 py-2 min-h-[56px] focus:outline-none focus:ring-2 focus:ring-brand-gold/40"
     :data-entry-id="entry.id"
     role="button"
     tabindex="0"
@@ -74,7 +74,7 @@
   <!-- ── Card layout (MealWeekGrid / desktop dense grid) ────────────────── -->
   <div
     v-else
-    class="group relative cursor-pointer transition-shadow rounded-card overflow-hidden border border-border-subtle bg-surface-raised hover:shadow-resting hover:border-[#C4975A]/40 focus:outline-none focus:ring-2 focus:ring-[#C4975A]/40"
+    class="group relative cursor-pointer transition-shadow rounded-card overflow-hidden border border-border-subtle bg-surface-raised hover:shadow-resting hover:border-brand-gold/40 focus:outline-none focus:ring-2 focus:ring-brand-gold/40"
     :data-entry-id="entry.id"
     role="button"
     tabindex="0"
@@ -109,7 +109,7 @@
           :href="entry.restaurant.google_maps_url"
           target="_blank"
           rel="noopener"
-          class="w-5 h-5 rounded-full bg-black/55 text-white/90 flex items-center justify-center hover:bg-[#C4975A] transition-all"
+          class="w-5 h-5 rounded-full bg-black/55 text-white/90 flex items-center justify-center hover:bg-brand-gold transition-all"
           aria-label="Open in Google Maps"
           @click.stop
         >

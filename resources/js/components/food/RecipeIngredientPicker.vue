@@ -17,21 +17,26 @@
         <span v-if="subtitle" class="text-xs text-ink-tertiary flex-shrink-0">
           {{ subtitle }}
         </span>
-        <span
+        <KinChip
           v-if="alreadyOnListCount > 0"
-          class="flex-shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
+          variant="category"
+          color="peach"
+          size="sm"
+          :interactive="false"
           :title="`${alreadyOnListCount} already on list`"
         >
-          <CheckCircleIcon class="w-3 h-3" />
+          <template #leading>
+            <CheckCircleIcon class="w-3 h-3" />
+          </template>
           {{ alreadyOnListCount }}
-        </span>
+        </KinChip>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
         <span class="text-xs text-ink-tertiary">
           {{ selectedIds.length }}/{{ ingredients.length }}
         </span>
         <button
-          class="text-xs text-[#C4975A] hover:underline"
+          class="text-xs text-brand-gold hover:underline"
           @click="toggleAll"
         >
           {{ allSelected ? 'None' : 'All' }}
@@ -53,7 +58,7 @@
         <input
           type="checkbox"
           :checked="isSelected(ingredient.id)"
-          class="w-4 h-4 rounded border-border-subtle text-[#C4975A] focus:ring-[#C4975A]"
+          class="w-4 h-4 rounded border-border-subtle text-brand-gold focus:ring-brand-gold"
           @change="toggle(ingredient.id)"
         />
         <div class="flex-1 min-w-0 flex items-center gap-2">
@@ -68,12 +73,15 @@
               (optional)
             </span>
           </div>
-          <span
+          <KinChip
             v-if="ingredient.already_on_list"
-            class="flex-shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
+            variant="category"
+            color="peach"
+            size="sm"
+            :interactive="false"
           >
             On list
-          </span>
+          </KinChip>
         </div>
       </label>
     </div>
@@ -83,6 +91,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { ChevronDownIcon, CheckCircleIcon } from '@heroicons/vue/24/outline'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   ingredients: { type: Array, default: () => [] },
@@ -116,7 +125,7 @@ const rowClass = (ingredient) => {
     return 'opacity-70 hover:opacity-100'
   }
   return isSelected(ingredient.id)
-    ? 'bg-[#C4975A]/5 dark:bg-[#C4975A]/10'
+    ? 'bg-brand-gold/5 dark:bg-brand-gold/10'
     : 'hover:bg-surface-sunken'
 }
 

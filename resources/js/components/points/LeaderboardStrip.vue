@@ -41,15 +41,14 @@
     </div>
 
     <!-- Empty state -->
-    <div v-if="leaderboard.length === 0" class="text-center py-3">
-      <TrophyIcon class="w-8 h-8 text-ink-tertiary mx-auto mb-1" />
-      <p class="text-sm text-ink-secondary">
-        No activity yet this period
-      </p>
-      <p class="text-xs text-ink-tertiary mt-0.5">
-        Complete tasks to earn points!
-      </p>
-    </div>
+    <KinEmptyState
+      v-if="leaderboard.length === 0"
+      :icon="TrophyIcon"
+      title="No activity yet this period"
+      description="Complete tasks or give kudos to appear on the board."
+      accent-color="sun"
+      size="sm"
+    />
   </div>
 </template>
 
@@ -58,6 +57,7 @@ import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { TrophyIcon } from '@heroicons/vue/24/solid'
 import LeaderboardPodium from '@/components/points/LeaderboardPodium.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
 const props = defineProps({
   leaderboard: {

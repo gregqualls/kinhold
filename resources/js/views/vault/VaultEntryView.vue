@@ -1,21 +1,14 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header -->
-    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
-      <div class="flex items-center gap-3">
-        <button
-          class="p-2 -ml-2 text-ink-tertiary hover:text-ink-primary hover:bg-surface-sunken rounded-xl transition-colors"
-          @click="$router.back()"
-        >
-          <ChevronLeftIcon class="w-5 h-5" />
-        </button>
-        <div class="flex-1 min-w-0">
-          <h1 class="text-base md:text-xl font-bold font-heading text-ink-primary truncate">{{ currentEntry?.title || 'Entry' }}</h1>
-          <p v-if="categoryName" class="hidden md:block text-xs text-ink-tertiary mt-0.5">{{ categoryName }}</p>
-        </div>
-
-        <ContextMenu v-if="isParent && currentEntry" :items="entryMenuItems" />
-      </div>
+    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-3 md:pb-0">
+      <KinPageHero show-back @back="$router.back()">
+        <template v-if="categoryName" #eyebrow>{{ categoryName }}</template>
+        {{ currentEntry?.title || 'Entry' }}
+        <template v-if="isParent && currentEntry" #actions>
+          <ContextMenu :items="entryMenuItems" />
+        </template>
+      </KinPageHero>
     </div>
 
     <!-- Loading -->
@@ -127,9 +120,15 @@
             </button>
           </div>
         </div>
-        <div v-else class="px-4 py-3">
-          <p class="text-xs text-ink-tertiary">No documents attached yet.</p>
-        </div>
+        <KinEmptyState
+          v-else
+          :icon="PaperClipIcon"
+          title="No documents attached"
+          :description="isParent && !isDemoFamily ? 'Attach PDFs, images, or any file that belongs with this entry.' : ''"
+          accent-color="lavender"
+          size="sm"
+          class="py-6"
+        />
         <div v-if="uploading" class="px-4 py-2 border-t border-border-subtle">
           <p class="text-xs text-accent-lavender-bold">Uploading...</p>
         </div>
@@ -242,7 +241,7 @@
     <KinModalSheet
       :model-value="showEditModal"
       title="Edit Entry"
-      size="xl"
+      size="lg"
       @close="showEditModal = false"
     >
       <form class="space-y-5" @submit.prevent="handleUpdateEntry">
@@ -256,7 +255,7 @@
           <KinSelect
             v-model="editForm.vault_category_id"
             label="Category"
-            class="w-40"
+            class="w-40 flex-shrink-0"
             :options="[{ value: null, label: 'Select...' }, ...categories.map((c) => ({ value: c.id, label: c.name }))]"
           />
         </div>
@@ -346,13 +345,15 @@ import KinButton from '@/components/design-system/KinButton.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
+import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import {
-  ChevronLeftIcon,
   ChevronRightIcon,
   DocumentTextIcon,
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   LockClosedIcon,
+  PaperClipIcon,
   PencilIcon,
   PlusIcon,
   ShareIcon,

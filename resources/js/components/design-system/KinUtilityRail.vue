@@ -16,7 +16,7 @@
   breakpoints). This component just renders the rail itself.
 -->
 <script setup>
-import { computed, useSlots } from 'vue'
+import { useSlots } from 'vue'
 
 const props = defineProps({
   /** Rail width. Default 280px matches the spec. */
@@ -42,10 +42,10 @@ const labelFor = (slotName) =>
 // Order of conventional sections.
 const SECTIONS = ['mini-month', 'filters', 'presence', 'saved-views', 'actions']
 
+// A function, not a computed: useSlots() is not reactive, so a computed would
+// keep a section (and its label) after a conditional slot goes away.
 const slots = useSlots()
-const visibleSections = computed(() =>
-  SECTIONS.filter((s) => !!slots[s])
-)
+const visibleSections = () => SECTIONS.filter((s) => !!slots[s])
 </script>
 
 <template>
@@ -53,7 +53,7 @@ const visibleSections = computed(() =>
     class="kin-utility-rail flex-shrink-0 flex flex-col border-l border-border-subtle bg-surface-raised p-4 overflow-y-auto"
     :style="{ width }"
   >
-    <template v-for="(slotName, i) in visibleSections" :key="slotName">
+    <template v-for="(slotName, i) in visibleSections()" :key="slotName">
       <div
         :class="[
           // First visible section: no top border.

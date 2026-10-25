@@ -24,7 +24,7 @@
           v-model="sortBy"
           size="sm"
           :options="sortOptions"
-          class="w-32"
+          class="w-32 flex-shrink-0"
           @change="onSortChange"
         />
 
@@ -54,7 +54,6 @@
           size="sm"
           :custom-color="tag.color || '#C4975A'"
           :active="isTagSelected(tag.id)"
-          class="flex-shrink-0 whitespace-nowrap"
           @click="toggleTagFilter(tag.id)"
         >
           {{ tag.name }}
@@ -127,14 +126,18 @@
                 <ClockIcon class="w-3 h-3" />
                 {{ compactTime(recipe) }}
               </span>
-              <span
+              <KinChip
                 v-for="tag in (recipe.tags || []).slice(0, 3)"
                 :key="tag.id"
-                class="px-1.5 py-0.5 text-[10px] font-medium rounded-full"
-                :style="{ backgroundColor: (tag.color || '#C4975A') + '20', color: tag.color || '#C4975A' }"
+                variant="filter"
+                size="sm"
+                active-tone="soft"
+                :active="true"
+                :custom-color="tag.color || '#C4975A'"
+                :interactive="false"
               >
                 {{ tag.name }}
-              </span>
+              </KinChip>
             </div>
           </div>
 

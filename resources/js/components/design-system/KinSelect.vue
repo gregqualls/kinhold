@@ -20,7 +20,7 @@
 -->
 
 <script setup>
-import { computed } from 'vue'
+import { computed, normalizeClass, useAttrs } from 'vue'
 import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -77,6 +77,20 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 defineOptions({ inheritAttrs: false })
+
+// A caller's class and style size the whole control, not just the <select>:
+// the chevron is positioned against the field wrapper, so a width applied to
+// the <select> alone left it floating past the narrowed box. Everything else
+// (aria-*, name, autocomplete) still lands on the <select>. Functions, not
+// computeds, because $attrs is not reactive.
+const attrs = useAttrs()
+const rootClass = () => {
+  const callerClass = normalizeClass(attrs.class)
+  const setsWidth = /(?:^|\s)(?:\S+:)?w-/.test(callerClass)
+  return [setsWidth ? '' : 'w-full', callerClass]
+}
+const selectAttrs = () =>
+  Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style'))
 
 const _autoId = `kin-select-${Math.random().toString(36).slice(2, 9)}`
 const selectId = computed(() => props.id || _autoId)
@@ -142,7 +156,7 @@ function onChange(e) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-1 w-full">
+  <div class="flex flex-col gap-1" :class="rootClass()" :style="attrs.style">
     <!-- Label -->
     <label
       v-if="hasLabel"
@@ -156,7 +170,7 @@ function onChange(e) {
     <!-- Field wrapper (anchors the chevron) -->
     <div class="relative w-full">
       <select
-        v-bind="$attrs"
+        v-bind="selectAttrs()"
         :id="selectId"
         :value="modelValue"
         :disabled="disabled"

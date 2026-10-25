@@ -17,56 +17,46 @@
       </p>
     </div>
     <div class="flex items-center gap-2 flex-shrink-0">
-      <button
+      <KinKudoStack
         v-if="canStack"
-        type="button"
-        class="inline-flex items-center gap-1 min-h-[40px] px-3 rounded-full bg-accent-lavender-soft text-accent-lavender-bold hover:bg-accent-lavender-bold hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        variant="action"
+        :count="item.stacks_count"
         :disabled="isSubmitting"
         :aria-label="stackAriaLabel"
         @click="handleStack"
-      >
-        <HandThumbUpIcon class="w-4 h-4" />
-        <span v-if="item.stacks_count" class="text-xs font-semibold">
-          {{ item.stacks_count }}
-        </span>
-      </button>
-      <span
+      />
+      <KinKudoStack
         v-else-if="showStackedBadge"
-        class="inline-flex items-center gap-1 min-h-[32px] px-2 rounded-full bg-surface-sunken text-ink-tertiary"
+        variant="stacked"
+        :count="item.stacks_count"
         :aria-label="`You +1'd this kudo${item.stacks_count > 1 ? `, ${item.stacks_count} total` : ''}`"
-      >
-        <HandThumbUpSolidIcon class="w-4 h-4" />
-        <span v-if="item.stacks_count" class="text-xs font-semibold">
-          {{ item.stacks_count }}
-        </span>
-      </span>
-      <span
+      />
+      <KinKudoStack
         v-else-if="showStackCountOnly"
-        class="inline-flex items-center gap-1 min-h-[32px] px-2 rounded-full bg-surface-sunken text-ink-tertiary"
+        variant="count"
+        :count="item.stacks_count"
         :aria-label="`${item.stacks_count} other ${item.stacks_count === 1 ? 'member' : 'members'} +1'd this`"
+      />
+      <KinChip
+        variant="status"
+        size="sm"
+        :status="item.points > 0 ? 'success' : 'failed'"
+        :show-dot="false"
+        :interactive="false"
       >
-        <HandThumbUpIcon class="w-4 h-4" />
-        <span class="text-xs font-semibold">{{ item.stacks_count }}</span>
-      </span>
-      <span
-        class="text-sm font-bold font-mono px-2 py-0.5 rounded-full"
-        :class="
-          item.points > 0
-            ? 'text-status-success bg-status-success/10'
-            : 'text-status-failed bg-status-failed/10'
-        "
-      >
-        {{ item.points > 0 ? "+" : "" }}{{ item.points }}
-      </span>
+        <span class="font-mono font-bold">
+          {{ item.points > 0 ? "+" : "" }}{{ item.points }}
+        </span>
+      </KinChip>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
-import { HandThumbUpIcon } from "@heroicons/vue/24/outline";
-import { HandThumbUpIcon as HandThumbUpSolidIcon } from "@heroicons/vue/24/solid";
 import UserAvatar from "@/components/common/UserAvatar.vue";
+import KinChip from "@/components/design-system/KinChip.vue";
+import KinKudoStack from "@/components/design-system/KinKudoStack.vue";
 import { useAuthStore } from "@/stores/auth";
 import { usePointsStore } from "@/stores/points";
 

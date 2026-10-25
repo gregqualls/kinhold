@@ -3,15 +3,13 @@
     <!-- Main column -->
     <div class="flex-1 min-w-0 flex flex-col">
       <!-- Header -->
-      <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Tasks</h1>
-            <p class="hidden md:block text-sm text-ink-tertiary mt-0.5">
-              {{ filteredIncompleteTasks.length }} remaining
-            </p>
-          </div>
-        </div>
+      <div class="px-4 pt-3 md:px-6 md:pt-3">
+        <KinPageHero>
+          Tasks
+          <template #subtitle>
+            <span class="hidden md:inline">{{ filteredIncompleteTasks.length }} remaining</span>
+          </template>
+        </KinPageHero>
       </div>
 
       <!-- Tag filter bar (mobile-only — desktop moves to the rail) -->
@@ -23,7 +21,6 @@
             size="sm"
             color="neutral"
             :active="selectedTagIds.length === 0"
-            class="flex-shrink-0 whitespace-nowrap"
             @click="clearTagFilter"
           >
             All
@@ -37,7 +34,6 @@
             size="sm"
             :custom-color="getTagHex(tag.color)"
             :active="isTagSelected(tag.id)"
-            class="flex-shrink-0 whitespace-nowrap"
             @click="toggleTagFilter(tag.id)"
           >
             {{ tag.name }}
@@ -83,6 +79,7 @@
               v-for="task in filteredIncompleteTasks"
               :key="task.id"
               :task="task"
+              :selected="selectedTask?.id === task.id"
               @click="openDetail(task)"
               @toggle="handleToggle(task)"
               @edit="openDetail(task)"
@@ -112,6 +109,7 @@
                 v-for="task in filteredCompletedTasks"
                 :key="task.id"
                 :task="task"
+                :selected="selectedTask?.id === task.id"
                 @click="openDetail(task)"
                 @toggle="handleToggle(task)"
                 @edit="openDetail(task)"
@@ -338,6 +336,7 @@ import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import KinChip from '@/components/design-system/KinChip.vue'
 import KinUtilityRail from '@/components/design-system/KinUtilityRail.vue'
 import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import {
   ChevronRightIcon,

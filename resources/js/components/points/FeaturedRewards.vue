@@ -30,16 +30,18 @@
         {{ reward.title }}
       </p>
 
-      <!-- Cost pill — affordable variant carries the lavender accent -->
-      <span
-        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold flex-shrink-0"
-        :class="canAfford(reward)
-          ? 'bg-accent-lavender-soft/60 text-accent-lavender-bold'
-          : 'bg-surface-sunken text-ink-tertiary'"
+      <!-- Cost pill: lavender when the member can afford it. -->
+      <KinChip
+        variant="category"
+        size="sm"
+        :color="canAfford(reward) ? 'lavender' : 'neutral'"
+        :interactive="false"
       >
-        <StarIcon class="w-3 h-3" />
+        <template #leading>
+          <StarIcon class="w-3 h-3" />
+        </template>
         {{ reward.point_cost }} pts
-      </span>
+      </KinChip>
     </button>
   </div>
 
@@ -69,6 +71,7 @@ import { GiftIcon } from '@heroicons/vue/24/outline'
 import IconRenderer from '@/components/common/IconRenderer.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import KinButton from '@/components/design-system/KinButton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   rewards: {

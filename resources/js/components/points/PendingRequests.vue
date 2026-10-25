@@ -4,9 +4,9 @@
       <p class="text-sm font-semibold font-heading text-ink-primary">
         Pending Point Requests
       </p>
-      <span class="bg-accent-lavender-bold text-white text-xs font-bold px-2 py-0.5 rounded-full">
+      <KinChip variant="filter" color="lavender" size="sm" :active="true" :interactive="false">
         {{ pendingRequests.length }}
-      </span>
+      </KinChip>
     </div>
 
     <div class="divide-y divide-border-subtle">
@@ -42,6 +42,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   requests: {

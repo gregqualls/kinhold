@@ -81,7 +81,7 @@
         <label class="text-sm font-semibold text-ink-primary">Ingredients</label>
         <button
           type="button"
-          class="text-xs font-medium text-[#C4975A] hover:text-[#D4A96A] transition-colors"
+          class="text-xs font-medium text-brand-gold hover:text-[#D4A96A] transition-colors"
           @click="addIngredient"
         >
           + Add ingredient
@@ -138,7 +138,7 @@
       <button
         v-if="form.ingredients.length === 0"
         type="button"
-        class="w-full mt-2 py-3 text-sm text-ink-tertiary border border-dashed border-border-subtle rounded-xl hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+        class="w-full mt-2 py-3 text-sm text-ink-tertiary border border-dashed border-border-subtle rounded-xl hover:border-brand-gold hover:text-brand-gold transition-colors"
         @click="addIngredient"
       >
         + Add your first ingredient
@@ -151,7 +151,7 @@
         <label class="text-sm font-semibold text-ink-primary">Instructions</label>
         <button
           type="button"
-          class="text-xs font-medium text-[#C4975A] hover:text-[#D4A96A] transition-colors"
+          class="text-xs font-medium text-brand-gold hover:text-[#D4A96A] transition-colors"
           @click="addInstruction"
         >
           + Add step
@@ -165,7 +165,7 @@
         >
           <!-- Step number -->
           <span
-            class="w-7 h-7 rounded-full bg-[#C4975A]/10 text-[#C4975A] text-xs font-semibold flex items-center justify-center flex-shrink-0 mt-1"
+            class="w-7 h-7 rounded-full bg-brand-gold/10 text-brand-gold text-xs font-semibold flex items-center justify-center flex-shrink-0 mt-1"
           >
             {{ index + 1 }}
           </span>
@@ -190,7 +190,7 @@
       <button
         v-if="form.instructions.length === 0"
         type="button"
-        class="w-full mt-2 py-3 text-sm text-ink-tertiary border border-dashed border-border-subtle rounded-xl hover:border-[#C4975A] hover:text-[#C4975A] transition-colors"
+        class="w-full mt-2 py-3 text-sm text-ink-tertiary border border-dashed border-border-subtle rounded-xl hover:border-brand-gold hover:text-brand-gold transition-colors"
         @click="addInstruction"
       >
         + Add your first step
@@ -270,7 +270,7 @@
       </button>
       <button
         type="submit"
-        class="px-6 py-2.5 text-sm font-medium text-white bg-[#C4975A] hover:bg-[#D4A96A] rounded-[10px] transition-colors disabled:opacity-50"
+        class="px-6 py-2.5 text-sm font-medium text-white bg-brand-gold hover:bg-[#D4A96A] rounded-[10px] transition-colors disabled:opacity-50"
         :disabled="!form.title || saving"
       >
         {{ saving ? "Saving..." : recipe ? "Update Recipe" : "Save Recipe" }}

@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div>
     <!-- Header -->
-    <div class="flex items-center justify-between mb-3 flex-shrink-0">
+    <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-ink-primary flex items-center gap-2">
         <TrophyIcon class="w-4 h-4 text-accent-lavender-bold" />
         {{ config.title || 'Leaderboard' }}
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Loading -->
-    <div v-if="loading" class="space-y-2 flex-1">
+    <div v-if="loading" class="space-y-2">
       <KinSkeleton v-for="n in 4" :key="n" shape="rect" :height="'32px'" rounded="4px" />
     </div>
 
@@ -26,16 +26,15 @@
       title="No activity yet"
       size="sm"
       accent-color="sun"
-      class="flex-1"
     />
 
     <!-- Medium: full animated LeaderboardStrip -->
-    <div v-else-if="config.size === 'md'" class="flex-1 min-h-0 overflow-y-auto">
+    <div v-else-if="config.size === 'md'">
       <LeaderboardStrip :leaderboard="leaderboard" />
     </div>
 
     <!-- Small: responsive layout — side-by-side on desktop, stacked on mobile -->
-    <div v-else class="flex-1 min-h-0 flex flex-col md:flex-row gap-3 md:gap-4">
+    <div v-else class="flex flex-col md:flex-row gap-3 md:gap-4">
       <!-- Podium (shared component — keeps trophy/medal styling consistent with /points) -->
       <LeaderboardPodium :entries="leaderboard" class="flex-shrink-0" />
 

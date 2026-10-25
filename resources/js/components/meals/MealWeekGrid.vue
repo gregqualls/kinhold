@@ -6,7 +6,7 @@
       class="flex items-center justify-between mb-2 text-xs text-[#9C9895]"
     >
       <button
-        class="p-1 rounded hover:bg-[#C4975A]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        class="p-1 rounded hover:bg-brand-gold/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         :disabled="offset === 0"
         aria-label="Previous days"
         @click="shiftBy(-visibleCount)"
@@ -17,7 +17,7 @@
         {{ visibleRangeLabel }}
       </span>
       <button
-        class="p-1 rounded hover:bg-[#C4975A]/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        class="p-1 rounded hover:bg-brand-gold/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         :disabled="offset + visibleCount >= dates.length"
         aria-label="Next days"
         @click="shiftBy(visibleCount)"
@@ -37,14 +37,14 @@
         :key="'h-' + date"
         class="bg-white dark:bg-[#1C1C20] text-center py-2 px-1"
         :class="[
-          isToday(date) ? 'bg-[#C4975A]/5' : '',
+          isToday(date) ? 'bg-brand-gold/5' : '',
           isPast(date) && !isToday(date) ? 'bg-[#F5F2EE]/60 dark:bg-[#252528]/60' : '',
         ]"
       >
         <p
           class="text-[11px] font-semibold uppercase tracking-wider"
           :class="isToday(date)
-            ? 'text-[#C4975A]'
+            ? 'text-brand-gold'
             : isPast(date)
               ? 'text-[#9C9895]/60'
               : 'text-[#9C9895]'"
@@ -54,7 +54,7 @@
         <p
           class="text-lg font-bold leading-tight"
           :class="isToday(date)
-            ? 'text-[#C4975A]'
+            ? 'text-brand-gold'
             : isPast(date)
               ? 'text-[#9C9895]'
               : 'text-[#1C1C1E] dark:text-[#F0EDE9]'"
@@ -79,7 +79,7 @@
           :key="slot.key + '-' + date"
           class="bg-white dark:bg-[#1C1C20] p-1.5 min-w-0 transition-opacity"
           :class="[
-            isToday(date) ? 'bg-[#C4975A]/[0.02]' : '',
+            isToday(date) ? 'bg-brand-gold/[0.02]' : '',
             isPast(date) && !isToday(date) ? 'bg-[#EDE8E0]/70 dark:bg-[#0E0E10]/80 opacity-55 hover:opacity-100' : '',
           ]"
           :data-date="date"
@@ -103,7 +103,7 @@
             />
           </VueDraggable>
           <button
-            class="flex items-center justify-center gap-1 py-1 w-full text-xs text-[#9C9895] hover:text-[#C4975A] hover:bg-[#C4975A]/5 rounded-lg transition-colors"
+            class="flex items-center justify-center gap-1 py-1 w-full text-xs text-[#9C9895] hover:text-brand-gold hover:bg-brand-gold/5 rounded-lg transition-colors"
             @click="$emit('add-entry', date, slot.key)"
           >
             <PlusIcon class="w-3 h-3" />

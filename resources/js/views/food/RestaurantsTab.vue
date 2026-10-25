@@ -30,7 +30,6 @@
           variant="filter"
           size="sm"
           :active="showFavoritesOnly"
-          class="flex-shrink-0"
           @click="showFavoritesOnly = !showFavoritesOnly"
         >
           <template #leading><HeartIcon class="w-3 h-3" /></template>
@@ -48,7 +47,6 @@
           size="sm"
           :custom-color="tag.color || '#C4975A'"
           :active="isTagSelected(tag.id)"
-          class="flex-shrink-0"
           @click="toggleTagFilter(tag.id)"
         >
           {{ tag.name }}
@@ -126,14 +124,18 @@
                 <MapPinIcon class="w-3 h-3 flex-shrink-0" />
                 {{ restaurant.address.length > 30 ? restaurant.address.slice(0, 30) + '…' : restaurant.address }}
               </span>
-              <span
+              <KinChip
                 v-for="tag in (restaurant.tags || []).slice(0, 2)"
                 :key="tag.id"
-                class="px-1.5 py-0.5 text-[10px] font-medium rounded-full"
-                :style="{ backgroundColor: (tag.color || '#C4975A') + '20', color: tag.color || '#C4975A' }"
+                variant="filter"
+                size="sm"
+                active-tone="soft"
+                :active="true"
+                :custom-color="tag.color || '#C4975A'"
+                :interactive="false"
               >
                 {{ tag.name }}
-              </span>
+              </KinChip>
             </div>
           </div>
 
@@ -183,37 +185,46 @@
 
         <!-- Quick links -->
         <div class="flex flex-wrap gap-2">
-          <a
+          <KinButton
             v-if="editFields.google_maps_url"
+            variant="secondary"
+            size="sm"
             :href="editFields.google_maps_url"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-sunken text-ink-primary rounded-full hover:bg-surface-sunken/80 transition-colors"
             @click.stop
           >
-            <MapPinIcon class="w-3.5 h-3.5" />
+            <template #leading>
+              <MapPinIcon class="w-3.5 h-3.5" />
+            </template>
             Maps
-          </a>
-          <a
+          </KinButton>
+          <KinButton
             v-if="editFields.menu_url"
+            variant="secondary"
+            size="sm"
             :href="editFields.menu_url"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-sunken text-ink-primary rounded-full hover:bg-surface-sunken/80 transition-colors"
             @click.stop
           >
-            <DocumentTextIcon class="w-3.5 h-3.5" />
+            <template #leading>
+              <DocumentTextIcon class="w-3.5 h-3.5" />
+            </template>
             Website
-          </a>
-          <a
+          </KinButton>
+          <KinButton
             v-if="editFields.phone"
+            variant="secondary"
+            size="sm"
             :href="'tel:' + editFields.phone"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-sunken text-ink-primary rounded-full hover:bg-surface-sunken/80 transition-colors"
             @click.stop
           >
-            <PhoneIcon class="w-3.5 h-3.5" />
+            <template #leading>
+              <PhoneIcon class="w-3.5 h-3.5" />
+            </template>
             Call
-          </a>
+          </KinButton>
         </div>
 
         <!-- Star rating -->

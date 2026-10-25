@@ -5,7 +5,7 @@
       role="button"
       tabindex="0"
       :aria-label="displayUrl ? `Change ${label || 'photo'}` : `Upload ${label || 'photo'}`"
-      class="relative border-2 border-dashed border-border-subtle rounded-xl overflow-hidden cursor-pointer hover:border-[#C4975A] focus:outline-none focus:ring-2 focus:ring-[#C4975A]/40 transition-colors"
+      class="relative border-2 border-dashed border-border-subtle rounded-xl overflow-hidden cursor-pointer hover:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold/40 transition-colors"
       :class="displayUrl ? 'h-40' : 'p-6'"
       @click="$refs.input.click()"
       @keydown.enter.prevent="$refs.input.click()"

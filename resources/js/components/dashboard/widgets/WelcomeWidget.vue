@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h1 class="text-2xl sm:text-3xl font-bold font-heading text-ink-primary">
+    <h1 class="text-xl sm:text-2xl font-semibold font-heading text-ink-primary tracking-tight">
       {{ greeting }}, {{ firstName }}!
     </h1>
-    <p class="text-ink-tertiary text-sm mt-1">{{ dateMessage }}</p>
+    <p class="text-ink-tertiary text-xs mt-1">{{ dateMessage }}</p>
 
     <!-- Celebration banners -->
     <CelebrationBanner

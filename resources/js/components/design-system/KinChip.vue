@@ -26,18 +26,20 @@ const props = defineProps({
   /**
    * Accent color for category/filter variants.
    * 'neutral' uses border-subtle / ink-secondary (off state).
+   * 'gold' is Kinhold's brand accent, reserved for food/meal/shopping
+   * surfaces that use brand-gold as their semantic marker.
    */
   color: {
     type: String,
     default: 'neutral',
-    validator: v => ['lavender', 'peach', 'mint', 'sun', 'neutral'].includes(v),
+    validator: v => ['lavender', 'peach', 'mint', 'sun', 'gold', 'neutral'].includes(v),
   },
 
   /**
    * Escape-hatch for arbitrary brand / category colors that don't map onto
    * the four accent families. Pass a CSS color string (`#7d57a8`, `rgb(...)`).
    * When present, overrides the `color` prop:
-   *   - active state: solid customColor background + white text
+   *   - active state: solid customColor background, white or ink text by contrast
    *   - inactive state: small dot of customColor + neutral surface bg
    * Use sparingly — accent families are preferred for design consistency.
    */
@@ -63,12 +65,30 @@ const props = defineProps({
   },
 
   /**
-   * Adds an X remove button inside the chip.
-   * Only meaningful on variant='filter'.
+   * Adds an X remove button inside the chip. Only meaningful on
+   * variant='filter'. The chip body then renders as a static label, since a
+   * remove button can't sit inside another button; the X is the only control.
    */
   removable: {
     type: Boolean,
     default: false,
+  },
+
+  /**
+   * How the active state renders on category + filter variants.
+   * - 'solid' (default): color-soft inactive, color-bold active. Every
+   *   option reads as part of one coloured group.
+   * - 'soft': neutral inactive, color-soft active. "Picked / not picked"
+   *   for multi-select sets where most options are usually on.
+   * - 'bold': neutral inactive, color-bold active. Toggle grammar for
+   *   single-select sets: only the selected pill pops.
+   *
+   * Ignored by variant="status" (status always renders as a passive label).
+   */
+  activeTone: {
+    type: String,
+    default: 'solid',
+    validator: v => ['solid', 'soft', 'bold'].includes(v),
   },
 
   /**
@@ -84,6 +104,29 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+
+  /**
+   * When false, the chip renders as a non-interactive <span> with no
+   * cursor, hover, press, or focus-ring treatment: a passive label.
+   * Default true preserves the existing clickable-button behaviour.
+   * No effect on variant="status" (always a span) or disabled (also span).
+   */
+  interactive: {
+    type: Boolean,
+    default: true,
+  },
+
+  /**
+   * Status variant only. When true (default), renders a leading dot
+   * coloured by the status token. When false, hides the dot and
+   * applies a soft-tinted background + bold text in the status colour,
+   * so the chip reads as a label-only state marker (e.g. "3 left",
+   * "Expired", "Children Only" on reward cards).
+   */
+  showDot: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 // ── Emits ────────────────────────────────────────────────────────────────────
@@ -92,11 +135,13 @@ const emit = defineEmits(['remove'])
 
 // ── Root tag decision ────────────────────────────────────────────────────────
 // status variant and disabled chips are non-interactive → use <span>.
-// category/filter are interactive buttons.
+// category/filter are interactive buttons, unless removable (see the prop).
 
 const rootTag = computed(() => {
   if (props.variant === 'status') return 'span'
   if (props.disabled) return 'span'
+  if (!props.interactive) return 'span'
+  if (props.removable) return 'span'
   return 'button'
 })
 
@@ -146,22 +191,77 @@ const accentMap = {
     boldText: 'text-accent-sun-bold',
     border:  'border-accent-sun-bold',
   },
+  // Brand-gold: single-token family. The soft and border variants synthesise
+  // alpha from the base brand-gold via Tailwind's slash-opacity utilities.
+  gold: {
+    softBg:  'bg-brand-gold/10',
+    boldBg:  'bg-brand-gold',
+    boldText: 'text-brand-gold',
+    border:  'border-brand-gold/40',
+  },
+}
+
+// Static map so Tailwind JIT picks up the status utilities (template-literal
+// class names are invisible to the content scanner).
+const STATUS_LABEL_CLASSES = {
+  success: 'bg-status-success/10 text-status-success',
+  pending: 'bg-status-pending/10 text-status-pending',
+  paused:  'bg-status-paused/10  text-status-paused',
+  failed:  'bg-status-failed/10  text-status-failed',
+  info:    'bg-status-info/10    text-status-info',
+  warning: 'bg-status-warning/10 text-status-warning',
 }
 
 // Classes for category/filter variants (non-status)
 const chipColorClasses = computed(() => {
-  if (props.variant === 'status') return ''
+  if (props.variant === 'status') {
+    // Dot variant: no colour on the chip body (the dot carries it).
+    if (props.showDot) return ''
+    // Label-only variant: soft bg + bold text in the status colour.
+    return STATUS_LABEL_CLASSES[props.status] || 'bg-surface-sunken text-ink-tertiary'
+  }
+
+  const isNeutral = props.color === 'neutral'
+  const isSoftTone = props.activeTone === 'soft'
+  const isBoldTone = props.activeTone === 'bold'
+
+  // Soft + bold tones share a neutral inactive state and diverge only on the
+  // active side. Only the active-vs-inactive split is written out below.
+  if (isSoftTone || isBoldTone) {
+    if (!props.active) {
+      return 'bg-surface-sunken border border-border-subtle text-ink-tertiary'
+    }
+    if (isSoftTone) {
+      if (props.customColor) {
+        // chipCustomStyle supplies bg + border and --kin-tag-color for the text.
+        return 'border kin-tag-ink'
+      }
+      if (isNeutral) {
+        return 'bg-ink-primary/10 border border-ink-primary/20 text-ink-primary'
+      }
+      const a = accentMap[props.color]
+      return `${a.softBg} border ${a.border} ${a.boldText}`
+    }
+    // Bold tone: filled with color-bold + inverse text (toggle grammar).
+    if (props.customColor) {
+      // chipCustomStyle fills the bg with customColor and picks the text color.
+      return 'border'
+    }
+    if (isNeutral) {
+      return 'bg-ink-primary border border-ink-primary text-ink-inverse'
+    }
+    const a = accentMap[props.color]
+    return `${a.boldBg} border ${a.border} text-ink-inverse`
+  }
 
   // customColor short-circuits the accent system — base classes only;
   // background/border/text get applied via `chipCustomStyle` below.
   if (props.customColor) {
     if (props.active) {
-      return 'border text-white'
+      return 'border'
     }
     return 'bg-surface-sunken border border-border-subtle text-ink-secondary'
   }
-
-  const isNeutral = props.color === 'neutral'
 
   if (props.active) {
     // Filled active state
@@ -190,15 +290,56 @@ const chipColorClasses = computed(() => {
   return `${a.softBg} border ${a.border} ${a.boldText}`
 })
 
+// Solid custom-colour fill that keeps its label readable. Tag colours are
+// picked as swatches: pale ones (amber, mint) put white text near 2:1, and
+// mid-tones (violet) clear AA with neither white nor ink, so those get a
+// slightly darkened fill under white text. The fill is the tag colour in both
+// themes, so the ink is fixed rather than a theme token. Non-hex colours are
+// left as given with white text.
+const INK_ON_LIGHT_FILL = '#1C1C1E'
+const AA_SMALL_TEXT = 4.5
+
+function hexLuminance(color) {
+  const match = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color.trim())
+  if (!match) return null
+  const hex = match[1].length === 3 ? [...match[1]].map((c) => c + c).join('') : match[1]
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+const INK_LUMINANCE = hexLuminance(INK_ON_LIGHT_FILL)
+
+function solidFillStyle(color) {
+  const luminance = hexLuminance(color)
+  if (luminance === null) return { backgroundColor: color, borderColor: color, color: '#FFFFFF' }
+  const onWhite = 1.05 / (luminance + 0.05)
+  const onInk = (luminance + 0.05) / (INK_LUMINANCE + 0.05)
+  if (Math.max(onWhite, onInk) < AA_SMALL_TEXT) {
+    const darker = `color-mix(in srgb, ${color} 80%, black)`
+    return { backgroundColor: darker, borderColor: darker, color: '#FFFFFF' }
+  }
+  const text = onWhite >= onInk ? '#FFFFFF' : INK_ON_LIGHT_FILL
+  return { backgroundColor: color, borderColor: color, color: text }
+}
+
 // Inline-style override when customColor is set. Active fills with the color;
 // inactive shows a small dot via the `#leading` slot fallback we render below.
+// Soft tone synthesises alpha via color-mix so the active state reads as a
+// tinted label rather than a filled badge.
 const chipCustomStyle = computed(() => {
   if (!props.customColor) return null
   if (props.active) {
-    return {
-      backgroundColor: props.customColor,
-      borderColor: props.customColor,
+    if (props.activeTone === 'soft') {
+      return {
+        backgroundColor: `color-mix(in srgb, ${props.customColor} 10%, transparent)`,
+        borderColor: `color-mix(in srgb, ${props.customColor} 40%, transparent)`,
+        '--kin-tag-color': props.customColor,
+      }
     }
+    return solidFillStyle(props.customColor)
   }
   return null
 })
@@ -226,14 +367,15 @@ const removablePaddingClass = computed(() =>
 const interactionClasses = computed(() => {
   if (props.disabled) return 'opacity-40 cursor-not-allowed'
   if (props.variant === 'status') return ''
-  return 'cursor-pointer transition-[filter,background-color,border-color] duration-quick ease-out-soft hover:brightness-95 dark:hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-lavender-bold focus-visible:ring-offset-1'
+  if (!props.interactive || props.removable) return ''
+  return 'kin-pressable cursor-pointer transition-[filter,background-color,border-color,transform] duration-quick ease-out-soft hover:brightness-95 dark:hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-lavender-bold focus-visible:ring-offset-1'
 })
 </script>
 
 <template>
   <component
     :is="rootTag"
-    class="inline-flex items-center rounded-pill font-medium select-none"
+    class="inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-pill font-medium select-none"
     :class="[
       sizeClasses,
       chipColorClasses,
@@ -241,7 +383,11 @@ const interactionClasses = computed(() => {
       interactionClasses,
     ]"
     :style="chipCustomStyle"
-    v-bind="rootTag === 'button' ? { type: 'button', disabled: disabled || undefined } : {}"
+    v-bind="rootTag === 'button' ? {
+      type: 'button',
+      disabled: disabled || undefined,
+      'aria-pressed': variant === 'filter' ? String(active) : undefined,
+    } : {}"
   >
     <!-- Leading slot (icon before label) -->
     <slot name="leading"></slot>
@@ -254,9 +400,9 @@ const interactionClasses = computed(() => {
       aria-hidden="true"
     ></span>
 
-    <!-- Status dot — only rendered for status variant -->
+    <!-- Status dot: only rendered for status variant when showDot is true -->
     <span
-      v-if="variant === 'status'"
+      v-if="variant === 'status' && showDot"
       :class="['rounded-full flex-shrink-0', dotSizeClass, statusDotClass]"
       aria-hidden="true"
     ></span>

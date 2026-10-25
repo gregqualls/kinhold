@@ -10,7 +10,7 @@
       class="flex-shrink-0 mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors"
       :class="item.is_checked
         ? 'bg-surface-overlay border-border-subtle'
-        : 'border-border-subtle hover:border-[#C4975A]'"
+        : 'border-border-subtle hover:border-brand-gold'"
       :aria-label="item.is_checked ? 'Uncheck item' : 'Check item'"
       @click="item.is_checked ? $emit('uncheck', item.id) : $emit('check', item.id)"
     >
@@ -57,16 +57,16 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
         </svg>
 
-        <!-- Needed date badge -->
-        <span
+        <!-- Needed date badge: peach when it's coming up (<= 2 days). -->
+        <KinChip
           v-if="item.needed_date && daysUntil(item.needed_date) !== null"
-          class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
-          :class="daysUntil(item.needed_date) <= 2
-            ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-            : 'bg-surface-sunken text-ink-secondary'"
+          variant="category"
+          size="sm"
+          :color="daysUntil(item.needed_date) <= 2 ? 'peach' : 'neutral'"
+          :interactive="false"
         >
           {{ formatDays(daysUntil(item.needed_date)) }}
-        </span>
+        </KinChip>
       </div>
 
       <!-- Line 2: recipe source -->
@@ -81,9 +81,9 @@
     <!-- Recurring toggle -->
     <button
       v-if="canManage"
-      class="flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all"
+      class="kin-pressable flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-[background-color,color,border-color,transform] duration-quick ease-out-soft"
       :class="item.is_recurring
-        ? 'bg-[#C4975A]/15 text-[#C4975A] border border-[#C4975A]/30'
+        ? 'bg-brand-gold/15 text-brand-gold border border-brand-gold/30'
         : 'text-ink-tertiary hover:bg-surface-sunken hover:text-ink-secondary'"
       :title="item.is_recurring
         ? 'This item reappears automatically after you clear bought items. Click to turn off.'
@@ -139,6 +139,7 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   item: {

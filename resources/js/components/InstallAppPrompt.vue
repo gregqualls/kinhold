@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="shouldShow"
-    class="bg-[#FAF5EE] dark:bg-[#3A2E1F]/40 border-b border-[#C4975A]/40 dark:border-[#C4975A]/30 px-4 py-2 flex items-start sm:items-center justify-between gap-3"
+    class="bg-[#FAF5EE] dark:bg-[#3A2E1F]/40 border-b border-brand-gold/40 dark:border-brand-gold/30 px-4 py-2 flex items-start sm:items-center justify-between gap-3"
     role="region"
     aria-label="Install Kinhold"
   >
@@ -26,7 +26,7 @@
     <div class="flex items-center gap-1.5 flex-shrink-0">
       <button
         v-if="mode === 'android'"
-        class="px-2.5 py-1 text-xs font-semibold rounded-md bg-[#C4975A] text-white hover:bg-[#B38A50] transition-colors"
+        class="px-2.5 py-1 text-xs font-semibold rounded-md bg-brand-gold text-white hover:bg-[#B38A50] transition-colors"
         @click="install"
       >
         Install

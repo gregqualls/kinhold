@@ -46,9 +46,9 @@
       <button
         v-if="itemName.length > 0"
         type="button"
-        class="flex-shrink-0 flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all"
+        class="kin-pressable flex-shrink-0 flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-[background-color,color,border-color,transform] duration-quick ease-out-soft"
         :class="isRecurring
-          ? 'bg-[#C4975A]/15 text-[#C4975A] border border-[#C4975A]/30'
+          ? 'bg-brand-gold/15 text-brand-gold border border-brand-gold/30'
           : 'text-ink-tertiary hover:bg-surface-sunken border border-transparent'"
         :title="isRecurring
           ? 'Recurring is ON — this item will reappear every time you clear bought items'

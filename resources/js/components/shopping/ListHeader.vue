@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-2 min-w-0">
         <!-- Store icon -->
-        <svg class="w-5 h-5 flex-shrink-0 text-[#C4975A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <svg class="w-5 h-5 flex-shrink-0 text-brand-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72l1.189-1.19A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72M6.75 18h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .414.336.75.75.75z" />
         </svg>
 
@@ -86,31 +86,33 @@
     <!-- Row 2: Window pills + Pre-Shop + Clear -->
     <div class="flex items-center justify-between gap-2">
       <!-- Shopping window pills -->
-      <div class="flex items-center gap-1 overflow-x-auto">
-        <button
+      <div class="flex items-center gap-1 min-w-0 overflow-x-auto">
+        <KinChip
           v-for="w in windows"
           :key="w.value"
-          class="px-2.5 py-1 text-xs rounded-full whitespace-nowrap transition-colors"
-          :class="shoppingWindow === w.value
-            ? 'bg-[#C4975A] text-white'
-            : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
+          variant="filter"
+          size="sm"
+          color="gold"
+          active-tone="bold"
+          :active="shoppingWindow === w.value"
           @click="$emit('set-window', w.value)"
         >
           {{ w.label }}
-        </button>
+        </KinChip>
       </div>
 
       <div class="flex items-center gap-1.5 flex-shrink-0">
-        <!-- Pre-Shop toggle -->
-        <button
-          class="px-2.5 py-1 text-xs rounded-full transition-colors"
-          :class="preShopMode
-            ? 'bg-status-success/10 text-status-success'
-            : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
+        <!-- Pre-Shop toggle: soft mint when on. -->
+        <KinChip
+          variant="filter"
+          size="sm"
+          color="mint"
+          active-tone="soft"
+          :active="preShopMode"
           @click="$emit('toggle-preshop')"
         >
           Pre-Shop
-        </button>
+        </KinChip>
 
         <!-- Clear Checked button -->
         <button
@@ -151,6 +153,7 @@
 import { ref, computed, nextTick } from 'vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinButton from '@/components/design-system/KinButton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   lists: {
