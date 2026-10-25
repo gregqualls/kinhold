@@ -2,6 +2,51 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-25: Polish pass part 6 — rail promotions, modal pattern, chip DS maturity (same branch, still unmerged)
+
+Twelve commits (`8ef1e09` → `1248fe1` + piece 5) finishing the deferral list from parts 1-5. Each piece has its own commit; the KinChip API extension got a high-effort code-review that caught a real visible regression I fixed before committing. Branch is still `polish/honour-the-system`, nothing pushed.
+
+**DS primitive extensions:**
+
+- **`KinChip` gets a `gold` accent** (`1248fe1`) — brand-gold enters the accentMap using Tailwind slash-alpha utilities (`bg-brand-gold/10`, `border-brand-gold/40`) since brand-gold is a single-token family. The food/meal/shopping surfaces that have historically been visual islands can now live inside the DS.
+- **`KinChip` gets `active-tone`** (`1248fe1`) — three values on the one prop:
+  - `'solid'` (default): color-soft inactive, color-bold active. Every existing call site keeps its look.
+  - `'soft'`: neutral inactive, color-soft active. The "picked / not picked" grammar.
+  - `'bold'`: neutral inactive, color-bold active. The classic toggle grammar where only the selected pill pops.
+  - Soft + customColor synthesises alpha via `color-mix(in srgb, ...)` on bg + border.
+
+**Rail promotion** (`8ef1e09`):
+
+- **RewardsView adopts `KinUtilityRail`** on desktop. Same `flex lg:h-full` + 280px right rail shape Points feed and Tasks already use. The filters slot carries search + chips + sort; the actions slot carries Add Reward for parents. Mobile keeps its inline toolbar and FAB.
+
+**Modal pattern** (`aa9e9c3`):
+
+- **BadgesView Award section becomes a modal** triggered by a new "Award Badge" secondary button in the hero. The parent-only 3-field card that used to sit always-visible at the bottom of the page is now a `KinModalSheet`. Trimmed ~30 lines of chrome off the page for the typical "browsing achievements" case.
+
+**Chip-storm long tail** — nine commits routing hand-rolled rounded-full pills through `KinChip`:
+
+- Vault entry counts + RecipeDetail prep/cook time (`e3c1180`) — the Recipe Total time stays hand-rolled per the brand-gold island decision but swaps its hard-coded `#C4975A` hex for the brand-gold token.
+- SettingsSection badge + PendingRequests count (`2c05fc1`) — both the collapsible and static header branches route through KinChip.
+- FeaturedRewards cost pill + ShoppingListItem needed-date badge (`c8fc385`) — the ShoppingListItem fix also drops hard-coded Tailwind amber for the DS peach accent.
+- RecipeIngredientPicker "already on list" badges (`87dd842`) — same amber → peach cleanup.
+- ChatView usage chip (`28caa6a`) — switches between `status=failed / warning` and `category=neutral` based on usagePercent thresholds.
+- RestaurantsTab Maps / Website / Call quick actions (`268790f`) — anchor-link chips become `KinButton variant="secondary"` with `href`.
+- Settings meal-slots, MealEntryPicker cook picker, ListHeader shopping windows + Pre-Shop (`1248fe1`) — now ride on the new `gold` accent + `active-tone` sub-variants.
+- FilteredTasksWidget dashboard tag chips, RecipesTab + RestaurantsTab inline tag chips — route through `KinChip filter active-tone="soft" :custom-color="tag.color" :interactive="false"`, which gives the "soft tint + colored text" look the hand-rolls had.
+
+**Lint cleanup** (`f303bbe`):
+
+- Dead `MagnifyingGlassIcon` import in VaultCategoriesView and dead `monthEventsMap` / `monthEventLabels` computeds in CalendarView removed. These were the pre-existing warnings called out in HANDOFF part 1.
+
+**Code-review (high effort) on the KinChip extension caught 8 findings.** The most severe — a visible shopping-window regression where unselected windows would have inherited the gold tint and weakened the "which is picked" signal — was fixed before commit by adding the `active-tone="bold"` toggle grammar. The other seven are documented in HANDOFF.
+
+**Closed-by-decision deferral items** — written up in HANDOFF with the reasoning:
+
+- `KinUtilityRail` on Vault entries (too thin — just search + Add), Food (tab-nested), Shopping (tab-nested).
+- `AllergenBadge` + `AllergenBadgeRow` — purpose-built primitives with semantics (dashed border for "unconfirmed" AI tags) KinChip doesn't model.
+- FoodCard photo-overlay tags — backdrop-blur treatment only makes sense on an image.
+- FeaturedEventsSection countdown badge — carries an `animate-bounce-gentle` on "today!" that KinChip would drop.
+
 ## 2026-10-25: Polish pass part 5 — the long-tail sweep (same branch, still unmerged)
 
 Seven commits (`0c869c1` → `8ae7a86`) working through the remaining deferral items from part 4: the empty-state adoption pass, the FeedItem kudo-stack primitive extraction, and the broader `rounded-full` sweep across the app. Each piece shipped alone with gate green and code-review clean. Branch is still `polish/honour-the-system`, nothing pushed.

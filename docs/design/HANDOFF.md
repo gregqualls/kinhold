@@ -1,3 +1,44 @@
+## Polish pass, part 6 — 2026-10-25 (same branch, still unmerged)
+
+Twelve commits (`8ef1e09` → piece 5) finishing the deferral list. The handshake named six pieces; all six landed. The KinChip API extension (piece 4) got a high-effort code-review that found one visible regression — fixed before commit — plus seven lower-severity notes documented below.
+
+**Landed:**
+
+1. **RewardsView adopts `KinUtilityRail`** (`8ef1e09`) — first new rail consumer since part 1. Desktop 280px right rail (search + filter chips + sort in `#filters`, Add Reward in `#actions`); mobile keeps inline toolbar + FAB. Same `flex lg:h-full` shape Points feed and Tasks already use.
+2. **BadgesView award modal** (`aa9e9c3`) — the always-visible Manually Award Badge card moves to a `KinModalSheet` triggered by a new "Award Badge" secondary button in the hero. ~30 lines of dead chrome removed.
+3. **Chip-storm long tail** (`e3c1180`, `2c05fc1`, `c8fc385`, `87dd842`, `28caa6a`, `268790f`) — six commits routing hand-rolled pills through `KinChip` or `KinButton`. Includes two token-drift fixes: ShoppingListItem and RecipeIngredientPicker swap hard-coded Tailwind amber (`bg-amber-100 text-amber-700`) for the DS peach accent; RecipeDetail Total time stays hand-rolled per the brand-gold island rule but trades `#C4975A` for the `bg-brand-gold` token.
+4. **Lint cleanup** (`f303bbe`) — unused `MagnifyingGlassIcon` import + dead `monthEventsMap` / `monthEventLabels` computeds removed. Clears the pre-existing warnings called out in HANDOFF part 1.
+5. **`KinChip` gold accent + soft/bold activeTone** (`1248fe1`) — the DS primitive extension that unlocks the brand-gold filter sites. See CHANGELOG for the API shape. Three sites route through the new accent + sub-variants: Settings meal-slots (soft), MealEntryPicker cook picker (soft), ListHeader shopping windows (bold toggle grammar) + Pre-Shop (soft mint).
+6. **Soft-tint tag chips** (piece 5) — FilteredTasksWidget dashboard filter display, RecipesTab inline tag chips, RestaurantsTab inline tag chips. All three use `KinChip filter active-tone="soft" :custom-color="tag.color" :interactive="false" :active="true"`, which gives the "soft tint + colored text" look the hand-rolls had and matches the TaskItem inline-tag treatment from part 4.
+
+**Code-review findings on piece 4 — fixed before commit:**
+
+- *Shopping window inactive flips neutral → soft gold* (correctness). Original hand-rolled toggle grammar had one gold-filled pill against three neutral siblings; routing through `active-tone="solid"` would have made all four pills gold-family. Fixed by adding `active-tone="bold"` to KinChip and routing shopping windows through it.
+
+**Code-review findings on piece 4 — kept, worth knowing:**
+
+- *Soft + neutral + active low contrast in dark mode* (correctness, hypothetical). No current call site exercises `color="neutral" active-tone="soft" :active="true"`. If one is added, dark mode may show the active state as a near-invisible wash. Fix would be a brighter alpha on `bg-ink-primary` or a dedicated neutral-active style.
+- *Soft + customColor + active returns bare `'border'` class* (correctness, tight coupling). The chip relies on `chipCustomStyle`'s inline border-color to render. If the inline style ever stops winning the cascade, these chips lose their color.
+- *Pre-Shop swaps `status-success` for `accent-mint` tokens* (correctness, token drift). Visually similar today; if the two token families diverge in a future palette iteration, Pre-Shop's on-state would drift with mint rather than with success.
+- *Soft-active accent duplicates filter-inactive class string* (simplification). Both branches of `chipColorClasses` return the same `${softBg} border ${border} ${boldText}` for the accent-color case. A later change to one branch has to be mirrored to the other.
+- *Food filter sites lose `hover:border-brand-gold/30` hover preview* (correctness, UX drift). The old hand-rolled hover was a border-color tint; the new one is `kin-pressable`'s uniform `brightness-95`. Universal to all three food filter sites.
+- *Pre-Shop inactive gains a visible border* (correctness, UI drift). The hand-rolled toggle was borderless when off; KinChip inactive filter always carries `border border-border-subtle`.
+- *`active-tone` silently ignored by `variant="status"`* (conventions). CLAUDE.md's "define errors out of existence" rule — a validator or dev warning would catch misuse of the prop on the wrong variant.
+
+**Closed by decision — not changing code, with reasons:**
+
+- **`KinUtilityRail` on Vault entries.** Just search + Add; a rail would be sparse. The entries list is thin enough that the inline toolbar is the right shape.
+- **`KinUtilityRail` on Food and Shopping.** Both are tabs inside FoodView's `h-full flex-col overflow-hidden` shell; a full-height rail doesn't fit the tab model. If they ever grow out of being tabs, revisit.
+- **`AllergenBadge` + `AllergenBadgeRow`.** The dashed-border "unconfirmed" state for AI-tagged allergens has no `KinChip` equivalent. The badge is also semantically tied to the allergen concept (contains / may_contain). Keep it as a dedicated primitive.
+- **FoodCard photo-overlay tags.** The `backdrop-blur-sm` + `bg-white/25 text-white` treatment only makes sense when the chip sits over an image. KinChip can't model this without an opt-in overlay mode that would only serve this one call site.
+- **FeaturedEventsSection countdown badge.** The "today!" state carries `animate-bounce-gentle` and uses the sand accent for a specific calendar-countdown semantic. KinChip would drop both.
+
+**Running tally of DS additions on this branch:** `KinChip` interactive + showDot + gold + activeTone (soft, bold), `KinSelectCard`, `KinPageHero`, `KinKudoStack`, `SettingsSection collapsible`, `SettingsNavRail`. Six new primitives, two prop-level extensions.
+
+**Where decisions live:** this handoff is the ledger. `CHANGELOG.md` has the per-part account. `REDESIGN_BRIEF.md`'s locked tenets 4 (pill shape), 5 (hero numerals), 6 (gradients) stay preserved.
+
+---
+
 ## Polish pass, part 5 — 2026-10-25 (same branch, still unmerged)
 
 Seven commits (`0c869c1` → `8ae7a86`) finishing the small-and-medium deferral items from part 4. Shipped per piece — gate green, review clean, in-browser verified where visible. Branch is still `polish/honour-the-system`, unmerged.
