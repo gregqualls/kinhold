@@ -183,37 +183,46 @@
 
         <!-- Quick links -->
         <div class="flex flex-wrap gap-2">
-          <a
+          <KinButton
             v-if="editFields.google_maps_url"
+            variant="secondary"
+            size="sm"
             :href="editFields.google_maps_url"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-sunken text-ink-primary rounded-full hover:bg-surface-sunken/80 transition-colors"
             @click.stop
           >
-            <MapPinIcon class="w-3.5 h-3.5" />
+            <template #leading>
+              <MapPinIcon class="w-3.5 h-3.5" />
+            </template>
             Maps
-          </a>
-          <a
+          </KinButton>
+          <KinButton
             v-if="editFields.menu_url"
+            variant="secondary"
+            size="sm"
             :href="editFields.menu_url"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-sunken text-ink-primary rounded-full hover:bg-surface-sunken/80 transition-colors"
             @click.stop
           >
-            <DocumentTextIcon class="w-3.5 h-3.5" />
+            <template #leading>
+              <DocumentTextIcon class="w-3.5 h-3.5" />
+            </template>
             Website
-          </a>
-          <a
+          </KinButton>
+          <KinButton
             v-if="editFields.phone"
+            variant="secondary"
+            size="sm"
             :href="'tel:' + editFields.phone"
-            class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-surface-sunken text-ink-primary rounded-full hover:bg-surface-sunken/80 transition-colors"
             @click.stop
           >
-            <PhoneIcon class="w-3.5 h-3.5" />
+            <template #leading>
+              <PhoneIcon class="w-3.5 h-3.5" />
+            </template>
             Call
-          </a>
+          </KinButton>
         </div>
 
         <!-- Star rating -->
