@@ -2,7 +2,11 @@
 
 > Updated at the end of every working session. Newest entries first.
 
-## 2026-10-25: Four design-system fixes (`fix/ds-followups`, stacked on the polish branch)
+## 2026-10-25: Preview check on PR #339
+
+Walked every screen on the Upsun `pr-339` preview as the demo family, at 1280px and 375px, light and dark: no console errors, no failed API calls, no horizontal overflow. Two regressions from this branch turned up and are fixed. The Shopping window pills (moved to KinChip) shrank and wrapped in their scrolling row at 375px; KinChip now carries `whitespace-nowrap` and `flex-shrink-0` itself, replacing the copies eight callers added by hand. The Rewards grid went to four columns at `xl` while the new rail took part of the width, which cut the timed auction title to one letter; the grid now auto-fills at a 13rem minimum and the auction card stacks its bid panel. Noted, not changed: the Rewards mobile sort select drops to its own line beside the three filter chips.
+
+## 2026-10-25: Four design-system fixes (folded into the polish branch)
 
 The four pre-existing issues the pre-PR check logged, one commit each. KinSelect now takes a caller's width on its root, so the chevron stays inside a narrowed select, and the widths callers asked for (Recipes sort, vault Category) finally apply. Vault entry sheets use a valid `size="lg"`. Solid custom-color chips pick white or ink text by contrast and darken mid-tone fills, so every seeded tag clears AA (4.52 to 7.92, up from about 2:1 on amber). Removable chips no longer nest a button inside a button. Two further pre-existing issues (blank vault Category select, modal size presets acting as caps) are logged in HANDOFF for a decision.
 
