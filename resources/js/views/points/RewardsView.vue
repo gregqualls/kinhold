@@ -55,8 +55,9 @@
         </div>
       </div>
 
-      <!-- Rewards Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+      <!-- Rewards Grid: columns follow the space left by the sidebar and the
+           rail, not the viewport, so a card never drops below 13rem. -->
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(13rem,1fr))] gap-4">
         <RewardCard
           v-for="reward in filteredRewards"
           :key="reward.id"

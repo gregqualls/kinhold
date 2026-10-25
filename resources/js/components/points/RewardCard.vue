@@ -82,11 +82,11 @@
       </div>
     </div>
 
-    <!-- Body: two-column on sm+ -->
+    <!-- Body: stacked at every width; the card is a grid tile, never wide
+         enough for the bid panel to sit beside the title. -->
     <div class="p-4">
-      <div class="flex flex-col sm:flex-row sm:gap-6">
-        <!-- Left: reward info -->
-        <div class="flex-1 min-w-0 mb-3 sm:mb-0">
+      <div class="flex flex-col gap-3">
+        <div class="min-w-0">
           <div class="flex items-center gap-2 mb-1">
             <div class="w-6 h-6 text-wisteria-500 dark:text-wisteria-400 shrink-0">
               <IconRenderer v-if="reward.icon" :icon="reward.icon" :size="24" color="currentColor" />
@@ -101,8 +101,7 @@
           </div>
         </div>
 
-        <!-- Right: bid stats -->
-        <div v-if="!reward.is_resolved" class="sm:w-48 shrink-0 space-y-1.5 bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
+        <div v-if="!reward.is_resolved" class="space-y-1.5 bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
           <div v-if="reward.highest_bid" class="flex justify-between text-xs">
             <span class="text-lavender-500 dark:text-lavender-400">High bid</span>
             <span class="font-bold font-mono text-wisteria-600 dark:text-wisteria-400">{{ reward.highest_bid }} pts</span>
@@ -136,7 +135,7 @@
         </div>
 
         <!-- Resolved state -->
-        <div v-else class="sm:w-48 shrink-0 flex items-center justify-center bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
+        <div v-else class="flex items-center justify-center bg-lavender-50 dark:bg-prussian-800/50 rounded-lg p-3">
           <span class="text-sm font-medium text-lavender-500 dark:text-lavender-400">Auction ended</span>
         </div>
       </div>
