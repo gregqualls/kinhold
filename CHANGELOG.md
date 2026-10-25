@@ -2,6 +2,45 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-25: Polish pass part 4 — the three bigger pieces (same branch, still unmerged)
+
+Three commits (`3a2818f`, `846935d`, `882bcd0`) picking up the design-call items the previous three parts kept deferring as "bigger than a single run." Each one shipped end-to-end — gate green, code-review clean, verified in the browser at desktop and mobile. Branch is still `polish/honour-the-system`, still unmerged, nothing pushed.
+
+**1. Settings two-pane master-detail layout** (`3a2818f`)
+
+The single-column accordion with 11 collapsible sections (Family, Tasks & Points, AI & Integrations, Feature Access, Food, Allergens, Appearance, Notifications, Billing, About, Your Data, Danger Zone) is replaced on desktop with a sticky left rail plus a detail pane that renders one section at a time. Mobile pushes into the detail with a back arrow, matching the native iOS pattern.
+
+- New `SettingsNavRail` primitive drives the flat ordered list (icons + title + optional badge). Selected row carries the `[data-selected="true"]` lavender-bar grammar from DS part 1.
+- `SettingsSection` gains a `collapsible` prop. When false, the chevron disappears, click-to-toggle is removed, and the body is always visible — but the header still carries icon + title + description, which doubles as the detail-pane heading.
+- `SettingsView` replaces the Set-based `expandedSections` state with a single `selectedSection` ref. Hash routing (`#family`, `#appearance`, etc.) survives refresh. `history.replaceState` on rail clicks keeps the back/forward stack clean. `watch(route.hash)` picks up deep-links when Vue Router reuses the mounted component on hash change.
+- Desktop lands on the first visible section so the right pane is never empty; mobile stays on the list until the user taps.
+- Page `max-w-4xl` widens to `md:max-w-6xl` so the 220px rail + detail pane has breathing room on wide screens.
+- GDPR mode (paywalled users with `?gdpr=1`) still filters to Your Data + Danger Zone — the rail honors the same gate.
+
+**2. Dashboard cards sized to their own content** (`846935d`)
+
+The audit's "50% empty My Tasks" finding: every carded widget forced a fixed 280-360px height per (type, size), and inner components used `flex-1 min-h-0 overflow-y-auto` to fill it. With 3 tasks in a 5-slot limit, cards sat half-empty.
+
+- `widgetRegistry.js`: the per-widget `heights` map is removed. A single `cardless: true` flag replaces it, covering only Welcome and Countdown (the two widgets that render without a `KinFlatCard` wrapper). Every other widget sizes to its content.
+- `DashboardWidget.vue`: inline height style gone; the inner `flex-1 min-h-0 overflow-hidden` wrapper gone. The widget renders directly inside the card.
+- Eight widget components (`MyTasks`, `FamilyTasks`, `FilteredTasks`, `TodaysSchedule`, `Leaderboard`, `ActivityFeed`, `Badges`, `PointsSummary`): dropped the `flex flex-col h-full` root, the `flex-shrink-0` on headers, the `flex-1 min-h-0 overflow-y-auto` on scrollable lists, and `flex-1` on empty states. Every widget already self-caps its list via `taskLimit` / `slice`, so there's no runaway growth to defend against.
+- `DashboardView.vue` grid gets `items-start` so uneven heights in a row don't stretch the shortest card to match the tallest.
+- Net: 11 files, 55 added / 85 removed. Visibly tighter at all breakpoints.
+
+**3. TaskItem meta row inline with middots** (`882bcd0`)
+
+The audit's strongest call, deferred since polish pass part 1. Six chip-and-text widgets per row (tags + due date + assignee + points + recurrence + description indicator) collapsed to a single scannable line.
+
+- Tags keep their color as inline text — no chip background, no border, no padding. Preserves color-coded recognition, drops the chip chrome.
+- Due date and recurrence keep their semantic shades (overdue red-bold, recurring lavender).
+- Assignee drops the in-row avatar; first name only. The avatar still appears in the detail panel.
+- Points render as `10pt` in sand mono.
+- Description indicator dropped — the row-click opens the panel where the description already lives.
+- Icons (calendar / user-group / arrow-path / document-text) removed from the row; the names carry the meaning.
+- Imports pruned: `KinChip`, `UserAvatar`, and the four icons.
+
+Row now reads e.g. `Chores · Open · 10pt · Every Tuesday` with each part in its own color. Mobile wraps gracefully on long meta.
+
 ## 2026-10-24: Polish pass part 3 — design-call items (same branch, still unmerged)
 
 Twelve more commits (`dae826f` → `ccfa1ff`) working through the design-call list the previous passes deferred. Primitives first, then per-screen polish. Branch is still `polish/honour-the-system`, still unmerged. Nothing pushed.

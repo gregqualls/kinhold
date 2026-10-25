@@ -1,3 +1,32 @@
+## Polish pass, part 4 — 2026-10-25 (same branch, still unmerged)
+
+Three commits (`3a2818f` → `882bcd0`) finishing the design-call items part 3 could only knock the small items off of. Each one shipped alone and settled before the next started — gate green, review clean, verified in-browser. Branch is still `polish/honour-the-system`, still unmerged.
+
+**Landed:**
+
+1. **Settings master-detail layout** (`3a2818f`) — Rail (sticky at md+) plus one-section-at-a-time detail replaces the 11-section accordion. New `SettingsNavRail` primitive. `SettingsSection` gains a `collapsible: false` mode. Hash routing with `replaceState` and a `watch(route.hash)` so Vue Router's component-reuse-on-hash-change still updates the detail pane. Mobile pushes into detail with a back arrow. Desktop lands on first visible section. GDPR mode honored. See CHANGELOG for the full account.
+2. **Dashboard cards sized to content** (`846935d`) — `widgetRegistry.heights` map replaced by a `cardless: true` flag on Welcome and Countdown. Every other widget sizes to its own content; the carded wrapper is a plain `KinFlatCard` with no inline height. Eight widgets lost their `h-full / flex-1 min-h-0 / overflow-y-auto` scaffolding (every widget self-caps via `taskLimit` / `slice`). Grid gets `items-start` so a short card next to a tall one doesn't stretch. 11 files, 55 added / 85 removed.
+3. **TaskItem meta row inline with middots** (`882bcd0`) — Six-chip meta row collapsed to `Chores · Open · 10pt · Every Tuesday`. Tags keep their color as text, due date and recurrence keep semantic shades, assignee is first name only (avatar stays in the detail panel), icons dropped (names carry the meaning), description indicator dropped (row-click opens the panel). Six unused imports pruned.
+
+**Stopped at (next session's starting point):**
+
+- **`KinUtilityRail` cross-screen promotion** — Vault, Rewards, Food, Shopping, Settings, Achievements each need a per-screen call on what fills the right rail (recent activity, quick filters, kin cards). Settings now has its own left rail from piece 1 — that's a different animal and doesn't change this question.
+- **`KinEmptyState` adoption on remaining sites** — Points right rail, Vault entry Documents section, Rewards auctions empty state. Each needs illustration + CTA copy decisions.
+- **`KinKudoStack` primitive** — extracts FeedItem's stack button + stacked / count-only badges. New primitive from scratch; the hand-rolls work fine until there's a second consumer.
+- **Broader `rounded-full` sweep** — Dashboard widgets, calendar legends, settings. Carried from parts 1-3.
+- **Dashboard widget skeleton heights** — BadgesWidget's loading skeletons went from `100%` (filling the old fixed-height parent) to a fixed `40px`. That's a sensible number but was picked by eye, not measured against the real badge icon size. If skeletons feel off during a slow-load observation, revisit.
+
+**Known limitations after this part:**
+
+- `data-selected` on `SettingsNavRail` rows is used in place of `aria-selected` since the nav items are plain `<button>`s in a `<nav>` rather than a listbox. `aria-current="true"` is set for the selected item, which is the right ARIA for navigation. OK as-is.
+- Settings form state is lost on section switch (the section's `<form>` unmounts via `v-if`). Matches the iOS Settings pattern — if this surfaces as a complaint, swap `v-if` for `v-show` in the detail area (performance cost: all 11 sections mounted at once; could be substantial for AI & Integrations which fetches MCP tokens).
+- Dashboard: `widgetHeight` and `getWidgetHeight` were the API consumers for the `heights` map. Both are removed. If a future custom widget wants a fixed card height, the registry would need `maxHeight` reintroduced plus a per-widget `max-h-[Xpx] overflow-y-auto` wrapper in DashboardWidget. Not needed today since every widget self-caps.
+- TaskItem: tags render as inline colored text. If a tag's color has poor contrast on the surface (e.g., pale pink on surface-raised), the text could be hard to read. The six current tag colors (wisteria, prussian, sand, red, green, pink) all pass contrast against both themes. Custom tag colors (API-driven) could in theory fail; untested in this pass.
+
+**Where decisions live:** this handoff is the ledger. `CHANGELOG.md` has the per-part account. `REDESIGN_BRIEF.md`'s locked tenets 4 (pill shape), 5 (hero numerals), 6 (gradients) stay preserved.
+
+---
+
 ## Polish pass, part 3 — 2026-10-24 (same branch, still unmerged)
 
 Twelve commits (`dae826f` → `ccfa1ff`) picking up the audit's remaining design-call items. The deferral list from part 2 ("Stopped at", "Still deferred") drove the plan. Everything landed on `polish/honour-the-system`; nothing pushed, nothing merged.
