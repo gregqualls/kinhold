@@ -15,9 +15,9 @@
       <div>
         <div class="flex items-center gap-2 mb-2">
           <h4 class="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">Need it</h4>
-          <span class="text-xs bg-surface-sunken text-ink-secondary px-1.5 py-0.5 rounded-full font-medium">
+          <KinChip variant="category" color="neutral" size="sm" :interactive="false">
             {{ needItems.length }}
-          </span>
+          </KinChip>
         </div>
         <div class="space-y-1.5">
           <div
@@ -44,9 +44,9 @@
       <details v-if="onHandItems.length > 0" class="group">
         <summary class="flex items-center gap-2 mb-2 cursor-pointer list-none">
           <h4 class="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">Got it</h4>
-          <span class="text-xs bg-status-success/10 text-status-success px-1.5 py-0.5 rounded-full font-medium">
+          <KinChip variant="status" status="success" size="sm" :show-dot="false" :interactive="false">
             {{ onHandItems.length }}
-          </span>
+          </KinChip>
           <svg class="w-3.5 h-3.5 text-ink-tertiary ml-auto transition-transform group-open:rotate-180" fill="none" viewBox="0 0 16 16">
             <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
@@ -77,6 +77,7 @@
 <script setup>
 import { computed } from 'vue'
 import KinButton from '@/components/design-system/KinButton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   items: {

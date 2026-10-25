@@ -61,13 +61,18 @@
             <span v-if="event.event_time" class="text-ink-tertiary">
               {{ formatTime(event.event_time) }}
             </span>
-            <span
+            <KinChip
               v-if="event.recurrence_label"
-              class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-accent-lavender-soft/40 text-accent-lavender-bold text-[10px] font-medium"
+              variant="category"
+              color="lavender"
+              size="sm"
+              :interactive="false"
             >
-              <ArrowPathIcon class="w-2.5 h-2.5" />
+              <template #leading>
+                <ArrowPathIcon class="w-2.5 h-2.5" />
+              </template>
               {{ event.recurrence_label }}
-            </span>
+            </KinChip>
           </div>
         </div>
 
@@ -157,6 +162,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import EventModal from '@/components/common/EventModal.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 import { StarIcon, PlusIcon, EllipsisVerticalIcon, ArrowPathIcon, ClockIcon } from '@heroicons/vue/24/outline'
 import IconRenderer from '@/components/common/IconRenderer.vue'
 
