@@ -126,14 +126,18 @@
                 <MapPinIcon class="w-3 h-3 flex-shrink-0" />
                 {{ restaurant.address.length > 30 ? restaurant.address.slice(0, 30) + '…' : restaurant.address }}
               </span>
-              <span
+              <KinChip
                 v-for="tag in (restaurant.tags || []).slice(0, 2)"
                 :key="tag.id"
-                class="px-1.5 py-0.5 text-[10px] font-medium rounded-full"
-                :style="{ backgroundColor: (tag.color || '#C4975A') + '20', color: tag.color || '#C4975A' }"
+                variant="filter"
+                size="sm"
+                active-tone="soft"
+                :active="true"
+                :custom-color="tag.color || '#C4975A'"
+                :interactive="false"
               >
                 {{ tag.name }}
-              </span>
+              </KinChip>
             </div>
           </div>
 

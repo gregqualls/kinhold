@@ -14,16 +14,22 @@
       </RouterLink>
     </div>
 
-    <!-- Tag pills (show which tags are filtering) -->
+    <!-- Tag pills (show which tags are filtering). Soft-tint active via
+         KinChip filter activeTone=soft + customColor; always-active since
+         they're passive labels showing the currently applied filters. -->
     <div v-if="filterTags.length > 0" class="flex flex-wrap gap-1 mb-2">
-      <span
+      <KinChip
         v-for="tag in filterTags"
         :key="tag.id"
-        class="inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded-full"
-        :style="{ backgroundColor: tag.color + '20', color: tag.color }"
+        variant="filter"
+        size="sm"
+        active-tone="soft"
+        :active="true"
+        :custom-color="tag.color"
+        :interactive="false"
       >
         {{ tag.name }}
-      </span>
+      </KinChip>
     </div>
 
     <!-- Loading -->
@@ -89,6 +95,7 @@ import { FunnelIcon } from '@heroicons/vue/24/outline'
 import { CheckIcon } from '@heroicons/vue/24/solid'
 import api from '@/services/api'
 import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 
 const props = defineProps({
