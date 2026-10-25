@@ -260,7 +260,6 @@ import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import {
   PlusIcon,
-  MagnifyingGlassIcon,
   ChevronRightIcon,
   XMarkIcon,
   HeartIcon,

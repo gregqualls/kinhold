@@ -481,37 +481,6 @@ const monthCells = computed(() =>
   }))
 )
 
-// Map of day-number → array of accent names. Only current-month events.
-const monthEventsMap = computed(() => {
-  const map = {}
-  const monthStart = currentMonth.value.startOf('month')
-  const monthEnd = currentMonth.value.endOf('month')
-  for (const event of events.value) {
-    if (!event.start) continue
-    const d = DateTime.fromISO(event.start)
-    if (d < monthStart || d > monthEnd) continue
-    const day = d.day
-    if (!map[day]) map[day] = []
-    map[day].push(accentForEvent(event))
-  }
-  return map
-})
-
-// Optional event-title labels per day (KinMonthGrid uses these in pills mode).
-// We're using dots mode but pass these along anyway for hover/aria context.
-const monthEventLabels = computed(() => {
-  const map = {}
-  const monthStart = currentMonth.value.startOf('month')
-  const monthEnd = currentMonth.value.endOf('month')
-  for (const event of events.value) {
-    if (!event.start) continue
-    const d = DateTime.fromISO(event.start)
-    if (d < monthStart || d > monthEnd) continue
-    if (!map[d.day]) map[d.day] = []
-    map[d.day].push(event.title || 'Event')
-  }
-  return map
-})
 
 const todayInCurrentMonth = computed(() => {
   const now = DateTime.now()
