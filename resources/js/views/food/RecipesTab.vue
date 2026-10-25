@@ -24,7 +24,7 @@
           v-model="sortBy"
           size="sm"
           :options="sortOptions"
-          class="w-32"
+          class="w-32 flex-shrink-0"
           @change="onSortChange"
         />
 

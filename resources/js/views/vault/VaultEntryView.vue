@@ -255,7 +255,7 @@
           <KinSelect
             v-model="editForm.vault_category_id"
             label="Category"
-            class="w-40"
+            class="w-40 flex-shrink-0"
             :options="[{ value: null, label: 'Select...' }, ...categories.map((c) => ({ value: c.id, label: c.name }))]"
           />
         </div>
