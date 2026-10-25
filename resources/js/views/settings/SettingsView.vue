@@ -941,18 +941,21 @@
                   Visible Meal Slots
                 </label>
                 <div class="flex flex-wrap gap-2">
-                  <button
+                  <KinChip
                     v-for="slot in allMealSlots"
                     :key="slot.key"
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors"
-                    :class="mealSlots.includes(slot.key)
-                      ? 'bg-brand-gold/10 border-brand-gold/40 text-brand-gold'
-                      : 'bg-surface-sunken border-border-subtle dark:border-border-subtle text-ink-tertiary hover:border-brand-gold/30'"
+                    variant="filter"
+                    size="sm"
+                    color="gold"
+                    active-tone="soft"
+                    :active="mealSlots.includes(slot.key)"
                     @click="toggleMealSlot(slot.key)"
                   >
-                    <component :is="slot.icon" class="w-3.5 h-3.5" />
+                    <template #leading>
+                      <component :is="slot.icon" class="w-3.5 h-3.5" />
+                    </template>
                     {{ slot.label }}
-                  </button>
+                  </KinChip>
                 </div>
                 <p class="text-xs text-ink-secondary mt-1">
                   Choose which meals to show on your planner. Hidden slots keep their data.

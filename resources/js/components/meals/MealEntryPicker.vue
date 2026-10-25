@@ -157,18 +157,21 @@
       <div v-if="familyMembers.length > 0">
         <label class="block text-xs font-medium text-ink-tertiary mb-2 uppercase tracking-wide">Assign Cook(s)</label>
         <div class="flex flex-wrap gap-2">
-          <button
+          <KinChip
             v-for="member in familyMembers"
             :key="member.id"
-            class="flex items-center gap-1.5 px-2 py-1.5 rounded-full border text-xs font-medium transition-colors"
-            :class="selectedCooks.includes(member.id)
-              ? 'bg-brand-gold/10 border-brand-gold/40 text-brand-gold'
-              : 'bg-surface-sunken border-border-subtle text-ink-tertiary hover:border-brand-gold/30'"
+            variant="filter"
+            size="sm"
+            color="gold"
+            active-tone="soft"
+            :active="selectedCooks.includes(member.id)"
             @click="toggleCook(member.id)"
           >
-            <UserAvatar :user="member" size="xs" />
+            <template #leading>
+              <UserAvatar :user="member" size="xs" />
+            </template>
             {{ member.name.split(' ')[0] }}
-          </button>
+          </KinChip>
         </div>
       </div>
 
@@ -221,6 +224,7 @@ import BaseInput from '@/components/common/BaseInput.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import UserAvatar from '@/components/common/UserAvatar.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 import MealPlannerAllergenWarning from '@/components/allergens/MealPlannerAllergenWarning.vue'
 import IconRenderer from '@/components/common/IconRenderer.vue'
 

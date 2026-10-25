@@ -87,30 +87,33 @@
     <div class="flex items-center justify-between gap-2">
       <!-- Shopping window pills -->
       <div class="flex items-center gap-1 overflow-x-auto">
-        <button
+        <KinChip
           v-for="w in windows"
           :key="w.value"
-          class="px-2.5 py-1 text-xs rounded-full whitespace-nowrap transition-colors"
-          :class="shoppingWindow === w.value
-            ? 'bg-brand-gold text-white'
-            : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
+          variant="filter"
+          size="sm"
+          color="gold"
+          active-tone="bold"
+          :active="shoppingWindow === w.value"
           @click="$emit('set-window', w.value)"
         >
           {{ w.label }}
-        </button>
+        </KinChip>
       </div>
 
       <div class="flex items-center gap-1.5 flex-shrink-0">
-        <!-- Pre-Shop toggle -->
-        <button
-          class="px-2.5 py-1 text-xs rounded-full transition-colors"
-          :class="preShopMode
-            ? 'bg-status-success/10 text-status-success'
-            : 'bg-surface-sunken text-ink-secondary hover:bg-surface-overlay'"
+        <!-- Pre-Shop toggle (mint when on; soft tone matches the status-
+             success tint the hand-rolled version used). -->
+        <KinChip
+          variant="filter"
+          size="sm"
+          color="mint"
+          active-tone="soft"
+          :active="preShopMode"
           @click="$emit('toggle-preshop')"
         >
           Pre-Shop
-        </button>
+        </KinChip>
 
         <!-- Clear Checked button -->
         <button
@@ -151,6 +154,7 @@
 import { ref, computed, nextTick } from 'vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinButton from '@/components/design-system/KinButton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   lists: {

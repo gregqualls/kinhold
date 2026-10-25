@@ -26,11 +26,13 @@ const props = defineProps({
   /**
    * Accent color for category/filter variants.
    * 'neutral' uses border-subtle / ink-secondary (off state).
+   * 'gold' is Kinhold's brand accent — reserved for food/meal/shopping
+   * surfaces that use brand-gold as their semantic marker.
    */
   color: {
     type: String,
     default: 'neutral',
-    validator: v => ['lavender', 'peach', 'mint', 'sun', 'neutral'].includes(v),
+    validator: v => ['lavender', 'peach', 'mint', 'sun', 'gold', 'neutral'].includes(v),
   },
 
   /**
@@ -69,6 +71,23 @@ const props = defineProps({
   removable: {
     type: Boolean,
     default: false,
+  },
+
+  /**
+   * How the active state renders on category + filter variants.
+   * - 'solid' (default): default DS filter — color-soft inactive +
+   *   color-bold active. Call sites: Rewards filters, Settings module access.
+   * - 'soft':  neutral inactive + color-soft active. The "picked / not picked"
+   *   grammar. Call sites: food meal-slot, cook-assignment filters.
+   * - 'bold':  neutral inactive + color-bold active. The classic toggle
+   *   grammar — only the selected pill pops. Call sites: Shopping windows.
+   *
+   * Ignored by variant="status" (status always renders as a passive label).
+   */
+  activeTone: {
+    type: String,
+    default: 'solid',
+    validator: v => ['solid', 'soft', 'bold'].includes(v),
   },
 
   /**
@@ -170,6 +189,14 @@ const accentMap = {
     boldText: 'text-accent-sun-bold',
     border:  'border-accent-sun-bold',
   },
+  // Brand-gold: single-token family. The soft and border variants synthesise
+  // alpha from the base brand-gold via Tailwind's slash-opacity utilities.
+  gold: {
+    softBg:  'bg-brand-gold/10',
+    boldBg:  'bg-brand-gold',
+    boldText: 'text-brand-gold',
+    border:  'border-brand-gold/40',
+  },
 }
 
 // Static map so Tailwind JIT picks up the status utilities (template-literal
@@ -192,6 +219,39 @@ const chipColorClasses = computed(() => {
     return STATUS_LABEL_CLASSES[props.status] || 'bg-surface-sunken text-ink-tertiary'
   }
 
+  const isNeutral = props.color === 'neutral'
+  const isSoftTone = props.activeTone === 'soft'
+  const isBoldTone = props.activeTone === 'bold'
+
+  // Soft + bold tones share a neutral inactive state and diverge only on the
+  // active side. Only the active-vs-inactive split is written out below.
+  if (isSoftTone || isBoldTone) {
+    if (!props.active) {
+      return 'bg-surface-sunken border border-border-subtle text-ink-tertiary'
+    }
+    if (isSoftTone) {
+      if (props.customColor) {
+        // chipCustomStyle fills in bg + border + text from the hex.
+        return 'border'
+      }
+      if (isNeutral) {
+        return 'bg-ink-primary/10 border border-ink-primary/20 text-ink-primary'
+      }
+      const a = accentMap[props.color]
+      return `${a.softBg} border ${a.border} ${a.boldText}`
+    }
+    // Bold tone: filled with color-bold + inverse text (toggle grammar).
+    if (props.customColor) {
+      // chipCustomStyle below fills the bg with customColor; text stays white.
+      return 'border text-white'
+    }
+    if (isNeutral) {
+      return 'bg-ink-primary border border-ink-primary text-ink-inverse'
+    }
+    const a = accentMap[props.color]
+    return `${a.boldBg} border ${a.border} text-ink-inverse`
+  }
+
   // customColor short-circuits the accent system — base classes only;
   // background/border/text get applied via `chipCustomStyle` below.
   if (props.customColor) {
@@ -200,8 +260,6 @@ const chipColorClasses = computed(() => {
     }
     return 'bg-surface-sunken border border-border-subtle text-ink-secondary'
   }
-
-  const isNeutral = props.color === 'neutral'
 
   if (props.active) {
     // Filled active state
@@ -232,9 +290,18 @@ const chipColorClasses = computed(() => {
 
 // Inline-style override when customColor is set. Active fills with the color;
 // inactive shows a small dot via the `#leading` slot fallback we render below.
+// Soft tone synthesises alpha via color-mix so the active state reads as a
+// tinted label rather than a filled badge.
 const chipCustomStyle = computed(() => {
   if (!props.customColor) return null
   if (props.active) {
+    if (props.activeTone === 'soft') {
+      return {
+        backgroundColor: `color-mix(in srgb, ${props.customColor} 10%, transparent)`,
+        borderColor: `color-mix(in srgb, ${props.customColor} 40%, transparent)`,
+        color: props.customColor,
+      }
+    }
     return {
       backgroundColor: props.customColor,
       borderColor: props.customColor,
