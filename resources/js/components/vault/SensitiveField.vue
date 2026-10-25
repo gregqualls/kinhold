@@ -5,7 +5,7 @@
       <p
         class="text-sm truncate"
         :class="[
-          useMono && 'font-mono',
+          (useMono || !revealed) && 'font-mono',
           revealed ? 'text-ink-primary' : 'text-ink-tertiary select-none',
         ]"
       >
@@ -64,7 +64,8 @@ const maskedValue = computed(() => {
 // Opt-in mono: use the monospace face only when the value looks like data
 // (phone, SSN, zip, URL, email, account number). Names, addresses, notes,
 // and any other prose render in the body font so the detail page reads as
-// a document, not a terminal.
+// a document, not a terminal. Masked values are always mono: choosing the
+// font from the hidden value would tell an onlooker what kind of secret it is.
 const useMono = computed(() => {
   const str = String(props.value || '').trim()
   if (!str) return false

@@ -70,28 +70,35 @@ const formatTime = (dateStr) => {
   })
 }
 
-// Group the feed by day (preserves order; the store returns newest first).
-// Headers show "Today" / "Yesterday" / "Weekday, Mon D" so a 20-row list
-// stops repeating "May 5" six times in a column of time-only subtitles.
+// Group the feed by day, keeping the store's newest-first order. Every
+// transaction lands in a group (an undated one gets its own) so the list
+// always adds up to the balance above it.
 const groupedFeed = computed(() => {
-  const groups = []
-  const seen = new Map()
-  const today = new Date().toDateString()
-  const yd = new Date()
+  const now = new Date()
+  const today = now.toDateString()
+  const yd = new Date(now)
   yd.setDate(yd.getDate() - 1)
   const yesterday = yd.toDateString()
 
+  const dayLabel = (d, key) => {
+    if (key === today) return 'Today'
+    if (key === yesterday) return 'Yesterday'
+    return d.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      ...(d.getFullYear() !== now.getFullYear() && { year: 'numeric' }),
+    })
+  }
+
+  const groups = []
+  const seen = new Map()
   for (const item of pointsStore.feed) {
-    if (!item.created_at) continue
-    const d = new Date(item.created_at)
-    const key = d.toDateString()
+    const d = item.created_at ? new Date(item.created_at) : null
+    const key = d ? d.toDateString() : 'undated'
     let group = seen.get(key)
     if (!group) {
-      let label
-      if (key === today) label = 'Today'
-      else if (key === yesterday) label = 'Yesterday'
-      else label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-      group = { key, label, items: [] }
+      group = { key, label: d ? dayLabel(d, key) : 'Undated', items: [] }
       seen.set(key, group)
       groups.push(group)
     }
