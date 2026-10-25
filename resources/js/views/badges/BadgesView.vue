@@ -3,6 +3,12 @@
     <KinPageHero>
       Achievements
       <template v-if="isParent" #actions>
+        <KinButton variant="secondary" size="sm" @click="showAwardModal = true">
+          <template #leading>
+            <TrophyIcon class="w-4 h-4" />
+          </template>
+          Award Badge
+        </KinButton>
         <KinButton variant="primary" size="sm" @click="showCreateForm = !showCreateForm">
           <template v-if="!showCreateForm" #leading>
             <PlusIcon class="w-4 h-4" />
@@ -130,10 +136,16 @@
       class="mt-8"
     />
 
-    <!-- Parent Award Section -->
-    <KinFlatCard v-if="isParent && activeTab === 'All'" padding="md" class="mt-8">
-      <h3 class="text-sm font-semibold text-ink-primary mb-4">Manually Award Badge</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+    <!-- Parent Award Modal — triggered from the hero. Replaces the
+         previous always-visible card at the bottom of the page. -->
+    <KinModalSheet
+      v-if="isParent"
+      :model-value="showAwardModal"
+      title="Award a badge"
+      size="md"
+      @close="closeAwardModal"
+    >
+      <form class="space-y-4" @submit.prevent="handleAward">
         <KinSelect
           v-model="awardBadgeId"
           label="Badge"
@@ -146,16 +158,16 @@
           placeholder="Select member…"
           :options="memberOptions"
         />
-        <KinButton
-          variant="primary"
-          size="md"
-          :disabled="!awardBadgeId || !awardUserId"
-          @click="handleAward"
-        >
-          Award
-        </KinButton>
-      </div>
-    </KinFlatCard>
+        <div class="flex gap-2 pt-2">
+          <KinButton type="button" variant="secondary" size="md" class="flex-1" @click="closeAwardModal">
+            Cancel
+          </KinButton>
+          <KinButton type="submit" variant="primary" size="md" class="flex-1" :disabled="!awardBadgeId || !awardUserId">
+            Award
+          </KinButton>
+        </div>
+      </form>
+    </KinModalSheet>
   </div>
 </template>
 
@@ -175,7 +187,8 @@ import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
 import KinTabPillGroup from '@/components/design-system/KinTabPillGroup.vue'
 import KinAchievementTile from '@/components/design-system/KinAchievementTile.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
-import { PlusIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline'
+import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
+import { PlusIcon, ShieldCheckIcon, TrophyIcon } from '@heroicons/vue/24/outline'
 
 const badgesStore = useBadgesStore()
 const authStore = useAuthStore()
@@ -183,8 +196,15 @@ const { isParent, familyMembers } = storeToRefs(authStore)
 
 const activeTab = ref('All')
 const showCreateForm = ref(false)
+const showAwardModal = ref(false)
 const awardBadgeId = ref('')
 const awardUserId = ref('')
+
+const closeAwardModal = () => {
+  showAwardModal.value = false
+  awardBadgeId.value = ''
+  awardUserId.value = ''
+}
 
 const iconNames = badgeIconNames
 
@@ -333,8 +353,7 @@ const createBadge = async () => {
 const handleAward = async () => {
   if (!awardBadgeId.value || !awardUserId.value) return
   await badgesStore.manuallyAward(awardBadgeId.value, awardUserId.value)
-  awardBadgeId.value = ''
-  awardUserId.value = ''
+  closeAwardModal()
 }
 
 onMounted(() => {
