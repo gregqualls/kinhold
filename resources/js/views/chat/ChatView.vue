@@ -150,17 +150,32 @@
 
       <!-- Normal input row -->
       <template v-else>
-        <!-- Usage chip -->
+        <!-- Usage chip. The computed usageStatus switches between
+             status=failed / warning for threshold crossings and null
+             for the normal case, which renders as a neutral category. -->
         <div
           v-if="usage.enforced && usage.limit"
           class="max-w-2xl mx-auto flex justify-end mb-1.5"
         >
-          <span
-            class="text-[11px] px-2 py-0.5 rounded-full"
-            :class="chipColorClass"
+          <KinChip
+            v-if="usageStatus"
+            variant="status"
+            :status="usageStatus"
+            size="sm"
+            :show-dot="false"
+            :interactive="false"
           >
             {{ usage.plan?.name }} · {{ usage.count }} / {{ usage.limit }} today
-          </span>
+          </KinChip>
+          <KinChip
+            v-else
+            variant="category"
+            color="neutral"
+            size="sm"
+            :interactive="false"
+          >
+            {{ usage.plan?.name }} · {{ usage.count }} / {{ usage.limit }} today
+          </KinChip>
         </div>
 
         <form class="max-w-2xl mx-auto flex gap-2 items-end" @submit.prevent="handleSend">
@@ -209,6 +224,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import KinButton from '@/components/design-system/KinButton.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 // Configure marked for safe, compact output
 marked.setOptions({
@@ -224,10 +240,10 @@ const { currentUser } = storeToRefs(authStore)
 const isParent = computed(() => authStore.isParent)
 const usagePercent = computed(() => chatStore.usagePercent)
 
-const chipColorClass = computed(() => {
-  if (usagePercent.value >= 100) return 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
-  if (usagePercent.value >= 80) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
-  return 'bg-surface-sunken text-ink-tertiary'
+const usageStatus = computed(() => {
+  if (usagePercent.value >= 100) return 'failed'
+  if (usagePercent.value >= 80) return 'warning'
+  return null
 })
 
 const resetCountdown = computed(() => {
