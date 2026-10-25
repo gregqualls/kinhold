@@ -30,7 +30,6 @@
           variant="filter"
           size="sm"
           :active="showFavoritesOnly"
-          class="flex-shrink-0"
           @click="showFavoritesOnly = !showFavoritesOnly"
         >
           <template #leading><HeartIcon class="w-3 h-3" /></template>
@@ -48,7 +47,6 @@
           size="sm"
           :custom-color="tag.color || '#C4975A'"
           :active="isTagSelected(tag.id)"
-          class="flex-shrink-0"
           @click="toggleTagFilter(tag.id)"
         >
           {{ tag.name }}

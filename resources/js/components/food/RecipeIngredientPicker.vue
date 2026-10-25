@@ -23,7 +23,6 @@
           color="peach"
           size="sm"
           :interactive="false"
-          class="flex-shrink-0"
           :title="`${alreadyOnListCount} already on list`"
         >
           <template #leading>
@@ -80,7 +79,6 @@
             color="peach"
             size="sm"
             :interactive="false"
-            class="flex-shrink-0"
           >
             On list
           </KinChip>

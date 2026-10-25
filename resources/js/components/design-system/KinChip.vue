@@ -375,7 +375,7 @@ const interactionClasses = computed(() => {
 <template>
   <component
     :is="rootTag"
-    class="inline-flex items-center rounded-pill font-medium select-none"
+    class="inline-flex flex-shrink-0 items-center whitespace-nowrap rounded-pill font-medium select-none"
     :class="[
       sizeClasses,
       chipColorClasses,

@@ -36,7 +36,6 @@
         size="sm"
         :color="canAfford(reward) ? 'lavender' : 'neutral'"
         :interactive="false"
-        class="flex-shrink-0"
       >
         <template #leading>
           <StarIcon class="w-3 h-3" />

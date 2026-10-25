@@ -23,7 +23,6 @@
             size="sm"
             color="neutral"
             :active="selectedTagIds.length === 0"
-            class="flex-shrink-0 whitespace-nowrap"
             @click="clearTagFilter"
           >
             All
@@ -37,7 +36,6 @@
             size="sm"
             :custom-color="getTagHex(tag.color)"
             :active="isTagSelected(tag.id)"
-            class="flex-shrink-0 whitespace-nowrap"
             @click="toggleTagFilter(tag.id)"
           >
             {{ tag.name }}

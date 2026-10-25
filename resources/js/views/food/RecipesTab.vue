@@ -54,7 +54,6 @@
           size="sm"
           :custom-color="tag.color || '#C4975A'"
           :active="isTagSelected(tag.id)"
-          class="flex-shrink-0 whitespace-nowrap"
           @click="toggleTagFilter(tag.id)"
         >
           {{ tag.name }}

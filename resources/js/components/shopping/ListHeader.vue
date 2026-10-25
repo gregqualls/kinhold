@@ -86,7 +86,7 @@
     <!-- Row 2: Window pills + Pre-Shop + Clear -->
     <div class="flex items-center justify-between gap-2">
       <!-- Shopping window pills -->
-      <div class="flex items-center gap-1 overflow-x-auto">
+      <div class="flex items-center gap-1 min-w-0 overflow-x-auto">
         <KinChip
           v-for="w in windows"
           :key="w.value"
