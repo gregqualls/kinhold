@@ -26,12 +26,15 @@
           <p class="text-xs text-ink-secondary truncate flex-1">
             {{ item.description }}
           </p>
-          <span
-            class="text-[10px] font-bold font-mono flex-shrink-0 px-2 py-0.5 rounded-full"
-            :class="item.points > 0 ? 'text-status-success bg-status-success/10' : 'text-status-failed bg-status-failed/10'"
+          <KinChip
+            variant="status"
+            size="sm"
+            :status="item.points > 0 ? 'success' : 'failed'"
+            :show-dot="false"
+            :interactive="false"
           >
-            {{ item.points > 0 ? '+' : '' }}{{ item.points }}
-          </span>
+            <span class="font-mono font-bold">{{ item.points > 0 ? '+' : '' }}{{ item.points }}</span>
+          </KinChip>
         </div>
       </div>
     </div>
@@ -42,6 +45,7 @@
 import { computed } from 'vue'
 import { useWidgetData } from '@/composables/useWidgetData'
 import KinSkeleton from '@/components/design-system/KinSkeleton.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 defineProps({
   config: { type: Object, required: true },

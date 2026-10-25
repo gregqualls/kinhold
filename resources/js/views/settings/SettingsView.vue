@@ -235,30 +235,18 @@
                       <p class="text-xs text-ink-secondary">{{ module.description }}</p>
                     </div>
                     <div class="flex gap-1.5 shrink-0">
-                      <button
-                        :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                        @click="setModuleMode(module.id, 'all')"
-                      >
+                      <KinChip variant="filter" size="sm" color="lavender" :active="moduleAccessState[module.id]?.mode === 'all'" @click="setModuleMode(module.id, 'all')">
                         Everyone
-                      </button>
-                      <button
-                        :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                        @click="setModuleMode(module.id, 'roles', ['parent'])"
-                      >
+                      </KinChip>
+                      <KinChip variant="filter" size="sm" color="lavender" :active="moduleAccessState[module.id]?.mode === 'roles'" @click="setModuleMode(module.id, 'roles', ['parent'])">
                         Parents Only
-                      </button>
-                      <button
-                        :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-status-failed text-white shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                        @click="setModuleMode(module.id, 'off')"
-                      >
+                      </KinChip>
+                      <KinChip variant="filter" size="sm" color="lavender" :active="moduleAccessState[module.id]?.mode === 'off'" @click="setModuleMode(module.id, 'off')">
                         Off
-                      </button>
-                      <button
-                        :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                        @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
-                      >
+                      </KinChip>
+                      <KinChip variant="filter" size="sm" color="lavender" :active="moduleAccessState[module.id]?.mode === 'users'" @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))">
                         Custom
-                      </button>
+                      </KinChip>
                     </div>
                   </div>
 
@@ -608,12 +596,26 @@
                   <div>
                     <div class="flex items-center gap-2">
                       <p class="font-medium text-ink-primary">MCP Connection</p>
-                      <span v-if="mcpToken.hasToken" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-status-success">
+                      <KinChip
+                        v-if="mcpToken.hasToken"
+                        variant="status"
+                        status="success"
+                        size="sm"
+                        :show-dot="false"
+                        :interactive="false"
+                      >
                         Connected
-                      </span>
-                      <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-sunken text-ink-secondary dark:bg-surface-overlay dark:text-ink-tertiary">
+                      </KinChip>
+                      <KinChip
+                        v-else
+                        variant="status"
+                        status="paused"
+                        size="sm"
+                        :show-dot="false"
+                        :interactive="false"
+                      >
                         Not Connected
-                      </span>
+                      </KinChip>
                     </div>
                     <p v-if="mcpToken.lastUsedAt" class="text-xs text-ink-secondary mt-1">
                       Last used: {{ new Date(mcpToken.lastUsedAt).toLocaleDateString() }}
@@ -861,30 +863,18 @@
                       <p class="text-xs text-ink-secondary">{{ module.description }}</p>
                     </div>
                     <div class="flex gap-1.5 shrink-0">
-                      <button
-                        :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'all' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                        @click="setModuleMode(module.id, 'all')"
-                      >
+                      <KinChip variant="filter" size="sm" color="lavender" :active="moduleAccessState[module.id]?.mode === 'all'" @click="setModuleMode(module.id, 'all')">
                         Everyone
-                      </button>
-                      <button
-                        :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'roles' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                        @click="setModuleMode(module.id, 'roles', ['parent'])"
-                      >
+                      </KinChip>
+                      <KinChip variant="filter" size="sm" color="lavender" :active="moduleAccessState[module.id]?.mode === 'roles'" @click="setModuleMode(module.id, 'roles', ['parent'])">
                         Parents Only
-                      </button>
-                      <button
-                        :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'off' ? 'bg-status-failed text-white shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                        @click="setModuleMode(module.id, 'off')"
-                      >
+                      </KinChip>
+                      <KinChip variant="filter" size="sm" color="lavender" :active="moduleAccessState[module.id]?.mode === 'off'" @click="setModuleMode(module.id, 'off')">
                         Off
-                      </button>
-                      <button
-                        :class="['px-2.5 py-1 text-xs font-medium rounded-full transition-colors', moduleAccessState[module.id]?.mode === 'users' ? 'bg-accent-lavender-bold text-ink-inverse shadow-resting' : 'bg-surface-raised text-ink-secondary border border-border-subtle hover:bg-surface-overlay']"
-                        @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))"
-                      >
+                      </KinChip>
+                      <KinChip variant="filter" size="sm" color="lavender" :active="moduleAccessState[module.id]?.mode === 'users'" @click="setModuleMode(module.id, 'users', getSelectedUserIds(module.id))">
                         Custom
-                      </button>
+                      </KinChip>
                     </div>
                   </div>
 
@@ -1610,6 +1600,7 @@ import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinSelectCard from '@/components/design-system/KinSelectCard.vue'
 import KinPageHero from '@/components/design-system/KinPageHero.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 import KinButton from '@/components/design-system/KinButton.vue'
 import SettingsSection from '@/components/settings/SettingsSection.vue'
 import SettingsNavRail from '@/components/settings/SettingsNavRail.vue'
