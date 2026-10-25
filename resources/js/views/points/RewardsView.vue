@@ -129,9 +129,9 @@
         </div>
       </template>
 
-      <template #actions>
-        <div v-if="isParent" class="flex flex-col gap-2 items-stretch">
-          <KinButton v-if="!showForm" variant="primary" size="sm" @click="openCreateForm">
+      <template v-if="isParent && !showForm" #actions>
+        <div class="flex flex-col gap-2 items-stretch">
+          <KinButton variant="primary" size="sm" @click="openCreateForm">
             <template #leading>
               <PlusIcon class="w-4 h-4" />
             </template>

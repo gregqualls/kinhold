@@ -2,6 +2,10 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-25: Kid-account pass on the PR #339 preview
+
+Walked every screen as Kenji (child) at 1280px and 375px: no console errors, no failed API calls, no horizontal overflow, parent-only actions hidden, and the vault shows categories but no entries. One fix: the Rewards rail drew an empty "Actions" heading for kids (and for parents while the reward form was open). The slot is now conditional, and KinUtilityRail re-reads its slots on every render instead of caching them in a computed, since `useSlots()` is not reactive.
+
 ## 2026-10-25: Page titles move into the desktop top bar
 
 From Greg's preview pass: every page had an empty top bar band above its title. KinPageHero now teleports into a title slot in the TopBar from md up, on one line (back, eyebrow, title, subtitle, then actions), and stays in the page below md where the TopBar is hidden. Tasks, Calendar, Points, Rewards, Meals and the recipe page swapped their hand-built headers for KinPageHero, so all eleven titled screens share it. Calendar's view toggle, Points' quick links, the Rewards balance and the recipe icons ride along as hero actions. To keep titles whole at 768px, the family avatar stack shows from lg up and the bar title is `text-xl` between md and lg. Dashboard (its greeting is a widget), Shopping and Assistant have no page title and are unchanged.
