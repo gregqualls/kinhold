@@ -2,6 +2,10 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-25: Four design-system fixes (`fix/ds-followups`, stacked on the polish branch)
+
+The four pre-existing issues the pre-PR check logged, one commit each. KinSelect now takes a caller's width on its root, so the chevron stays inside a narrowed select, and the widths callers asked for (Recipes sort, vault Category) finally apply. Vault entry sheets use a valid `size="lg"`. Solid custom-color chips pick white or ink text by contrast and darken mid-tone fills, so every seeded tag clears AA (4.52 to 7.92, up from about 2:1 on amber). Removable chips no longer nest a button inside a button. Two further pre-existing issues (blank vault Category select, modal size presets acting as caps) are logged in HANDOFF for a decision.
+
 ## 2026-10-25: Pre-PR check for the polish branch
 
 A whole-branch review and a light/dark browser walkthrough before opening the PR. Fixes: the Settings rail no longer wipes Vue Router's history state (Back now returns to the section you were on, and `?gdpr=1` survives rail clicks); Settings sections can no longer render after their module or billing gate closes; masked vault values no longer pick their font from the hidden value; tag-colored text clears WCAG AA via a new `.kin-tag-ink` utility (minimum 5.4:1 light, 7.5:1 dark, up from about 2:1); toggle chips and select cards expose `aria-pressed`; Points history keeps undated rows and shows the year on older dates. Four pre-existing issues are logged in HANDOFF as follow-ups.

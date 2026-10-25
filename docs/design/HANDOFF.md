@@ -12,12 +12,17 @@ A whole-branch pass before opening the PR: clean gate on HEAD, a high-effort rev
 - *Points history* no longer drops transactions without a timestamp, and dates from another year show the year.
 - MealEntryPicker recipe thumbnail gets `alt=""`. Comments that narrated branch history or used em dashes were rewritten.
 
-**Follow-ups found, not fixed here (pre-existing on main):**
+**Follow-ups found (pre-existing on main), fixed on `fix/ds-followups`:**
 
-- `KinSelect` binds a caller's `max-w-*` to the inner `<select>` while the chevron is positioned against the full-width wrapper, so the chevron floats far right of a narrowed select (Settings: leaderboard period, week start day).
-- `VaultCategoriesView` and `VaultEntriesView` pass `size="xl"` to `KinModalSheet`, whose validator only allows sm / md / lg (console warning on every Vault visit).
-- KinChip's *solid* custom-color active state puts white text on the raw tag color (e.g. a selected amber "School" filter is about 2:1). Needs a text-color-by-luminance rule, a separate design call.
-- A removable KinChip renders its remove `<button>` inside the chip's own `<button>` (nested interactive controls).
+- *KinSelect chevron floated past a narrowed select.* A caller's class went on the inner `<select>` while the chevron sat against the full-width wrapper. Class and style now go on the root; `w-full` applies only when the caller sets no width. This also makes `w-32` / `w-40` take effect for the first time (before, `w-full` silently won), so the Recipes sort and vault Category selects get `flex-shrink-0`.
+- *Vault sheets passed `size="xl"`*, which the KinModalSheet validator rejects. Now `lg`.
+- *Solid custom-color chips put white text on pale fills* (amber School was about 2:1). The label takes white or ink by contrast; mid-tones where neither reaches 4.5:1 (violet Shopping) get a fill darkened 20% under white. Seeded tags now measure 4.52 to 7.92.
+- *A removable KinChip nested its X `<button>` inside the chip `<button>`.* The body is now a `<span>` and the X is the only control.
+
+**Still open (pre-existing, need a call from Greg):**
+
+- The vault Category select shows blank: its first option is `{ value: null, label: 'Select...' }`, and an `<option>` with a `null` value falls back to its text as its value, so a `null` model matches nothing. Depends on whether "no category" is a valid choice.
+- KinModalSheet size presets are `max-width` caps on a `md:w-auto` surface, so desktop sheets are content-width and `lg` versus `md` barely changes anything. Making presets real widths touches about 15 modals.
 
 ## Polish pass, part 6 (2026-10-25, same branch, still unmerged)
 
