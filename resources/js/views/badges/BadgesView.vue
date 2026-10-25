@@ -136,8 +136,7 @@
       class="mt-8"
     />
 
-    <!-- Parent Award Modal — triggered from the hero. Replaces the
-         previous always-visible card at the bottom of the page. -->
+    <!-- Parent award modal, opened from the hero's Award Badge button. -->
     <KinModalSheet
       v-if="isParent"
       :model-value="showAwardModal"

@@ -118,8 +118,6 @@
             </template>
             Cook {{ formatTime(recipe.cook_time_minutes) }}
           </KinChip>
-          <!-- Total: brand-gold is a deliberate accent island for food, so this
-               stays hand-rolled but swaps the hard-coded hex for the token. -->
           <span v-if="totalTime" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-brand-gold/10 text-brand-gold rounded-full">
             Total {{ formatTime(totalTime) }}
           </span>

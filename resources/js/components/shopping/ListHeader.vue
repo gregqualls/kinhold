@@ -102,8 +102,7 @@
       </div>
 
       <div class="flex items-center gap-1.5 flex-shrink-0">
-        <!-- Pre-Shop toggle (mint when on; soft tone matches the status-
-             success tint the hand-rolled version used). -->
+        <!-- Pre-Shop toggle: soft mint when on. -->
         <KinChip
           variant="filter"
           size="sm"

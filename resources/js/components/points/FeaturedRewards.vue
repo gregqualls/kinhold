@@ -30,7 +30,7 @@
         {{ reward.title }}
       </p>
 
-      <!-- Cost pill — affordable variant carries the lavender accent. -->
+      <!-- Cost pill: lavender when the member can afford it. -->
       <KinChip
         variant="category"
         size="sm"

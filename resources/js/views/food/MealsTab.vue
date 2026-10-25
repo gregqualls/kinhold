@@ -69,8 +69,7 @@
     />
 
     <template v-else>
-      <!-- Desktop empty-week state: replaces the 28 "+ Add" slots of an
-           empty week with a single invite to plan it. -->
+      <!-- Desktop empty week: one invite to plan instead of an empty grid. -->
       <div
         v-if="isWeekEmpty"
         class="hidden md:flex flex-1 items-center justify-center px-4 md:px-6"

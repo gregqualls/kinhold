@@ -2,14 +2,18 @@
 
 > Updated at the end of every working session. Newest entries first.
 
-## 2026-10-25: Polish pass part 6 — rail promotions, modal pattern, chip DS maturity (same branch, still unmerged)
+## 2026-10-25: Pre-PR check for the polish branch
+
+A whole-branch review and a light/dark browser walkthrough before opening the PR. Fixes: the Settings rail no longer wipes Vue Router's history state (Back now returns to the section you were on, and `?gdpr=1` survives rail clicks); Settings sections can no longer render after their module or billing gate closes; masked vault values no longer pick their font from the hidden value; tag-colored text clears WCAG AA via a new `.kin-tag-ink` utility (minimum 5.4:1 light, 7.5:1 dark, up from about 2:1); toggle chips and select cards expose `aria-pressed`; Points history keeps undated rows and shows the year on older dates. Four pre-existing issues are logged in HANDOFF as follow-ups.
+
+## 2026-10-25: Polish pass part 6: rail promotions, modal pattern, chip DS maturity (same branch, still unmerged)
 
 Twelve commits (`8ef1e09` → `1248fe1` + piece 5) finishing the deferral list from parts 1-5. Each piece has its own commit; the KinChip API extension got a high-effort code-review that caught a real visible regression I fixed before committing. Branch is still `polish/honour-the-system`, nothing pushed.
 
 **DS primitive extensions:**
 
-- **`KinChip` gets a `gold` accent** (`1248fe1`) — brand-gold enters the accentMap using Tailwind slash-alpha utilities (`bg-brand-gold/10`, `border-brand-gold/40`) since brand-gold is a single-token family. The food/meal/shopping surfaces that have historically been visual islands can now live inside the DS.
-- **`KinChip` gets `active-tone`** (`1248fe1`) — three values on the one prop:
+- **`KinChip` gets a `gold` accent** (`1248fe1`), brand-gold enters the accentMap using Tailwind slash-alpha utilities (`bg-brand-gold/10`, `border-brand-gold/40`) since brand-gold is a single-token family. The food/meal/shopping surfaces that have historically been visual islands can now live inside the DS.
+- **`KinChip` gets `active-tone`** (`1248fe1`), three values on the one prop:
   - `'solid'` (default): color-soft inactive, color-bold active. Every existing call site keeps its look.
   - `'soft'`: neutral inactive, color-soft active. The "picked / not picked" grammar.
   - `'bold'`: neutral inactive, color-bold active. The classic toggle grammar where only the selected pill pops.
@@ -23,47 +27,47 @@ Twelve commits (`8ef1e09` → `1248fe1` + piece 5) finishing the deferral list f
 
 - **BadgesView Award section becomes a modal** triggered by a new "Award Badge" secondary button in the hero. The parent-only 3-field card that used to sit always-visible at the bottom of the page is now a `KinModalSheet`. Trimmed ~30 lines of chrome off the page for the typical "browsing achievements" case.
 
-**Chip-storm long tail** — nine commits routing hand-rolled rounded-full pills through `KinChip`:
+**Chip-storm long tail**, nine commits routing hand-rolled rounded-full pills through `KinChip`:
 
-- Vault entry counts + RecipeDetail prep/cook time (`e3c1180`) — the Recipe Total time stays hand-rolled per the brand-gold island decision but swaps its hard-coded `#C4975A` hex for the brand-gold token.
-- SettingsSection badge + PendingRequests count (`2c05fc1`) — both the collapsible and static header branches route through KinChip.
-- FeaturedRewards cost pill + ShoppingListItem needed-date badge (`c8fc385`) — the ShoppingListItem fix also drops hard-coded Tailwind amber for the DS peach accent.
-- RecipeIngredientPicker "already on list" badges (`87dd842`) — same amber → peach cleanup.
-- ChatView usage chip (`28caa6a`) — switches between `status=failed / warning` and `category=neutral` based on usagePercent thresholds.
-- RestaurantsTab Maps / Website / Call quick actions (`268790f`) — anchor-link chips become `KinButton variant="secondary"` with `href`.
-- Settings meal-slots, MealEntryPicker cook picker, ListHeader shopping windows + Pre-Shop (`1248fe1`) — now ride on the new `gold` accent + `active-tone` sub-variants.
-- FilteredTasksWidget dashboard tag chips, RecipesTab + RestaurantsTab inline tag chips — route through `KinChip filter active-tone="soft" :custom-color="tag.color" :interactive="false"`, which gives the "soft tint + colored text" look the hand-rolls had.
+- Vault entry counts + RecipeDetail prep/cook time (`e3c1180`), the Recipe Total time stays hand-rolled per the brand-gold island decision but swaps its hard-coded `#C4975A` hex for the brand-gold token.
+- SettingsSection badge + PendingRequests count (`2c05fc1`), both the collapsible and static header branches route through KinChip.
+- FeaturedRewards cost pill + ShoppingListItem needed-date badge (`c8fc385`), the ShoppingListItem fix also drops hard-coded Tailwind amber for the DS peach accent.
+- RecipeIngredientPicker "already on list" badges (`87dd842`), same amber → peach cleanup.
+- ChatView usage chip (`28caa6a`), switches between `status=failed / warning` and `category=neutral` based on usagePercent thresholds.
+- RestaurantsTab Maps / Website / Call quick actions (`268790f`), anchor-link chips become `KinButton variant="secondary"` with `href`.
+- Settings meal-slots, MealEntryPicker cook picker, ListHeader shopping windows + Pre-Shop (`1248fe1`), now ride on the new `gold` accent + `active-tone` sub-variants.
+- FilteredTasksWidget dashboard tag chips, RecipesTab + RestaurantsTab inline tag chips, route through `KinChip filter active-tone="soft" :custom-color="tag.color" :interactive="false"`, which gives the "soft tint + colored text" look the hand-rolls had.
 
 **Lint cleanup** (`f303bbe`):
 
 - Dead `MagnifyingGlassIcon` import in VaultCategoriesView and dead `monthEventsMap` / `monthEventLabels` computeds in CalendarView removed. These were the pre-existing warnings called out in HANDOFF part 1.
 
-**Code-review (high effort) on the KinChip extension caught 8 findings.** The most severe — a visible shopping-window regression where unselected windows would have inherited the gold tint and weakened the "which is picked" signal — was fixed before commit by adding the `active-tone="bold"` toggle grammar. The other seven are documented in HANDOFF.
+**Code-review (high effort) on the KinChip extension caught 8 findings.** The most severe, a visible shopping-window regression where unselected windows would have inherited the gold tint and weakened the "which is picked" signal, was fixed before commit by adding the `active-tone="bold"` toggle grammar. The other seven are documented in HANDOFF.
 
-**Closed-by-decision deferral items** — written up in HANDOFF with the reasoning:
+**Closed-by-decision deferral items**, written up in HANDOFF with the reasoning:
 
-- `KinUtilityRail` on Vault entries (too thin — just search + Add), Food (tab-nested), Shopping (tab-nested).
-- `AllergenBadge` + `AllergenBadgeRow` — purpose-built primitives with semantics (dashed border for "unconfirmed" AI tags) KinChip doesn't model.
-- FoodCard photo-overlay tags — backdrop-blur treatment only makes sense on an image.
-- FeaturedEventsSection countdown badge — carries an `animate-bounce-gentle` on "today!" that KinChip would drop.
+- `KinUtilityRail` on Vault entries (too thin, just search + Add), Food (tab-nested), Shopping (tab-nested).
+- `AllergenBadge` + `AllergenBadgeRow`, purpose-built primitives with semantics (dashed border for "unconfirmed" AI tags) KinChip doesn't model.
+- FoodCard photo-overlay tags, backdrop-blur treatment only makes sense on an image.
+- FeaturedEventsSection countdown badge, carries an `animate-bounce-gentle` on "today!" that KinChip would drop.
 
-## 2026-10-25: Polish pass part 5 — the long-tail sweep (same branch, still unmerged)
+## 2026-10-25: Polish pass part 5, the long-tail sweep (same branch, still unmerged)
 
 Seven commits (`0c869c1` → `8ae7a86`) working through the remaining deferral items from part 4: the empty-state adoption pass, the FeedItem kudo-stack primitive extraction, and the broader `rounded-full` sweep across the app. Each piece shipped alone with gate green and code-review clean. Branch is still `polish/honour-the-system`, nothing pushed.
 
 **New primitive:**
 
-- **`KinKudoStack`** (`7399851`) — three variants (`action`, `stacked`, `count`) encapsulate FeedItem's three hand-rolled kudo-stack widgets (lavender tappable pill with outline thumb-up, muted static pill with solid thumb-up for "I +1'd this", muted static pill with outline thumb-up for "others +1'd"). FeedItem drops its two Heroicon imports and 30 lines of markup collapse to 15 call-site lines.
+- **`KinKudoStack`** (`7399851`), three variants (`action`, `stacked`, `count`) encapsulate FeedItem's three hand-rolled kudo-stack widgets (lavender tappable pill with outline thumb-up, muted static pill with solid thumb-up for "I +1'd this", muted static pill with outline thumb-up for "others +1'd"). FeedItem drops its two Heroicon imports and 30 lines of markup collapse to 15 call-site lines.
 
 **Empty-state adoption** (`0c869c1`):
 
 - **Vault entry Documents card**: the bare `<p>No documents attached yet.</p>` becomes a lavender paperclip `KinEmptyState` with a parent-only description (hidden on demo-family instances to match the Upload button's own `isParent && !isDemoFamily` gate).
 - **LeaderboardStrip**: the hand-rolled TrophyIcon + two `<p>`s empty state becomes the sun-accent primitive with tightened description copy.
-- The HANDOFF's third empty-state site ("Rewards auctions") turned out to be RewardCard's inline "No bids yet" label inside a 192px bid-stats sidebar — the primitive would overpower that layout, left as-is.
+- The HANDOFF's third empty-state site ("Rewards auctions") turned out to be RewardCard's inline "No bids yet" label inside a 192px bid-stats sidebar, the primitive would overpower that layout, left as-is.
 
-**Rounded-full sweep** — eight commits across Settings, Dashboard, and other components routed hand-rolled pills through `KinChip`:
+**Rounded-full sweep**, eight commits across Settings, Dashboard, and other components routed hand-rolled pills through `KinChip`:
 
-- **Settings module-access pills** (`3825cff`): 8 identical buttons across two sections (Tasks & Points, Feature Access) become `KinChip variant="filter"` with lavender color. Visible change: the active "Off" state loses its red fill for uniform lavender — the four options now read as peers.
+- **Settings module-access pills** (`3825cff`): 8 identical buttons across two sections (Tasks & Points, Feature Access) become `KinChip variant="filter"` with lavender color. Visible change: the active "Off" state loses its red fill for uniform lavender, the four options now read as peers.
 - **Settings MCP Connection** (`3825cff`): Connected / Not Connected spans become `KinChip status="success" / "paused"`.
 - **PointsSummaryWidget +/-N points pill** (`3825cff`): routed through `KinChip variant="status" show-dot="false"`, matching RewardCard and FeedItem.
 - **Settings Family Members list** (`804115d`): Parent / Child role chip and the peach "Managed" badge beside managed accounts both route through `KinChip variant="category"`.
@@ -73,30 +77,30 @@ Seven commits (`0c869c1` → `8ae7a86`) working through the remaining deferral i
 - **RewardForm member picker** (`76cfa1d`): the label-wrapping-hidden-checkbox pattern becomes `KinChip variant="filter"` with lavender color. Also drops the pre-DS `wisteria-100` / `lavender-100` colors that had been drifting from the DS palette.
 - **MealDaySection meal-count badge** (`76cfa1d`): span with hard-coded hex colors (`bg-[#F5F2EE]` / `text-[#6B6966]`) becomes `KinChip category neutral`. Token-drift fix as a bonus.
 
-Deliberately left alone — `FilteredTasksWidget` tag pills (the soft-tint-plus-colored-text active-filter chrome doesn't map onto any `KinChip` variant without a visible regression) and three brand-gold filter chrome sites (`Settings` meal-slot pills, `ListHeader` shopping windows, `MealEntryPicker` cook assignment — same concern).
+Deliberately left alone, `FilteredTasksWidget` tag pills (the soft-tint-plus-colored-text active-filter chrome doesn't map onto any `KinChip` variant without a visible regression) and three brand-gold filter chrome sites (`Settings` meal-slot pills, `ListHeader` shopping windows, `MealEntryPicker` cook assignment, same concern).
 
 **Dead code removal** (`9d1b2fb`):
 
-- `TaskPointsBadge.vue` — the component had no callers anywhere in the codebase, only a mention in CHANGELOG. Deleted.
+- `TaskPointsBadge.vue`, the component had no callers anywhere in the codebase, only a mention in CHANGELOG. Deleted.
 
 **Polish** (`8ae7a86`):
 
 - **BadgesWidget loading state**: the 40px fixed-height skeleton that part 4 picked by eye is replaced with per-cell icon-shaped circles plus caption bars, laid out through the same `gridClass` and `maxDisplay` the real content uses. No layout jump when data resolves at either size; icon diameter follows `iconSize` (40 at sm / 56 at md).
 
-## 2026-10-25: Polish pass part 4 — the three bigger pieces (same branch, still unmerged)
+## 2026-10-25: Polish pass part 4, the three bigger pieces (same branch, still unmerged)
 
-Three commits (`3a2818f`, `846935d`, `882bcd0`) picking up the design-call items the previous three parts kept deferring as "bigger than a single run." Each one shipped end-to-end — gate green, code-review clean, verified in the browser at desktop and mobile. Branch is still `polish/honour-the-system`, still unmerged, nothing pushed.
+Three commits (`3a2818f`, `846935d`, `882bcd0`) picking up the design-call items the previous three parts kept deferring as "bigger than a single run." Each one shipped end-to-end, gate green, code-review clean, verified in the browser at desktop and mobile. Branch is still `polish/honour-the-system`, still unmerged, nothing pushed.
 
 **1. Settings two-pane master-detail layout** (`3a2818f`)
 
 The single-column accordion with 11 collapsible sections (Family, Tasks & Points, AI & Integrations, Feature Access, Food, Allergens, Appearance, Notifications, Billing, About, Your Data, Danger Zone) is replaced on desktop with a sticky left rail plus a detail pane that renders one section at a time. Mobile pushes into the detail with a back arrow, matching the native iOS pattern.
 
 - New `SettingsNavRail` primitive drives the flat ordered list (icons + title + optional badge). Selected row carries the `[data-selected="true"]` lavender-bar grammar from DS part 1.
-- `SettingsSection` gains a `collapsible` prop. When false, the chevron disappears, click-to-toggle is removed, and the body is always visible — but the header still carries icon + title + description, which doubles as the detail-pane heading.
+- `SettingsSection` gains a `collapsible` prop. When false, the chevron disappears, click-to-toggle is removed, and the body is always visible, but the header still carries icon + title + description, which doubles as the detail-pane heading.
 - `SettingsView` replaces the Set-based `expandedSections` state with a single `selectedSection` ref. Hash routing (`#family`, `#appearance`, etc.) survives refresh. `history.replaceState` on rail clicks keeps the back/forward stack clean. `watch(route.hash)` picks up deep-links when Vue Router reuses the mounted component on hash change.
 - Desktop lands on the first visible section so the right pane is never empty; mobile stays on the list until the user taps.
 - Page `max-w-4xl` widens to `md:max-w-6xl` so the 220px rail + detail pane has breathing room on wide screens.
-- GDPR mode (paywalled users with `?gdpr=1`) still filters to Your Data + Danger Zone — the rail honors the same gate.
+- GDPR mode (paywalled users with `?gdpr=1`) still filters to Your Data + Danger Zone, the rail honors the same gate.
 
 **2. Dashboard cards sized to their own content** (`846935d`)
 
@@ -112,35 +116,35 @@ The audit's "50% empty My Tasks" finding: every carded widget forced a fixed 280
 
 The audit's strongest call, deferred since polish pass part 1. Six chip-and-text widgets per row (tags + due date + assignee + points + recurrence + description indicator) collapsed to a single scannable line.
 
-- Tags keep their color as inline text — no chip background, no border, no padding. Preserves color-coded recognition, drops the chip chrome.
+- Tags keep their color as inline text, no chip background, no border, no padding. Preserves color-coded recognition, drops the chip chrome.
 - Due date and recurrence keep their semantic shades (overdue red-bold, recurring lavender).
 - Assignee drops the in-row avatar; first name only. The avatar still appears in the detail panel.
 - Points render as `10pt` in sand mono.
-- Description indicator dropped — the row-click opens the panel where the description already lives.
+- Description indicator dropped, the row-click opens the panel where the description already lives.
 - Icons (calendar / user-group / arrow-path / document-text) removed from the row; the names carry the meaning.
 - Imports pruned: `KinChip`, `UserAvatar`, and the four icons.
 
 Row now reads e.g. `Chores · Open · 10pt · Every Tuesday` with each part in its own color. Mobile wraps gracefully on long meta.
 
-## 2026-10-24: Polish pass part 3 — design-call items (same branch, still unmerged)
+## 2026-10-24: Polish pass part 3, design-call items (same branch, still unmerged)
 
 Twelve more commits (`dae826f` → `ccfa1ff`) working through the design-call list the previous passes deferred. Primitives first, then per-screen polish. Branch is still `polish/honour-the-system`, still unmerged. Nothing pushed.
 
 **DS primitives + extensions:**
 
-- **`KinChip interactive` prop** — passive labels drop out of the keyboard tab order. TaskItem's tag + recurring chips lose the `tabindex="-1"` hack. First task row went from 5 tab stops to 3.
-- **`KinChip showDot` prop** — status variant can hide its leading dot and apply a soft-tinted bg + bold text in the status colour. Unblocked the RewardCard chip storm: stock, expiry, visibility pills now route through `KinChip variant="status"` with semantic status keys (failed / warning / info).
-- **`KinSelectCard`** — new primitive extracted from the `.kin-tile` pattern. Props: `selected`, `showCheck`, `padding`, `align`. Four Settings tile sites (AI mode × 2, AI provider, color theme) each shrunk from ~15 lines of inline button + conditional classes + hand-rolled check SVG to 7-10 lines of `<KinSelectCard>` plus their own inner content.
-- **`KinPageHero`** — shared page-header primitive with optional back arrow, eyebrow, subtitle, and right-aligned actions. Default type scale matches the WelcomeWidget polish (text-xl sm:text-2xl semibold tracking-tight). Six screens adopted: VaultEntryView (back + eyebrow + title + context menu), VaultCategoriesView (title + subtitle + 2 action buttons), VaultEntriesView (back + title + subtitle + Add), BadgesView (title + Create Badge), SettingsView (one-line title), PointsHistoryView (back + title). Food, Shopping, Chat and Points main stay custom — their chrome doesn't fit the primitive.
+- **`KinChip interactive` prop**, passive labels drop out of the keyboard tab order. TaskItem's tag + recurring chips lose the `tabindex="-1"` hack. First task row went from 5 tab stops to 3.
+- **`KinChip showDot` prop**, status variant can hide its leading dot and apply a soft-tinted bg + bold text in the status colour. Unblocked the RewardCard chip storm: stock, expiry, visibility pills now route through `KinChip variant="status"` with semantic status keys (failed / warning / info).
+- **`KinSelectCard`**, new primitive extracted from the `.kin-tile` pattern. Props: `selected`, `showCheck`, `padding`, `align`. Four Settings tile sites (AI mode × 2, AI provider, color theme) each shrunk from ~15 lines of inline button + conditional classes + hand-rolled check SVG to 7-10 lines of `<KinSelectCard>` plus their own inner content.
+- **`KinPageHero`**, shared page-header primitive with optional back arrow, eyebrow, subtitle, and right-aligned actions. Default type scale matches the WelcomeWidget polish (text-xl sm:text-2xl semibold tracking-tight). Six screens adopted: VaultEntryView (back + eyebrow + title + context menu), VaultCategoriesView (title + subtitle + 2 action buttons), VaultEntriesView (back + title + subtitle + Add), BadgesView (title + Create Badge), SettingsView (one-line title), PointsHistoryView (back + title). Food, Shopping, Chat and Points main stay custom, their chrome doesn't fit the primitive.
 
-**FeedItem partial cleanup:** points pill routed through `KinChip variant="status" show-dot="false"` (clean semantic win). Stack button kept as a `<button>` with `.kin-pressable` + per-property transition — a stronger hover colour-swap pattern that `KinChip filter` doesn't model. The stacked / count-only badges are also still hand-rolled and should become a `KinKudoStack` primitive in Phase 2.
+**FeedItem partial cleanup:** points pill routed through `KinChip variant="status" show-dot="false"` (clean semantic win). Stack button kept as a `<button>` with `.kin-pressable` + per-property transition, a stronger hover colour-swap pattern that `KinChip filter` doesn't model. The stacked / count-only badges are also still hand-rolled and should become a `KinKudoStack` primitive in Phase 2.
 
 **Per-screen polish (small wins):**
 
-- **Rewards grid density** — 3 cols → 4 at xl, 5 at 2xl. Main content stops wasting horizontal space on wide monitors.
-- **Food empty-week** — the 28 "+ Add" slot grid is replaced by a single centred `KinEmptyState` ("No meals planned this week" + "Plan the week" CTA) when `currentPlan.entries` is empty. Desktop only; mobile keeps infinite scroll from today.
-- **Points history date groups** — flat list grouped by date, each with a `Today` / `Yesterday` / `Weekday, Mon D` header. Row subtitle switched from month-day-time to time-only (header carries the date).
-- **TaskItem dblclick inline-edit retired** — the row-click-opens-panel from the first polish pass dominated the path; retired properly. Removed the handler, the `<input>` branch, three functions, and the `nextTick` / `ref` imports (46 deletions).
+- **Rewards grid density**, 3 cols → 4 at xl, 5 at 2xl. Main content stops wasting horizontal space on wide monitors.
+- **Food empty-week**, the 28 "+ Add" slot grid is replaced by a single centred `KinEmptyState` ("No meals planned this week" + "Plan the week" CTA) when `currentPlan.entries` is empty. Desktop only; mobile keeps infinite scroll from today.
+- **Points history date groups**, flat list grouped by date, each with a `Today` / `Yesterday` / `Weekday, Mon D` header. Row subtitle switched from month-day-time to time-only (header carries the date).
+- **TaskItem dblclick inline-edit retired**, the row-click-opens-panel from the first polish pass dominated the path; retired properly. Removed the handler, the `<input>` branch, three functions, and the `nextTick` / `ref` imports (46 deletions).
 
 Code review ran per commit at low effort. Zero findings on 11 of 12 (the only exception was piece 1 of this session's run, part 2's ToggleSwitch swap, which had 3 cosmetic findings all addressed). Gate (`scripts/check.sh`) green on each; 86-89s per piece.
 
@@ -152,8 +156,8 @@ Six more commits acting on the frontend-design + emil-design-eng audits of the r
 - **Tokenise brand gold.** `[#C4975A]` → `brand-gold` across 71 sites in 19 files (Food, Meals, Recipes, Shopping, Settings, InstallAppPrompt). Pure refactor, zero visual change: the `--brand-gold` CSS variable and Tailwind color already existed; feature code was reaching for the literal.
 - **`.kin-pressable` + per-property transitions on Vault, Chat, Badges.** `VaultCategoriesView` category rows + icon picker, `VaultEntriesView` entry rows, `ChatView` suggestion buttons + textarea focus-ring, `BadgeCard` card + progress-bar transitions, `FeaturedEventsSection` row. Each `transition-all` swapped for a per-property list on the DS easing + duration tokens; `kin-pressable` added where surfaces are clickable.
 - **`.kin-tile` collapses four Settings selected-tile duplicates.** The AI mode picker (× 2 tabs), AI provider picker, and color theme picker all repeated the same `border-accent-lavender-bold ring-2 ring-...-bold/20 bg-surface-sunken` conditional inline. One shared DS rule (`.kin-tile` + `[data-selected="true"]`) now owns the border + ring + bg; each tile button becomes `.kin-pressable .kin-tile` with `:data-selected="..."`. The row-grammar `::before` bar is overridden with `content: none` on tiles so row style doesn't leak onto bordered cards.
-- **Vault entry typography — mono for data, body for prose.** `SensitiveField` applied `font-mono` to every value, which read as a terminal. New `useMono` computed opts into mono only for URLs (`^https?://`), domains/emails (`\S+\.\S+` with no whitespace), and digits + typical separators (phone, SSN, zip). Verified on Family Pediatrician: name/practice/address/notes render in sans; phone and portal URL stay mono.
-- **Partial chip-storm cleanup.** Only `ShoppingListItem` and `AddItemInput` recurring toggles were swept to `kin-pressable` + per-property transitions. The rest of the audit's piece (FeedItem +1 badges, RewardCard stock/expiry/visibility pills, Chat suggestions → KinButton) stopped at an honest decision point: those are not clean `KinChip` fits (status variant always renders a leading dot that would be a visual regression). Documented in HANDOFF.md as Phase 2 — either extend `KinChip` with a dot-less status variant or extract a `KinStatusBadge` primitive; both are design calls, not DS-honouring.
+- **Vault entry typography, mono for data, body for prose.** `SensitiveField` applied `font-mono` to every value, which read as a terminal. New `useMono` computed opts into mono only for URLs (`^https?://`), domains/emails (`\S+\.\S+` with no whitespace), and digits + typical separators (phone, SSN, zip). Verified on Family Pediatrician: name/practice/address/notes render in sans; phone and portal URL stay mono.
+- **Partial chip-storm cleanup.** Only `ShoppingListItem` and `AddItemInput` recurring toggles were swept to `kin-pressable` + per-property transitions. The rest of the audit's piece (FeedItem +1 badges, RewardCard stock/expiry/visibility pills, Chat suggestions → KinButton) stopped at an honest decision point: those are not clean `KinChip` fits (status variant always renders a leading dot that would be a visual regression). Documented in HANDOFF.md as Phase 2, either extend `KinChip` with a dot-less status variant or extract a `KinStatusBadge` primitive; both are design calls, not DS-honouring.
 
 Gate (`scripts/check.sh`) green on all six commits, 83-89s per piece. Code-review (`low` effort) run per piece; zero findings on five of six, three cosmetic findings on the first (ToggleSwitch swap) all addressed. ESLint pre-existing warnings on `monthEventsMap` / `monthEventLabels` unused vars in `CalendarView.vue` remain; a new `MagnifyingGlassIcon` unused-vars warning in `VaultCategoriesView.vue` is pre-existing too.
 

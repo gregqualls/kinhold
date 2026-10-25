@@ -41,7 +41,7 @@
       </div>
     </template>
 
-    <!-- Regular widgets — KinFlatCard sized to its own content. -->
+    <!-- Regular widgets: KinFlatCard sized to its own content. -->
     <template v-else>
       <KinFlatCard
         padding="sm"

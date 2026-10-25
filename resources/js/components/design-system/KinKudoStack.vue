@@ -26,9 +26,9 @@ import { HandThumbUpIcon } from '@heroicons/vue/24/outline'
 import { HandThumbUpIcon as HandThumbUpSolidIcon } from '@heroicons/vue/24/solid'
 
 defineProps({
-  // 'action'  — tappable stack button (lavender active, outline icon)
-  // 'stacked' — I already +1'd (solid icon, muted pill)
-  // 'count'   — others +1'd and I can't (outline icon, muted pill)
+  // 'action':  tappable stack button (lavender active, outline icon)
+  // 'stacked': I already +1'd (solid icon, muted pill)
+  // 'count':   others +1'd and I can't (outline icon, muted pill)
   variant: {
     type: String,
     required: true,
