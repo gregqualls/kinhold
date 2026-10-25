@@ -156,19 +156,23 @@
                         <p v-if="member.email" class="text-xs text-ink-secondary">{{ member.email }}</p>
                         <p v-else class="text-xs text-ink-secondary italic">Managed account</p>
                         <div class="flex items-center gap-2 mt-1">
-                          <span
-                            :class="[
-                              'text-xs px-2 py-0.5 rounded-full font-medium',
-                              member.family_role === 'parent' || member.role === 'parent'
-                                ? 'bg-accent-lavender-soft/40 text-accent-lavender-bold dark:bg-accent-lavender-soft/40 dark:text-accent-lavender-bold'
-                                : 'bg-surface-sunken text-ink-secondary dark:bg-surface-overlay dark:text-ink-tertiary'
-                            ]"
+                          <KinChip
+                            variant="category"
+                            size="sm"
+                            :color="(member.family_role || member.role) === 'parent' ? 'lavender' : 'neutral'"
+                            :interactive="false"
                           >
                             {{ (member.family_role || member.role) === 'parent' ? 'Parent' : 'Child' }}
-                          </span>
-                          <span v-if="member.is_managed" class="text-xs px-2 py-0.5 rounded-full bg-accent-peach-soft/60 text-accent-peach-bold font-medium">
+                          </KinChip>
+                          <KinChip
+                            v-if="member.is_managed"
+                            variant="category"
+                            size="sm"
+                            color="peach"
+                            :interactive="false"
+                          >
                             Managed
-                          </span>
+                          </KinChip>
                         </div>
                       </div>
                     </div>
