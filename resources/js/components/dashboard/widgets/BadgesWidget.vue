@@ -14,9 +14,13 @@
       </RouterLink>
     </div>
 
-    <!-- Loading -->
-    <div v-if="loading" class="grid grid-cols-6 gap-1">
-      <KinSkeleton v-for="n in 12" :key="n" shape="rect" :height="'40px'" rounded="4px" />
+    <!-- Loading: mirrors the real grid shape so there's no layout jump
+         on resolve. Each cell is an icon-shaped circle plus a caption bar. -->
+    <div v-if="loading" :class="gridClass">
+      <div v-for="n in maxDisplay" :key="n" class="flex flex-col items-center">
+        <KinSkeleton shape="circle" :width="iconSize === 'md' ? '56px' : '40px'" />
+        <KinSkeleton shape="rect" width="80%" height="10px" rounded="2px" class="mt-0.5" />
+      </div>
     </div>
 
     <!-- Empty -->
