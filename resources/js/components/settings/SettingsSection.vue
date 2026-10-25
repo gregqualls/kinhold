@@ -16,12 +16,15 @@
         <div class="min-w-0">
           <div class="flex items-center gap-2">
             <h2 class="text-lg font-semibold font-heading text-ink-primary truncate">{{ title }}</h2>
-            <span
+            <KinChip
               v-if="badge"
-              class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent-lavender-soft/40 text-accent-lavender-bold dark:bg-accent-lavender-soft/40 dark:text-accent-lavender-bold whitespace-nowrap"
+              variant="category"
+              color="lavender"
+              size="sm"
+              :interactive="false"
             >
               {{ badge }}
-            </span>
+            </KinChip>
           </div>
           <p v-if="description" class="text-sm text-ink-secondary mt-0.5">{{ description }}</p>
         </div>
@@ -52,12 +55,15 @@
         <div class="min-w-0">
           <div class="flex items-center gap-2">
             <h2 class="text-lg font-semibold font-heading text-ink-primary truncate">{{ title }}</h2>
-            <span
+            <KinChip
               v-if="badge"
-              class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent-lavender-soft/40 text-accent-lavender-bold dark:bg-accent-lavender-soft/40 dark:text-accent-lavender-bold whitespace-nowrap"
+              variant="category"
+              color="lavender"
+              size="sm"
+              :interactive="false"
             >
               {{ badge }}
-            </span>
+            </KinChip>
           </div>
           <p v-if="description" class="text-sm text-ink-secondary mt-0.5">{{ description }}</p>
         </div>
@@ -78,6 +84,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { ChevronDownIcon } from '@heroicons/vue/24/outline'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   id: {
