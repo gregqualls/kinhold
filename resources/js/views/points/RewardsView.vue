@@ -1,60 +1,127 @@
 <template>
-  <div class="p-3 md:p-6 max-w-3xl">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-3 md:mb-6 gap-3 flex-wrap">
-      <div class="flex items-center gap-2 md:gap-3">
-        <KinButton variant="ghost" size="sm" icon-only aria-label="Back to Points" to="/points">
-          <ChevronLeftIcon class="w-5 h-5" />
-        </KinButton>
-        <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Rewards</h1>
-      </div>
-      <div class="flex items-center gap-3 flex-wrap">
+  <div class="flex lg:h-full">
+    <!-- Main column -->
+    <div class="flex-1 min-w-0 flex flex-col p-3 md:p-6 gap-3 md:gap-4 lg:overflow-y-auto">
+      <!-- Header -->
+      <div class="flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
+        <div class="flex items-center gap-2 md:gap-3">
+          <KinButton variant="ghost" size="sm" icon-only aria-label="Back to Points" to="/points">
+            <ChevronLeftIcon class="w-5 h-5" />
+          </KinButton>
+          <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Rewards</h1>
+        </div>
         <span class="text-sm font-bold font-mono text-accent-lavender-bold">
           {{ pointsStore.bank }} pts
         </span>
-        <KinButton v-if="isParent && !showForm" variant="primary" size="sm" class="hidden md:flex" @click="openCreateForm">
-          <template #leading>
-            <PlusIcon class="w-4 h-4" />
-          </template>
-          Add Reward
-        </KinButton>
       </div>
-    </div>
 
-    <!-- Create/Edit Form -->
-    <RewardForm
-      v-if="showForm"
-      data-reward-form
-      :reward="editingReward"
-      :is-editing="!!editingReward"
-      @save="handleSave"
-      @cancel="closeForm"
-    />
-
-    <!-- Search & Filter Toolbar -->
-    <div v-if="pointsStore.rewards.length > 0" class="mb-4 space-y-3">
-      <!-- Search -->
-      <KinSearch
-        v-model="searchQuery"
-        placeholder="Search rewards..."
-        aria-label="Search rewards"
+      <!-- Create/Edit Form -->
+      <RewardForm
+        v-if="showForm"
+        data-reward-form
+        :reward="editingReward"
+        :is-editing="!!editingReward"
+        @save="handleSave"
+        @cancel="closeForm"
       />
 
-      <!-- Filter chips + Sort -->
-      <div class="flex flex-wrap items-center gap-2">
-        <KinChip
-          v-for="f in filterOptions"
-          :key="f.value"
-          variant="filter"
-          size="sm"
-          color="lavender"
-          :active="activeFilter === f.value"
-          @click="activeFilter = f.value"
-        >
-          {{ f.label }}
-        </KinChip>
+      <!-- Mobile search & filter toolbar (desktop version lives in the rail). -->
+      <div v-if="pointsStore.rewards.length > 0" class="space-y-3 lg:hidden flex-shrink-0">
+        <KinSearch
+          v-model="searchQuery"
+          placeholder="Search rewards..."
+          aria-label="Search rewards"
+        />
+        <div class="flex flex-wrap items-center gap-2">
+          <KinChip
+            v-for="f in filterOptions"
+            :key="`m-${f.value}`"
+            variant="filter"
+            size="sm"
+            color="lavender"
+            :active="activeFilter === f.value"
+            @click="activeFilter = f.value"
+          >
+            {{ f.label }}
+          </KinChip>
+          <div class="ml-auto w-44">
+            <KinSelect
+              v-model="sortBy"
+              size="sm"
+              :options="sortOptions"
+              aria-label="Sort rewards"
+            />
+          </div>
+        </div>
+      </div>
 
-        <div class="ml-auto w-44">
+      <!-- Rewards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <RewardCard
+          v-for="reward in filteredRewards"
+          :key="reward.id"
+          :reward="reward"
+          :bank="pointsStore.bank"
+          :is-parent="isParent"
+          @purchase="handlePurchase"
+          @edit="openEditForm"
+          @delete="handleDelete"
+          @bid="openBidModal"
+          @close-auction="handleCloseAuction"
+          @cancel-auction="handleCancelAuction"
+        />
+      </div>
+
+      <!-- Empty states -->
+      <KinEmptyState
+        v-if="filteredRewards.length === 0 && pointsStore.rewards.length > 0"
+        :icon="MagnifyingGlassIcon"
+        title="No rewards match your filters"
+        description="Try adjusting your search or filters."
+        accent-color="lavender"
+        size="md"
+        class="mt-6"
+      />
+
+      <KinEmptyState
+        v-if="pointsStore.rewards.length === 0 && !showForm"
+        :icon="GiftIcon"
+        title="No rewards yet"
+        :description="isParent ? 'Create some rewards for your family!' : 'Check back soon — rewards are coming.'"
+        accent-color="peach"
+        size="md"
+        class="mt-6"
+      />
+    </div>
+
+    <!-- Right utility rail (desktop only). Slots render unconditionally so
+         KinUtilityRail's useSlots-based section check sees them; the content
+         inside each slot handles its own visibility. -->
+    <KinUtilityRail
+      v-if="pointsStore.rewards.length > 0 || isParent"
+      class="hidden lg:flex"
+      width="280px"
+    >
+      <template #filters>
+        <div v-if="pointsStore.rewards.length > 0" class="space-y-3">
+          <KinSearch
+            v-model="searchQuery"
+            placeholder="Search rewards..."
+            aria-label="Search rewards"
+          />
+          <div class="flex flex-wrap gap-1.5">
+            <KinChip
+              v-for="f in filterOptions"
+              :key="f.value"
+              variant="filter"
+              size="sm"
+              color="lavender"
+              :active="activeFilter === f.value"
+              @click="activeFilter = f.value"
+            >
+              {{ f.label }}
+            </KinChip>
+          </div>
           <KinSelect
             v-model="sortBy"
             size="sm"
@@ -62,25 +129,19 @@
             aria-label="Sort rewards"
           />
         </div>
-      </div>
-    </div>
+      </template>
 
-    <!-- Rewards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-      <RewardCard
-        v-for="reward in filteredRewards"
-        :key="reward.id"
-        :reward="reward"
-        :bank="pointsStore.bank"
-        :is-parent="isParent"
-        @purchase="handlePurchase"
-        @edit="openEditForm"
-        @delete="handleDelete"
-        @bid="openBidModal"
-        @close-auction="handleCloseAuction"
-        @cancel-auction="handleCancelAuction"
-      />
-    </div>
+      <template #actions>
+        <div v-if="isParent" class="flex flex-col gap-2 items-stretch">
+          <KinButton v-if="!showForm" variant="primary" size="sm" @click="openCreateForm">
+            <template #leading>
+              <PlusIcon class="w-4 h-4" />
+            </template>
+            Add Reward
+          </KinButton>
+        </div>
+      </template>
+    </KinUtilityRail>
 
     <!-- Bid Modal -->
     <BidModal
@@ -89,27 +150,6 @@
       :bank="pointsStore.bank"
       @close="biddingReward = null"
       @bid-placed="handleBidPlaced"
-    />
-
-    <!-- Empty states -->
-    <KinEmptyState
-      v-if="filteredRewards.length === 0 && pointsStore.rewards.length > 0"
-      :icon="MagnifyingGlassIcon"
-      title="No rewards match your filters"
-      description="Try adjusting your search or filters."
-      accent-color="lavender"
-      size="md"
-      class="mt-6"
-    />
-
-    <KinEmptyState
-      v-if="pointsStore.rewards.length === 0 && !showForm"
-      :icon="GiftIcon"
-      title="No rewards yet"
-      :description="isParent ? 'Create some rewards for your family!' : 'Check back soon — rewards are coming.'"
-      accent-color="peach"
-      size="md"
-      class="mt-6"
     />
 
     <!-- Floating Action Button (mobile) -->
@@ -133,6 +173,7 @@ import KinChip from '@/components/design-system/KinChip.vue'
 import KinSearch from '@/components/design-system/KinSearch.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinUtilityRail from '@/components/design-system/KinUtilityRail.vue'
 
 const pointsStore = usePointsStore()
 const authStore = useAuthStore()
