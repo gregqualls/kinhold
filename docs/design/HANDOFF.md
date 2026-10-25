@@ -1,3 +1,39 @@
+## Polish pass, part 5 — 2026-10-25 (same branch, still unmerged)
+
+Seven commits (`0c869c1` → `8ae7a86`) finishing the small-and-medium deferral items from part 4. Shipped per piece — gate green, review clean, in-browser verified where visible. Branch is still `polish/honour-the-system`, unmerged.
+
+**Landed:**
+
+1. **`KinKudoStack` primitive** (`7399851`) — three variants (`action`, `stacked`, `count`) encapsulate FeedItem's hand-rolled kudo widgets. 30 lines of markup → 15 call-site lines; two Heroicon imports move into the primitive.
+2. **Vault Documents + Leaderboard empty states** (`0c869c1`) — route through `KinEmptyState` (lavender paperclip for Vault, sun-accent trophy for the leaderboard). "Rewards auctions" from HANDOFF part 4's note turned out to be RewardCard's inline "No bids yet" in a 192px sidebar — too small for the primitive, left as a plain label.
+3. **Settings module-access pills** (`3825cff`) — 8 identical buttons across two sections (Tasks & Points, Feature Access) become `KinChip variant="filter"`. Visible change: active "Off" state loses its red fill for uniform lavender; the four options read as peers now.
+4. **Settings MCP Connection status + PointsSummaryWidget +/-N pill** (`3825cff`) — route through `KinChip status`.
+5. **Settings Family Members Parent/Child/Managed badges + WidgetPickerModal tag filter** (`804115d`) — `KinChip category` with lavender/neutral/peach for the former, `KinChip filter` with `customColor` for the latter.
+6. **FeaturedEventsSection recurrence + PreShopChecklist counts** (`9d1b2fb`) — `KinChip category` and `status`.
+7. **RewardForm member picker + MealDaySection meal count** (`76cfa1d`) — RewardForm drops the label-wraps-hidden-checkbox pattern (and pre-DS wisteria colors) for `KinChip filter`; MealDaySection trades hard-coded hex colors for the DS neutral token.
+8. **Dead `TaskPointsBadge.vue` deleted** (`9d1b2fb`) — no callers anywhere; only mentioned in CHANGELOG.
+9. **BadgesWidget loading state** (`8ae7a86`) — the "picked by eye" 40px skeleton becomes per-cell icon-shaped circles plus caption bars, following the same `gridClass` + `maxDisplay` as the real content. No layout jump on resolve.
+
+**Stopped at (next session's starting point):**
+
+- **`KinUtilityRail` cross-screen promotion** — Vault, Rewards, Food, Shopping, Settings, Achievements each need a per-screen call on what fills the right rail. Settings grew its own left-rail from part 4 (master-detail layout), which doesn't change this question for the other six. This is the biggest remaining piece and needs a design conversation per screen.
+- **Three brand-gold filter chrome sites, consolidated for a future piece:**
+  - `Settings` Visible Meal Slots filter (meal planner slot selection)
+  - `ListHeader` shopping-window pills (All / This Week / etc.)
+  - `MealEntryPicker` Cook assignment buttons
+  All three use the same `bg-brand-gold/10 border-brand-gold/40 text-brand-gold` active state and the same soft-tint-plus-colored-text treatment TaskItem settled on in part 4. Routing through `KinChip filter customColor` would flip them to filled-bg active state — a visible regression. The right fix is either (a) a new `KinChip filter` sub-variant that mirrors the TaskItem-style soft-tint active treatment, or (b) accept these as a deliberate "food/meal-planner uses brand-gold" visual island and leave them. Needs a call.
+- **`FilteredTasksWidget` tag pills** — the dashboard's active-filter chrome (soft tinted bg + same-color text). Same argument as above; the look doesn't map onto any current `KinChip` variant. If sub-variant (a) above lands, this one can migrate too.
+
+**Known limitations after this part:**
+
+- `RewardForm` member picker now reads as "name, button" to screen readers rather than "name, checkbox, checked/unchecked". The toggle state is visible via the chip's active fill. If a11y feedback flags this, add an optional `aria-pressed` prop to `KinChip` variant="filter" and set it from `active`.
+- `BadgesWidget` loading state now renders `maxDisplay` skeleton cells (24 at sm, 36 at md). More flashing on load than the previous 12, but matches the real cell count so the shape of "what's coming" is honest. Pull back to 12 if the loading state feels busy.
+- `WidgetPickerModal` tag filter chips now render inactive tags with a small color dot (KinChip filter customColor grammar) where the previous hand-roll was outlined with no dot. Minor DS-consistency win over the previous spelling.
+
+**Where decisions live:** this handoff is the ledger. `CHANGELOG.md` has the per-part account. `REDESIGN_BRIEF.md`'s locked tenets 4 (pill shape), 5 (hero numerals), 6 (gradients) stay preserved.
+
+---
+
 ## Polish pass, part 4 — 2026-10-25 (same branch, still unmerged)
 
 Three commits (`3a2818f` → `882bcd0`) finishing the design-call items part 3 could only knock the small items off of. Each one shipped alone and settled before the next started — gate green, review clean, verified in-browser. Branch is still `polish/honour-the-system`, still unmerged.

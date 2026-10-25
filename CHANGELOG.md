@@ -2,6 +2,42 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-25: Polish pass part 5 — the long-tail sweep (same branch, still unmerged)
+
+Seven commits (`0c869c1` → `8ae7a86`) working through the remaining deferral items from part 4: the empty-state adoption pass, the FeedItem kudo-stack primitive extraction, and the broader `rounded-full` sweep across the app. Each piece shipped alone with gate green and code-review clean. Branch is still `polish/honour-the-system`, nothing pushed.
+
+**New primitive:**
+
+- **`KinKudoStack`** (`7399851`) — three variants (`action`, `stacked`, `count`) encapsulate FeedItem's three hand-rolled kudo-stack widgets (lavender tappable pill with outline thumb-up, muted static pill with solid thumb-up for "I +1'd this", muted static pill with outline thumb-up for "others +1'd"). FeedItem drops its two Heroicon imports and 30 lines of markup collapse to 15 call-site lines.
+
+**Empty-state adoption** (`0c869c1`):
+
+- **Vault entry Documents card**: the bare `<p>No documents attached yet.</p>` becomes a lavender paperclip `KinEmptyState` with a parent-only description (hidden on demo-family instances to match the Upload button's own `isParent && !isDemoFamily` gate).
+- **LeaderboardStrip**: the hand-rolled TrophyIcon + two `<p>`s empty state becomes the sun-accent primitive with tightened description copy.
+- The HANDOFF's third empty-state site ("Rewards auctions") turned out to be RewardCard's inline "No bids yet" label inside a 192px bid-stats sidebar — the primitive would overpower that layout, left as-is.
+
+**Rounded-full sweep** — eight commits across Settings, Dashboard, and other components routed hand-rolled pills through `KinChip`:
+
+- **Settings module-access pills** (`3825cff`): 8 identical buttons across two sections (Tasks & Points, Feature Access) become `KinChip variant="filter"` with lavender color. Visible change: the active "Off" state loses its red fill for uniform lavender — the four options now read as peers.
+- **Settings MCP Connection** (`3825cff`): Connected / Not Connected spans become `KinChip status="success" / "paused"`.
+- **PointsSummaryWidget +/-N points pill** (`3825cff`): routed through `KinChip variant="status" show-dot="false"`, matching RewardCard and FeedItem.
+- **Settings Family Members list** (`804115d`): Parent / Child role chip and the peach "Managed" badge beside managed accounts both route through `KinChip variant="category"`.
+- **WidgetPickerModal tag filter** (`804115d`): button-with-inline-style becomes `KinChip variant="filter"` with `customColor=tag.color`.
+- **FeaturedEventsSection recurrence badge** (`9d1b2fb`): span-with-icon becomes `KinChip category lavender` with ArrowPathIcon in the `#leading` slot.
+- **PreShopChecklist count badges** (`9d1b2fb`): "Need it" and "Got it" counts become `KinChip category neutral` and `status success`.
+- **RewardForm member picker** (`76cfa1d`): the label-wrapping-hidden-checkbox pattern becomes `KinChip variant="filter"` with lavender color. Also drops the pre-DS `wisteria-100` / `lavender-100` colors that had been drifting from the DS palette.
+- **MealDaySection meal-count badge** (`76cfa1d`): span with hard-coded hex colors (`bg-[#F5F2EE]` / `text-[#6B6966]`) becomes `KinChip category neutral`. Token-drift fix as a bonus.
+
+Deliberately left alone — `FilteredTasksWidget` tag pills (the soft-tint-plus-colored-text active-filter chrome doesn't map onto any `KinChip` variant without a visible regression) and three brand-gold filter chrome sites (`Settings` meal-slot pills, `ListHeader` shopping windows, `MealEntryPicker` cook assignment — same concern).
+
+**Dead code removal** (`9d1b2fb`):
+
+- `TaskPointsBadge.vue` — the component had no callers anywhere in the codebase, only a mention in CHANGELOG. Deleted.
+
+**Polish** (`8ae7a86`):
+
+- **BadgesWidget loading state**: the 40px fixed-height skeleton that part 4 picked by eye is replaced with per-cell icon-shaped circles plus caption bars, laid out through the same `gridClass` and `maxDisplay` the real content uses. No layout jump when data resolves at either size; icon diameter follows `iconSize` (40 at sm / 56 at md).
+
 ## 2026-10-25: Polish pass part 4 — the three bigger pieces (same branch, still unmerged)
 
 Three commits (`3a2818f`, `846935d`, `882bcd0`) picking up the design-call items the previous three parts kept deferring as "bigger than a single run." Each one shipped end-to-end — gate green, code-review clean, verified in the browser at desktop and mobile. Branch is still `polish/honour-the-system`, still unmerged, nothing pushed.
