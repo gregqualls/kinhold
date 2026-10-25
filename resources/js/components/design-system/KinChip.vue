@@ -26,7 +26,7 @@ const props = defineProps({
   /**
    * Accent color for category/filter variants.
    * 'neutral' uses border-subtle / ink-secondary (off state).
-   * 'gold' is Kinhold's brand accent — reserved for food/meal/shopping
+   * 'gold' is Kinhold's brand accent, reserved for food/meal/shopping
    * surfaces that use brand-gold as their semantic marker.
    */
   color: {
@@ -75,12 +75,12 @@ const props = defineProps({
 
   /**
    * How the active state renders on category + filter variants.
-   * - 'solid' (default): default DS filter — color-soft inactive +
-   *   color-bold active. Call sites: Rewards filters, Settings module access.
-   * - 'soft':  neutral inactive + color-soft active. The "picked / not picked"
-   *   grammar. Call sites: food meal-slot, cook-assignment filters.
-   * - 'bold':  neutral inactive + color-bold active. The classic toggle
-   *   grammar — only the selected pill pops. Call sites: Shopping windows.
+   * - 'solid' (default): color-soft inactive, color-bold active. Every
+   *   option reads as part of one coloured group.
+   * - 'soft': neutral inactive, color-soft active. "Picked / not picked"
+   *   for multi-select sets where most options are usually on.
+   * - 'bold': neutral inactive, color-bold active. Toggle grammar for
+   *   single-select sets: only the selected pill pops.
    *
    * Ignored by variant="status" (status always renders as a passive label).
    */
@@ -106,7 +106,7 @@ const props = defineProps({
 
   /**
    * When false, the chip renders as a non-interactive <span> with no
-   * cursor, hover, press, or focus-ring treatment — a passive label.
+   * cursor, hover, press, or focus-ring treatment: a passive label.
    * Default true preserves the existing clickable-button behaviour.
    * No effect on variant="status" (always a span) or disabled (also span).
    */
@@ -231,8 +231,8 @@ const chipColorClasses = computed(() => {
     }
     if (isSoftTone) {
       if (props.customColor) {
-        // chipCustomStyle fills in bg + border + text from the hex.
-        return 'border'
+        // chipCustomStyle supplies bg + border and --kin-tag-color for the text.
+        return 'border kin-tag-ink'
       }
       if (isNeutral) {
         return 'bg-ink-primary/10 border border-ink-primary/20 text-ink-primary'
@@ -299,7 +299,7 @@ const chipCustomStyle = computed(() => {
       return {
         backgroundColor: `color-mix(in srgb, ${props.customColor} 10%, transparent)`,
         borderColor: `color-mix(in srgb, ${props.customColor} 40%, transparent)`,
-        color: props.customColor,
+        '--kin-tag-color': props.customColor,
       }
     }
     return {
@@ -349,7 +349,11 @@ const interactionClasses = computed(() => {
       interactionClasses,
     ]"
     :style="chipCustomStyle"
-    v-bind="rootTag === 'button' ? { type: 'button', disabled: disabled || undefined } : {}"
+    v-bind="rootTag === 'button' ? {
+      type: 'button',
+      disabled: disabled || undefined,
+      'aria-pressed': variant === 'filter' ? String(active) : undefined,
+    } : {}"
   >
     <!-- Leading slot (icon before label) -->
     <slot name="leading"></slot>
@@ -362,7 +366,7 @@ const interactionClasses = computed(() => {
       aria-hidden="true"
     ></span>
 
-    <!-- Status dot — only rendered for status variant when showDot is true -->
+    <!-- Status dot: only rendered for status variant when showDot is true -->
     <span
       v-if="variant === 'status' && showDot"
       :class="['rounded-full flex-shrink-0', dotSizeClass, statusDotClass]"

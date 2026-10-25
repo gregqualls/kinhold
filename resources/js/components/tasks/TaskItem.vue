@@ -18,9 +18,7 @@
 
     <!-- Content -->
     <div class="flex-1 min-w-0">
-      <!-- Title (editing happens in TaskDetailPanel; #293 Phase 2 removed
-           the dblclick-to-inline-edit path that was dominated by the
-           row-click-opens-panel after piece 2 of the polish pass). -->
+      <!-- Title is read-only here; the row opens TaskDetailPanel for edits. -->
       <p
         class="text-sm font-medium leading-snug"
         :class="task.completed_at ? 'line-through text-ink-tertiary' : 'text-ink-primary'"
@@ -28,12 +26,7 @@
         {{ task.title }}
       </p>
 
-      <!-- Meta row: inline text with middot separators. Replaces the
-           earlier chip storm (tags + due + assignee + points + recurrence
-           + description-indicator) with a single scannable line. Tags
-           keep their color as text; everything else is small text in
-           semantic shades. Description indicator dropped (row-click opens
-           the panel anyway). -->
+      <!-- Meta row: one line of middot-separated parts (see metaParts). -->
       <p v-if="metaParts.length" class="text-xs leading-snug mt-0.5">
         <template v-for="(part, i) in metaParts" :key="i">
           <span v-if="i > 0" class="text-ink-tertiary mx-1.5">·</span>
@@ -46,7 +39,7 @@
     <button
       class="flex-shrink-0 p-1 rounded transition-colors"
       :class="priorityIndicatorClass"
-      :title="`Priority: ${task.priority || 'none'} — click to change`"
+      :title="`Priority: ${task.priority || 'none'} (click to change)`"
       :aria-label="`Priority ${task.priority || 'none'}, click to change`"
       @click.stop="cyclePriority"
     >
@@ -79,9 +72,7 @@ const emit = defineEmits(['click', 'toggle', 'edit', 'delete', 'update-inline'])
 
 // Inner interactive children (checkbox, flag, context menu) carry @click.stop
 // so a tap on them doesn't also open the panel. Row body opens the detail
-// panel on touch and mouse alike. Note: dblclick-to-inline-edit on the title
-// is now dominated by row-click-opens-panel; inline editing in that path is
-// effectively deprecated and should move into the panel for #293 Phase 2.
+// panel on touch and mouse alike.
 const handleRowClick = () => {
   emit('click', props.task)
 }
@@ -106,8 +97,8 @@ const metaParts = computed(() => {
   for (const tag of t.tags || []) {
     parts.push({
       text: tag.name,
-      class: 'font-medium',
-      style: { color: getTagHex(tag.color) },
+      class: 'font-medium kin-tag-ink',
+      style: { '--kin-tag-color': getTagHex(tag.color) },
     })
   }
 
@@ -138,7 +129,8 @@ const metaParts = computed(() => {
   return parts
 })
 
-// Priority cycling (inline edit path only — title edit lives in TaskDetailPanel)
+// Priority is the one field still edited inline; everything else goes
+// through TaskDetailPanel.
 const cyclePriority = () => {
   const cycle = { low: 'medium', medium: 'high', high: 'low' }
   const newPriority = cycle[props.task.priority] || 'medium'

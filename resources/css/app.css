@@ -161,6 +161,17 @@
   /* Row-style ::before bar from above does not belong on tiles. */
   .kin-pressable.kin-tile[data-selected="true"]::before { content: none; }
 
+  /* Text in a user-chosen tag colour. Raw tag colours are picked for swatches,
+     not for 12px text, and many fall under WCAG AA (amber on white is ~2:1).
+     Mixing toward ink keeps the hue recognisable while clearing 4.5:1 on both
+     themes. Set --kin-tag-color inline to the tag's hex. */
+  .kin-tag-ink {
+    color: color-mix(in srgb, var(--kin-tag-color) 60%, black);
+  }
+  .dark .kin-tag-ink {
+    color: color-mix(in srgb, var(--kin-tag-color) 50%, white);
+  }
+
   .meal-drag-chosen {
     box-shadow: 0 0 0 2px rgba(196, 151, 90, 0.5) !important;
   }

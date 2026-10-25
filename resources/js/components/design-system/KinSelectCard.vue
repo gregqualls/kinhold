@@ -1,5 +1,5 @@
 <!--
-  KinSelectCard — a tappable, bordered tile with a check badge in the
+  KinSelectCard: a tappable, bordered tile with a check badge in the
   top-right when selected. Wraps the .kin-tile DS rule (border + ring +
   sunken-bg selected state) with the shared .kin-pressable press feel.
 
@@ -8,7 +8,7 @@
   .kin-pressable + [data-selected] directly.
 
   Props: selected, showCheck, padding, align
-  Slot:  default (icon, title, description — anything)
+  Slot:  default (icon, title, description, anything)
   Emits: click
 -->
 <script setup>
@@ -52,6 +52,7 @@ const alignClass = computed(() => (props.align === 'center' ? 'items-center text
     class="kin-pressable kin-tile relative flex flex-col rounded-xl transition-[background-color,border-color,box-shadow,transform] duration-quick ease-out-soft"
     :class="[paddingClass, alignClass]"
     :data-selected="selected || null"
+    :aria-pressed="String(selected)"
     @click="emit('click', $event)"
   >
     <span

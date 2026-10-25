@@ -49,6 +49,7 @@
             <img
               v-if="recipe.photo_url"
               :src="recipe.photo_url"
+              alt=""
               class="w-8 h-8 rounded object-cover flex-shrink-0"
             />
             <FireIcon v-else class="w-5 h-5 text-orange-400 flex-shrink-0" />
