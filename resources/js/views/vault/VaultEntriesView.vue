@@ -86,7 +86,7 @@
     <KinModalSheet
       :model-value="showCreateEntry"
       title="New Vault Entry"
-      size="xl"
+      size="lg"
       @close="closeCreateModal"
     >
       <form class="space-y-5" @submit.prevent="handleCreateEntry">

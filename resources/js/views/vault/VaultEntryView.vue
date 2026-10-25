@@ -241,7 +241,7 @@
     <KinModalSheet
       :model-value="showEditModal"
       title="Edit Entry"
-      size="xl"
+      size="lg"
       @close="showEditModal = false"
     >
       <form class="space-y-5" @submit.prevent="handleUpdateEntry">
