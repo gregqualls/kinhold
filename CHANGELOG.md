@@ -2,6 +2,10 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-25: v1.12.0, UI polish pass
+
+Release covering #339 and the entries below back to the polish pass on Dashboard, Calendar and Tasks: every screen brought back in line with the Kin* design system, page titles in the desktop top bar, Settings as a master-detail layout, accessibility fixes (AA tag text, readable custom-colour chips, `aria-pressed`, no nested buttons), and the bugs found reviewing it locally and on the preview. Frontend only: no migrations, no config or environment changes, nothing for self-hosters to do beyond a normal upgrade.
+
 ## 2026-10-25: Kid-account pass on the PR #339 preview
 
 Walked every screen as Kenji (child) at 1280px and 375px: no console errors, no failed API calls, no horizontal overflow, parent-only actions hidden, and the vault shows categories but no entries. One fix: the Rewards rail drew an empty "Actions" heading for kids (and for parents while the reward form was open). The slot is now conditional, and KinUtilityRail re-reads its slots on every render instead of caching them in a computed, since `useSlots()` is not reactive.
