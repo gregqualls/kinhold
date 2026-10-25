@@ -39,7 +39,7 @@ const props = defineProps({
    * Escape-hatch for arbitrary brand / category colors that don't map onto
    * the four accent families. Pass a CSS color string (`#7d57a8`, `rgb(...)`).
    * When present, overrides the `color` prop:
-   *   - active state: solid customColor background + white text
+   *   - active state: solid customColor background, white or ink text by contrast
    *   - inactive state: small dot of customColor + neutral surface bg
    * Use sparingly — accent families are preferred for design consistency.
    */
@@ -242,8 +242,8 @@ const chipColorClasses = computed(() => {
     }
     // Bold tone: filled with color-bold + inverse text (toggle grammar).
     if (props.customColor) {
-      // chipCustomStyle below fills the bg with customColor; text stays white.
-      return 'border text-white'
+      // chipCustomStyle fills the bg with customColor and picks the text color.
+      return 'border'
     }
     if (isNeutral) {
       return 'bg-ink-primary border border-ink-primary text-ink-inverse'
@@ -256,7 +256,7 @@ const chipColorClasses = computed(() => {
   // background/border/text get applied via `chipCustomStyle` below.
   if (props.customColor) {
     if (props.active) {
-      return 'border text-white'
+      return 'border'
     }
     return 'bg-surface-sunken border border-border-subtle text-ink-secondary'
   }
@@ -288,6 +288,41 @@ const chipColorClasses = computed(() => {
   return `${a.softBg} border ${a.border} ${a.boldText}`
 })
 
+// Solid custom-colour fill that keeps its label readable. Tag colours are
+// picked as swatches: pale ones (amber, mint) put white text near 2:1, and
+// mid-tones (violet) clear AA with neither white nor ink, so those get a
+// slightly darkened fill under white text. The fill is the tag colour in both
+// themes, so the ink is fixed rather than a theme token. Non-hex colours are
+// left as given with white text.
+const INK_ON_LIGHT_FILL = '#1C1C1E'
+const AA_SMALL_TEXT = 4.5
+
+function hexLuminance(color) {
+  const match = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color.trim())
+  if (!match) return null
+  const hex = match[1].length === 3 ? [...match[1]].map((c) => c + c).join('') : match[1]
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+const INK_LUMINANCE = hexLuminance(INK_ON_LIGHT_FILL)
+
+function solidFillStyle(color) {
+  const luminance = hexLuminance(color)
+  if (luminance === null) return { backgroundColor: color, borderColor: color, color: '#FFFFFF' }
+  const onWhite = 1.05 / (luminance + 0.05)
+  const onInk = (luminance + 0.05) / (INK_LUMINANCE + 0.05)
+  if (Math.max(onWhite, onInk) < AA_SMALL_TEXT) {
+    const darker = `color-mix(in srgb, ${color} 80%, black)`
+    return { backgroundColor: darker, borderColor: darker, color: '#FFFFFF' }
+  }
+  const text = onWhite >= onInk ? '#FFFFFF' : INK_ON_LIGHT_FILL
+  return { backgroundColor: color, borderColor: color, color: text }
+}
+
 // Inline-style override when customColor is set. Active fills with the color;
 // inactive shows a small dot via the `#leading` slot fallback we render below.
 // Soft tone synthesises alpha via color-mix so the active state reads as a
@@ -302,10 +337,7 @@ const chipCustomStyle = computed(() => {
         '--kin-tag-color': props.customColor,
       }
     }
-    return {
-      backgroundColor: props.customColor,
-      borderColor: props.customColor,
-    }
+    return solidFillStyle(props.customColor)
   }
   return null
 })
