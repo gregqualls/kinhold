@@ -57,16 +57,17 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
         </svg>
 
-        <!-- Needed date badge -->
-        <span
+        <!-- Needed date badge: peach for "coming up" (<= 2 days), neutral
+             otherwise. Previously used hard-coded Tailwind amber. -->
+        <KinChip
           v-if="item.needed_date && daysUntil(item.needed_date) !== null"
-          class="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
-          :class="daysUntil(item.needed_date) <= 2
-            ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-            : 'bg-surface-sunken text-ink-secondary'"
+          variant="category"
+          size="sm"
+          :color="daysUntil(item.needed_date) <= 2 ? 'peach' : 'neutral'"
+          :interactive="false"
         >
           {{ formatDays(daysUntil(item.needed_date)) }}
-        </span>
+        </KinChip>
       </div>
 
       <!-- Line 2: recipe source -->
@@ -139,6 +140,7 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 
 const props = defineProps({
   item: {
