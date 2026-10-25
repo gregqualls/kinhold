@@ -65,8 +65,9 @@ const props = defineProps({
   },
 
   /**
-   * Adds an X remove button inside the chip.
-   * Only meaningful on variant='filter'.
+   * Adds an X remove button inside the chip. Only meaningful on
+   * variant='filter'. The chip body then renders as a static label, since a
+   * remove button can't sit inside another button; the X is the only control.
    */
   removable: {
     type: Boolean,
@@ -134,12 +135,13 @@ const emit = defineEmits(['remove'])
 
 // ── Root tag decision ────────────────────────────────────────────────────────
 // status variant and disabled chips are non-interactive → use <span>.
-// category/filter are interactive buttons.
+// category/filter are interactive buttons, unless removable (see the prop).
 
 const rootTag = computed(() => {
   if (props.variant === 'status') return 'span'
   if (props.disabled) return 'span'
   if (!props.interactive) return 'span'
+  if (props.removable) return 'span'
   return 'button'
 })
 
@@ -365,7 +367,7 @@ const removablePaddingClass = computed(() =>
 const interactionClasses = computed(() => {
   if (props.disabled) return 'opacity-40 cursor-not-allowed'
   if (props.variant === 'status') return ''
-  if (!props.interactive) return ''
+  if (!props.interactive || props.removable) return ''
   return 'kin-pressable cursor-pointer transition-[filter,background-color,border-color,transform] duration-quick ease-out-soft hover:brightness-95 dark:hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-lavender-bold focus-visible:ring-offset-1'
 })
 </script>
