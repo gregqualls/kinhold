@@ -31,27 +31,26 @@
         </p>
       </div>
 
-      <!-- Master-detail: sticky rail on desktop, push-nav on mobile (back arrow
-           returns to the rail). Rail items drive selectedSection; hash routing
-           keeps deep-links alive across refresh. -->
+      <!-- Master-detail: sticky rail on desktop; on mobile the rail and the
+           detail pane swap, with a back button returning to the rail. -->
       <div class="md:grid md:grid-cols-[220px_1fr] md:gap-6">
         <aside
           class="md:sticky md:top-6 md:self-start md:mb-0 mb-6"
-          :class="{ 'hidden md:block': selectedSection }"
+          :class="{ 'hidden md:block': activeSection }"
         >
           <SettingsNavRail
             :sections="visibleSections"
-            :model-value="selectedSection"
+            :model-value="activeSection"
             @update:model-value="selectSection"
           />
         </aside>
 
         <section
           class="min-w-0"
-          :class="{ 'hidden md:block': !selectedSection }"
+          :class="{ 'hidden md:block': !activeSection }"
         >
           <KinButton
-            v-if="selectedSection"
+            v-if="activeSection"
             class="md:hidden mb-4"
             variant="ghost"
             size="sm"
@@ -66,7 +65,7 @@
           <template v-if="!gdprMode">
             <!-- Section 1: Family -->
             <SettingsSection
-              v-if="selectedSection === 'family'"
+              v-if="activeSection === 'family'"
               id="family"
               title="Family"
               description="Manage your family info, members, and invites"
@@ -219,7 +218,7 @@
 
             <!-- Section 2: Tasks & Points -->
             <SettingsSection
-              v-if="selectedSection === 'tasks-points'"
+              v-if="activeSection === 'tasks-points'"
               id="tasks-points"
               title="Tasks & Points"
               description="Configure task behavior, points, and rewards"
@@ -391,7 +390,7 @@
 
             <!-- Section 3: AI & Integrations -->
             <SettingsSection
-              v-if="selectedSection === 'ai-integrations'"
+              v-if="activeSection === 'ai-integrations'"
               id="ai-integrations"
               title="AI & Integrations"
               description="API keys, calendar connections, and MCP"
@@ -847,7 +846,7 @@
 
             <!-- Section 4: Feature Access -->
             <SettingsSection
-              v-if="selectedSection === 'feature-access'"
+              v-if="activeSection === 'feature-access'"
               id="feature-access"
               title="Feature Access"
               description="Control which features each family member can access"
@@ -916,7 +915,7 @@
 
             <!-- Section 5: Food -->
             <SettingsSection
-              v-if="selectedSection === 'food'"
+              v-if="activeSection === 'food'"
               id="food"
               title="Food"
               description="Meal planning preferences"
@@ -968,7 +967,7 @@
 
             <!-- Section 5b: Allergens (food module only) -->
             <SettingsSection
-              v-if="selectedSection === 'allergens'"
+              v-if="activeSection === 'allergens'"
               id="allergens"
               title="Allergens"
               description="Family allergens and per-member allergy profiles"
@@ -994,7 +993,7 @@
 
             <!-- Section 6: Appearance -->
             <SettingsSection
-              v-if="selectedSection === 'appearance'"
+              v-if="activeSection === 'appearance'"
               id="appearance"
               title="Appearance"
               description="Dark mode and color themes"
@@ -1038,7 +1037,7 @@
 
             <!-- Section 6: Notifications -->
             <SettingsSection
-              v-if="selectedSection === 'notifications'"
+              v-if="activeSection === 'notifications'"
               id="notifications"
               title="Notifications"
               description="Push, email, quiet hours, and per-type preferences"
@@ -1050,7 +1049,7 @@
 
             <!-- Section 6b: Billing (only visible to the family billing owner when BILLING_ENABLED) -->
             <SettingsSection
-              v-if="selectedSection === 'billing'"
+              v-if="activeSection === 'billing'"
               id="billing"
               title="Billing & subscription"
               description="Manage your plan, payment method, and invoices"
@@ -1062,7 +1061,7 @@
 
             <!-- Section 7: About -->
             <SettingsSection
-              v-if="selectedSection === 'about'"
+              v-if="activeSection === 'about'"
               id="about"
               title="About Kinhold"
               description="Version info and updates"
@@ -1145,7 +1144,7 @@
 
           <!-- Your Data (GDPR export) -->
           <SettingsSection
-            v-if="selectedSection === 'your-data'"
+            v-if="activeSection === 'your-data'"
             id="your-data"
             title="Your Data"
             description="Download a copy of your data"
@@ -1169,7 +1168,7 @@
 
           <!-- Section 8: Danger Zone -->
           <SettingsSection
-            v-if="selectedSection === 'danger'"
+            v-if="activeSection === 'danger'"
             id="danger"
             title="Danger Zone"
             description="Irreversible actions — delete account or family"
@@ -1709,30 +1708,25 @@ const billingEnabled = computed(() => !!appConfig.value?.billing_enabled)
 // data rights without bypassing the paywall via other settings.
 const gdprMode = computed(() => route.query.gdpr === '1')
 
-// ---- Section expand/collapse state ----
-// Master-detail state: single selected section id (replaces the Set-based
-// accordion model). Deep-linked via location.hash so refresh preserves state.
-// Mobile shows just the rail when null; desktop defaults to the first visible
-// section so the detail pane is never empty.
+// ---- Section selection (master-detail) ----
+// The selected section lives in the URL hash so refresh, deep links and
+// back/forward all land on it. Mobile shows the rail alone until a section
+// is picked; desktop always shows one so the detail pane is never empty.
 const selectedSection = ref(null)
 
+const isDesktopViewport = () => window.matchMedia('(min-width: 768px)').matches
+
+// Through the router, not history.replaceState: Vue Router keeps its own
+// history.state and rewrites the entry without the hash if that is lost.
+// path + query are passed explicitly because a hash-only location drops the
+// query, and ?gdpr=1 is what keeps paywalled users on export/delete only.
 const selectSection = (key) => {
   selectedSection.value = key
-  if (typeof window === 'undefined') return
-  const hash = key ? `#${key}` : ''
-  if (window.location.hash !== hash) {
-    // replaceState avoids littering history with every rail click.
-    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}${hash}`)
-  }
-  // Mobile pushes into the detail view from a scrolled rail; desktop keeps the
-  // sticky rail where it is, so scroll only on mobile.
-  if (key && !window.matchMedia('(min-width: 768px)').matches) {
-    window.scrollTo({ top: 0, behavior: 'instant' })
-  }
+  router.replace({ path: route.path, query: route.query, hash: key ? `#${key}` : '' })
 }
 
-// The ordered rail model. v-if flags on each item mirror the per-section gates
-// below (moduleToggles, foodModuleEnabled, canSeeBilling, gdprMode).
+// The ordered rail model, and the single source of truth for which sections
+// are reachable (moduleToggles, foodModuleEnabled, canSeeBilling, gdprMode).
 const visibleSections = computed(() => {
   if (gdprMode.value) {
     return [
@@ -1763,36 +1757,33 @@ const visibleSections = computed(() => {
   return list
 })
 
-// Resolve the initial section from hash → first visible → null (mobile list view).
+const visibleSectionKeys = computed(() => visibleSections.value.map(s => s.key))
+
+// Only a section whose gate is open renders. A selection can outlive its
+// gate: a deep link resolved against the default module state before the
+// family's real settings load, or a module switched off from inside its own
+// section.
+const activeSection = computed(() =>
+  visibleSectionKeys.value.includes(selectedSection.value) ? selectedSection.value : null,
+)
+
 const initSelectedSection = () => {
-  if (typeof window === 'undefined') return
-  const hash = window.location.hash.slice(1)
-  const visible = visibleSections.value.map(s => s.key)
-  if (hash && visible.includes(hash)) {
-    selectedSection.value = hash
-    return
-  }
-  // Desktop lands on the first visible section; mobile stays on the list.
-  const isDesktop = window.matchMedia('(min-width: 768px)').matches
-  if (isDesktop && visible.length > 0) {
-    selectedSection.value = visible[0]
+  const hashKey = route.hash.slice(1)
+  if (visibleSectionKeys.value.includes(hashKey)) {
+    selectedSection.value = hashKey
+  } else if (isDesktopViewport()) {
+    selectedSection.value = visibleSectionKeys.value[0] ?? null
   }
 }
 
-// Vue Router reuses the component when only the hash changes, so onMounted
-// doesn't re-fire. Watch route.hash so external hash navigation (deep-links,
-// browser back/forward) still updates the detail pane.
-watch(() => route.hash, (h) => {
-  const key = h.slice(1)
-  const visible = visibleSections.value.map(s => s.key)
-  if (key && visible.includes(key)) {
+// Vue Router reuses this component when only the hash changes, so external
+// hash navigation (deep links, back/forward) is picked up here.
+watch(() => route.hash, (hash) => {
+  const key = hash.slice(1)
+  if (visibleSectionKeys.value.includes(key)) {
     selectedSection.value = key
-  } else if (!key) {
-    // Hash cleared externally: mirror the mobile list view on narrow screens,
-    // leave the desktop pane on whatever was last selected.
-    const isDesktop = typeof window !== 'undefined'
-      && window.matchMedia('(min-width: 768px)').matches
-    if (!isDesktop) selectedSection.value = null
+  } else if (!key && !isDesktopViewport()) {
+    selectedSection.value = null
   }
 })
 
@@ -2677,6 +2668,20 @@ const handleDeleteFamily = async () => {
   deletingFamily.value = false
 }
 
+// Gates open and close after mount (module access loads, billing config
+// arrives, a module is switched off). Follow a deep link that has just become
+// valid, and move off a section that has just been hidden. Registered down
+// here because watch() reads its source immediately, and visibleSections
+// depends on computeds declared above.
+watch(visibleSectionKeys, (keys) => {
+  const hashKey = route.hash.slice(1)
+  if (keys.includes(hashKey)) {
+    selectedSection.value = hashKey
+  } else if (selectedSection.value && !keys.includes(selectedSection.value)) {
+    selectSection(isDesktopViewport() ? keys[0] ?? null : null)
+  }
+})
+
 // ---- Init ----
 onMounted(async () => {
   initSelectedSection()
@@ -2766,8 +2771,5 @@ onMounted(async () => {
     calendarError.value = route.query.calendar_error
     router.replace({ path: '/settings' })
   }
-
-  // Hash deep-linking is handled by initSelectedSection above; gdprMode
-  // already lands on your-data via the first-visible fallback.
 })
 </script>
