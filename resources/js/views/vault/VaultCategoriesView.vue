@@ -58,12 +58,15 @@
           </div>
 
           <!-- Entry count -->
-          <span
+          <KinChip
             v-if="getEntryCount(category.id) > 0"
-            class="text-xs font-medium text-ink-tertiary bg-surface-sunken px-2 py-0.5 rounded-full"
+            variant="category"
+            color="neutral"
+            size="sm"
+            :interactive="false"
           >
             {{ getEntryCount(category.id) }}
-          </span>
+          </KinChip>
 
           <!-- Context menu (parent only) -->
           <div v-if="isParent" class="opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
@@ -252,6 +255,7 @@ import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import KinInput from '@/components/design-system/KinInput.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinSearch from '@/components/design-system/KinSearch.vue'
+import KinChip from '@/components/design-system/KinChip.vue'
 import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import {

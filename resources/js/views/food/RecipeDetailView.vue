@@ -106,15 +106,21 @@
 
         <!-- Time + servings badges -->
         <div class="flex flex-wrap items-center gap-2">
-          <span v-if="recipe.prep_time_minutes" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-surface-sunken text-ink-secondary rounded-full">
-            <ClockIcon class="w-3.5 h-3.5" />
+          <KinChip v-if="recipe.prep_time_minutes" variant="category" color="neutral" size="sm" :interactive="false">
+            <template #leading>
+              <ClockIcon class="w-3.5 h-3.5" />
+            </template>
             Prep {{ formatTime(recipe.prep_time_minutes) }}
-          </span>
-          <span v-if="recipe.cook_time_minutes" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-surface-sunken text-ink-secondary rounded-full">
-            <FireIcon class="w-3.5 h-3.5" />
+          </KinChip>
+          <KinChip v-if="recipe.cook_time_minutes" variant="category" color="neutral" size="sm" :interactive="false">
+            <template #leading>
+              <FireIcon class="w-3.5 h-3.5" />
+            </template>
             Cook {{ formatTime(recipe.cook_time_minutes) }}
-          </span>
-          <span v-if="totalTime" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-[#C4975A]/10 text-[#C4975A] rounded-full">
+          </KinChip>
+          <!-- Total: brand-gold is a deliberate accent island for food, so this
+               stays hand-rolled but swaps the hard-coded hex for the token. -->
+          <span v-if="totalTime" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-brand-gold/10 text-brand-gold rounded-full">
             Total {{ formatTime(totalTime) }}
           </span>
         </div>
