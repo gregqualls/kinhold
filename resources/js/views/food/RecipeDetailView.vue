@@ -17,64 +17,53 @@
 
     <!-- Recipe content -->
     <template v-else-if="recipe">
-      <!-- Header bar -->
-      <div class="px-4 pt-4 pb-2 md:px-6 md:pt-6 flex items-center gap-3">
-        <KinButton
-          variant="ghost"
-          size="sm"
-          icon-only
-          aria-label="Back to recipes"
-          @click="$router.push({ name: 'Food' })"
-        >
-          <ArrowLeftIcon class="w-5 h-5" />
-        </KinButton>
-        <div class="flex-1 min-w-0">
-          <h1 class="text-xl font-bold font-heading text-ink-primary truncate">
-            {{ recipe.title }}
-          </h1>
-        </div>
-        <!-- Actions -->
-        <div class="flex items-center gap-1">
-          <button
-            class="p-2 rounded-lg transition-colors"
-            :class="recipe.is_favorite ? 'text-status-failed' : 'text-ink-tertiary hover:text-status-failed'"
-            aria-label="Toggle favorite"
-            @click="handleToggleFavorite"
-          >
-            <HeartIconSolid v-if="recipe.is_favorite" class="w-5 h-5" />
-            <HeartIcon v-else class="w-5 h-5" />
-          </button>
-          <KinButton
-            v-if="isParent"
-            variant="ghost"
-            size="sm"
-            icon-only
-            aria-label="Share recipe"
-            @click="showShareModal = true"
-          >
-            <ShareIcon class="w-5 h-5" />
-          </KinButton>
-          <KinButton
-            v-if="isParent"
-            variant="ghost"
-            size="sm"
-            icon-only
-            aria-label="Edit recipe"
-            @click="showEditForm = true"
-          >
-            <PencilSquareIcon class="w-5 h-5" />
-          </KinButton>
-          <KinButton
-            v-if="isParent"
-            variant="ghost"
-            size="sm"
-            icon-only
-            aria-label="Delete recipe"
-            @click="showDeleteConfirm = true"
-          >
-            <TrashIcon class="w-5 h-5" />
-          </KinButton>
-        </div>
+      <div class="px-4 pt-4 md:px-6 md:pt-6">
+        <KinPageHero show-back back-label="Back to recipes" @back="$router.push({ name: 'Food' })">
+          {{ recipe.title }}
+          <template #actions>
+            <div class="flex items-center gap-1">
+              <button
+                class="p-2 rounded-lg transition-colors"
+                :class="recipe.is_favorite ? 'text-status-failed' : 'text-ink-tertiary hover:text-status-failed'"
+                aria-label="Toggle favorite"
+                @click="handleToggleFavorite"
+              >
+                <HeartIconSolid v-if="recipe.is_favorite" class="w-5 h-5" />
+                <HeartIcon v-else class="w-5 h-5" />
+              </button>
+              <KinButton
+                v-if="isParent"
+                variant="ghost"
+                size="sm"
+                icon-only
+                aria-label="Share recipe"
+                @click="showShareModal = true"
+              >
+                <ShareIcon class="w-5 h-5" />
+              </KinButton>
+              <KinButton
+                v-if="isParent"
+                variant="ghost"
+                size="sm"
+                icon-only
+                aria-label="Edit recipe"
+                @click="showEditForm = true"
+              >
+                <PencilSquareIcon class="w-5 h-5" />
+              </KinButton>
+              <KinButton
+                v-if="isParent"
+                variant="ghost"
+                size="sm"
+                icon-only
+                aria-label="Delete recipe"
+                @click="showDeleteConfirm = true"
+              >
+                <TrashIcon class="w-5 h-5" />
+              </KinButton>
+            </div>
+          </template>
+        </KinPageHero>
       </div>
 
       <!-- Hero image -->
@@ -296,8 +285,8 @@ import KinButton from '@/components/design-system/KinButton.vue'
 import KinChip from '@/components/design-system/KinChip.vue'
 import KinModalSheet from '@/components/design-system/KinModalSheet.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import {
-  ArrowLeftIcon,
   HeartIcon,
   PencilSquareIcon,
   TrashIcon,

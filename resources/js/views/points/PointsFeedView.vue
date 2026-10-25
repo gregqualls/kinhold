@@ -3,14 +3,16 @@
     <!-- Main column -->
     <div class="flex-1 min-w-0 flex flex-col p-3 md:p-6 gap-3 md:gap-4 lg:overflow-hidden">
       <!-- Header -->
-      <div class="flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
-        <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Points</h1>
-        <!-- Mobile-only quick links (rail handles this on desktop) -->
-        <div class="flex gap-2 lg:hidden">
-          <KinButton variant="secondary" size="sm" to="/points/rewards">Rewards</KinButton>
-          <KinButton variant="ghost" size="sm" to="/points/history">History</KinButton>
-        </div>
-      </div>
+      <KinPageHero>
+        Points
+        <template #actions>
+          <!-- Quick links until the rail appears at lg, which carries them. -->
+          <div class="flex gap-2 lg:hidden">
+            <KinButton variant="secondary" size="sm" to="/points/rewards">Rewards</KinButton>
+            <KinButton variant="ghost" size="sm" to="/points/history">History</KinButton>
+          </div>
+        </template>
+      </KinPageHero>
 
       <!-- Pending Point Requests (parents only) -->
       <PendingRequests
@@ -150,6 +152,7 @@ import KinHeroMetricCard from '@/components/design-system/KinHeroMetricCard.vue'
 import KinFlatCard from '@/components/design-system/KinFlatCard.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import KinUtilityRail from '@/components/design-system/KinUtilityRail.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import { SparklesIcon, GiftIcon, ClockIcon } from '@heroicons/vue/24/outline'
 
 const pointsStore = usePointsStore()

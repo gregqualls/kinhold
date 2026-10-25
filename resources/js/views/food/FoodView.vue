@@ -1,9 +1,13 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header -->
-    <div class="px-4 pt-3 md:px-6 md:pt-6">
-      <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Meals</h1>
-      <p class="hidden md:block text-sm text-ink-tertiary mt-0.5">Recipes, restaurants &amp; meal planning</p>
+    <div class="px-4 pt-3 md:px-6 md:pt-3">
+      <KinPageHero>
+        Meals
+        <template #subtitle>
+          <span class="hidden md:inline">Recipes, restaurants &amp; meal planning</span>
+        </template>
+      </KinPageHero>
     </div>
 
     <!-- Tab bar -->
@@ -31,6 +35,7 @@ import RecipesTab from './RecipesTab.vue'
 import RestaurantsTab from './RestaurantsTab.vue'
 import MealsTab from './MealsTab.vue'
 import KinTabPillGroup from '@/components/design-system/KinTabPillGroup.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 
 const tabs = [
   { key: 'meals',       label: 'Plans' },

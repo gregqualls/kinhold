@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col">
     <!-- Header -->
-    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-6 md:pb-2">
+    <div class="px-4 pt-3 pb-1 md:px-6 md:pt-3 md:pb-0">
       <KinPageHero>
         Vault
         <template #subtitle>Secure family information</template>

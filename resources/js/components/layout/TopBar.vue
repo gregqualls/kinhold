@@ -1,5 +1,8 @@
 <template>
-  <div class="px-6 py-3 flex items-center justify-end gap-4">
+  <div class="px-6 py-3 min-h-[64px] flex items-center gap-4">
+    <!-- Page title slot: KinPageHero teleports here on desktop. -->
+    <div id="kin-topbar-title" class="flex-1 min-w-0"></div>
+
     <!-- Dark mode toggle -->
     <button
       type="button"
@@ -12,10 +15,11 @@
       <SunIcon v-else class="w-5 h-5" />
     </button>
 
-    <!-- Family avatars — UserAvatar renders KinAvatar with each member's
+    <!-- Family avatars: UserAvatar renders KinAvatar with each member's
          own avatar_color (or stable hash when none set) so the topbar row
-         matches the per-user accent shown elsewhere in the app. -->
-    <div class="flex -space-x-1.5">
+         matches the per-user accent shown elsewhere in the app. Hidden
+         below lg so a page title and its actions keep the room. -->
+    <div class="hidden lg:flex -space-x-1.5">
       <UserAvatar
         v-for="member in displayedMembers"
         :key="member.id"

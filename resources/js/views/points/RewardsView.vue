@@ -3,17 +3,14 @@
     <!-- Main column -->
     <div class="flex-1 min-w-0 flex flex-col p-3 md:p-6 gap-3 md:gap-4 lg:overflow-y-auto">
       <!-- Header -->
-      <div class="flex items-center justify-between gap-3 flex-wrap flex-shrink-0">
-        <div class="flex items-center gap-2 md:gap-3">
-          <KinButton variant="ghost" size="sm" icon-only aria-label="Back to Points" to="/points">
-            <ChevronLeftIcon class="w-5 h-5" />
-          </KinButton>
-          <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Rewards</h1>
-        </div>
-        <span class="text-sm font-bold font-mono text-accent-lavender-bold">
-          {{ pointsStore.bank }} pts
-        </span>
-      </div>
+      <KinPageHero show-back back-label="Back to Points" @back="$router.push('/points')">
+        Rewards
+        <template #actions>
+          <span class="text-sm font-bold font-mono text-accent-lavender-bold">
+            {{ pointsStore.bank }} pts
+          </span>
+        </template>
+      </KinPageHero>
 
       <!-- Create/Edit Form -->
       <RewardForm
@@ -167,7 +164,7 @@ import RewardCard from '@/components/points/RewardCard.vue'
 import RewardForm from '@/components/points/RewardForm.vue'
 import BidModal from '@/components/points/BidModal.vue'
 import FloatingActionButton from '@/components/common/FloatingActionButton.vue'
-import { ChevronLeftIcon, PlusIcon, GiftIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
+import { PlusIcon, GiftIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import { useNotification } from '@/composables/useNotification'
 import KinButton from '@/components/design-system/KinButton.vue'
 import KinChip from '@/components/design-system/KinChip.vue'
@@ -175,6 +172,7 @@ import KinSearch from '@/components/design-system/KinSearch.vue'
 import KinSelect from '@/components/design-system/KinSelect.vue'
 import KinEmptyState from '@/components/design-system/KinEmptyState.vue'
 import KinUtilityRail from '@/components/design-system/KinUtilityRail.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 
 const pointsStore = usePointsStore()
 const authStore = useAuthStore()

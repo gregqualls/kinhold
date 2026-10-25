@@ -3,11 +3,9 @@
     <!-- Main column -->
     <div class="flex-1 min-w-0 p-3 md:p-6 overflow-y-auto">
       <!-- Header -->
-      <div class="flex items-center justify-between mb-2 md:mb-4 gap-3 flex-wrap">
-        <h1 class="text-lg md:text-2xl font-bold font-heading text-ink-primary">Calendar</h1>
-
-        <div class="flex items-center gap-2 flex-wrap">
-          <!-- View Mode Selector -->
+      <KinPageHero>
+        Calendar
+        <template #actions>
           <KinTabPillGroup
             v-model:active-key="viewMode"
             :tabs="viewModeTabs"
@@ -15,8 +13,8 @@
             size="sm"
             @change="setViewMode"
           />
-        </div>
-      </div>
+        </template>
+      </KinPageHero>
 
       <!-- Day-view editorial header (hero day number + week / month) -->
       <div v-if="viewMode === 'day'" class="mb-6 flex items-center gap-3 flex-wrap">
@@ -237,6 +235,7 @@ import KinMonthGrid from '@/components/design-system/KinMonthGrid.vue'
 import KinChip from '@/components/design-system/KinChip.vue'
 import KinUtilityRail from '@/components/design-system/KinUtilityRail.vue'
 import KinDayHeader from '@/components/design-system/KinDayHeader.vue'
+import KinPageHero from '@/components/design-system/KinPageHero.vue'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,

@@ -2,6 +2,10 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-10-25: Page titles move into the desktop top bar
+
+From Greg's preview pass: every page had an empty top bar band above its title. KinPageHero now teleports into a title slot in the TopBar from md up, on one line (back, eyebrow, title, subtitle, then actions), and stays in the page below md where the TopBar is hidden. Tasks, Calendar, Points, Rewards, Meals and the recipe page swapped their hand-built headers for KinPageHero, so all eleven titled screens share it. Calendar's view toggle, Points' quick links, the Rewards balance and the recipe icons ride along as hero actions. To keep titles whole at 768px, the family avatar stack shows from lg up and the bar title is `text-xl` between md and lg. Dashboard (its greeting is a widget), Shopping and Assistant have no page title and are unchanged.
+
 ## 2026-10-25: Preview check on PR #339
 
 Walked every screen on the Upsun `pr-339` preview as the demo family, at 1280px and 375px, light and dark: no console errors, no failed API calls, no horizontal overflow. Two regressions from this branch turned up and are fixed. The Shopping window pills (moved to KinChip) shrank and wrapped in their scrolling row at 375px; KinChip now carries `whitespace-nowrap` and `flex-shrink-0` itself, replacing the copies eight callers added by hand. The Rewards grid went to four columns at `xl` while the new rail took part of the width, which cut the timed auction title to one letter; the grid now auto-fills at a 13rem minimum and the auction card stacks its bid panel. Noted, not changed: the Rewards mobile sort select drops to its own line beside the three filter chips.
