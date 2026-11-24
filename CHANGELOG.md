@@ -2,6 +2,10 @@
 
 > Updated at the end of every working session. Newest entries first.
 
+## 2026-11-24: Dependency security updates
+
+`composer audit` reported 23 advisories across 8 packages and `npm audit` reported 13. Composer now reports none: Laravel 13.38.0 to 13.44.1, Symfony http-foundation, http-kernel, routing and filesystem to 8.1.11 and mime to 8.1.10 (trusted-proxy spoofing, client-chosen hosts in generated URLs, path access-control bypasses, email header injection), web-token/jwt-library 4.2.3 to 4.2.8 (weak ECDH-ES keys, any-length AES-GCM tags), and phpseclib 3.0.57 to 3.0.58. `npm audit fix` cleared the high-severity follow-redirects credential leak. Nine low and moderate npm advisories remain on purpose: glob and minimatch under vite-plugin-pwa's build tooling, and KaTeX under Milkdown's math extension. npm's only fix for those is downgrading Milkdown and vite-plugin-pwa. All 459 tests pass and the Vite build succeeds. No migrations or config changes.
+
 ## 2026-10-25: v1.12.0, UI polish pass
 
 Release covering #339 and the entries below back to the polish pass on Dashboard, Calendar and Tasks: every screen brought back in line with the Kin* design system, page titles in the desktop top bar, Settings as a master-detail layout, accessibility fixes (AA tag text, readable custom-colour chips, `aria-pressed`, no nested buttons), and the bugs found reviewing it locally and on the preview. Frontend only: no migrations, no config or environment changes, nothing for self-hosters to do beyond a normal upgrade.
